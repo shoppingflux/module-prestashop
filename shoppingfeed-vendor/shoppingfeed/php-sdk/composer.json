@@ -1,0 +1,33 @@
+{
+  "name": "shoppingfeed/php-sdk",
+  "license": "Apache-2.0",
+  "minimum-stability": "stable",
+  "require": {
+    "php": ">= 5.6",
+    "guzzlehttp/guzzle": "^6.3",
+    "shoppingfeed/php-feed-generator": "1.0.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "ShoppingFeed\\Sdk\\": "src/",
+      "ShoppingFeed\\Sdk\\Test\\": "tests/unit"
+    }
+  },
+  "suggest": {
+    "psr/log": "trace HTTP requests performed by the SDK"
+  },
+  "require-dev": {
+    "monolog/monolog": "^1.23",
+    "phpunit/phpunit": "^5.0",
+    "squizlabs/php_codesniffer": "^2.8"
+  },
+  "scripts": {
+    "test": [
+      "@php vendor/bin/phpunit --configuration=phpunit.xml --coverage-html=build/phpunit/coverage/",
+      "@php vendor/bin/phpcs --colors --report=full --standard=resources/phpcs/ruleset.xml --report-checkstyle=build/phpcs/phpcs.xml --report-emacs=build/phpcs/phpcs.log --extensions=php -p src"
+    ]
+  },
+  "scripts-descriptions": {
+    "test" : "Run PHPUnit tests suites and Coding standards validator"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "require": {
+    "shoppingfeed/php-sdk": "0.2.1-beta.1"
+  },
+  "config": {
+    "vendor-dir": "shoppingfeed-vendor"
+  }
+}
