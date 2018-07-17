@@ -87,7 +87,7 @@ class ShoppingfeedSyncStockModuleFrontController extends ShoppingfeedCronControl
         // TODO : for now, only use the default shop...
         $id_shop_default = Configuration::get('PS_SHOP_DEFAULT');
         try {
-            $res = ShoppingfeedApi::getInstance($id_shop_default)->updateMainStoreInventory($productsData[$id_shop_default]);
+            $res = TotShoppingFeed\ShoppingfeedApi::getInstance($id_shop_default)->updateMainStoreInventory($productsData[$id_shop_default]);
         } catch (Exception $e) {
             $logger::logError("Fail syncStock : " . $e->getMessage() . " " . $e->getFile() . ":" . $e->getLine());
             $logger::closeLogger();

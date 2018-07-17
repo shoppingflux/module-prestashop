@@ -35,8 +35,6 @@ class AdminShoppingfeedConfigurationController extends ModuleAdminController
 {
     public $bootstrap = true;
 
-    public $display = 'form';
-
     public function initContent()
     {
         $this->addCSS($this->module->getPathUri() . 'views/css/shoppingfeed_configuration/form.css');
@@ -62,7 +60,30 @@ class AdminShoppingfeedConfigurationController extends ModuleAdminController
             ),
         );
 
-        return parent::initContent();
+        $this->fields_form = array(
+            'tinymce' => true,
+            'legend' => array(
+                'title' => $this->trans('Category', array(), 'Admin.Catalog.Feature'),
+                'icon' => 'icon-tags'
+            ),
+            'input' => array(
+                array(
+                    'type' => 'text',
+                    'label' => $this->trans('Name', array(), 'Admin.Global'),
+                    'name' => 'name',
+                    'lang' => true,
+                    'required' => true,
+                    'class' => 'copy2friendlyUrl',
+                    'hint' => $this->trans('Invalid characters:', array(), 'Admin.Notifications.Info').' <>;=#{}',
+                ),
+            ),
+            'submit' => array(
+                'title' => $this->trans('Save', array(), 'Admin.Actions'),
+                'name' => 'submitAdd'
+            )
+        );
+
+        return parent::initContent() . $this->renderForm();
     }
 
     public function postProcess()

@@ -9,7 +9,7 @@
 /** IMPORTANT : Guzzle version is different between the SF SDK and PS. They can not be interchanged.
  *  So if we're using the SDK in a PS process which uses Guzzle, the SDK will likely break...
  */
-require_once _PS_MODULE_DIR_ . "shoppingfeed/shoppingfeed-vendor/autoload.php";
+require_once _PS_MODULE_DIR_ . "shoppingfeed/vendor/autoload.php";
 
 use ShoppingFeed\Sdk\Credential\Token;
 use ShoppingFeed\Sdk\Client\Client;
@@ -47,7 +47,7 @@ class ShoppingfeedApi
         if (!$token && !$id_shop) {
             return false;
         } else if ($id_shop) {
-            $token = Configuration::get(shoppingfeed::AUTH_TOKEN . "_" . $id_shop);
+            $token = Configuration::get(Shoppingfeed::AUTH_TOKEN . "_" . $id_shop);
         }
 
         // Setup credentials to connect to the API, and create session
@@ -61,7 +61,7 @@ class ShoppingfeedApi
 
     /**
      * Makes the call to update the SF inventory
-     * @param $products an array of product's references and quantities
+     * @param array $products an array of product's references and quantities
      * <pre>
      * Array(
      *      Array(

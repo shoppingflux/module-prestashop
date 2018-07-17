@@ -156,7 +156,7 @@ class Shoppingfeed extends ShoppingfeedModule
         $new_quantity = $params['quantity'];
 
         $product = new Product($id_product);
-        if ($product->hasCombinations() && !$id_product_attribute) {
+        if ($product->hasAttributes() && !$id_product_attribute) {
             return;
         }
 

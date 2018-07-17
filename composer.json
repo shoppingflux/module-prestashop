@@ -3,6 +3,12 @@
     "shoppingfeed/php-sdk": "0.2.1-beta.1"
   },
   "config": {
-    "vendor-dir": "shoppingfeed-vendor"
+    "vendor-dir": "vendor"
+  },
+  "autoload": {
+    "psr-4": {
+      "SfGuzzle\\GuzzleHttp\\": "vendor/testRename/shoppingfeed/guzzlehttp/src/",
+      "ShoppingFeed\\Sdk\\": "vendor/testRename/shoppingfeed/src/"
+    }
   }
 }
