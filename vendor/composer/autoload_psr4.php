@@ -6,12 +6,9 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
-    'ShoppingFeed\\Sdk\\Test\\' => array($vendorDir . '/shoppingfeed/php-sdk/tests/unit'),
-    'ShoppingFeed\\Sdk\\' => array($vendorDir . '/testRename/shoppingfeed/src', $vendorDir . '/shoppingfeed/php-sdk/src'),
-    'ShoppingFeed\\Feed\\' => array($vendorDir . '/shoppingfeed/php-feed-generator/src'),
-    'SfGuzzle\\GuzzleHttp\\' => array($vendorDir . '/testRename/shoppingfeed/guzzlehttp/src'),
+    'ShoppingFeed\\Sdk\\' => array($vendorDir . '/prefixed/shoppingfeed/php-sdk/src'),
+    'SfGuzzle\\GuzzleHttp\\Psr7\\' => array($vendorDir . '/prefixed/guzzlehttp/psr7/src'),
+    'SfGuzzle\\GuzzleHttp\\Promise\\' => array($vendorDir . '/prefixed/guzzlehttp/promises/src'),
+    'SfGuzzle\\GuzzleHttp\\' => array($vendorDir . '/prefixed/guzzlehttp/guzzle/src'),
     'Psr\\Http\\Message\\' => array($vendorDir . '/psr/http-message/src'),
-    'GuzzleHttp\\Psr7\\' => array($vendorDir . '/guzzlehttp/psr7/src'),
-    'GuzzleHttp\\Promise\\' => array($vendorDir . '/guzzlehttp/promises/src'),
-    'GuzzleHttp\\' => array($vendorDir . '/guzzlehttp/guzzle/src'),
 );

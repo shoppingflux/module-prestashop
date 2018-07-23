@@ -35,100 +35,292 @@ class AdminShoppingfeedConfigurationController extends ModuleAdminController
 {
     public $bootstrap = true;
 
+    /**
+     * @inheritdoc
+     */
     public function initContent()
     {
         $this->addCSS($this->module->getPathUri() . 'views/css/shoppingfeed_configuration/form.css');
 
-        // renderForm() uses Guzzle for some reason, so we can't use fields_form because of the lib conflict...
-        $this->fields_options['TokenAuth'] = array(
-            'image' => '../img/admin/cog.gif',
-            'icon' => 'icon-user',
-            'info' => $this->createInfoTemplate(),
-            'title' => $this->l('API Token'),
-            'fields' => array(
-                shoppingfeed::AUTH_TOKEN => array(
-                    'title' => $this->l('Token'),
+        $id_shop = Shop::getContextShopID();
+        if (!$id_shop) {
+            $id_shop = Configuration::get('PS_SHOP_DEFAULT');
+        }
+        $token = Configuration::get(shoppingfeed::AUTH_TOKEN . "_" . $id_shop);
+
+        $this->content = $this->renderTokenForm();
+
+        if ($token) {
+            $this->content .= $this->renderConfigurationForm();
+        } else {
+            $this->content .= $this->renderLoginForm();
+        }
+
+        return parent::initContent();
+    }
+
+    /**
+     * Renders the HTML for the token form
+     * @return string the rendered form's HTML
+     */
+    public function renderTokenForm()
+    {
+        $fields_form = array(
+            'legend' => array(
+                'title' => $this->l('API Token'),
+                'icon' => 'icon-user'
+            ),
+            'input' => array(
+                array(
                     'type' => 'text',
+                    'label' => $this->l('Token'),
+                    'name' => Shoppingfeed::AUTH_TOKEN,
                     'required' => true,
-                    'auto_value' => false,
-                    'value' => Configuration::get(shoppingfeed::AUTH_TOKEN),
                 ),
             ),
             'submit' => array(
                 'title' => $this->l('Save'),
                 'name' => 'saveToken'
-            ),
+            )
         );
 
-        $this->fields_form = array(
-            'tinymce' => true,
+        $id_shop = Shop::getContextShopID();
+        if (!$id_shop) {
+            $id_shop = Configuration::get('PS_SHOP_DEFAULT');
+        }
+
+        $fields_value = array(
+            Shoppingfeed::AUTH_TOKEN => Configuration::get(shoppingfeed::AUTH_TOKEN . "_" . $id_shop),
+        );
+
+        $helper = new HelperForm($this);
+        $this->setHelperDisplay($helper);
+        $helper->fields_value = $fields_value;
+        $helper->tpl_vars = $this->getTemplateFormVars();
+        $helper->tpl_vars['img_path'] = $this->module->getPathUri() . "views/img/";
+        $helper->base_folder = $this->getTemplatePath() . $this->override_folder;
+        $helper->base_tpl = 'form_token.tpl';
+
+        return $helper->generateForm(array(array('form' => $fields_form)));
+    }
+
+    /**
+     * Renders the HTML for the login form
+     * @return string the rendered form's HTML
+     */
+    public function renderLoginForm()
+    {
+        $fields_form = array(
             'legend' => array(
-                'title' => $this->trans('Category', array(), 'Admin.Catalog.Feature'),
-                'icon' => 'icon-tags'
+                'title' => $this->l('Login'),
+                'icon' => 'icon-user'
             ),
             'input' => array(
                 array(
                     'type' => 'text',
-                    'label' => $this->trans('Name', array(), 'Admin.Global'),
-                    'name' => 'name',
-                    'lang' => true,
+                    'label' => $this->l('Username'),
+                    'name' => 'username',
                     'required' => true,
-                    'class' => 'copy2friendlyUrl',
-                    'hint' => $this->trans('Invalid characters:', array(), 'Admin.Notifications.Info').' <>;=#{}',
+                ),
+                array(
+                    'type' => 'password',
+                    'label' => $this->l('Password'),
+                    'name' => 'password',
+                    'required' => true,
                 ),
             ),
             'submit' => array(
-                'title' => $this->trans('Save', array(), 'Admin.Actions'),
-                'name' => 'submitAdd'
+                'title' => $this->l('Send'),
+                'name' => 'login'
             )
         );
 
-        return parent::initContent() . $this->renderForm();
+        $id_shop = Shop::getContextShopID();
+        if (!$id_shop) {
+            $id_shop = Configuration::get('PS_SHOP_DEFAULT');
+        }
+
+        $fields_value = array(
+            'username' => '',
+            'password' => '',
+        );
+
+        $helper = new HelperForm($this);
+        $this->setHelperDisplay($helper);
+        $helper->fields_value = $fields_value;
+        $helper->tpl_vars = $this->getTemplateFormVars();
+        $helper->base_folder = $this->getTemplatePath() . $this->override_folder;
+        $helper->base_tpl = 'form_login.tpl';
+
+        return $helper->generateForm(array(array('form' => $fields_form)));
     }
 
+    /**
+     * Renders the HTML for the configuration form
+     * @return string the rendered form's HTML
+     */
+    public function renderConfigurationForm()
+    {
+        $fields_form = array(
+            'legend' => array(
+                'title' => $this->l('Configuration'),
+                'icon' => 'icon-cog'
+            ),
+            'input' => array(
+                array(
+                    'type' => 'switch',
+                    'is_bool' => true,
+                    'values' => array(
+                        array(
+                            'value' => 1,
+                        ),
+                        array(
+                            'value' => 0,
+                        )
+                    ),
+                    'label' => $this->l('Real-time synchronization'),
+                    'hint' => $this->l('If checked, no CRON will be needed. Synchronization will occur as soon as the changes are made. This may impact user performance.'),
+                    'name' => Shoppingfeed::REAL_TIME_SYNCHRONIZATION,
+                ),
+                array(
+                    'type' => 'text',
+                    'label' => $this->l('Max. product update per request'),
+                    'name' => Shoppingfeed::STOCK_SYNC_MAX_PRODUCTS,
+                    'required' => true,
+                ),
+            ),
+            'submit' => array(
+                'title' => $this->l('Save'),
+                'name' => 'saveConfiguration'
+            )
+        );
+
+        $fields_value = array(
+            Shoppingfeed::REAL_TIME_SYNCHRONIZATION => Configuration::get(Shoppingfeed::REAL_TIME_SYNCHRONIZATION),
+            Shoppingfeed::STOCK_SYNC_MAX_PRODUCTS => Configuration::get(Shoppingfeed::STOCK_SYNC_MAX_PRODUCTS),
+        );
+
+        $helper = new HelperForm($this);
+        $this->setHelperDisplay($helper);
+        $helper->fields_value = $fields_value;
+        $helper->tpl_vars = $this->getTemplateFormVars();
+
+        return $helper->generateForm(array(array('form' => $fields_form)));
+    }
+
+
+    /**
+     * @inheritdoc
+     */
     public function postProcess()
     {
         if (Tools::isSubmit('saveToken')) {
             return $this->saveToken();
+        } else if (Tools::isSubmit('login')) {
+            return $this->login();
+        } else if (Tools::isSubmit('saveConfiguration')) {
+            return $this->saveConfiguration();
         }
     }
 
+    /**
+     * Checks if a token is valid by testing it against the SF API, and saves it if it succeeds
+     * @return bool
+     */
     public function saveToken()
     {
-        $token = Tools::getValue(shoppingfeed::AUTH_TOKEN);
+        $token = Tools::getValue(Shoppingfeed::AUTH_TOKEN);
         if (!$token || !preg_match("/^[\w\-\.\~\+\/]+=*$/", $token)) { // See https://tools.ietf.org/html/rfc6750
             $this->errors[] = $this->l("You must specify a valid token.");
             return false;
         }
 
         try {
-            $shoppingFeedApi = ShoppingfeedApi::getInstance($token);
-        } catch (GuzzleHttp\Exception\ClientException $e) {
+            $shoppingFeedApi = ShoppingfeedApi::getInstanceByToken(null, $token);
+
+            if (!$shoppingFeedApi) {
+                $this->errors[] = $this->l("An error has occurred.");
+                return false;
+            }
+        } catch (SfGuzzle\GuzzleHttp\Exception\ClientException $e) {
             if ($e->getResponse()->getStatusCode() == 401) {
                 $this->errors[] = $this->l("This token was not recognized by the Shopping Feed API.");
+            } else {
+                $this->errors[] = $this->l($e->getMessage());
             }
-            $shoppingFeedApi = false;
+            return false;
         } catch (Exception $e) {
             $this->errors[] = $e->getMessage();
-            $shoppingFeedApi = false;
-        }
-
-        if (!$shoppingFeedApi) {
             return false;
         }
 
-        $shops = Shop::getContextListShopID();
-        foreach ($shops as $id_shop) {
-            Configuration::updateValue(shoppingfeed::AUTH_TOKEN . "_" . $id_shop, $token);
+        $id_shop = Shop::getContextShopID();
+        if (!$id_shop) {
+            $id_shop = Configuration::get('PS_SHOP_DEFAULT');
         }
+        Configuration::updateValue(shoppingfeed::AUTH_TOKEN . "_" . $id_shop, $token);
 
+        $this->confirmations[] = $this->l("Your token has been saved.");
         return true;
     }
 
-    public function createInfoTemplate()
+    /**
+     * Attempts to retrieve a token from the SF API using credentials, and saves the token on success
+     * @return bool
+     */
+    public function login()
     {
-        $template = $this->createTemplate("info.tpl");
-        $template->assign('img_path', $this->module->getPathUri() . "views/img/");
-        return $template->fetch();
+        $username = Tools::getValue('username');
+        $password = Tools::getValue('password');
+
+        try {
+            $shoppingFeedApi = ShoppingfeedApi::getInstanceByCredentials($username, $password);
+
+            if (!$shoppingFeedApi) {
+                $this->errors[] = $this->l("An error has occurred.");
+                return false;
+            }
+        } catch (SfGuzzle\GuzzleHttp\Exception\ClientException $e) {
+            if ($e->getResponse()->getStatusCode() == 401) {
+                $this->errors[] = $this->l("These credentials were not recognized by the Shopping Feed API.");
+            } else {
+                $this->errors[] = $this->l($e->getMessage());
+            }
+            return false;
+        } catch (Exception $e) {
+            $this->errors[] = $e->getMessage();
+            return false;
+        }
+
+        $id_shop = Shop::getContextShopID();
+        if (!$id_shop) {
+            $id_shop = Configuration::get('PS_SHOP_DEFAULT');
+        }
+        Configuration::updateValue(shoppingfeed::AUTH_TOKEN . "_" . $id_shop, $shoppingFeedApi->getToken());
+
+        $this->confirmations[] = $this->l("Login successful; your token has been saved.");
+        return true;
+    }
+
+    /**
+     * Saves the configuration for the module
+     * @return bool
+     */
+    public function saveConfiguration()
+    {
+        $realtime_sync = Tools::getValue(Shoppingfeed::REAL_TIME_SYNCHRONIZATION);
+        $stock_sync_max_products = (int)Tools::getValue(Shoppingfeed::STOCK_SYNC_MAX_PRODUCTS);
+
+        Configuration::updateValue(Shoppingfeed::REAL_TIME_SYNCHRONIZATION, $realtime_sync ? true : false);
+
+        if (!is_numeric($stock_sync_max_products)) {
+            $this->errors[] = $this->l("You must specify a valid \"Max. product update per request\" number.");
+        } elseif ($stock_sync_max_products > 200 || $stock_sync_max_products <= 0) {
+            $this->errors[] = $this->l("You must specify a \"Max. product update per request\" number between 1 and 200.");
+        } else {
+            Configuration::updateValue(Shoppingfeed::STOCK_SYNC_MAX_PRODUCTS, $stock_sync_max_products);
+        }
+
+        return true;
     }
 }

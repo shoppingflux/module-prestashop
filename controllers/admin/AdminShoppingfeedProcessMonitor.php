@@ -35,14 +35,38 @@ class AdminShoppingfeedProcessMonitorController extends ShoppingfeedAdminProcess
 
     public $bootstrap = true;
 
+    /**
+     * @inheritdoc
+     * @throws SmartyException
+     */
     public function initContent()
     {
         parent::initContent();
 
-        $this->content .= $this->context->link->getModuleLink($this->module->name, 'syncStock', array('secure_key' => $this->module->secure_key));
+        $this->content .= $this->renderCronUrls();
+
         $this->context->smarty->assign(array(
             'content' => $this->content,
         ));
     }
 
+    /**
+     * Renders a list with all the cron URLs.
+     * TODO : load the list dynamically by reading the front controllers files
+     * @return string the list's HTML
+     * @throws SmartyException
+     */
+    public function renderCronUrls()
+    {
+        $list = array(
+            ShoppingfeedProduct::ACTION_SYNC_STOCK => array(
+                'action' => $this->l('Products stock synchronization'),
+                'url' => $this->context->link->getModuleLink($this->module->name, 'syncStock', array('secure_key' => $this->module->secure_key)),
+            )
+        );
+
+        $tpl = $this->createTemplate('cronUrls.tpl');
+        $tpl->assign('cron_urls', $list);
+        return $tpl->fetch();
+    }
 }

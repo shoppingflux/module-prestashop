@@ -26,8 +26,8 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-require_once __DIR__ . '/config_dev.php';
-require_once __DIR__ . '/classes/ShoppingfeedProduct.php';
+require_once _PS_MODULE_DIR_.'shoppingfeed/config_dev.php';
+require_once _PS_MODULE_DIR_.'shoppingfeed/classes/ShoppingfeedProduct.php';
 
 TotLoader::import('shoppingfeed\classlib\module');
 
@@ -38,41 +38,38 @@ class Shoppingfeed extends ShoppingfeedModule
 
     const AUTH_TOKEN = "SHOPPINGFEED_AUTH_TOKEN";
     const STOCK_SYNC_MAX_PRODUCTS = "SHOPPINGFEED_STOCK_SYNC_MAX_PRODUCTS";
+    const REAL_TIME_SYNCHRONIZATION = "SHOPPINGFEED_REAL_TIME_SYNCHRONIZATION";
 
+    /**
+     * List of objectModel used in this Module
+     * @var array
+     */
     public $objectModels = array(
         'ShoppingfeedProcessMonitor',
         'ShoppingfeedProcessLogger',
         'ShoppingfeedProduct',
     );
 
+    /** @var array $moduleAdminControllers
+     *  The "AdminShoppingfeed2" "AdminShoppingfeed" are both required for ps1.6 / ps1.7 compliance
+     */
     public $moduleAdminControllers = array(
-        /* Both are required for ps1.6 / ps1.7 compliancy */
         array(
             'name' => array(
                 'en' => 'Shopping Feed',
                 'fr' => 'Shopping Feed'
             ),
-            'class_name' => 'AdminShoppingfeed2',
-            'parent_class_name' => 'SELL',
+            'class_name' => 'shoppingfeed',
+            'parent_class_name' => 'ShopParameters',
             'visible' => true,
         ),
-        array(
-            'name' => array(
-                'en' => '202 Shopping Feed',
-                'fr' => '202 Shopping Feed'
-            ),
-            'class_name' => 'AdminShoppingfeed',
-            'parent_class_name' => 'AdminShoppingfeed2',
-            'visible' => true,
-        ),
-        /**/
         array(
             'name' => array(
                 'en' => 'Configuration',
                 'fr' => 'Configuration'
             ),
             'class_name' => 'AdminShoppingfeedConfiguration',
-            'parent_class_name' => 'AdminShoppingfeed',
+            'parent_class_name' => 'shoppingfeed',
             'visible' => true,
         ),
         array(
@@ -81,7 +78,7 @@ class Shoppingfeed extends ShoppingfeedModule
                 'fr' => 'Tâches planifiées'
             ),
             'class_name' => 'AdminShoppingfeedProcessMonitor',
-            'parent_class_name' => 'AdminShoppingfeed',
+            'parent_class_name' => 'shoppingfeed',
             'visible' => true,
         ),
         array(
@@ -90,11 +87,24 @@ class Shoppingfeed extends ShoppingfeedModule
                 'fr' => 'Journal des tâches'
             ),
             'class_name' => 'AdminShoppingfeedProcessLogger',
-            'parent_class_name' => 'AdminShoppingfeed',
+            'parent_class_name' => 'shoppingfeed',
             'visible' => true,
         ),
     );
 
+    /**
+     * List of ModuleFrontController used in this Module
+     * Module::install() register it, after that you can edit it in BO (for rewrite if needed)
+     * @var array
+     */
+    public $controllers = array(
+        'syncStock'
+    );
+
+    /**
+     * List of hooks used in this Module
+     * @var array
+     */
     public $hooks = array(
         'actionUpdateQuantity',
     );
@@ -111,6 +121,7 @@ class Shoppingfeed extends ShoppingfeedModule
         $this->name = 'shoppingfeed';
         $this->version = '1.0.0';
         $this->author = '202 ecommerce';
+        $this->tab = 'adminModule';
         $this->ps_versions_compliancy = array('min' => '1.6', 'max' => '1.7');
         $this->need_instance = false;
         $this->bootstrap = true;
@@ -129,17 +140,16 @@ class Shoppingfeed extends ShoppingfeedModule
     {
         $res = parent::install();
 
-        // TODO : check if the other module is installed ?
+        // Try to retrieve the token from the other SF module
         $token = Configuration::get('SHOPPING_FLUX_TOKEN');
         if ($token) {
             Configuration::updateValue(self::AUTH_TOKEN, $token);
         }
 
         Configuration::updateValue(self::STOCK_SYNC_MAX_PRODUCTS, 100);
+        Configuration::updateValue(self::REAL_TIME_SYNCHRONIZATION, false);
 
-        // Add unique key on multiple columns for "product" table
-        $sqlProductKey = "ALTER TABLE `" . _DB_PREFIX_ . "shoppingfeed_product` ADD UNIQUE( `action`, `id_product`, `id_product_attribute`, `id_shop`);";
-        return $res && Db::getInstance()->execute($sqlProductKey);
+        return $res;
     }
 
     public function getContent()
@@ -149,19 +159,53 @@ class Shoppingfeed extends ShoppingfeedModule
         );
     }
 
+    /**
+     * Saves a product for stock synchronization, or synchronizes it directly using the Actions handler
+     * @param $params
+     */
     public function hookActionUpdateQuantity($params)
     {
         $id_product = $params['id_product'];
         $id_product_attribute = $params['id_product_attribute'];
         $new_quantity = $params['quantity'];
 
-        $product = new Product($id_product);
-        if ($product->hasAttributes() && !$id_product_attribute) {
-            return;
+        $id_shop_list = Context::getContext()->shop->getContextListShopID();
+        TotLoader::import('shoppingfeed\classlib\extensions\ProcessLogger\ProcessLoggerHandler');
+        TotLoader::import('shoppingfeed\classlib\registry');
+
+        foreach ($id_shop_list as $id_shop) {
+            try {
+                $sfProduct = new ShoppingfeedProduct();
+                $sfProduct->action = ShoppingfeedProduct::ACTION_SYNC_STOCK;
+                $sfProduct->id_product = $id_product;
+                $sfProduct->id_product_attribute = $id_product_attribute;
+                $sfProduct->id_shop = $id_shop;
+                if ($sfProduct->save() == false) {
+                    ShoppingfeedProcessLoggerHandler::logError(
+                        '[Stock] Fail : ' .
+                        "Product $id_product _ $id_product_attribute cannot be added to synchro.",
+                        'Product',
+                        $id_product
+                    );
+                }
+            } catch (Exception $e) {
+                // We can't do an "insert ignore", so use a try catch...
+                ShoppingfeedProcessLoggerHandler::logInfo(
+                    '[Stock] Fail : ' .
+                    "Product $id_product _ $id_product_attribute already in synchro list.",
+                    'Product',
+                    $id_product
+                );
+            }
         }
 
-        $id_shop_list = Context::getContext()->shop->getContextListShopID();
-
-        ShoppingfeedProduct::saveAction(ShoppingfeedProduct::ACTION_SYNC_STOCK, $id_product, $id_shop_list, $id_product_attribute);
+        if (true == Configuration::get(Shoppingfeed::REAL_TIME_SYNCHRONIZATION)) {
+            /** @var ShoppingfeedHandler $productActionsHandler */
+            $productActionsHandler = TotLoader::getInstance('shoppingfeed\classlib\actions\handler');
+            $productActionsHandler
+                ->addActions("getBatch", "prepareBatch", "executeBatch")
+                ->process("shoppingfeedProductStockSync");
+        }
+        ShoppingfeedProcessLoggerHandler::closeLogger();
     }
 }

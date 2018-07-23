@@ -27,7 +27,6 @@ if (!defined('_PS_VERSION_')) {
 }
 
 TotLoader::import('shoppingfeed\classlib\extensions\ProcessMonitor\CronController');
-require_once(_PS_MODULE_DIR_ . 'shoppingfeed/classes/ShoppingfeedApi.php');
 require_once(_PS_MODULE_DIR_ . 'shoppingfeed/classes/ShoppingfeedProduct.php');
 
 class ShoppingfeedSyncStockModuleFrontController extends ShoppingfeedCronController
@@ -40,67 +39,45 @@ class ShoppingfeedSyncStockModuleFrontController extends ShoppingfeedCronControl
         ),
     );
 
+    /**
+     * Executed by the CRON
+     * @param $data the data saved for this CRON (see totpsclasslib doc)
+     * @return mixed
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
     protected function processCron($data)
     {
-        $logger = TotLoader::import('shoppingfeed\classlib\extensions\ProcessLogger\ProcessLoggerHandler');
-        $logger::openLogger($this->processMonitor);
-        $logger::logInfo("start syncStock");
+        TotLoader::import('shoppingfeed\classlib\extensions\ProcessLogger\ProcessLoggerHandler');
+        TotLoader::import('shoppingfeed\classlib\registry');
 
-        $sfProducts = ShoppingfeedProduct::getProductsToSync();
+        ShoppingfeedProcessLoggerHandler::openLogger($this->processMonitor);
+        ShoppingfeedProcessLoggerHandler::logInfo("[Stock] Process start", 'Product');
 
-        if (empty($sfProducts)) {
-            $logger::logInfo("syncStock : nothing to synchronize");
-            $logger::closeLogger();
-            return $data;
-        }
-
-        $productsData = array();
-        $processedLinesIds = array();
-        foreach ($sfProducts as $sfProduct) {
-            $newData = array();
-            if ($sfProduct['id_product_attribute']) {
-                $combination = new Combination($sfProduct['id_product_attribute']);
-                $newData['reference'] = $combination->reference;
-            } else {
-                $product = new Product($sfProduct['id_product']);
-                $newData['reference'] = $product->reference;
-            }
-
-            if (empty($newData['reference'])) {
-                continue;
-            }
-
-            $newData['quantity'] = StockAvailable::getQuantityAvailableByProduct(
-                $sfProduct['id_product'],
-                $sfProduct['id_product_attribute'] ? $sfProduct['id_product_attribute'] : null,
-                $sfProduct['id_shop']
-            );
-
-            if (!is_array($productsData[$sfProduct['id_shop']])) {
-                $productsData[$sfProduct['id_shop']] = array();
-            }
-
-            $productsData[$sfProduct['id_shop']] = $newData;
-            $processedLinesIds[] = $sfProduct['id_shoppingfeed_product'];
-        }
-
-        // TODO : for now, only use the default shop...
-        $id_shop_default = Configuration::get('PS_SHOP_DEFAULT');
         try {
-            $res = TotShoppingFeed\ShoppingfeedApi::getInstance($id_shop_default)->updateMainStoreInventory($productsData[$id_shop_default]);
+            /** @var ShoppingfeedHandler $productActionsHandler */
+            $handler = TotLoader::getInstance('shoppingfeed\classlib\actions\handler');
+            $handler->addActions("getBatch", "prepareBatch", "executeBatch");
+            $success = $handler->process("shoppingfeedProductStockSync");
         } catch (Exception $e) {
-            $logger::logError("Fail syncStock : " . $e->getMessage() . " " . $e->getFile() . ":" . $e->getLine());
-            $logger::closeLogger();
-            return $data;
+            ShoppingfeedProcessLoggerHandler::logError(
+                "[Stock] Fail : " . $e->getMessage() . " " . $e->getFile() . ":" . $e->getLine(),
+                'Product'
+            );
+            $success = false;
         }
 
-        // TODO : uncomment line
-        //Db::getInstance()->delete('shoppingfeed_product', 'id_shoppingfeed_product IN (' . implode(", ", $processedLinesIds) . ")");
-        // TODO : set number of updated products using the response
-        $logger::logSuccess("syncStock : " . count($productsData) . " updated");
-        $logger::closeLogger();
+        if ($success) {
+            ShoppingfeedProcessLoggerHandler::logSuccess(
+                "[Stock] " .
+                ShoppingfeedRegistry::get('updatedProducts') . " products updated - 0 errors",
+                'Product'
+            );
+        }
 
-        /** The data to be saved in the CRON table */
+        ShoppingfeedProcessLoggerHandler::closeLogger();
+
+        // The data to be saved in the CRON table
         return $data;
     }
 }

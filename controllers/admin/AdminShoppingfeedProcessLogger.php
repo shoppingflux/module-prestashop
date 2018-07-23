@@ -26,12 +26,12 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-require_once (_PS_MODULE_DIR_.'shoppingfeed/shoppingfeed.php');
+require_once _PS_MODULE_DIR_ . 'shoppingfeed/shoppingfeed.php';
 
 TotLoader::import('shoppingfeed\classlib\extensions\ProcessLogger\AdminProcessLoggerController');
 
-class AdminShoppingfeedProcessLoggerController extends ShoppingfeedAdminProcessLoggerController {
+class AdminShoppingfeedProcessLoggerController extends ShoppingfeedAdminProcessLoggerController
+{
 
     public $bootstrap = true;
-
 }

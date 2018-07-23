@@ -37,7 +37,6 @@ class ShoppingfeedProduct extends ObjectModel
     public $id_product;
 
     // The combination
-    // TODO : what if it's not specified ? Apply to all products ? None ?
     public $id_product_attribute;
 
     // Multishop
@@ -55,21 +54,26 @@ class ShoppingfeedProduct extends ObjectModel
                 'type' => ObjectModel::TYPE_STRING,
                 'validate' => 'isGenericName',
                 'required' => true,
+                'unique' => true,
+                'values' => array(self::ACTION_SYNC_STOCK),
             ),
             'id_product' => array(
                 'type' => ObjectModel::TYPE_INT,
                 'validate' => 'isUnsignedInt',
                 'required' => true,
+                'unique' => true,
             ),
             'id_product_attribute' => array(
                 'type' => ObjectModel::TYPE_INT,
                 'validate' => 'isUnsignedInt',
                 'required' => true,
+                'unique' => true,
             ),
             'id_shop' => array(
                 'type' => ObjectModel::TYPE_INT,
                 'validate' => 'isUnsignedInt',
                 'required' => true,
+                'unique' => true,
             ),
             'date_add' => array(
                 'type' => self::TYPE_DATE,
@@ -90,39 +94,4 @@ class ShoppingfeedProduct extends ObjectModel
             ),
         ),
     );
-
-    public static function getActionsArray()
-    {
-        return array(
-            self::ACTION_SYNC_STOCK
-        );
-    }
-
-    public static function saveAction($action, $id_product, $id_shop_list, $id_product_attribute = null)
-    {
-        if (!in_array($action, self::getActionsArray())) {
-            return false;
-        }
-
-        foreach ($id_shop_list as $id_shop) {
-            $query = "INSERT IGNORE INTO " . _DB_PREFIX_ . "shoppingfeed_product(`action`, `id_product`, `id_product_attribute`, `id_shop`) " .
-                "VALUES (" .
-                "'" . pSQL($action) . "', "
-                . (int)$id_product . ", "
-                . ((int)$id_product_attribute ? (int)$id_product_attribute : 0) . ", "
-                . (int)$id_shop
-                . ")";
-            Db::getInstance()->execute($query);
-        }
-    }
-
-    public static function getProductsToSync() {
-        $query = new DbQuery();
-        $query->select('id_shoppingfeed_product, action, id_product, id_product_attribute, id_shop')
-            ->from('shoppingfeed_product')
-            ->where("action = '" . pSQL(ShoppingfeedProduct::ACTION_SYNC_STOCK) . "'")
-            ->limit(Configuration::get(Shoppingfeed::STOCK_SYNC_MAX_PRODUCTS))
-            ->orderBy('date_add ASC');
-        return Db::getInstance()->executeS($query);
-    }
 }

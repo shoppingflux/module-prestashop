@@ -1,9 +1,25 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: aandria
- * Date: 10/07/18
- * Time: 17:02
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to a commercial license from SARL 202 ecommence
+ * Use, copy, modification or distribution of this source file without written
+ * license agreement from the SARL 202 ecommence is strictly forbidden.
+ * In order to obtain a license, please contact us: tech@202-ecommerce.com
+ * ...........................................................................
+ * INFORMATION SUR LA LICENCE D'UTILISATION
+ *
+ * L'utilisation de ce fichier source est soumise a une licence commerciale
+ * concedee par la societe 202 ecommence
+ * Toute utilisation, reproduction, modification ou distribution du present
+ * fichier source sans contrat de licence ecrit de la part de la SARL 202 ecommence est
+ * expressement interdite.
+ * Pour obtenir une licence, veuillez contacter 202-ecommerce <tech@202-ecommerce.com>
+ * ...........................................................................
+ *
+ * @author    202-ecommerce <tech@202-ecommerce.com>
+ * @copyright Copyright (c) 202-ecommerce
+ * @license   Commercial license
  */
 
 /** IMPORTANT : Guzzle version is different between the SF SDK and PS. They can not be interchanged.
@@ -12,6 +28,7 @@
 require_once _PS_MODULE_DIR_ . "shoppingfeed/vendor/autoload.php";
 
 use ShoppingFeed\Sdk\Credential\Token;
+use ShoppingFeed\Sdk\Credential\Password;
 use ShoppingFeed\Sdk\Client\Client;
 use ShoppingFeed\Sdk\Api\Catalog\InventoryUpdate;
 
@@ -33,12 +50,12 @@ class ShoppingfeedApi
     }
 
     /**
-     * Returns the object's instance. If no session was initialized, creates it. No exceptions are handled here.
+     * Returns the object's instance, using a token. If no session was initialized, creates it. No exceptions are handled here.
      * @param $id_shop the shop to use (one token per shop)
      * @param $token the token to use, if no shop is specified
-     * @return ShoppingfeedApi|false
+     * @return ShoppingfeedApi
      */
-    public static function getInstance($id_shop = null, $token = null)
+    public static function getInstanceByToken($id_shop = null, $token = null)
     {
         if (static::$instance) {
             return static::$instance;
@@ -50,7 +67,7 @@ class ShoppingfeedApi
             $token = Configuration::get(Shoppingfeed::AUTH_TOKEN . "_" . $id_shop);
         }
 
-        // Setup credentials to connect to the API, and create session
+        // Setup token to connect to the API, and create session
         $credential = new Token($token);
         /** @var \ShoppingFeed\Sdk\Api\Session\SessionResource $session */
         $session = Client::createSession($credential);
@@ -60,7 +77,30 @@ class ShoppingfeedApi
     }
 
     /**
+     * Returns the object's instance, using credentials. Always creates a new session. No exceptions are handled here.
+     * @param $username
+     * @param $password
+     * @return ShoppingfeedApi
+     */
+    public static function getInstanceByCredentials($username, $password)
+    {
+        // Setup credentials to connect to the API, and create session
+        $credential = new Password($username, $password);
+        /** @var \ShoppingFeed\Sdk\Api\Session\SessionResource $session */
+        $session = Client::createSession($credential);
+
+        static::$instance = new ShoppingfeedApi($session);
+        return static::$instance;
+    }
+
+    public function getToken()
+    {
+        return $this->session->getToken();
+    }
+
+    /**
      * Makes the call to update the SF inventory
+     * Note that the API can only support a batch of up to 200 products
      * @param array $products an array of product's references and quantities
      * <pre>
      * Array(
@@ -74,27 +114,15 @@ class ShoppingfeedApi
      *      ),
      * )
      * </pre>
-     * @return TODO
+     * @return ShoppingFeed\Sdk\Api\Catalog\InventoryCollection
      */
     public function updateMainStoreInventory($products)
     {
-        $totalUpdates = 0;
-        $nbSlices = ceil(count($products) / 200);
         $inventoryApi = $this->session->getMainStore()->getInventoryApi();
-
-        // We should never need this loop, but just in case...
-        $returns = array();
-        for ($i = 0; $i < $nbSlices; ++$i) {
-            $productsSlice = array_slice($products, $i * 200, 200);
-
-            $inventoryUpdate = new InventoryUpdate();
-            foreach ($productsSlice as $product) {
-                $inventoryUpdate->add($product['reference'], $product['quantity']);
-            }
-            $r = $inventoryApi->execute($inventoryUpdate);
-            $returns[] = $r;
+        $inventoryUpdate = new InventoryUpdate();
+        foreach ($products as $product) {
+            $inventoryUpdate->add($product['reference'], $product['quantity']);
         }
-
-        return $returns;
+        return $inventoryApi->execute($inventoryUpdate);
     }
 }
