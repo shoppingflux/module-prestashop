@@ -100,7 +100,6 @@ class ShoppingfeedApi
 
     /**
      * Makes the call to update the SF inventory
-     * Note that the API can only support a batch of up to 200 products
      * @param array $products an array of product's references and quantities
      * <pre>
      * Array(

@@ -25,6 +25,6 @@
 
 {block name="legend" append}
     <p>
-        {l s="You may also enter your Shopping Feed credentials here to retrieve your token." mod="shoppingfeed"}
+        {l s='You may also enter your Shopping Feed credentials here to retrieve your token.' mod='shoppingfeed'}
     </p>
 {/block}

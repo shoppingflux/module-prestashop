@@ -33,8 +33,8 @@
         <tbody>
         {foreach from=$cron_urls item=line}
             <tr>
-                <td>{$line.action}</td>
-                <td>{$line.url}</td>
+                <td>{$line.action|escape:'htmlall':'UTF-8'}</td>
+                <td>{$line.url|escape:'htmlall':'UTF-8'}</td>
             </tr>
         {/foreach}
         </tbody>

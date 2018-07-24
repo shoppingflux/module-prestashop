@@ -121,7 +121,7 @@ class Shoppingfeed extends ShoppingfeedModule
         $this->name = 'shoppingfeed';
         $this->version = '1.0.0';
         $this->author = '202 ecommerce';
-        $this->tab = 'adminModule';
+        $this->tab = 'market_place';
         $this->ps_versions_compliancy = array('min' => '1.6', 'max' => '1.7');
         $this->need_instance = false;
         $this->bootstrap = true;
@@ -136,6 +136,10 @@ class Shoppingfeed extends ShoppingfeedModule
         $this->secure_key = Tools::encrypt($this->name);
     }
 
+    /**
+     * Installs the module; see the parent ShoppingfeedModule class from classlib
+     * @return bool
+     */
     public function install()
     {
         $res = parent::install();
@@ -152,6 +156,10 @@ class Shoppingfeed extends ShoppingfeedModule
         return $res;
     }
 
+    /**
+     * Redirects the user to our AdminController for configuration
+     * @throws PrestaShopException
+     */
     public function getContent()
     {
         Tools::redirectAdmin(
