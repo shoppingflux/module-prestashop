@@ -22,16 +22,58 @@
  * @license   Commercial license
  */
 
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
 TotLoader::import('shoppingfeed\classlib\actions\defaultActions');
 
 require_once(_PS_MODULE_DIR_ . 'shoppingfeed/classes/ShoppingfeedApi.php');
 
 /**
  * The Actions class responsible for synchronizing product stocks using the SF API
- * Class ShoppingfeedProductStockSyncActions
+ * @see ShoppingfeedDefaultActions
  */
 class ShoppingfeedProductStockSyncActions extends ShoppingfeedDefaultActions
 {
+    /**
+     * Saves a ShoppingfeedProduct to be synchronized. Runs the synchronization if real-time is enabled.
+     * @return bool
+     */
+    public function saveProduct()
+    {
+        // Save the product for each shop
+        $id_shop_list = Context::getContext()->shop->getContextListShopID();
+        foreach ($id_shop_list as $id_shop) {
+            try {
+                $sfProduct = new ShoppingfeedProduct();
+                $sfProduct->action = ShoppingfeedProduct::ACTION_SYNC_STOCK;
+                $sfProduct->id_product = $this->conveyor['id_product'];
+                $sfProduct->id_product_attribute = $this->conveyor['id_product_attribute'];
+                $sfProduct->id_shop = $id_shop;
+                $sfProduct->save();
+            } catch (Exception $e) {
+                // We can't do an "insert ignore", so use a try catch for when in debug mode...
+            }
+        }
+
+        if (true == Configuration::get(Shoppingfeed::REAL_TIME_SYNCHRONIZATION)) {
+            return $this->forward('getBatch');
+        } else {
+            return true;
+        }
+    }
+
+
+    /**
+     * Gets a batch of ShoppindfeedProduct requiring their stock to be synchronized, and saves it
+     * in the conveyor at ['batch'].
+     * Forwards to prepareBatch.
+     * @see prepareBatch
+     * @return bool
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
     public function getBatch()
     {
 
@@ -54,15 +96,24 @@ class ShoppingfeedProductStockSyncActions extends ShoppingfeedDefaultActions
             $this->conveyor['batch'][] = $sfProduct;
         }
 
-        return true;
+        return $this->forward('prepareBatch');
     }
 
+    /**
+     * Prepares a batch of ShoppingfeedProduct to be used with API calls. Splits the batch in multiple arrays using the id_shop
+     * and saves them in the conveyor at ['preparedBatch'][id_shop][reference].
+     * Forwards to executeBatch.
+     * @see getBatch
+     * @see executeBatch
+     * @return bool
+     */
     public function prepareBatch()
     {
         $this->conveyor['preparedBatch'] = array();
+        /** @var ShoppingfeedProduct $sfProduct */
         foreach ($this->conveyor['batch'] as $sfProduct) {
             $newData = array(
-                'reference' => $sfProduct->id_product . ($sfProduct->id_product_attribute ? "_" . $sfProduct->id_product_attribute : "")
+                'reference' => $sfProduct->getShoppingfeedReference()
             );
 
             $newData['quantity'] = StockAvailable::getQuantityAvailableByProduct(
@@ -75,12 +126,34 @@ class ShoppingfeedProductStockSyncActions extends ShoppingfeedDefaultActions
                 $this->conveyor['preparedBatch'][$sfProduct->id_shop] = array();
             }
 
-            $this->conveyor['preparedBatch'][$sfProduct->id_shop][] = $newData;
+            $this->conveyor['preparedBatch'][$sfProduct->id_shop][$newData['reference']] = $newData;
         }
 
-        return true;
+        return $this->forward('executeBatch');
     }
 
+    /**
+     * Gets prepared ShoppingfeedProduct from the conveyor at ['preparedBatch']
+     * and synchronizes their stock using the API.<br/>
+     * <br/>
+     * Notes :
+     * <ul>
+     * <li> If we send a product reference that isn't in Shopping Feed's catalog,
+     *      the API doesn't send back a confirmation for this product.
+     * </li>
+     * <li> If no products could be updated, the SDK throws an exception
+     *      on array_push as it's trying to add the (non-existent) responses to
+     *      its own responses array.
+     * </li>
+     * <li> If the quantity for a product is not a number, Shopping Feed will
+     *      set it to 0. A response is still sent, without any error.
+     * </li>
+     * </ul>
+     * @see prepareBatch
+     * @return bool
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
     public function executeBatch()
     {
         // TODO : for now, only use the default shop... But we'll have to support multishop at some point...
@@ -88,30 +161,59 @@ class ShoppingfeedProductStockSyncActions extends ShoppingfeedDefaultActions
 
         $res = ShoppingfeedApi::getInstanceByToken($id_shop_default)->updateMainStoreInventory($this->conveyor['preparedBatch'][$id_shop_default]);
 
+        /*
+         * If we send a product reference that isn't in SF's catalog, the API doesn't send a confirmation for this product.
+         * This means we must make a diff between what we sent and what we received to know which product wasn't
+         * updated.
+         */
+        $preparedBatchShop = $this->conveyor['preparedBatch'][$id_shop_default];
         /** @var ShoppingFeed\Sdk\Api\Catalog\InventoryResource $inventoryResource */
         foreach ($res as $inventoryResource) {
-            $explodedReference = explode('_', $inventoryResource->getReference());
+            $reference = $inventoryResource->getReference();
+            $explodedReference = explode('_', $reference);
             $id_product = $explodedReference[0];
             $id_product_attribute = isset($explodedReference[1]) ? $explodedReference[1] : 0;
 
-            ShoppingfeedProcessLoggerHandler::logSuccess(
-                '[Stock] ' .
-                "Updated $id_product _ $id_product_attribute",
+            ShoppingfeedProcessLoggerHandler::logInfo(
+                sprintf(
+                    $this->l('[Stock] Updated %s qty: %s', 'ShoppingfeedProductStockSyncActions'),
+                    $reference, $preparedBatchShop[$reference]['quantity']
+                ),
                 'Product',
                 $id_product
             );
+
             ShoppingfeedRegistry::increment('updatedProducts');
 
-            foreach ($this->conveyor['batch'] as $sfProduct) {
-                if ($sfProduct->id_product == $id_product
-                    && $sfProduct->id_product_attribute == $id_product_attribute
-                    && $sfProduct->id_shop == $id_shop_default
-                ) {
-                    $sfProduct->delete();
-                }
+            unset($preparedBatchShop[$reference]);
+
+            $sfProduct = ShoppingFeedProduct::getFromUniqueKey($id_product, $id_product_attribute, $id_shop_default);
+            $sfProduct->delete();
+        }
+
+        if (!empty($preparedBatchShop)) {
+            foreach ($preparedBatchShop as $data) {
+                $explodedReference = explode('_', $data['reference']);
+                $id_product = $explodedReference[0];
+                $id_product_attribute = isset($explodedReference[1]) ? $explodedReference[1] : 0;
+
+                ShoppingfeedProcessLoggerHandler::logError(
+                    sprintf(
+                        $this->l('[Stock] No confirmation for %s', 'ShoppingfeedProductStockSyncActions'),
+                        $data['reference']
+                    ),
+                    'Product',
+                    $id_product
+                );
+                ShoppingfeedRegistry::increment('errors');
             }
         }
 
         return true;
+    }
+
+    protected function l($string, $source)
+    {
+        return TranslateCore::getModuleTranslation('shoppingfeed', $string, $source);
     }
 }

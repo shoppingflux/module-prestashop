@@ -22,9 +22,10 @@
  * @license   Commercial license
  */
 
-/** IMPORTANT : Guzzle version is different between the SF SDK and PS. They can not be interchanged.
- *  So if we're using the SDK in a PS process which uses Guzzle, the SDK will likely break...
- */
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
 require_once _PS_MODULE_DIR_ . "shoppingfeed/vendor/autoload.php";
 
 use ShoppingFeed\Sdk\Credential\Token;
@@ -33,7 +34,6 @@ use ShoppingFeed\Sdk\Client\Client;
 use ShoppingFeed\Sdk\Api\Catalog\InventoryUpdate;
 
 /**
- * Class ShoppingfeedApi
  * This class is a singleton, which is responsible for calling the SF API using the SDK
  */
 class ShoppingfeedApi
@@ -64,7 +64,7 @@ class ShoppingfeedApi
         if (!$token && !$id_shop) {
             return false;
         } else if ($id_shop) {
-            $token = Configuration::get(Shoppingfeed::AUTH_TOKEN . "_" . $id_shop);
+            $token = Configuration::get(Shoppingfeed::AUTH_TOKEN, null, null, $id_shop);
         }
 
         // Setup token to connect to the API, and create session
@@ -122,6 +122,7 @@ class ShoppingfeedApi
         foreach ($products as $product) {
             $inventoryUpdate->add($product['reference'], $product['quantity']);
         }
+
         return $inventoryApi->execute($inventoryUpdate);
     }
 }

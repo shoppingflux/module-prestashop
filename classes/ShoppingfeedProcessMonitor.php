@@ -22,6 +22,10 @@
  * @license   Commercial license
  */
 
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
 TotLoader::import('shoppingfeed\classlib\extensions\ProcessMonitor\ProcessMonitorObjectModel');
 
 class ShoppingfeedProcessMonitor extends ShoppingfeedProcessMonitorObjectModel

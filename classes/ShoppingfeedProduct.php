@@ -26,6 +26,9 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
+/**
+ * This class represents a Product to be synchronized with the Shopping Feed API
+ */
 class ShoppingfeedProduct extends ObjectModel
 {
     const ACTION_SYNC_STOCK = "SYNC_STOCK";
@@ -94,4 +97,24 @@ class ShoppingfeedProduct extends ObjectModel
             ),
         ),
     );
+
+    public function getShoppingfeedReference()
+    {
+        return $this->id_product . ($this->id_product_attribute ? "_" . $this->id_product_attribute : "");
+    }
+
+    public static function getFromUniqueKey($id_product, $id_product_attribute, $id_shop)
+    {
+        $sql = new DbQuery();
+        $sql->select('id_shoppingfeed_product')
+            ->from(self::$definition['table'])
+            ->where('id_product = ' . (int)$id_product)
+            ->where('id_product_attribute = ' . (int)$id_product_attribute)
+            ->where('id_shop = ' . (int)$id_shop);
+        $id = Db::getInstance()->getValue($sql);
+        if ($id) {
+            return new ShoppingfeedProduct($id);
+        }
+        return false;
+    }
 }

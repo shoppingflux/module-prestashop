@@ -29,6 +29,10 @@ if (!defined('_PS_VERSION_')) {
 TotLoader::import('shoppingfeed\classlib\extensions\ProcessMonitor\CronController');
 require_once(_PS_MODULE_DIR_ . 'shoppingfeed/classes/ShoppingfeedProduct.php');
 
+/**
+ * This front controller receives the HTTP call for the CRON. It is used to synchronize the ShoppingfeedProduct's stocks.
+ * @see ShoppingfeedCronController
+ */
 class ShoppingfeedSyncStockModuleFrontController extends ShoppingfeedCronController
 {
     public $taskDefinition = array(
@@ -52,30 +56,32 @@ class ShoppingfeedSyncStockModuleFrontController extends ShoppingfeedCronControl
         TotLoader::import('shoppingfeed\classlib\registry');
 
         ShoppingfeedProcessLoggerHandler::openLogger($this->processMonitor);
-        ShoppingfeedProcessLoggerHandler::logInfo("[Stock] Process start", 'Product');
+        ShoppingfeedProcessLoggerHandler::logInfo(
+            $this->l('[Stock] Process start', 'syncStock'),
+            $this->processMonitor->getProcessObjectModelName(),
+            $this->processMonitor->getProcessObjectModelId()
+        );
 
         try {
-            /** @var ShoppingfeedHandler $productActionsHandler */
+            /** @var ShoppingfeedHandler $handler */
             $handler = TotLoader::getInstance('shoppingfeed\classlib\actions\handler');
-            $handler->addActions("getBatch", "prepareBatch", "executeBatch");
-            $success = $handler->process("shoppingfeedProductStockSync");
+            $handler->addActions("getBatch");
+            $handler->process("shoppingfeedProductStockSync");
         } catch (Exception $e) {
             ShoppingfeedProcessLoggerHandler::logError(
-                "[Stock] Fail : " . $e->getMessage() . " " . $e->getFile() . ":" . $e->getLine(),
-                'Product'
-            );
-            $success = false;
-        }
-
-        if ($success) {
-            ShoppingfeedProcessLoggerHandler::logSuccess(
-                "[Stock] " .
-                ShoppingfeedRegistry::get('updatedProducts') . " products updated - 0 errors",
-                'Product'
+                sprintf(
+                    $this->l('[Stock] Fail : %s', 'syncStock'),
+                    $e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine()
+                )
             );
         }
 
-        ShoppingfeedProcessLoggerHandler::closeLogger();
+        ShoppingfeedProcessLoggerHandler::closeLogger(
+            sprintf(
+                $this->l('[Stock] %d products updated - %d errors', 'syncStock'),
+                (int)ShoppingfeedRegistry::get('updatedProducts'), (int)ShoppingfeedRegistry::get('errors')
+            )
+        );
 
         // The data to be saved in the CRON table
         return $data;

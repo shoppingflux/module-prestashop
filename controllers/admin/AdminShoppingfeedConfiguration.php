@@ -31,6 +31,9 @@ require_once(_PS_MODULE_DIR_ . 'shoppingfeed/classes/ShoppingfeedApi.php');
 
 TotLoader::import('shoppingfeed\classlib\extensions\ProcessLogger\AdminProcessLoggerController');
 
+/**
+ * This admin controller displays the module's general configuration forms
+ */
 class AdminShoppingfeedConfigurationController extends ModuleAdminController
 {
     public $bootstrap = true;
@@ -42,11 +45,8 @@ class AdminShoppingfeedConfigurationController extends ModuleAdminController
     {
         $this->addCSS($this->module->getPathUri() . 'views/css/shoppingfeed_configuration/form.css');
 
-        $id_shop = Shop::getContextShopID();
-        if (!$id_shop) {
-            $id_shop = Configuration::get('PS_SHOP_DEFAULT');
-        }
-        $token = Configuration::get(shoppingfeed::AUTH_TOKEN . "_" . $id_shop);
+        $id_shop = Configuration::get('PS_SHOP_DEFAULT');
+        $token = Configuration::get(shoppingfeed::AUTH_TOKEN, null, null, $id_shop);
 
         $this->content = $this->renderTokenForm();
 
@@ -84,13 +84,9 @@ class AdminShoppingfeedConfigurationController extends ModuleAdminController
             )
         );
 
-        $id_shop = Shop::getContextShopID();
-        if (!$id_shop) {
-            $id_shop = Configuration::get('PS_SHOP_DEFAULT');
-        }
-
+        $id_shop = Configuration::get('PS_SHOP_DEFAULT');
         $fields_value = array(
-            Shoppingfeed::AUTH_TOKEN => Configuration::get(shoppingfeed::AUTH_TOKEN . "_" . $id_shop),
+            Shoppingfeed::AUTH_TOKEN => Configuration::get(ShoppingFeed::AUTH_TOKEN, null, null, $id_shop),
         );
 
         $helper = new HelperForm($this);
@@ -135,11 +131,7 @@ class AdminShoppingfeedConfigurationController extends ModuleAdminController
             )
         );
 
-        $id_shop = Shop::getContextShopID();
-        if (!$id_shop) {
-            $id_shop = Configuration::get('PS_SHOP_DEFAULT');
-        }
-
+        $id_shop = Configuration::get('PS_SHOP_DEFAULT');
         $fields_value = array(
             'username' => '',
             'password' => '',
@@ -231,7 +223,7 @@ class AdminShoppingfeedConfigurationController extends ModuleAdminController
     {
         $token = Tools::getValue(Shoppingfeed::AUTH_TOKEN);
         if (!$token || !preg_match("/^[\w\-\.\~\+\/]+=*$/", $token)) { // See https://tools.ietf.org/html/rfc6750
-            $this->errors[] = $this->l("You must specify a valid token.");
+            $this->errors[] = $this->l('You must specify a valid token.');
             return false;
         }
 
@@ -239,12 +231,12 @@ class AdminShoppingfeedConfigurationController extends ModuleAdminController
             $shoppingFeedApi = ShoppingfeedApi::getInstanceByToken(null, $token);
 
             if (!$shoppingFeedApi) {
-                $this->errors[] = $this->l("An error has occurred.");
+                $this->errors[] = $this->l('An error has occurred.');
                 return false;
             }
         } catch (SfGuzzle\GuzzleHttp\Exception\ClientException $e) {
             if ($e->getResponse()->getStatusCode() == 401) {
-                $this->errors[] = $this->l("This token was not recognized by the Shopping Feed API.");
+                $this->errors[] = $this->l('This token was not recognized by the Shopping Feed API.');
             } else {
                 $this->errors[] = $this->l($e->getMessage());
             }
@@ -254,13 +246,10 @@ class AdminShoppingfeedConfigurationController extends ModuleAdminController
             return false;
         }
 
-        $id_shop = Shop::getContextShopID();
-        if (!$id_shop) {
-            $id_shop = Configuration::get('PS_SHOP_DEFAULT');
-        }
-        Configuration::updateValue(shoppingfeed::AUTH_TOKEN . "_" . $id_shop, $token);
+        $id_shop = Configuration::get('PS_SHOP_DEFAULT');
+        Configuration::updateValue(shoppingfeed::AUTH_TOKEN, $token, null, null, $id_shop);
 
-        $this->confirmations[] = $this->l("Your token has been saved.");
+        $this->confirmations[] = $this->l('Your token has been saved.');
         return true;
     }
 
@@ -277,12 +266,12 @@ class AdminShoppingfeedConfigurationController extends ModuleAdminController
             $shoppingFeedApi = ShoppingfeedApi::getInstanceByCredentials($username, $password);
 
             if (!$shoppingFeedApi) {
-                $this->errors[] = $this->l("An error has occurred.");
+                $this->errors[] = $this->l('An error has occurred.');
                 return false;
             }
         } catch (SfGuzzle\GuzzleHttp\Exception\ClientException $e) {
             if ($e->getResponse()->getStatusCode() == 401) {
-                $this->errors[] = $this->l("These credentials were not recognized by the Shopping Feed API.");
+                $this->errors[] = $this->l('These credentials were not recognized by the Shopping Feed API.');
             } else {
                 $this->errors[] = $this->l($e->getMessage());
             }
@@ -292,13 +281,10 @@ class AdminShoppingfeedConfigurationController extends ModuleAdminController
             return false;
         }
 
-        $id_shop = Shop::getContextShopID();
-        if (!$id_shop) {
-            $id_shop = Configuration::get('PS_SHOP_DEFAULT');
-        }
-        Configuration::updateValue(shoppingfeed::AUTH_TOKEN . "_" . $id_shop, $shoppingFeedApi->getToken());
+        $id_shop = Configuration::get('PS_SHOP_DEFAULT');
+        Configuration::updateValue(shoppingfeed::AUTH_TOKEN, $shoppingFeedApi->getToken(), null, null, $id_shop);
 
-        $this->confirmations[] = $this->l("Login successful; your token has been saved.");
+        $this->confirmations[] = $this->l('Login successful; your token has been saved.');
         return true;
     }
 
@@ -314,9 +300,9 @@ class AdminShoppingfeedConfigurationController extends ModuleAdminController
         Configuration::updateValue(Shoppingfeed::REAL_TIME_SYNCHRONIZATION, $realtime_sync ? true : false);
 
         if (!is_numeric($stock_sync_max_products)) {
-            $this->errors[] = $this->l("You must specify a valid \"Max. product update per request\" number.");
+            $this->errors[] = $this->l('You must specify a valid \"Max. product update per request\" number.');
         } elseif ($stock_sync_max_products > 200 || $stock_sync_max_products <= 0) {
-            $this->errors[] = $this->l("You must specify a \"Max. product update per request\" number between 1 and 200.");
+            $this->errors[] = $this->l('You must specify a \"Max. product update per request\" number between 1 and 200.');
         } else {
             Configuration::updateValue(Shoppingfeed::STOCK_SYNC_MAX_PRODUCTS, $stock_sync_max_products);
         }

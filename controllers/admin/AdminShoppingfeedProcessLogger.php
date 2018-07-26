@@ -30,6 +30,9 @@ require_once _PS_MODULE_DIR_ . 'shoppingfeed/shoppingfeed.php';
 
 TotLoader::import('shoppingfeed\classlib\extensions\ProcessLogger\AdminProcessLoggerController');
 
+/**
+ * @inheritdoc
+ */
 class AdminShoppingfeedProcessLoggerController extends ShoppingfeedAdminProcessLoggerController
 {
 
