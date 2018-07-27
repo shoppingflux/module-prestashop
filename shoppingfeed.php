@@ -156,7 +156,7 @@ class Shoppingfeed extends ShoppingfeedModule
         $id_shop = Configuration::get('PS_SHOP_DEFAULT');
         $token = Configuration::get('SHOPPING_FLUX_TOKEN', null, null, $id_shop);
         if ($token) {
-            ConfigurationCore::updateValue(self::AUTH_TOKEN, $token, false, false, $id_shop);
+            Configuration::updateValue(self::AUTH_TOKEN, $token, false, false, $id_shop);
         }
 
         Configuration::updateValue(self::STOCK_SYNC_MAX_PRODUCTS, 100);

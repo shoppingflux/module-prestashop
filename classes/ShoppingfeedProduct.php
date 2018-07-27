@@ -98,11 +98,24 @@ class ShoppingfeedProduct extends ObjectModel
         ),
     );
 
+    /**
+     * Returns the product's Shopping Feed reference
+     * @return string
+     */
     public function getShoppingfeedReference()
     {
         return $this->id_product . ($this->id_product_attribute ? "_" . $this->id_product_attribute : "");
     }
 
+    /**
+     * Attempts to retrieve an object using its unique key; returns false if none was found.
+     * @param $id_product
+     * @param $id_product_attribute
+     * @param $id_shop
+     * @return bool|ShoppingfeedProduct
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
     public static function getFromUniqueKey($id_product, $id_product_attribute, $id_shop)
     {
         $sql = new DbQuery();

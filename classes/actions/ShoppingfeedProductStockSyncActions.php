@@ -212,8 +212,14 @@ class ShoppingfeedProductStockSyncActions extends ShoppingfeedDefaultActions
         return true;
     }
 
+    /**
+     * Translation function; needed so PS will properly parse the file
+     * @param string $string the string to translate
+     * @param string $source the file with the translation; should always be the current file
+     * @return mixed|string
+     */
     protected function l($string, $source)
     {
-        return TranslateCore::getModuleTranslation('shoppingfeed', $string, $source);
+        return Translate::getModuleTranslation('shoppingfeed', $string, $source);
     }
 }
