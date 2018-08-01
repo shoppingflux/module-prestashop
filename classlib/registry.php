@@ -20,58 +20,72 @@
  * @author    202-ecommerce <tech@202-ecommerce.com>
  * @copyright Copyright (c) 202-ecommerce
  * @license   Commercial license
- * @version   release/1.0.1
+ * @version   release/1.1.0
  */
 
 /**
- * @desc Design pattern Registry
+ * Design pattern Registry
  */
 class ShoppingfeedRegistry {
 
+    /**
+     * @var ShoppingfeedRegistry $_registry Instance of this class
+     */
     private static $_registry = null;
 
     /**
-     * @desc Design pattern Registry
+     * @var array $values
      */
-    public static function getInstance() {
+    private $values = array();
+    
+    /**
+     * Get instance of this class
+     * 
+     * @return ShoppingfeedRegistry
+     */
+    public static function getInstance()
+    {
         if (self::$_registry === null) {
             self::$_registry = new ShoppingfeedRegistry;
         }
         return self::$_registry;
     }
-
+    
     /**
-     * @desc get a variable in the Registry
-     *
-     * @return string
+     * Get a variable in the Registry
+     * 
+     * @param string $index
+     * @return bool
      */
-
-    public static function get($index)    {
+    public static function get($index)
+    {
         $instance = self::getInstance();
         if (!$instance->offsetExists($index)) {
             return false;
         }
         return $instance->values[$index];
     }
-
+    
     /**
-     * @desc set a variable in the Registry
+     * Set a variable in the Registry
+     * 
      * @param string $index
      * @param string $value
      */
-    public static function set($index, $value) {
+    public static function set($index, $value)
+    {
         $instance = self::getInstance();
         $instance->values[$index]= $value;
     }
 
     /**
-     * @desc check if var exist in the registry
+     * Check if var exist in the registry
+     * 
      * @param string $index
-     *
-     * @return boolean
+     * @return bool
      */
-
-    public static function isRegistered($index)   {
+    public static function isRegistered($index)
+    {
         if (self::$_registry === null) {
             return false;
         }
@@ -79,25 +93,27 @@ class ShoppingfeedRegistry {
     }
 
     /**
-     * @desc check if offsetExists
+     * Check if offsetExists
+     * 
      * @param string $index
-     *
-     * @return boolean
+     * @return bool
      */
-
-    public function offsetExists($index) {
+    public function offsetExists($index)
+    {
         if (false === isset($this->values)) {
             return false;
         }
         return array_key_exists($index, $this->values);
     }
-
+    
     /**
-     * @desc increment a counter in the Registry
+     * Increment a counter in the Registry
+     * 
      * @param string $index
-     * @param string $value
+     * @param int $value
      */
-    public static function increment($index, $value=1) {
+    public static function increment($index, $value = 1)
+    {
         $instance = self::getInstance();
         if (self::isRegistered($index)) {
             $instance->values[$index] += $value;
@@ -105,13 +121,15 @@ class ShoppingfeedRegistry {
             $instance->values[$index] = $value;
         }
     }
-
+    
     /**
-     * @desc decrement a counter in the Registry
+     * Decrement a counter in the Registry
+     * 
      * @param string $index
-     * @param string $value
+     * @param int $value
      */
-    public static function decrement($index, $value=1) {
+    public static function decrement($index, $value = 1)
+    {
         $instance = self::getInstance();
         if (self::isRegistered($index)) {
             $instance->values[$index] -= $value;

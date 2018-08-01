@@ -20,12 +20,12 @@
  * @author    202-ecommerce <tech@202-ecommerce.com>
  * @copyright Copyright (c) 202-ecommerce
  * @license   Commercial license
- * @version   release/1.0.1
+ * @version   release/1.1.0
  */
 
 abstract class ShoppingfeedCronController extends ModuleFrontController
 {
-    /** @var Module|shoppingfeed Instance of your Module, set automatically by ModuleFrontController */
+    /** @var Shoppingfeed Instance of your Module, set automatically by ModuleFrontController */
     public $module;
 
     /** @var bool If set to true, will redirected user to login page during init function. */
@@ -59,7 +59,7 @@ abstract class ShoppingfeedCronController extends ModuleFrontController
         if (false === Tools::isSubmit('secure_key') || Tools::getValue('secure_key') !== $this->module->secure_key) {
             $result &= false;
         }
-        if (false == $result) {
+        if (false === $result) {
             $return = array('success' => false, 'error' => 'Authentication failed');
             $this->ajaxDie(Tools::jsonEncode($return));
         }
@@ -77,6 +77,10 @@ abstract class ShoppingfeedCronController extends ModuleFrontController
         exit;
     }
 
+    /**
+     * @inheritdoc
+     * @throws Exception
+     */
     public function initContent()
     {
         $this->processMonitor = TotLoader::getInstance('shoppingfeed\classlib\extensions\ProcessMonitor\ProcessMonitorHandler');
@@ -98,7 +102,10 @@ abstract class ShoppingfeedCronController extends ModuleFrontController
     }
 
     /**
-     * @desc To be defined your process
+     * To be defined your process
+     * 
+     * @param array $data
+     * @return array
      */
     protected function processCron($data)
     {

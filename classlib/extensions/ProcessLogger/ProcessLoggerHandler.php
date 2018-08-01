@@ -20,22 +20,35 @@
  * @author    202-ecommerce <tech@202-ecommerce.com>
  * @copyright Copyright (c) 202-ecommerce
  * @license   Commercial license
- * @version   release/1.0.1
+ * @version   release/1.1.0
  */
 
 class ShoppingfeedProcessLoggerHandler
 {
-    /** @var ShoppingfeedProcessMonitorHandler Instance of ProcessMonitorHandler */
+    /**
+     * @var ShoppingfeedProcessMonitorHandler Instance of ProcessMonitorHandler
+     */
     private static $process;
-    /** @var array logs */
+
+    /**
+     * @var array logs
+     */
     private static $logs = array();
 
+    /**
+     * Set process name and remove oldest logs
+     *
+     * @param ShoppingfeedProcessMonitorHandler|null $process
+     */
     public static function openLogger($process = null)
     {
         self::$process = $process;
         self::autoErasingLogs();
     }
 
+    /**
+     * @param string|null $msg
+     */
     public static function closeLogger($msg = null)
     {
         if (self::$process != null && false === empty($msg)) {
@@ -44,6 +57,13 @@ class ShoppingfeedProcessLoggerHandler
         self::saveLogsInDb();
     }
 
+    /**
+     * @param string $msg
+     * @param string|null $objectModel
+     * @param int|null $objectId
+     * @param string|null $name
+     * @param string $level
+     */
     public static function addLog($msg, $objectModel = null, $objectId = null, $name = null, $level = 'info')
     {
         self::$logs[] = array(
@@ -60,6 +80,12 @@ class ShoppingfeedProcessLoggerHandler
         }
     }
 
+    /**
+     * @param string $msg
+     * @param string|null $objectModel
+     * @param int|null $objectId
+     * @param string $name
+     */
     public static function logSuccess($msg, $objectModel = null, $objectId = null, $name = 'default')
     {
         if (self::$process != null) {
@@ -68,6 +94,12 @@ class ShoppingfeedProcessLoggerHandler
         self::addLog($msg, $objectModel, $objectId, $name, 'success');
     }
 
+    /**
+     * @param string $msg
+     * @param string|null $objectModel
+     * @param int|null $objectId
+     * @param string $name
+     */
     public static function logError($msg, $objectModel = null, $objectId = null, $name = 'default')
     {
         if (self::$process != null) {
@@ -76,6 +108,12 @@ class ShoppingfeedProcessLoggerHandler
         self::addLog($msg, $objectModel, $objectId, $name, 'error');
     }
 
+    /**
+     * @param string $msg
+     * @param string|null $objectModel
+     * @param int|null $objectId
+     * @param string $name
+     */
     public static function logInfo($msg, $objectModel = null, $objectId = null, $name = 'default')
     {
         if (self::$process != null) {
@@ -84,6 +122,9 @@ class ShoppingfeedProcessLoggerHandler
         self::addLog($msg, $objectModel, $objectId, $name, 'info');
     }
 
+    /**
+     * @return bool
+     */
     public static function saveLogsInDb()
     {
         $result = true;
@@ -101,20 +142,22 @@ class ShoppingfeedProcessLoggerHandler
         return $result;
     }
 
+    /**
+     * @return bool
+     */
     public static function autoErasingLogs()
     {
-        if (self::canExecErasing()) {
-            $result = Db::getInstance()->delete(
+        if (self::isAutoErasingEnabled()) {
+            return Db::getInstance()->delete(
                 'shoppingfeed_processlogger',
                 sprintf(
                     'date_add <= NOW() - INTERVAL %d DAY',
                     self::getAutoErasingDelayInDays()
                 )
             );
-            if ($result) {
-                self::setLastDateErasingExec();
-            }
         }
+
+        return true;
     }
 
     /**
@@ -137,48 +180,5 @@ class ShoppingfeedProcessLoggerHandler
         }
 
         return (int)$numberOfDays;
-    }
-
-    /**
-     * @return bool
-     */
-    protected static function setLastDateErasingExec()
-    {
-        return Configuration::updateValue('SHOPPINGFEED_EXTLOGS_ERASING_LASTEXEC', date("Y-m-d H:i:s"));
-    }
-
-    /**
-     * @return bool
-     */
-    protected static function isSetLastDateErasingExec()
-    {
-        return Validate::isDate(self::getLastDateErasingExec());
-    }
-
-    /**
-     * @return string
-     */
-    protected static function getLastDateErasingExec()
-    {
-        return Configuration::get('SHOPPINGFEED_EXTLOGS_ERASING_LASTEXEC');
-    }
-
-    /**
-     * @return bool
-     */
-    protected static function canExecErasing()
-    {
-        if (self::isAutoErasingEnabled()) {
-            if (false === self::isSetLastDateErasingExec()) {
-                return true;
-            }
-            $dateLastRefresh = new DateTime(self::getLastDateErasingExec());
-            $dateNow         = new DateTime();
-            $dateInterval    = $dateLastRefresh->diff($dateNow);
-            if ($dateInterval->d > self::getAutoErasingDelayInDays()) {
-                return true;
-            }
-        }
-        return false;
     }
 }

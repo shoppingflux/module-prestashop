@@ -33,7 +33,7 @@ if (!defined('TOTPSCLASSLIB_DEV_PATH')) {
 if (defined('TOTPSCLASSLIB_DEV_PATH') &&
         file_exists(TOTPSCLASSLIB_DEV_PATH .'classlib/_config_dev.php')) {
     eval(file_get_contents(TOTPSCLASSLIB_DEV_PATH .'classlib/_config_dev.php'));
-    TotLoader::checkVersion('release/1.0.1');
+    TotLoader::checkVersion('release/1.1.0');
 } else {
     include 'config_prod.php';
 }

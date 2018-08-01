@@ -20,17 +20,15 @@
  * @author    202-ecommerce <tech@202-ecommerce.com>
  * @copyright Copyright (c) 202-ecommerce
  * @license   Commercial license
- * @version   release/1.0.1
+ * @version   release/1.1.0
  */
 
-/**
- * @desc
- */
 class ShoppingfeedModule extends Module
 {
 
     /**
      * Install Module
+     *
      * @return bool
      */
     public function install()
@@ -49,6 +47,7 @@ class ShoppingfeedModule extends Module
 
     /**
      * Uninstall Module
+     *
      * @return bool
      */
     public function uninstall()
@@ -60,6 +59,7 @@ class ShoppingfeedModule extends Module
 
     /**
      * Reset Module only if merchant choose to keep data on modal
+     *
      * @return bool
      */
     public function reset()

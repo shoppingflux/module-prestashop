@@ -20,26 +20,28 @@
  * @author    202-ecommerce <tech@202-ecommerce.com>
  * @copyright Copyright (c) 202-ecommerce
  * @license   Commercial license
- * @version   release/1.0.1
+ * @version   release/1.1.0
  */
 
 class ShoppingfeedProcessMonitorHandler
 {
     /**
-     * @desc ProcessMonitorObjectModel
+     * @var ShoppingfeedProcessMonitorObjectModel $process
      */
     protected $process;
-
+    
     /**
-     * @desc float microtime
+     * @var float $startTime microtime
      */
     public $startTime;
-
+    
     /**
-     * @desc Lock process
+     * Lock process
+     * 
      * @param string $name
-     *
-     * @return boolean
+     * @return bool|mixed
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function lock($name)
     {
@@ -49,7 +51,7 @@ class ShoppingfeedProcessMonitorHandler
         if (empty($this->process->id)) {
             $this->process = new ShoppingfeedProcessMonitorObjectModel();
             $this->process->name = $name;
-            $this->process->data = json_encode(array());
+            $this->process->data = Tools::jsonEncode(array());
         }
         if (false === empty($this->process->pid)) {
             $oldpid = $this->process->pid;
@@ -63,14 +65,15 @@ class ShoppingfeedProcessMonitorHandler
         $this->process->pid = getmypid();
         $this->process->save();
 
-        return json_decode($this->process->data, true);
+        return Tools::jsonDecode($this->process->data, true);
     }
-
+    
     /**
-     * @desc UnLock process
-     * @param string $name
-     *
-     * @return boolean
+     * UnLock process
+     * 
+     * @param array $data
+     * @return bool
+     * @throws PrestaShopException
      */
     public function unlock($data = array())
     {
@@ -79,7 +82,7 @@ class ShoppingfeedProcessMonitorHandler
         }
 
         if (false === empty($data)) {
-            $this->process->data = json_encode($data);
+            $this->process->data = Tools::jsonEncode($data);
         }
         $this->process->last_update = date('Y-m-d H:i:s');
         $endTime = $this->microtimeFloat();
@@ -89,17 +92,21 @@ class ShoppingfeedProcessMonitorHandler
 
         return $this->process->save();
     }
-
+    
     /**
-     * @desc get microtime in float value
-     *
+     * Get microtime in float value
+     * 
      * @return float
      */
-    public function microtimeFloat() {
+    public function microtimeFloat()
+    {
         list($usec, $sec) = explode(" ", microtime());
         return ((float)$usec + (float)$sec);
     }
 
+    /**
+     * @return null|string
+     */
     public function getProcessObjectModelName()
     {
         if (empty($this->process)) {
@@ -108,6 +115,9 @@ class ShoppingfeedProcessMonitorHandler
         return get_class($this->process);
     }
 
+    /**
+     * @return int|null
+     */
     public function getProcessObjectModelId()
     {
         if (empty($this->process)) {
@@ -116,6 +126,9 @@ class ShoppingfeedProcessMonitorHandler
         return (int)$this->process->id;
     }
 
+    /**
+     * @return null|string
+     */
     public function getProcessName()
     {
         if (empty($this->process)) {

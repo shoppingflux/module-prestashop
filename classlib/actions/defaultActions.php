@@ -20,28 +20,32 @@
  * @author    202-ecommerce <tech@202-ecommerce.com>
  * @copyright Copyright (c) 202-ecommerce
  * @license   Commercial license
- * @version   release/1.0.1
+ * @version   release/1.1.0
  */
 
 /**
- * @DefaultActions
+ * DefaultActions
  */
 class ShoppingfeedDefaultActions
 {
-
-    /*
-    * @desc modelObject
-    */
+    /**
+     * @var ObjectModel $modelObject
+     */
     protected $modelObject;
 
-    /*
-    * @desc: data set in the conveyor
-    */
+    /**
+     * Values conveyored by the classes
+     *
+     * @var array $conveyor
+     */
     protected $conveyor = array();
 
-    /*
-    * Set the modelObject
-    */
+    /**
+     * Set the modelObject
+     *
+     * @param ObjectModel $modelObject
+     * @return $this
+     */
     public function setModelObject($modelObject)
     {
         $this->modelObject = $modelObject;
@@ -50,11 +54,11 @@ class ShoppingfeedDefaultActions
     }
 
     /**
-    * Set the conveyor
-    * @param $conveyor
-    *
-    * @return this
-    */
+     * Set the conveyor
+     *
+     * @param array $conveyorData
+     * @return $this
+     */
     public function setConveyor($conveyorData)
     {
         $this->conveyor = $conveyorData;
@@ -63,19 +67,21 @@ class ShoppingfeedDefaultActions
     }
 
     /**
-    * @desc Return data in this->conveyor
-    */
+     * Return data in conveyor
+     *
+     * @return array
+     */
     public function getConveyor()
     {
         return $this->conveyor;
     }
 
     /**
-    * @desc call next action call back of cross modules
-    * @param $chain mixed name of the actions chain
-    *
-    * @return boolean
-    */
+     * Call next action call back of cross modules
+     *
+     * @param mixed $action Name of the actions chain
+     * @return bool
+     */
     protected function forward($action)
     {
         if (!is_callable(array($this, $action), false)) {

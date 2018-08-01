@@ -20,31 +20,39 @@
  * @author    202-ecommerce <tech@202-ecommerce.com>
  * @copyright Copyright (c) 202-ecommerce
  * @license   Commercial license
- * @version   release/1.0.1
+ * @version   release/1.1.0
  */
 
 /**
- * @desc Actions Handler
+ * Actions Handler
  */
 class ShoppingfeedHandler
 {
-
-    /*
-    * @desc modelObject
-    */
+    /**
+     * @var ObjectModel $modelObject
+     */
     protected $modelObject;
 
-    /*
-    * @desc Values conveyored by the classes
-    */
+    /**
+     * Values conveyored by the classes
+     *
+     * @var array $conveyor
+     */
     protected $conveyor = array();
 
-    /*
-    * Set an modelObject
-    * @param $modelObject
-    *
-    * @return this
-    */
+    /**
+     * List of actions
+     *
+     * @var array $actions
+     */
+    protected $actions;
+
+    /**
+     * Set an modelObject
+     *
+     * @param ObjectModel $modelObject
+     * @return $this
+     */
     public function setModelObject($modelObject)
     {
         $this->modelObject = $modelObject;
@@ -53,11 +61,11 @@ class ShoppingfeedHandler
     }
 
     /**
-    * Set the conveyor
-    * @param $conveyor
-    *
-    * @return this
-    */
+     * Set the conveyor
+     *
+     * @param array $conveyorData
+     * @return $this
+     */
     public function setConveyor($conveyorData)
     {
         $this->conveyor = $conveyorData;
@@ -66,17 +74,21 @@ class ShoppingfeedHandler
     }
 
     /**
-    * @desc Return data in this->conveyor
-    */
+     * Return data in conveyor
+     *
+     * @return array
+     */
     public function getConveyor()
     {
         return $this->conveyor;
     }
 
     /**
-    * @desc Call sevral actions
-    * @param $actions
-    */
+     * Call sevral actions
+     *
+     * @param mixed $actions
+     * @return $this
+     */
     public function addActions($actions)
     {
         $this->actions = func_get_args();
@@ -84,20 +96,20 @@ class ShoppingfeedHandler
     }
 
     /**
-    * @desc process the action call back of cross modules
-    * @param $chain name of the actions chain
-    *
-    * @return boolean
-    */
+     * Process the action call back of cross modules
+     *
+     * @param string $chain Name of the actions chain
+     * @return bool
+     */
     public function process($chain)
     {
         $className = ucfirst($chain).'Actions';
-        $overridePath = _PS_OVERRIDE_DIR_ . 'modules/shoppingfeed/classes/actions/'.$className.'.php';
+        $overridePath = _PS_OVERRIDE_DIR_.'modules/shoppingfeed/classes/actions/'.$className.'.php';
         if (file_exists($overridePath)) {
             $className .= 'Override';
-            include_once($overridePath);
+            include_once $overridePath;
         } else {
-            include_once(__DIR__ . '/../../classes/actions/'.ucfirst($chain).'Actions.php');
+            include_once _PS_MODULE_DIR_.'shoppingfeed/classes/actions/'.ucfirst($chain).'Actions.php';
         }
         if (class_exists($className)) {
             $classAction = new $className;
@@ -113,7 +125,7 @@ class ShoppingfeedHandler
             }
             $this->setConveyor($classAction->getConveyor());
         } else {
-            echo ucfirst($action).'Actions not defined';
+            echo ucfirst($chain).'Actions not defined';
             exit;
         }
 

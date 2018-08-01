@@ -180,6 +180,7 @@ class Shoppingfeed extends ShoppingfeedModule
     /**
      * Saves a product for stock synchronization, or synchronizes it directly using the Actions handler
      * @param array $params The hook parameters
+     * @throws Exception
      */
     public function hookActionUpdateQuantity($params)
     {

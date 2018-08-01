@@ -29,6 +29,7 @@ if (!defined('_PS_VERSION_')) {
 TotLoader::import('shoppingfeed\classlib\actions\defaultActions');
 
 require_once(_PS_MODULE_DIR_ . 'shoppingfeed/classes/ShoppingfeedApi.php');
+require_once(_PS_MODULE_DIR_ . 'shoppingfeed/classes/ShoppingfeedProduct.php');
 
 /**
  * The Actions class responsible for synchronizing product stocks using the SF API

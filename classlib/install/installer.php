@@ -20,22 +20,19 @@
  * @author    202-ecommerce <tech@202-ecommerce.com>
  * @copyright Copyright (c) 202-ecommerce
  * @license   Commercial license
- * @version   release/1.0.1
+ * @version   release/1.1.0
  */
 
-/**
- * @desc
- */
 class ShoppingfeedInstaller
 {
     /**
-     * @var Module
+     * @var Shoppingfeed
      */
     protected $module;
 
-
     /**
-     * @return this
+     * @param Shoppingfeed $module
+     * @return $this
      */
     public function setModule($module)
     {
@@ -45,12 +42,16 @@ class ShoppingfeedInstaller
     }
 
     /**
+     * @param Shoppingfeed $module
      * @return bool
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function install($module)
     {
         $this->module = $module;
         $result = $this->registerHooks();
+        $result &= $this->registerOrderStates();
         $result &= $this->installObjectModels();
         $result &= $this->installModuleAdminControllers();
 
@@ -58,6 +59,7 @@ class ShoppingfeedInstaller
     }
 
     /**
+     * @param Shoppingfeed $module
      * @return bool
      * @throws Exception
      */
@@ -81,7 +83,10 @@ class ShoppingfeedInstaller
     }
 
     /**
+     * @param Shoppingfeed $module
      * @return bool
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function uninstall($module)
     {
@@ -89,13 +94,18 @@ class ShoppingfeedInstaller
         $result = $this->uninstallObjectModels();
         $result &= $this->uninstallModuleAdminControllers();
         $result &= $this->uninstallConfiguration();
+        $result &= $this->unregisterOrderStates();
 
         return $result;
     }
 
     /**
-     * Used only if merchant choose to keep data on modal
+     * Used only if merchant choose to keep data on modal in Prestashop 1.6
+     *
+     * @param Shoppingfeed $module
      * @return bool
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function reset($module)
     {
@@ -123,7 +133,9 @@ class ShoppingfeedInstaller
 
     /**
      * Clear hooks used by our module
+     *
      * @return bool
+     * @throws PrestaShopException
      */
     public function clearHookUsed()
     {
@@ -160,7 +172,8 @@ class ShoppingfeedInstaller
 
     /**
      * Retrieve hooks used by our module
-     * @throws PrestaShopDatabaseException
+     *
+     * @return array
      */
     public function getHooksUsed()
     {
@@ -182,6 +195,7 @@ class ShoppingfeedInstaller
 
     /**
      * Add Tabs for our ModuleAdminController
+     *
      * @return bool
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -248,6 +262,7 @@ class ShoppingfeedInstaller
 
     /**
      * Delete Tabs of our ModuleAdminController
+     *
      * @return bool
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -275,6 +290,7 @@ class ShoppingfeedInstaller
 
     /**
      * Install all our ObjectModel
+     *
      * @return bool
      */
     public function installObjectModels()
@@ -288,13 +304,13 @@ class ShoppingfeedInstaller
 
     /**
      * Install model
+     *
      * @param string $objectModelClassName
      * @return bool
      * @throws Exception
      */
     public function installObjectModel($objectModelClassName)
     {
-        /** @var ObjectModel $objectModel */
         $objectModelPath = _PS_MODULE_DIR_ . 'shoppingfeed/classes/'.$objectModelClassName.'.php';
         if (file_exists($objectModelPath)) {
             require_once $objectModelPath;
@@ -304,6 +320,7 @@ class ShoppingfeedInstaller
                     '" doesn\'t exist. Please check a typo ?');
         }
 
+        /** @var ObjectModel $objectModel */
         $objectModel = new $objectModelClassName();
 
         TotLoader::import('shoppingfeed\classlib\db\ObjectModelExtension');
@@ -317,6 +334,7 @@ class ShoppingfeedInstaller
 
     /**
      * Uninstall models
+     *
      * @return bool
      */
     public function uninstallObjectModels()
@@ -330,13 +348,13 @@ class ShoppingfeedInstaller
 
     /**
      * Uninstall model
+     *
      * @param string $objectModelClassName
      * @return bool
      * @throws Exception
      */
     public function uninstallObjectModel($objectModelClassName)
     {
-        /** @var ObjectModel $objectModel */
         $objectModelPath = _PS_MODULE_DIR_ . 'shoppingfeed/classes/'.$objectModelClassName.'.php';
         if (file_exists($objectModelPath)) {
             require_once $objectModelPath;
@@ -345,6 +363,8 @@ class ShoppingfeedInstaller
                     '" not found or file "' . $objectModelPath .
                     '" doesn\'t exist. Please check a typo ?');
         }
+        
+        /** @var ObjectModel $objectModel */
         $objectModel = new $objectModelClassName();
 
         TotLoader::import('shoppingfeed\classlib\db\ObjectModelExtension');
@@ -358,8 +378,8 @@ class ShoppingfeedInstaller
 
     /**
      * Uninstall Configuration (with or without language management)
+     *
      * @return bool
-     * @throws PrestaShopDatabaseException
      */
     public function uninstallConfiguration()
     {
@@ -384,4 +404,84 @@ class ShoppingfeedInstaller
         return $result;
     }
 
+    /**
+     * Register Order State : create new order state for this module
+     *
+     * @return bool
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    public function registerOrderStates()
+    {
+        if (empty($this->module->orderStates)) {
+            return true;
+        }
+
+        $result = true;
+        foreach ($this->module->orderStates as $configurationName => $orderStateParams) {
+            $orderState = new OrderState();
+            foreach ($orderStateParams as $key => $value) {
+                if ($key !== 'name' && property_exists($orderState, $key)) {
+                    $orderState->$key = $value;
+                }
+                if ($key === 'name') {
+                    foreach (Language::getLanguages(false) as $language) {
+                        if (empty($value[$language['iso_code']])) {
+                            $orderState->name[$language['id_lang']] = $value['en'];
+                        } else {
+                            $orderState->name[$language['id_lang']] = $value[$language['iso_code']];
+                        }
+                    }
+                }
+            }
+            $orderState->module_name = $this->module->name;
+            $result &= (bool)$orderState->save();
+            Configuration::updateValue($configurationName, $orderState->id);
+        }
+
+        return $result;
+    }
+
+    /**
+     * Unregister Order State : mark them as deleted
+     *
+     * @return bool
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    public function unregisterOrderStates()
+    {
+        if (empty($this->module->orderStates)) {
+            return true;
+        }
+
+        $query = new DbQuery();
+        $query->select('id_order_state');
+        $query->from('order_state');
+        $query->where('module_name = \''.pSQL($this->module->name).'\'');
+
+        $orderStateData = Db::getInstance()->executeS($query);
+
+        if (empty($orderStateData)) {
+            return true;
+        }
+
+        $result = true;
+        foreach ($orderStateData as $data) {
+            $query = new DbQuery();
+            $query->select('1');
+            $query->from('orders');
+            $query->where('current_state = '.$data['id_order_state']);
+            $isUsed = (bool)Db::getInstance()->getValue($query);
+            $orderState = new OrderState($data['id_order_state']);
+            if ($isUsed) {
+                $orderState->deleted = true;
+                $result &= (bool)$orderState->save();
+            } else {
+                $result &= (bool)$orderState->delete();
+            }
+        }
+
+        return $result;
+    }
 }
