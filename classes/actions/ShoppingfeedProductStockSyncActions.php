@@ -178,7 +178,8 @@ class ShoppingfeedProductStockSyncActions extends ShoppingfeedDefaultActions
             ShoppingfeedProcessLoggerHandler::logInfo(
                 sprintf(
                     $this->l('[Stock] Updated %s qty: %s', 'ShoppingfeedProductStockSyncActions'),
-                    $reference, $preparedBatchShop[$reference]['quantity']
+                    $reference,
+                    $preparedBatchShop[$reference]['quantity']
                 ),
                 'Product',
                 $id_product

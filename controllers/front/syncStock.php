@@ -79,7 +79,8 @@ class ShoppingfeedSyncStockModuleFrontController extends ShoppingfeedCronControl
         ShoppingfeedProcessLoggerHandler::closeLogger(
             sprintf(
                 $this->l('[Stock] %d products updated - %d errors', 'syncStock'),
-                (int)ShoppingfeedRegistry::get('updatedProducts'), (int)ShoppingfeedRegistry::get('errors')
+                (int)ShoppingfeedRegistry::get('updatedProducts'),
+                (int)ShoppingfeedRegistry::get('errors')
             )
         );
 
