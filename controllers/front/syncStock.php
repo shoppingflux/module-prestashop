@@ -57,7 +57,7 @@ class ShoppingfeedSyncStockModuleFrontController extends ShoppingfeedCronControl
 
         ShoppingfeedProcessLoggerHandler::openLogger($this->processMonitor);
         ShoppingfeedProcessLoggerHandler::logInfo(
-            $this->l('[Stock] Process start', 'syncStock'),
+            $this->module->l('[Stock] Process start', 'syncStock'),
             $this->processMonitor->getProcessObjectModelName(),
             $this->processMonitor->getProcessObjectModelId()
         );
@@ -70,7 +70,7 @@ class ShoppingfeedSyncStockModuleFrontController extends ShoppingfeedCronControl
         } catch (Exception $e) {
             ShoppingfeedProcessLoggerHandler::logError(
                 sprintf(
-                    $this->l('[Stock] Fail : %s', 'syncStock'),
+                    $this->module->l('[Stock] Fail : %s', 'syncStock'),
                     $e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine()
                 )
             );
@@ -78,7 +78,7 @@ class ShoppingfeedSyncStockModuleFrontController extends ShoppingfeedCronControl
 
         ShoppingfeedProcessLoggerHandler::closeLogger(
             sprintf(
-                $this->l('[Stock] %d products updated - %d errors', 'syncStock'),
+                $this->module->l('[Stock] %d products updated - %d errors', 'syncStock'),
                 (int)ShoppingfeedRegistry::get('updatedProducts'),
                 (int)ShoppingfeedRegistry::get('errors')
             )

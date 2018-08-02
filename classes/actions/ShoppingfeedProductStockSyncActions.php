@@ -201,8 +201,9 @@ class ShoppingfeedProductStockSyncActions extends ShoppingfeedDefaultActions
 
                 ShoppingfeedProcessLoggerHandler::logError(
                     sprintf(
-                        $this->l('[Stock] No confirmation for %s', 'ShoppingfeedProductStockSyncActions'),
-                        $data['reference']
+                        $this->l('[Stock] No confirmation from ShoppingFlux for %s qty: %d', 'ShoppingfeedProductStockSyncActions'),
+                        $data['reference'],
+                        $data['quantity']
                     ),
                     'Product',
                     $id_product
