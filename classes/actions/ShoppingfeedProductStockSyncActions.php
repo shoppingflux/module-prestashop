@@ -52,6 +52,7 @@ class ShoppingfeedProductStockSyncActions extends ShoppingfeedDefaultActions
                 $sfProduct->id_product = $this->conveyor['id_product'];
                 $sfProduct->id_product_attribute = $this->conveyor['id_product_attribute'];
                 $sfProduct->id_shop = $id_shop;
+                $sfProduct->update_at = date('Y-m-d H:i:s');
                 $sfProduct->save();
             } catch (Exception $e) {
                 // We can't do an "insert ignore", so use a try catch for when in debug mode...
@@ -82,6 +83,8 @@ class ShoppingfeedProductStockSyncActions extends ShoppingfeedDefaultActions
         $query->select('*')
             ->from('shoppingfeed_product')
             ->where("action = '" . pSQL(ShoppingfeedProduct::ACTION_SYNC_STOCK) . "'")
+            ->where("update_at IS NOT NULL")
+            ->where("update_at <= '" . date('Y-m-d H:i:s') . "'")
             ->limit(Configuration::get(Shoppingfeed::STOCK_SYNC_MAX_PRODUCTS))
             ->orderBy('date_add ASC');
         $sfProductsRows = Db::getInstance()->executeS($query);
@@ -209,6 +212,10 @@ class ShoppingfeedProductStockSyncActions extends ShoppingfeedDefaultActions
                     $id_product
                 );
                 ShoppingfeedRegistry::increment('errors');
+
+                $sfProduct = ShoppingFeedProduct::getFromUniqueKey($id_product, $id_product_attribute, $id_shop_default);
+                $sfProduct->update_at = date('Y-m-d H:i:s', strtotime('+1 day'));
+                $sfProduct->save();
             }
         }
 

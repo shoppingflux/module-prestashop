@@ -33,17 +33,22 @@ class ShoppingfeedProduct extends ObjectModel
 {
     const ACTION_SYNC_STOCK = "SYNC_STOCK";
 
-    // The action to execute for this product
+    /** @var string The action to execute for this product */
     public $action;
 
-    // The product's id
+    /** @var int The product's id */
     public $id_product;
 
-    // The combination
+    /** @var int The combination's id */
     public $id_product_attribute;
 
-    // Multishop
+    /** @var int The shop to get the product from */
     public $id_shop;
+
+    /** @var string The date and time after which the product will be updated.
+     * If null, the product will never be updated.
+     */
+    public $update_at;
 
     public $date_add;
 
@@ -77,6 +82,11 @@ class ShoppingfeedProduct extends ObjectModel
                 'validate' => 'isUnsignedInt',
                 'required' => true,
                 'unique' => true,
+            ),
+            'update_at'=> array(
+                'type' => self::TYPE_DATE,
+                'validate' => 'isDate',
+                'allow_null' => true,
             ),
             'date_add' => array(
                 'type' => self::TYPE_DATE,
