@@ -147,7 +147,8 @@ class ShoppingfeedProductStockSyncActions extends ShoppingfeedDefaultActions
      * </li>
      * <li> If no products could be updated, the SDK throws an exception
      *      on array_push as it's trying to add the (non-existent) responses to
-     *      its own responses array.
+     *      its own responses array. <br/>
+     *      TODO : should be fixed soon, remove this part then
      * </li>
      * <li> If the quantity for a product is not a number, Shopping Feed will
      *      set it to 0. A response is still sent, without any error.
@@ -202,9 +203,9 @@ class ShoppingfeedProductStockSyncActions extends ShoppingfeedDefaultActions
                 $id_product = $explodedReference[0];
                 $id_product_attribute = isset($explodedReference[1]) ? $explodedReference[1] : 0;
 
-                ShoppingfeedProcessLoggerHandler::logError(
+                ShoppingfeedProcessLoggerHandler::logInfo(
                     sprintf(
-                        $this->l('[Stock] No confirmation from ShoppingFlux for %s qty: %d', 'ShoppingfeedProductStockSyncActions'),
+                        $this->l('[Stock] %s not in Shopping Feed catalog - qty: %d', 'ShoppingfeedProductStockSyncActions'),
                         $data['reference'],
                         $data['quantity']
                     ),
