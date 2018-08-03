@@ -20,7 +20,7 @@
  * @author    202-ecommerce <tech@202-ecommerce.com>
  * @copyright Copyright (c) 202-ecommerce
  * @license   Commercial license
- * @version   release/1.1.0
+ * @version   release/1.2.0
  */
 
 abstract class ShoppingfeedCronController extends ModuleFrontController
@@ -37,13 +37,20 @@ abstract class ShoppingfeedCronController extends ModuleFrontController
     /** @var ShoppingfeedProcessMonitorHandler Instance of ProcessMonitorHandler */
     public $processMonitor;
 
-    public $taskDefinition = array(
-            'name' => 'default',
-            'title' => array(
-                'en' => 'default',
-            ),
-            'frequency_alert' => 'hourly', // hourly, daily, weekly, monthly
-        );
+    /**
+     * Retrieve the technical name of the task defined in module
+     *
+     * @return string
+     * @throws Exception
+     */
+    public function getProcessName()
+    {
+        $controller = Tools::getValue('controller');
+        if (isset($this->module->cronTasks[$controller]) && isset($this->module->cronTasks[$controller]['name'])) {
+            return $this->module->cronTasks[$controller]['name'];
+        }
+        throw new Exception('Unable to find process name');
+    }
 
     /**
      * This add an additional security to prevent unauthorized people/bot to execute cron
@@ -84,7 +91,7 @@ abstract class ShoppingfeedCronController extends ModuleFrontController
     public function initContent()
     {
         $this->processMonitor = TotLoader::getInstance('shoppingfeed\classlib\extensions\ProcessMonitor\ProcessMonitorHandler');
-        if (false === ($data = $this->processMonitor->lock($this->taskDefinition['name']))) {
+        if (false === ($data = $this->processMonitor->lock($this->getProcessName()))) {
             $return = array('success' => false, 'error' => 'Lock return false. Process ID already in run.');
             $this->ajaxDie(Tools::jsonEncode($return));
         }
@@ -103,7 +110,7 @@ abstract class ShoppingfeedCronController extends ModuleFrontController
 
     /**
      * To be defined your process
-     * 
+     *
      * @param array $data
      * @return array
      */

@@ -20,7 +20,7 @@
  * @author    202-ecommerce <tech@202-ecommerce.com>
  * @copyright Copyright (c) 202-ecommerce
  * @license   Commercial license
- * @version   release/1.1.0
+ * @version   release/1.2.0
  */
 
 TotLoader::import('shoppingfeed\classlib\extensions\ProcessLogger\ProcessLoggerObjectModel');
@@ -174,6 +174,26 @@ class ShoppingfeedAdminProcessLoggerController extends ModuleAdminController
         parent::initToolbar();
         // Remove the add new item button
         unset($this->toolbar_btn['new']);
+        $this->toolbar_btn['delete'] = array(
+            'short' => 'Erase',
+            'desc' => $this->l('Erase all'),
+            'js' => 'if (confirm(\''.$this->l('Are you sure?').'\')) document.location = \''.self::$currentIndex.'&amp;token='.$this->token.'&amp;action=erase\';'
+        );
     }
 
+    /**
+     * Delete all logs
+     *
+     * @return bool
+     */
+    public function processErase()
+    {
+        $result = Db::getInstance()->delete($this->table);
+
+        if ($result) {
+            $this->confirmations[] = $this->l('All logs has been erased');
+        }
+
+        return $result;
+    }
 }

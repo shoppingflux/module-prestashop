@@ -20,7 +20,7 @@
  * @author    202-ecommerce <tech@202-ecommerce.com>
  * @copyright Copyright (c) 202-ecommerce
  * @license   Commercial license
- * @version   release/1.1.0
+ * @version   release/1.2.0
  */
 
 class ShoppingfeedProcessMonitorHandler
@@ -37,7 +37,7 @@ class ShoppingfeedProcessMonitorHandler
     
     /**
      * Lock process
-     * 
+     *
      * @param string $name
      * @return bool|mixed
      * @throws PrestaShopDatabaseException
@@ -53,7 +53,7 @@ class ShoppingfeedProcessMonitorHandler
             $this->process->name = $name;
             $this->process->data = Tools::jsonEncode(array());
         }
-        if (false === empty($this->process->pid)) {
+        if (!empty($this->process->pid)) {
             $oldpid = $this->process->pid;
             exec("ps -ef| awk '\$3 == \"$oldpid\" { print \$2 }'", $output, $ret);
             if (false === empty($output)) {
@@ -70,7 +70,7 @@ class ShoppingfeedProcessMonitorHandler
     
     /**
      * UnLock process
-     * 
+     *
      * @param array $data
      * @return bool
      * @throws PrestaShopException
@@ -95,7 +95,7 @@ class ShoppingfeedProcessMonitorHandler
     
     /**
      * Get microtime in float value
-     * 
+     *
      * @return float
      */
     public function microtimeFloat()

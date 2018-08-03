@@ -20,7 +20,7 @@
  * @author    202-ecommerce <tech@202-ecommerce.com>
  * @copyright Copyright (c) 202-ecommerce
  * @license   Commercial license
- * @version   release/1.1.0
+ * @version   release/1.2.0
  */
 
 class ShoppingfeedDbTableDefinitionRelation
@@ -170,11 +170,11 @@ class ShoppingfeedDbTableDefinitionRelation
         );
 
         if ($this->hasMany('shop')) {
-            $foreign[] = [_DB_PREFIX_.'shop.id_shop'];
+            $foreign[] = array(_DB_PREFIX_.'shop.id_shop');
         }
 
         if ($this->hasMany('lang')) {
-            $foreign[] = [_DB_PREFIX_.'lang.id_lang'];
+            $foreign[] = array(_DB_PREFIX_.'lang.id_lang');
         }
 
         return $foreign;
@@ -303,7 +303,8 @@ class ShoppingfeedDbTableDefinitionRelation
                         $this,
                         'hasField'
                     ),
-                    ARRAY_FILTER_USE_BOTH);
+                    ARRAY_FILTER_USE_BOTH
+                );
             default:
                 return $this->get('fields');
         }

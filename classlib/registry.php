@@ -20,13 +20,14 @@
  * @author    202-ecommerce <tech@202-ecommerce.com>
  * @copyright Copyright (c) 202-ecommerce
  * @license   Commercial license
- * @version   release/1.1.0
+ * @version   release/1.2.0
  */
 
 /**
  * Design pattern Registry
  */
-class ShoppingfeedRegistry {
+class ShoppingfeedRegistry
+{
 
     /**
      * @var ShoppingfeedRegistry $_registry Instance of this class
@@ -40,7 +41,7 @@ class ShoppingfeedRegistry {
     
     /**
      * Get instance of this class
-     * 
+     *
      * @return ShoppingfeedRegistry
      */
     public static function getInstance()
@@ -53,7 +54,7 @@ class ShoppingfeedRegistry {
     
     /**
      * Get a variable in the Registry
-     * 
+     *
      * @param string $index
      * @return bool
      */
@@ -68,7 +69,7 @@ class ShoppingfeedRegistry {
     
     /**
      * Set a variable in the Registry
-     * 
+     *
      * @param string $index
      * @param string $value
      */
@@ -80,7 +81,7 @@ class ShoppingfeedRegistry {
 
     /**
      * Check if var exist in the registry
-     * 
+     *
      * @param string $index
      * @return bool
      */
@@ -94,7 +95,7 @@ class ShoppingfeedRegistry {
 
     /**
      * Check if offsetExists
-     * 
+     *
      * @param string $index
      * @return bool
      */
@@ -108,7 +109,7 @@ class ShoppingfeedRegistry {
     
     /**
      * Increment a counter in the Registry
-     * 
+     *
      * @param string $index
      * @param int $value
      */
@@ -124,7 +125,7 @@ class ShoppingfeedRegistry {
     
     /**
      * Decrement a counter in the Registry
-     * 
+     *
      * @param string $index
      * @param int $value
      */

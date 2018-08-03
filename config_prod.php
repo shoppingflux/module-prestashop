@@ -33,27 +33,29 @@ if (!class_exists('TotLoader')) {
     class TotLoader
     {
         /**
-        * @desc get classname with module name
-        * @params string $namespace
-        *
-        * @return true
-        */
-        private static function getClassname($namespace) {
-            $moduleName = substr($namespace, 0, strpos($namespace, '\\'));
+         * @desc get classname with module name
+         * @params string $namespace
+         *
+         * @return true
+         */
+        private static function getClassname($namespace)
+        {
+            $moduleName = Tools::substr($namespace, 0, strpos($namespace, '\\'));
             $pathExplode = explode('\\', $namespace);
-            $classname = ucfirst($moduleName) . ucfirst(array_pop($pathExplode));
+            $classname = Tools::ucfirst($moduleName) . Tools::ucfirst(array_pop($pathExplode));
 
             return $classname;
         }
 
         /**
-        * @desc require_one a php class file
-        * @params string $namespace
-        *
-        * @return string
-        */
-        public static function import($namespace) {
-            $path = _PS_ROOT_DIR_  . '/' . basename(_MODULE_DIR_) . '/' . str_replace('\\', '/', $namespace) . '.php';
+         * @desc require_one a php class file
+         * @params string $namespace
+         *
+         * @return string
+         */
+        public static function import($namespace)
+        {
+            $path = _PS_ROOT_DIR_ . '/' . basename(_MODULE_DIR_) . '/' . str_replace('\\', '/', $namespace) . '.php';
             if (!file_exists($path)) {
                 throw new Exception('Loader error : File ' . $path . ' doesn\'t exist');
             }
@@ -64,9 +66,10 @@ if (!class_exists('TotLoader')) {
         }
 
         /**
-        * @desc: instantiate a classname
-        */
-        public static function getInstance($namespace) {
+         * @desc: instantiate a classname
+         */
+        public static function getInstance($namespace)
+        {
             self::import($namespace);
             $classname = self::getClassname($namespace);
 
@@ -74,4 +77,3 @@ if (!class_exists('TotLoader')) {
         }
     }
 }
-

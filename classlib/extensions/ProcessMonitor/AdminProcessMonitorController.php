@@ -20,7 +20,7 @@
  * @author    202-ecommerce <tech@202-ecommerce.com>
  * @copyright Copyright (c) 202-ecommerce
  * @license   Commercial license
- * @version   release/1.1.0
+ * @version   release/1.2.0
  */
 
 TotLoader::import('shoppingfeed\classlib\extensions\ProcessMonitor\ProcessMonitorObjectModel');
@@ -125,4 +125,80 @@ class ShoppingfeedAdminProcessMonitorController extends ModuleAdminController
         unset($this->toolbar_btn['new']);
     }
 
+    /**
+     * @inheritdoc
+     * @throws SmartyException
+     */
+    public function initContent()
+    {
+        parent::initContent();
+
+        $this->content .= $this->renderCronTasks();
+
+        $this->context->smarty->assign('content', $this->content);
+    }
+
+    /**
+     * Renders a list with all cron tasks
+     *
+     * @return null|string
+     * @throws SmartyException
+     * @throws Exception
+     */
+    public function renderCronTasks()
+    {
+        if (empty($this->module->cronTasks)) {
+            throw new Exception('Unable to find cronTasks declaration in module');
+        }
+
+        $fieldsList = array(
+            'name'     => array(
+                'title' => $this->l('Technical name'),
+                'name'  => 'name',
+            ),
+            'title'     => array(
+                'title' => $this->l('Title'),
+                'name'  => 'title',
+            ),
+            'frequency' => array(
+                'title' => $this->l('Frequency'),
+                'name'  => 'frequency',
+            ),
+            'url'       => array(
+                'title' => $this->l('URL'),
+                'name'  => 'url',
+            ),
+        );
+
+        $list = array();
+
+        foreach ($this->module->cronTasks as $controller => $data) {
+            $title = null;
+            if (isset($data['title'][$this->context->language->iso_code])) {
+                $title = $data['title'][$this->context->language->iso_code];
+            } else if (isset($data['title']['en'])) {
+                $title = $data['title']['en'];
+            }
+            $list[] = array(
+                'name' => $data['name'],
+                'title' => $title,
+                'frequency' => $data['frequency'],
+                'url' => $this->context->link->getModuleLink(
+                    $this->module->name,
+                    $controller,
+                    array(
+                        'secure_key' => $this->module->secure_key
+                    )
+                ),
+            );
+        }
+
+        $helper = new HelperList();
+        $this->setHelperDisplay($helper);
+        $helper->title = $this->l('Cron Tasks');
+        $helper->actions = array();
+        $helper->bulk_actions = array();
+        $helper->no_link = true;
+        return $helper->generateList($list, $fieldsList);
+    }
 }

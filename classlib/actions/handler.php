@@ -20,7 +20,7 @@
  * @author    202-ecommerce <tech@202-ecommerce.com>
  * @copyright Copyright (c) 202-ecommerce
  * @license   Commercial license
- * @version   release/1.1.0
+ * @version   release/1.2.0
  */
 
 /**
@@ -103,13 +103,12 @@ class ShoppingfeedHandler
      */
     public function process($chain)
     {
-        $className = ucfirst($chain).'Actions';
+        include_once _PS_MODULE_DIR_.'shoppingfeed/classes/actions/'.Tools::ucfirst($chain).'Actions.php';
+        $className = Tools::ucfirst($chain).'Actions';
         $overridePath = _PS_OVERRIDE_DIR_.'modules/shoppingfeed/classes/actions/'.$className.'.php';
         if (file_exists($overridePath)) {
             $className .= 'Override';
             include_once $overridePath;
-        } else {
-            include_once _PS_MODULE_DIR_.'shoppingfeed/classes/actions/'.ucfirst($chain).'Actions.php';
         }
         if (class_exists($className)) {
             $classAction = new $className;
@@ -125,11 +124,10 @@ class ShoppingfeedHandler
             }
             $this->setConveyor($classAction->getConveyor());
         } else {
-            echo ucfirst($chain).'Actions not defined';
+            echo Tools::ucfirst($chain).'Actions not defined';
             exit;
         }
 
         return true;
     }
-
 }

@@ -55,6 +55,24 @@ class Shoppingfeed extends ShoppingfeedModule
         'ShoppingfeedProduct',
     );
 
+    /**
+     * List of cron tasks indexed by controller name
+     * Title value must be an array indexed by iso language (en is required)
+     * Frequency value can be hourly, daily, weekly, monthly
+     *
+     * @var array
+     */
+    public $cronTasks = array(
+        'syncStock' => array(
+            'name' => 'shoppingfeed:syncStock',
+            'title' => array(
+                'en' => 'Synchronize stock on Shopping Feed',
+                'fr' => 'Synchronisation du stock sur Shopping Feed'
+            ),
+            'frequency' => '', // Undefined; will depend on merchant's need
+        )
+    );
+
     /** @var array $moduleAdminControllers
      */
     public $moduleAdminControllers = array(

@@ -20,7 +20,7 @@
  * @author    202-ecommerce <tech@202-ecommerce.com>
  * @copyright Copyright (c) 202-ecommerce
  * @license   Commercial license
- * @version   release/1.1.0
+ * @version   release/1.2.0
  */
 
 class ShoppingfeedObjectModelDefinition
@@ -35,20 +35,20 @@ class ShoppingfeedObjectModelDefinition
     /**
      * Primary key field description.
      */
-    const PRIMARY_KEY_FIELD = [
+    const PRIMARY_KEY_FIELD = array(
         'type'     => ObjectModel::TYPE_INT,
         'validate' => 'isUnsignedId',
         'required' => true,
         'primary'  => true,
-    ];
+    );
     /**
      * (Simple) Key field description.
      */
-    const KEY_FIELD = [
+    const KEY_FIELD = array(
         'type'     => ObjectModel::TYPE_INT,
         'validate' => 'isUnsignedId',
         'required' => true,
-    ];
+    );
 
     /**
      * ObjectModel::$definition.
@@ -76,10 +76,10 @@ class ShoppingfeedObjectModelDefinition
         $this->def = $def;
         // Prestashop doesn't define shop association when fetching definition.
         if ($this->get('multishop')) {
-            $this->def['associations'][ShoppingfeedDbTableDefinitionRelation::ID_SHOP] = [
+            $this->def['associations'][ShoppingfeedDbTableDefinitionRelation::ID_SHOP] = array(
                 'type'  => ObjectModel::HAS_MANY,
                 'field' => $this->get('primary'),
-            ];
+            );
         }
     }
 
@@ -364,7 +364,7 @@ class ShoppingfeedObjectModelDefinition
                     break;
                 case ObjectModel::TYPE_INT:
                     $description .= 'INT(10)'.(
-                        !empty($constraints['validate']) && strpos(strtolower($constraints['validate']), 'unsigned')
+                        !empty($constraints['validate']) && strpos(Tools::strtolower($constraints['validate']), 'unsigned')
                             ? ' UNSIGNED'
                             : ' SIGNED'
                     );

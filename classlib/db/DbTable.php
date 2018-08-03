@@ -20,7 +20,7 @@
  * @author    202-ecommerce <tech@202-ecommerce.com>
  * @copyright Copyright (c) 202-ecommerce
  * @license   Commercial license
- * @version   release/1.1.0
+ * @version   release/1.2.0
  */
 
 class ShoppingfeedDbTable
@@ -117,12 +117,12 @@ class ShoppingfeedDbTable
         $describe = $this->db->executeS("SHOW COLUMNS FROM `$this->name`");
 
         foreach ($describe as $key => $col) {
-            $describe[$key]['modelDef'] = '`'.$col['Field'].'` '.strtoupper($col['Type']).' ';
+            $describe[$key]['modelDef'] = '`'.$col['Field'].'` '.Tools::strtoupper($col['Type']).' ';
             if ('NO' === $col['Null']) {
                 $describe[$key]['modelDef'] .= 'NOT NULL ';
             }
             if (false === empty($col['Extra'])) {
-                $describe[$key]['modelDef'] .= strtoupper($col['Extra']);
+                $describe[$key]['modelDef'] .= Tools::strtoupper($col['Extra']);
             }
         }
 
