@@ -212,11 +212,10 @@ class ShoppingfeedProductStockSyncActions extends ShoppingfeedDefaultActions
                     'Product',
                     $id_product
                 );
-                ShoppingfeedRegistry::increment('errors');
+                ShoppingfeedRegistry::increment('not-in-catalog');
 
                 $sfProduct = ShoppingFeedProduct::getFromUniqueKey($id_product, $id_product_attribute, $id_shop_default);
-                $sfProduct->update_at = date('Y-m-d H:i:s', strtotime('+1 day'));
-                $sfProduct->save();
+                $sfProduct->delete();
             }
         }
 

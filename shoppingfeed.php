@@ -69,7 +69,7 @@ class Shoppingfeed extends ShoppingfeedModule
                 'en' => 'Synchronize stock on Shopping Feed',
                 'fr' => 'Synchronisation du stock sur Shopping Feed'
             ),
-            'frequency' => '', // Undefined; will depend on merchant's need
+            'frequency' => '5min',
         )
     );
 

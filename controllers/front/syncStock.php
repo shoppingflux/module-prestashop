@@ -47,8 +47,7 @@ class ShoppingfeedSyncStockModuleFrontController extends ShoppingfeedCronControl
      * Executed by the CRON
      * @param $data the data saved for this CRON (see totpsclasslib doc)
      * @return mixed
-     * @throws PrestaShopDatabaseException
-     * @throws PrestaShopException
+     * @throws Exception
      */
     protected function processCron($data)
     {
@@ -74,12 +73,14 @@ class ShoppingfeedSyncStockModuleFrontController extends ShoppingfeedCronControl
                     $e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine()
                 )
             );
+            ShoppingfeedRegistry::increment('errors');
         }
 
         ShoppingfeedProcessLoggerHandler::closeLogger(
             sprintf(
-                $this->module->l('[Stock] %d products updated - %d errors', 'syncStock'),
+                $this->module->l('[Stock] %d products updated - %d not in catalog - %d errors', 'syncStock'),
                 (int)ShoppingfeedRegistry::get('updatedProducts'),
+                (int)ShoppingfeedRegistry::get('not-in-catalog'),
                 (int)ShoppingfeedRegistry::get('errors')
             )
         );
