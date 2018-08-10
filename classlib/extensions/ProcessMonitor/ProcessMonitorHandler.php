@@ -57,7 +57,6 @@ class ShoppingfeedProcessMonitorHandler
             $oldpid = $this->process->pid;
             exec("ps -ef| awk '\$3 == \"$oldpid\" { print \$2 }'", $output, $ret);
             if (false === empty($output)) {
-
                 return false;
             }
         }
