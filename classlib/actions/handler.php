@@ -103,14 +103,15 @@ class ShoppingfeedHandler
      */
     public function process($chain)
     {
-        include_once _PS_MODULE_DIR_.'shoppingfeed/classes/actions/'.Tools::ucfirst($chain).'Actions.php';
         $className = Tools::ucfirst($chain).'Actions';
+        include_once _PS_MODULE_DIR_.'shoppingfeed/classes/actions/'.$className.'.php';
         $overridePath = _PS_OVERRIDE_DIR_.'modules/shoppingfeed/classes/actions/'.$className.'.php';
         if (file_exists($overridePath)) {
             $className .= 'Override';
             include_once $overridePath;
         }
         if (class_exists($className)) {
+            /** @var ShoppingfeedDefaultActions $classAction */
             $classAction = new $className;
             $classAction->setModelObject($this->modelObject);
             $classAction->setConveyor($this->conveyor);
@@ -124,7 +125,7 @@ class ShoppingfeedHandler
             }
             $this->setConveyor($classAction->getConveyor());
         } else {
-            echo Tools::ucfirst($chain).'Actions not defined';
+            echo $className.' not defined';
             exit;
         }
 
