@@ -63,6 +63,8 @@
 
 #accordion a span{
    white-space: normal;
+    color: #666;
+    font-size: ;
 }
 
 #accordion .card{
