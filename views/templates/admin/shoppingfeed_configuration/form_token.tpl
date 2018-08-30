@@ -24,8 +24,18 @@
 {extends file="helpers/form/form.tpl"}
 
 {block name="legend" append}
-    <img id="logo_sf" src="{$img_path|escape:'htmlall':'UTF-8'}logo_shoppingfeed.png"/>
-    <p>
-        {l s='Your account token can be [1] found on your access page [/1].' tags=['<a href="https://app.shopping-feed.com/tools/access">','</a>'] mod='shoppingfeed'}
-    </p>
+   <div class="form-group">
+       <div class="col-lg-6 logo_shoppingfeed">
+           <img id="logo_sf" src="{$img_path|escape:'htmlall':'UTF-8'}logo_shoppingfeed.png"/>
+       </div>
+
+       <div class="col-lg-6 desc_shoppingfeed">
+           <p>
+               {l s='Accélérez la vitesse de synchronisation des stocks Marketplaces de votre module Shopping Feed.
+Ce module est complémentaire et indépendant du module « Shopping flux officiel ».
+Il permet d’envoyer vos mises à jour de stocks sur les marketplaces soit à chaque mise à jour de stock,
+soit si vous utilisez un ERP par lot' mod='shoppingfeed'}
+           </p>
+       </div>
+   </div>
 {/block}

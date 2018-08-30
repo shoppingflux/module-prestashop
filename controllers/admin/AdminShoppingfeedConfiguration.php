@@ -48,13 +48,17 @@ class AdminShoppingfeedConfigurationController extends ModuleAdminController
         $id_shop = Configuration::get('PS_SHOP_DEFAULT');
         $token = Configuration::get(shoppingfeed::AUTH_TOKEN, null, null, $id_shop);
 
-        $this->content = $this->renderTokenForm();
+        $this->content = $this->welcomeForm();
+
+        $this->content .= $this->renderTokenForm();
 
         if ($token) {
             $this->content .= $this->renderConfigurationForm();
         } else {
             $this->content .= $this->renderLoginForm();
         }
+
+        $this->content .= $this->faqForm();
 
         return parent::initContent();
     }
@@ -71,6 +75,18 @@ class AdminShoppingfeedConfigurationController extends ModuleAdminController
                 'icon' => 'icon-user'
             ),
             'input' => array(
+                array(
+                    'type' => 'html',
+                    'name' => 'employee_avatar',
+                    'html_content' => '<div id="employee-avatar-thumbnail" class="alert alert-info">
+                    '.sprintf($this->trans(
+                            'Your token can be found on the %url% of your merchant interface',
+                            array(
+                                '%url%' => '<a href="https://app.shopping-feed.com/v3/en/login" class="alert-link" target="_blank">'. $this->l('My Access page').'</a>',
+                            ),
+                            'Admin.Advparameters.Help'
+                        )).'</div>',
+                ),
                 array(
                     'type' => 'text',
                     'label' => $this->l('Token'),
@@ -92,7 +108,20 @@ class AdminShoppingfeedConfigurationController extends ModuleAdminController
         $helper = new HelperForm($this);
         $this->setHelperDisplay($helper);
         $helper->fields_value = $fields_value;
-        $helper->tpl_vars = $this->getTemplateFormVars();
+
+        return $helper->generateForm(array(array('form' => $fields_form)));
+    }
+
+    public function welcomeForm()
+    {
+        $fields_form = array(
+            'legend' => array(
+                'title' => $this->l('15 min Marketplace Updates - Shopping'),
+            )
+        );
+
+        $helper = new HelperForm($this);
+        $this->setHelperDisplay($helper);
         $helper->tpl_vars['img_path'] = $this->module->getPathUri() . "views/img/";
         $helper->base_folder = $this->getTemplatePath() . $this->override_folder;
         $helper->base_tpl = 'form_token.tpl';
@@ -112,6 +141,12 @@ class AdminShoppingfeedConfigurationController extends ModuleAdminController
                 'icon' => 'icon-user'
             ),
             'input' => array(
+                array(
+                    'type' => 'html',
+                    'name' => 'employee_avatar',
+                    'html_content' => '<div id="employee-avatar-thumbnail" class="alert alert-info">
+                    '.$this->l('You may also enter your Shopping Feed credentials here to retrieve your token.').'</div>',
+                ),
                 array(
                     'type' => 'text',
                     'label' => $this->l('Username'),
@@ -153,12 +188,45 @@ class AdminShoppingfeedConfigurationController extends ModuleAdminController
      */
     public function renderConfigurationForm()
     {
+
+        $nbr_prpoducts = count(Product::getSimpleProducts($this->context->language->id));
+
+        switch (true) {
+            case ($nbr_prpoducts <= 100):
+                $message_realtime = $this->l('Si vous avez moins de 100 produits, le paramètre Realtime à OUI est conseillé.
+Vous disposez de peu de stock de chaque référence et pour vous la disponibilité au plus juste est primordiale. De plus aucune tâche 
+cron à configurer n’est nécessaire. L’envoi des mises à jour de stocks en temps réel à l’API de Shopping flux vous garanti 
+une synchronisation des stocks en moins de 15 min. Cependant, cela multiplie les appels à l’API Shopping flux ce qui peut ralentir 
+le temps de chargement les pages qui décrémentent ou incrémentent du stock, notamment lors de la mise à jour du statut des commandes.');
+                break;
+            case ($nbr_prpoducts < 1000 && $nbr_prpoducts > 100):
+                $message_realtime = $this->l('Si vous avez entre 100 et 1000 produits, le paramètre Realtime à NON reste conseillé.
+Les mises à jour sont mis en file d’attente et la configuration d’une tâche cron (URL) toutes les 5 minutes 
+permettra de synchroniser tous les produits en attente de synchronisation. Cela optimise les appels à l’API 
+Shopping Flux et les performances de chargement des pages.
+');
+                break;
+            case ($nbr_prpoducts > 1000):
+                $message_realtime = $this->l('Si vous avez plus de 1000 produits, le paramètre Realtime à NON est indispensable.
+Vous utilisez probablement un outil externe (type ERP) pour gérer vos stocks ce qui peut engendrer de nombreuses mises à jour en parallèle.
+ Dans ce cas, les mises à jour sont mis en file d’attente et la configuration d’une tâche cron (URL) toutes les 5 minutes 
+ permettra de synchroniser tous les produits en attente de synchronisation. Cela optimise les appels à l’API Shopping 
+ Flux et les performances de chargement des pages.');
+                break;
+        }
+
         $fields_form = array(
             'legend' => array(
                 'title' => $this->l('Configuration'),
                 'icon' => 'icon-cog'
             ),
             'input' => array(
+                array(
+                    'type' => 'html',
+                    'name' => 'employee_avatar',
+                    'html_content' => '<div id="employee-avatar-thumbnail" class="alert alert-info">
+                    '.$message_realtime.'</div>',
+                ),
                 array(
                     'type' => 'switch',
                     'is_bool' => true,
@@ -173,6 +241,15 @@ class AdminShoppingfeedConfigurationController extends ModuleAdminController
                     'label' => $this->l('Real-time synchronization'),
                     'hint' => $this->l('If checked, no CRON will be needed. Synchronization will occur as soon as the changes are made. This may impact user performance.'),
                     'name' => Shoppingfeed::REAL_TIME_SYNCHRONIZATION,
+                ),
+                array(
+                    'type' => 'html',
+                    'name' => 'employee_avatar',
+                    'html_content' => '<div id="employee-avatar-thumbnail" class="alert alert-warning">
+                    '.$this->l('Ce paramètre est réservé aux expert (100 par défaut). Vous pouvez configurer le nombre de produits à traiter lors de chaque appel de la tâche cron.
+                     Plus vous augmentez ce chiffre, plus le nombre de requêtes en base de données sera importantes. 
+                     La valeur de ce paramètre est à calibrer en fonction des capacités de votre serveur mysql et de votre taux de rotation des stocks 
+                     pour écouler la file d’attente dans le délais qui vous conviendra.').'</div>',
                 ),
                 array(
                     'type' => 'text',
@@ -308,5 +385,22 @@ class AdminShoppingfeedConfigurationController extends ModuleAdminController
         }
 
         return true;
+    }
+
+    public function faqForm()
+    {
+        $fields_form = array(
+            'legend' => array(
+                'title' => $this->l('Faq/Support'),
+                'icon' => 'icon-question'
+            )
+        );
+
+        $helper = new HelperForm($this);
+        $helper->tpl_vars['img_path'] = $this->module->getPathUri() . "views/img/";
+        $helper->base_folder = $this->getTemplatePath() . $this->override_folder;
+        $helper->base_tpl = 'faq.tpl';
+
+        return $helper->generateForm(array(array('form' => $fields_form)));
     }
 }
