@@ -84,7 +84,7 @@ class ShoppingfeedSyncStockModuleFrontController extends ShoppingfeedCronControl
                 (int)ShoppingfeedRegistry::get('errors')
             )
         );
-
+        Configuration::updateValue(shoppingfeed::LAST_CRON_TIME_SYNCHRONIZATION, date("Y-m-d H:i:s"));
         // The data to be saved in the CRON table
         return $data;
     }

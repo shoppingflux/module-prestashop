@@ -24,9 +24,9 @@
 {extends file="helpers/form/form.tpl"}
 
 {block name="legend" append}
-   <div class="form-group">
+   <div class="form-group welcome_shoppingfeed">
        <div class="col-lg-6 logo_shoppingfeed">
-           <img id="logo_sf" src="{$img_path|escape:'htmlall':'UTF-8'}logo_shoppingfeed.png"/>
+           <img class="mb-0" id="logo_sf" src="{$img_path|escape:'htmlall':'UTF-8'}logo_shoppingfeed.png"/>
        </div>
 
        <div class="col-lg-6 desc_shoppingfeed">

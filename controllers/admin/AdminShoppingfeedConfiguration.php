@@ -38,16 +38,19 @@ class AdminShoppingfeedConfigurationController extends ModuleAdminController
 {
     public $bootstrap = true;
 
+    public $nbr_prpoducts;
     /**
      * @inheritdoc
      */
     public function initContent()
     {
         $this->addCSS($this->module->getPathUri() . 'views/css/shoppingfeed_configuration/form.css');
+        $this->addJS($this->module->getPathUri() . 'views/js/form_config.js');
+        $this->addCSS($this->module->getPathUri() . 'views/fonts/font-awesome/css/font-awesome.min.css');
 
         $id_shop = Configuration::get('PS_SHOP_DEFAULT');
         $token = Configuration::get(shoppingfeed::AUTH_TOKEN, null, null, $id_shop);
-
+        $this->nbr_prpoducts = count(Product::getSimpleProducts($this->context->language->id));
         $this->content = $this->welcomeForm();
 
         $this->content .= $this->renderTokenForm();
@@ -185,30 +188,16 @@ class AdminShoppingfeedConfigurationController extends ModuleAdminController
      */
     public function renderConfigurationForm()
     {
-
-        $nbr_prpoducts = count(Product::getSimpleProducts($this->context->language->id));
-
         switch (true) {
-            case ($nbr_prpoducts <= 100):
-                $message_realtime = $this->l('Si vous avez moins de 100 produits, le paramètre Realtime à OUI est conseillé.
-Vous disposez de peu de stock de chaque référence et pour vous la disponibilité au plus juste est primordiale. De plus aucune tâche 
-cron à configurer n’est nécessaire. L’envoi des mises à jour de stocks en temps réel à l’API de Shopping flux vous garanti 
-une synchronisation des stocks en moins de 15 min. Cependant, cela multiplie les appels à l’API Shopping flux ce qui peut ralentir 
-le temps de chargement les pages qui décrémentent ou incrémentent du stock, notamment lors de la mise à jour du statut des commandes.');
+            case ($this->nbr_prpoducts <= 100):
+                $message_realtime = $this->l('You have less than 100 products, the RealTime parameter on YES is recommended. You have little stock for each reference and for you the stock precision is fundamental. Moreover, no need to set up any cron job. Sending real-time inventory updates to the Feed API makes it easy for you to sync inventory in less than 15 minutes. However, this multiplies the calls to the Shopping API stream wchich can slow the loading time of pages that decrement or increment the stock, especially during order status updates.');
                 break;
-            case ($nbr_prpoducts < 1000 && $nbr_prpoducts > 100):
-                $message_realtime = $this->l('Si vous avez entre 100 et 1000 produits, le paramètre Realtime à NON reste conseillé.
-Les mises à jour sont mis en file d’attente et la configuration d’une tâche cron (URL) toutes les 5 minutes 
-permettra de synchroniser tous les produits en attente de synchronisation. Cela optimise les appels à l’API 
-Shopping Flux et les performances de chargement des pages.
+            case ($this->nbr_prpoducts < 1000 && $this->nbr_prpoducts > 100):
+                $message_realtime = $this->l('You have between 100 and 1000 products, the Realtime parameter on NO is recommended. Updates are queued and the configuration of a cron job (URL) every 5 minutes will allow you to synchronize of all products waiting for synchronization. This reduce calls sent to the Shopping Flux API and improve page loading performances.
 ');
                 break;
-            case ($nbr_prpoducts > 1000):
-                $message_realtime = $this->l('Si vous avez plus de 1000 produits, le paramètre Realtime à NON est indispensable.
-Vous utilisez probablement un outil externe (type ERP) pour gérer vos stocks ce qui peut engendrer de nombreuses mises à jour en parallèle.
- Dans ce cas, les mises à jour sont mis en file d’attente et la configuration d’une tâche cron (URL) toutes les 5 minutes 
- permettra de synchroniser tous les produits en attente de synchronisation. Cela optimise les appels à l’API Shopping 
- Flux et les performances de chargement des pages.');
+            case ($this->nbr_prpoducts > 1000):
+                $message_realtime = $this->l('You have more than 1000 products, Realtime parameter NO is required. You probably use an external tool (like an ERP) to manage your inventory which can lead to many updates at the same time. In this case, the updates are queued and the configuration of a cron job (URL) every 5 minutes will allow you to synchronize of all products waiting for synchronization. This reduce calls sent to the Shopping Flux API and improve page loading performances');
                 break;
         }
 
@@ -220,8 +209,8 @@ Vous utilisez probablement un outil externe (type ERP) pour gérer vos stocks ce
             'input' => array(
                 array(
                     'type' => 'html',
-                    'name' => 'employee_avatar',
-                    'html_content' => '<div id="employee-avatar-thumbnail" class="alert alert-info">
+                    'name' => 'real_synch',
+                    'html_content' => '<div id="real_synch" class="alert alert-info">
                     '.$message_realtime.'</div>',
                 ),
                 array(
@@ -241,18 +230,16 @@ Vous utilisez probablement un outil externe (type ERP) pour gérer vos stocks ce
                 ),
                 array(
                     'type' => 'html',
-                    'name' => 'employee_avatar',
-                    'html_content' => '<div id="employee-avatar-thumbnail" class="alert alert-warning">
-                    '.$this->l('Ce paramètre est réservé aux expert (100 par défaut). Vous pouvez configurer le nombre de produits à traiter lors de chaque appel de la tâche cron.
-                     Plus vous augmentez ce chiffre, plus le nombre de requêtes en base de données sera importantes. 
-                     La valeur de ce paramètre est à calibrer en fonction des capacités de votre serveur mysql et de votre taux de rotation des stocks 
-                     pour écouler la file d’attente dans le délais qui vous conviendra.').'</div>',
+                    'name' => 'for_real',
+                    'html_content' => '<div id="for_real" class="alert alert-warning">
+                    '.$this->l('The Max product update parameter is reserved for experts (100 by default). You can configure the number of products to be processed each time the cron job is called. The more you increase this number, the greater the number of database queries. The value of this parameter is to be calibrated according to the capacities of your MySQL server and your stock rotation rate to process the queue in the time that suits you.').'</div>',
                 ),
                 array(
                     'type' => 'text',
                     'label' => $this->l('Max. product update per request'),
                     'name' => Shoppingfeed::STOCK_SYNC_MAX_PRODUCTS,
                     'required' => true,
+                    'class' => 'for_real'
                 ),
             ),
             'submit' => array(
@@ -393,8 +380,17 @@ Vous utilisez probablement un outil externe (type ERP) pour gérer vos stocks ce
             )
         );
 
+
         $helper = new HelperForm($this);
-        $helper->tpl_vars['img_path'] = $this->module->getPathUri() . "views/img/";
+        $helper->tpl_vars['REAL_TIME_SYNCHRONIZATION'] = Configuration::get(Shoppingfeed::REAL_TIME_SYNCHRONIZATION)?'true':'false';
+        $helper->tpl_vars['nbr_prpoducts'] = $this->nbr_prpoducts;
+        $helper->tpl_vars['shop_url'] = Tools::getShopDomain();
+        $helper->tpl_vars['php_version'] = PHP_VERSION;
+        $helper->tpl_vars['prestashop_version'] = _PS_VERSION_;
+        $helper->tpl_vars['token'] = Configuration::get(Shoppingfeed::AUTH_TOKEN);
+        $helper->tpl_vars['multiboutique'] = Configuration::get('PS_MULTISHOP_FEATURE_ACTIVE')?'true':'false';
+        $helper->tpl_vars['STOCK_SYNC_MAX_PRODUCTS'] = Configuration::get(Shoppingfeed::STOCK_SYNC_MAX_PRODUCTS);
+        $helper->tpl_vars['LAST_CRON_TIME_SYNCHRONIZATION'] = Configuration::get(Shoppingfeed::LAST_CRON_TIME_SYNCHRONIZATION);
         $helper->base_folder = $this->getTemplatePath() . $this->override_folder;
         $helper->base_tpl = 'faq.tpl';
 

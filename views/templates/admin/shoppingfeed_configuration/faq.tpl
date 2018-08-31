@@ -30,18 +30,16 @@
                <div class="card-header" id="headingOne">
                    <h5 class="mb-0">
                        <a class="btn btn-link collapsed" role="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
-                           <span>Le module 15 min Marketplace Updates - Shopping Feed fonctionne-t-il avec le module Shopping Flux Officiel ?
+                           <span>{l s='Does the 15 min Marketplace Updates - Shopping Feed module work with the official Shopping Feed module?' mod='shoppingfeed'}
                            </span>
-                           <i class="material-icons rotate-icon">
-                               expand_less
-                           </i>
+                           <i class="fa fa-chevron-up"></i>
                        </a>
                    </h5>
                </div>
 
                <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
                    <div class="card-body">
-                       Oui. Ce nouveau module fonctionne avec ou sans l’autre module.
+{l s='Yes. This new module works with or without the other module' mod='shoppingfeed'}
                    </div>
                </div>
            </div>
@@ -49,35 +47,30 @@
                <div class="card-header" id="headingTwo">
                    <h5 class="mb-0">
                        <a class="btn btn-link collapsed" role="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                            <span> Le module 15 min Marketplace Updates - Shopping Feed synchronise-t-il d’autres données de mes fiches produits ?
-                           </span><i class="material-icons rotate-icon">
-                               expand_less
-                           </i>
+                            <span> {l s='Does the 15 min Marketplace Updates - Shopping Feed module synchronize other data from my product listings ?' mod='shoppingfeed'}
+                           </span><i class="fa fa-chevron-up"></i>
                        </a>
                    </h5>
                </div>
                <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
                    <div class="card-body">
-                       Non. Pour le moment ce module ne synchronise que les stocks, mais nous réfléchissons déjà à ajouter la mises à jour des prix selon le même principe que les stocks.
+{l s='No. For the moment this module only synchronizes stocks, but we are already thinking about adding price updates on the same principle as stocks' mod='shoppingfeed'}
                    </div>
                </div>
            </div>
            <div class="card">
                <div class="card-header" id="headingThree">
                    <h5 class="mb-0">
-                       <a class="btn btn-link collapsed" role="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-                            <span> Comment fonctionne le module 15 min Marketplace Updates - Shopping Feed ?</span>
-                           <i class="material-icons rotate-icon">
-                               expand_less
-                           </i>
+                       <a class=" collapsed" role="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                            <span> {l s='How does the 15 min Marketplace Updates - Shopping Feed work ?' mod='shoppingfeed'}</span>
+                           <i class="fa fa-chevron-up"></i>
                        </a>
                    </h5>
                </div>
                <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion">
-                   <div class="card-body">
-                       Le module a deux modes :
-                       - le mode « synchronisation temps réel », dans ce cas à chaque mise à jour du stock d’un produit par exemple si vous modifiez manuellement ou si une commande passe dans le statut qui déstocke, le module enverra l’information à Shopping fFed qui mettra à jour les marketplaces. Mais certains marchand qui gère de nombreuses commandes et de nombreux produits ne peuvent pas multiplier les appels sur l’API Shopping Feed.
-                       - le mode « synchronisation par tâche cron », dans ce cas la mise à jour de stock est mis en file d’attente et vous devez programmer un cron pour exécuter cette tâche qui peut être longue. Les mises à jour de stocks sont alors regroupés pour de meilleures performances.
+                   <div class="card-body">{l s='The module has two modes :' mod='shoppingfeed'} </br>
+                       {l s='- the "real-time synchronization" mode, in this case for each update of the stock of a product for example if you manually modify or if a command goes into the status that destock, the module will send the information to Shopping Feed which will update the marketplaces. But some merhant who handles many orders and many products cannot multiply calls on the Shopping Feed API.' mod='shoppingfeed'} </br>
+{l s='- cron job syncronization mode, in this case the inventory update is queued and you must program a cron job to perform this task that can be lenghty. Inventory updates are then grouped together for better performance.' mod='shoppingfeed'}
                    </div>
                </div>
            </div>
@@ -85,30 +78,43 @@
            <div class="card">
                <div class="card-header" id="heading4">
                    <h5 class="mb-0">
-                       <a class="btn btn-link collapsed" role="button" data-toggle="collapse" data-target="#collapse4" aria-expanded="false" aria-controls="collapseThree">
-                           <span>Comment contacter le support ?</span>
-                           <i class="material-icons rotate-icon">
-                               expand_less
-                           </i>
+                       <a class=" collapsed" role="button" data-toggle="collapse" data-target="#collapse4" aria-expanded="false" aria-controls="collapseThree">
+                           <span>{l s='How to contact support ?' mod='shoppingfeed'}</span>
+                           <i class="fa fa-chevron-up"></i>
                        </a>
                    </h5>
                </div>
                <div id="collapse4" class="collapse" aria-labelledby="heading4" data-parent="#accordion">
-                   <div class="card-body">
-                       Pour contacter le support vous devez vous rendre sur la fiche développeur du module puis envoyer
-                       un message complétant les informations suivantes :
+                   <div class="card-body">{l s='To contact the support, go on our Prestashop Addons module page, click on "Contact the developer" button and send us' mod='shoppingfeed'}
+                       {l s='a message describing your issue with the following information :' mod='shoppingfeed'}
+                       </br>
+                       </br>
                        <textarea readonly rows="10" >
-                            URL : PS_SHOP_URL
-                            Version PHP :
-                            Version PrestaShop :
-                            Multiboutique activé : oui/non
-                            Nombre de produits en base de données : XXX
+URL : {$shop_url}
+Version PHP : {$php_version}
+Version PrestaShop : {$prestashop_version}
+Multiboutique activé : {$multiboutique}
+Nombre de produits en base de données : {$nbr_prpoducts}
+Token : {$token}
+Configuration temps réel : {$REAL_TIME_SYNCHRONIZATION}
+Nombre de produits : {$STOCK_SYNC_MAX_PRODUCTS}
+Date du dernier lancement du cron : {$LAST_CRON_TIME_SYNCHRONIZATION}</textarea>
+                   </div>
+               </div>
+           </div>
 
-                            Token : AUTH_TOKEN
-                            Configuration temps réel : REAL_TIME_SYNCHRONIZATION
-                            Nombre de produits : STOCK_SYNC_MAX_PRODUCTS
-                            Date du dernier lancement du cron :
-                        </textarea>
+           <div class="card">
+               <div class="card-header" id="heading5">
+                   <h5 class="mb-0">
+                       <a class="collapsed" role="button" data-toggle="collapse" data-target="#collapse5" aria-expanded="false" aria-controls="collapse5">
+                           <span> {l s='What are the recommendations for configuring the real time ?' mod='shoppingfeed'}</span>
+                           <i class="fa fa-chevron-up"></i>
+                       </a>
+                   </h5>
+               </div>
+               <div id="collapse5" class="collapse" aria-labelledby="heading5" data-parent="#accordion">
+                   <div class="card-body">
+
                    </div>
                </div>
            </div>

@@ -23,7 +23,6 @@
 
 #logo_sf {
     height: 5em;
-    margin-bottom: 2em;
 }
 
 #accordion {
@@ -64,7 +63,9 @@
 #accordion a span{
    white-space: normal;
     color: #666;
-    font-size: ;
+    font-size: 13px;
+    font-weight: normal;
+    font: 400 12px/1.42857 "Open Sans",Helvetica,Arial,sans-serif;
 }
 
 #accordion .card{
@@ -87,6 +88,10 @@
     transform: rotate(180deg);
 }
 
+#accordion a i {
+    color: #666;
+}
+
 .logo_shoppingfeed {
     padding-left: 40px;
     text-align: center;
@@ -94,4 +99,25 @@
 
 .desc_shoppingfeed {
     max-width: 600px;
+    font-size: 16px;
+    font-style: italic;
+    line-height: 26px;
+}
+
+.desc_shoppingfeed p {
+    margin: 0;
+}
+
+.welcome_shoppingfeed.form-group{
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -webkit-align-items: center;
+    -moz-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    margin: 0 ;
 }
