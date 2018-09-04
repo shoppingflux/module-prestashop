@@ -76,6 +76,26 @@
            </div>
 
            <div class="card">
+               <div class="card-header" id="heading5">
+                   <h5 class="mb-0">
+                       <a class="collapsed" role="button" data-toggle="collapse" data-target="#collapse5" aria-expanded="false" aria-controls="collapse5">
+                           <span> {l s='What are the recommendations for configuring the real time ?' mod='shoppingfeed'}</span>
+                           <i class="fa fa-chevron-up"></i>
+                       </a>
+                   </h5>
+               </div>
+               <div id="collapse5" class="collapse" aria-labelledby="heading5" data-parent="#accordion">
+                   <div class="card-body">
+<ul>
+<li>                {l s='You have less than 100 products, the RealTime parameter on YES is recommended. You have little stock for each reference and for you the stock precision is fundamental. Moreover, no need to set up any cron job. Sending real-time inventory updates to the Feed API makes it easy for you to sync inventory in less than 15 minutes. However, this multiplies the calls to the Shopping API stream wchich can slow the loading time of pages that decrement or increment the stock, especially during order status updates.' mod='shoppingfeed'}</li>
+<li>                {l s='You have between 100 and 1000 products, the Realtime parameter on NO is recommended. Updates are queued and the configuration of a cron job (URL) every 5 minutes will allow you to synchronize of all products waiting for synchronization. This reduce calls sent to the Shopping Flux API and improve page loading performances.' mod='shoppingfeed'}</li>
+<li>                {l s='You have more than 1000 products, Realtime parameter NO is required. You probably use an external tool (like an ERP) to manage your inventory which can lead to many updates at the same time. In this case, the updates are queued and the configuration of a cron job (URL) every 5 minutes will allow you to synchronize of all products waiting for synchronization. This reduce calls sent to the Shopping Flux API and improve page loading performances' mod='shoppingfeed'}</li>
+</ul>
+                   </div>
+               </div>
+           </div>
+
+           <div class="card">
                <div class="card-header" id="heading4">
                    <h5 class="mb-0">
                        <a class=" collapsed" role="button" data-toggle="collapse" data-target="#collapse4" aria-expanded="false" aria-controls="collapseThree">
@@ -99,22 +119,6 @@ Token : {$token}
 Configuration temps réel : {$REAL_TIME_SYNCHRONIZATION}
 Nombre de produits : {$STOCK_SYNC_MAX_PRODUCTS}
 Date du dernier lancement du cron : {$LAST_CRON_TIME_SYNCHRONIZATION}</textarea>
-                   </div>
-               </div>
-           </div>
-
-           <div class="card">
-               <div class="card-header" id="heading5">
-                   <h5 class="mb-0">
-                       <a class="collapsed" role="button" data-toggle="collapse" data-target="#collapse5" aria-expanded="false" aria-controls="collapse5">
-                           <span> {l s='What are the recommendations for configuring the real time ?' mod='shoppingfeed'}</span>
-                           <i class="fa fa-chevron-up"></i>
-                       </a>
-                   </h5>
-               </div>
-               <div id="collapse5" class="collapse" aria-labelledby="heading5" data-parent="#accordion">
-                   <div class="card-body">
-
                    </div>
                </div>
            </div>

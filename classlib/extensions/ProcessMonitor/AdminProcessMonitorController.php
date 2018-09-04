@@ -62,33 +62,33 @@ class ShoppingfeedAdminProcessMonitorController extends ModuleAdminController
 
         $this->bulk_actions = array(
             'delete' => array(
-                'text' => $this->l('Delete selected'),
-                'confirm' => $this->l('Would you like to delete the selected items?'),
+                'text' => $this->module->l('Delete selected', 'AdminProcessMonitorController'),
+                'confirm' => $this->module->l('Would you like to delete the selected items?', 'AdminProcessMonitorController'),
             )
         );
 
         $this->fields_list = array(
             'id_shoppingfeed_processmonitor' => array(
-                'title'  => $this->l('ID'),
+                'title'  => $this->module->l('ID', 'ShoppingfeedAdminProcessMonitorController'),
                 'align'  => 'center',
                 'class'  => 'fixed-width-xs',
                 'search' => true,
             ),
             'name'                       => array(
-                'title' => $this->l('Title'),
+                'title' => $this->module->l('Title', 'AdminProcessMonitorController'),
                 'name'  => 'name',
             ),
             'pid'                        => array(
-                'title' => $this->l('Status'),
+                'title' => $this->module->l('Status', 'AdminProcessMonitorController'),
                 'name'  => 'pid',
                 'callback' => 'getStatus'
             ),
             'duration'                   => array(
-                'title' => $this->l('Duration'),
+                'title' => $this->module->l('Duration', 'AdminProcessMonitorController'),
                 'name'  => 'duration',
             ),
             'last_update'                => array(
-                'title' => $this->l('Last update'),
+                'title' => $this->module->l('Last update', 'AdminProcessMonitorController'),
                 'name'  => 'last_update',
             ),
         );
@@ -102,7 +102,7 @@ class ShoppingfeedAdminProcessMonitorController extends ModuleAdminController
     public function getStatus($echo, $tr)
     {
         unset($tr);
-        return empty($echo) ? '<span class="badge badge-info">'.$this->l('Not running').'</span>' : '<span class="badge badge-warning">'.$this->l('Is running').'</span>';
+        return empty($echo) ? '<span class="badge badge-info">'.$this->module->l('Not running', 'AdminProcessMonitorController').'</span>' : '<span class="badge badge-warning">'.$this->module->l('Is running', 'AdminProcessMonitorController').'</span>';
     }
 
     /**
@@ -148,20 +148,22 @@ class ShoppingfeedAdminProcessMonitorController extends ModuleAdminController
     public function renderCronTasks()
     {
         if (empty($this->module->cronTasks)) {
-            throw new Exception('Unable to find cronTasks declaration in module');
+            throw new Exception(
+                $this->module->l('Unable to find cronTasks declaration in module.', 'AdminProcessMonitorController')
+            );
         }
 
         $fieldsList = array(
             'name'     => array(
-                'title' => $this->l('Technical name'),
+                'title' => $this->module->l('Technical name', 'AdminProcessMonitorController'),
                 'name'  => 'name',
             ),
             'title'     => array(
-                'title' => $this->l('Title'),
+                'title' => $this->module->l('Title', 'AdminProcessMonitorController'),
                 'name'  => 'title',
             ),
             'frequency' => array(
-                'title' => $this->l('Frequency'),
+                'title' => $this->module->l('Frequency', 'AdminProcessMonitorController'),
                 'name'  => 'frequency',
             ),
             'url'       => array(
@@ -195,7 +197,7 @@ class ShoppingfeedAdminProcessMonitorController extends ModuleAdminController
 
         $helper = new HelperList();
         $this->setHelperDisplay($helper);
-        $helper->title = $this->l('Cron Tasks');
+        $helper->title = $this->module->l('Cron Tasks', 'AdminProcessMonitorController');
         $helper->actions = array();
         $helper->bulk_actions = array();
         $helper->no_link = true;
