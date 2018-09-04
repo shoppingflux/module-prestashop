@@ -62,63 +62,63 @@ class ShoppingfeedAdminProcessLoggerController extends ModuleAdminController
 
         $this->bulk_actions = array(
             'delete' => array(
-                'text' => $this->l('Delete selected'),
-                'confirm' => $this->l('Would you like to delete the selected items?'),
+                'text' => $this->module->l('Delete selected', 'AdminProcessLoggerController'),
+                'confirm' => $this->module->l('Would you like to delete the selected items?', 'AdminProcessLoggerController'),
             )
         );
 
         $this->fields_list = array(
             'id_shoppingfeed_processlogger' => array(
-                'title'  => $this->l('ID'),
+                'title'  => $this->module->l('ID', 'AdminProcessLoggerController'),
                 'align'  => 'center',
                 'class'  => 'fixed-width-xs',
                 'search' => true,
             ),
             'name'                      => array(
-                'title' => $this->l('Name'),
+                'title' => $this->module->l('Name', 'AdminProcessLoggerController'),
             ),
             'msg'                       => array(
-                'title' => $this->l('Message'),
+                'title' => $this->module->l('Message', 'AdminProcessLoggerController'),
             ),
             'level'                     => array(
-                'title'    => $this->l('Level'),
+                'title'    => $this->module->l('Level', 'AdminProcessLoggerController'),
                 'callback' => 'getLevel',
             ),
             'object_name'               => array(
-                'title' => $this->l('Object Name'),
+                'title' => $this->module->l('Object Name', 'AdminProcessLoggerController'),
             ),
             'object_id'                 => array(
-                'title'    => $this->l('Object ID'),
+                'title'    => $this->module->l('Object ID', 'AdminProcessLoggerController'),
                 'callback' => 'getObjectId',
             ),
             'date_add'                  => array(
-                'title' => $this->l('Date'),
+                'title' => $this->module->l('Date', 'AdminProcessLoggerController'),
             ),
         );
 
         $this->fields_options = array(
             'processLogger' => array(
                 'image'       => '../img/admin/cog.gif',
-                'title'       => $this->l('Process Logger Settings'),
-                'description' => $this->l('Here you can change the default configuration for this Process Logger'),
+                'title'       => $this->module->l('Process Logger Settings', 'AdminProcessLoggerController'),
+                'description' => $this->module->l('Here you can change the default configuration for this Process Logger', 'AdminProcessLoggerController'),
                 'fields'      => array(
                     'SHOPPINGFEED_EXTLOGS_ERASING_DISABLED' => array(
-                        'title'        => $this->l('Disable auto erasing'),
-                        'hint'         => $this->l('If disabled, logs will be automatically erased after the delay'),
+                        'title'        => $this->module->l('Disable auto erasing', 'AdminProcessLoggerController'),
+                        'hint'         => $this->module->l('If disabled, logs will be automatically erased after the delay', 'AdminProcessLoggerController'),
                         'validation'   => 'isBool',
                         'cast'         => 'intval',
                         'type'         => 'bool',
                     ),
                     'SHOPPINGFEED_EXTLOGS_ERASING_DAYSMAX' => array(
-                        'title'        => $this->l('Auto erasing delay (in days)'),
-                        'hint'         => $this->l('Choose the number of days you want to keep logs in database'),
+                        'title'        => $this->module->l('Auto erasing delay (in days)', 'AdminProcessLoggerController'),
+                        'hint'         => $this->module->l('Choose the number of days you want to keep logs in database', 'AdminProcessLoggerController'),
                         'validation'   => 'isInt',
                         'cast'         => 'intval',
                         'type'         => 'text',
                         'defaultValue' => 5,
                     ),
                 ),
-                'submit'      => array('title' => $this->l('Save')),
+                'submit'      => array('title' => $this->module->l('Save', 'AdminProcessLoggerController')),
             ),
         );
     }
@@ -176,8 +176,8 @@ class ShoppingfeedAdminProcessLoggerController extends ModuleAdminController
         unset($this->toolbar_btn['new']);
         $this->toolbar_btn['delete'] = array(
             'short' => 'Erase',
-            'desc' => $this->l('Erase all'),
-            'js' => 'if (confirm(\''.$this->l('Are you sure?').'\')) document.location = \''.self::$currentIndex.'&amp;token='.$this->token.'&amp;action=erase\';'
+            'desc' => $this->module->l('Erase all'),
+            'js' => 'if (confirm(\''.$this->module->l('Are you sure?', 'AdminProcessLoggerController').'\')) document.location = \''.self::$currentIndex.'&amp;token='.$this->token.'&amp;action=erase\';'
         );
     }
 
@@ -191,7 +191,7 @@ class ShoppingfeedAdminProcessLoggerController extends ModuleAdminController
         $result = Db::getInstance()->delete($this->table);
 
         if ($result) {
-            $this->confirmations[] = $this->l('All logs has been erased');
+            $this->confirmations[] = $this->module->l('All logs has been erased', 'AdminProcessLoggerController');
         }
 
         return $result;

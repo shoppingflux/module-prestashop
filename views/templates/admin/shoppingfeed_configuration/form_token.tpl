@@ -24,8 +24,15 @@
 {extends file="helpers/form/form.tpl"}
 
 {block name="legend" append}
-    <img id="logo_sf" src="{$img_path|escape:'htmlall':'UTF-8'}logo_shoppingfeed.png"/>
-    <p>
-        {l s='Your account token can be [1] found on your access page [/1].' tags=['<a href="https://app.shopping-feed.com/tools/access">','</a>'] mod='shoppingfeed'}
-    </p>
+   <div class="form-group welcome_shoppingfeed">
+       <div class="col-lg-6 logo_shoppingfeed">
+           <img class="mb-0" id="logo_sf" src="{$img_path|escape:'htmlall':'UTF-8'}logo_shoppingfeed.png"/>
+       </div>
+
+       <div class="col-lg-6 desc_shoppingfeed">
+           <p>
+               {l s='Improve your Shopping Feed module\'s  Marketplaces stocks synchronization speed.' mod='shoppingfeed'}
+           </p>
+       </div>
+   </div>
 {/block}
