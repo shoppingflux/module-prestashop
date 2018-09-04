@@ -46,7 +46,7 @@ class AdminShoppingfeedConfigurationController extends ModuleAdminController
     {
         $this->addCSS($this->module->getPathUri() . 'views/css/shoppingfeed_configuration/form.css');
         $this->addJS($this->module->getPathUri() . 'views/js/form_config.js');
-        $this->addCSS($this->module->getPathUri() . 'views/fonts/font-awesome/css/font-awesome.min.css');
+        $this->addCSS($this->module->getPathUri() . 'views/css/font-awesome.min.css');
 
         $id_shop = Configuration::get('PS_SHOP_DEFAULT');
         $token = Configuration::get(shoppingfeed::AUTH_TOKEN, null, null, $id_shop);

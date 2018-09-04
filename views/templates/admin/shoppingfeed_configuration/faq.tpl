@@ -110,15 +110,15 @@
                        </br>
                        </br>
                        <textarea readonly rows="10" >
-URL : {$shop_url}
-Version PHP : {$php_version}
-Version PrestaShop : {$prestashop_version}
-Multiboutique activé : {$multiboutique}
-Nombre de produits en base de données : {$nbr_prpoducts}
-Token : {$token}
-Configuration temps réel : {$REAL_TIME_SYNCHRONIZATION}
-Nombre de produits : {$STOCK_SYNC_MAX_PRODUCTS}
-Date du dernier lancement du cron : {$LAST_CRON_TIME_SYNCHRONIZATION}</textarea>
+URL : {$shop_url|escape:'htmlall':'UTF-8'}
+Version PHP : {$php_version|escape:'htmlall':'UTF-8'}
+Version PrestaShop : {$prestashop_version|escape:'htmlall':'UTF-8'}
+Multiboutique activé : {$multiboutique|escape:'htmlall':'UTF-8'}
+Nombre de produits en base de données : {$nbr_prpoducts|escape:'htmlall':'UTF-8'}
+Token : {$token|escape:'htmlall':'UTF-8'}
+Configuration temps réel : {$REAL_TIME_SYNCHRONIZATION|escape:'htmlall':'UTF-8'}
+Nombre de produits : {$STOCK_SYNC_MAX_PRODUCTS|escape:'htmlall':'UTF-8'}
+Date du dernier lancement du cron : {$LAST_CRON_TIME_SYNCHRONIZATION|escape:'htmlall':'UTF-8'}</textarea>
                    </div>
                </div>
            </div>

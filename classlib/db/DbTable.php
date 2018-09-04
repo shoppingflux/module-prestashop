@@ -81,6 +81,7 @@ class ShoppingfeedDbTable
     {
         $tableExists = $this->db->executeS("SHOW TABLES LIKE '$this->name'");
         if ($tableExists == false) {
+            $keys = array();
             foreach ($this->keys as $modelDef) {
                 if (strpos($modelDef, 'FOREIGN KEY') === 0) {
                     continue;
