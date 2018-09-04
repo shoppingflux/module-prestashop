@@ -34,6 +34,7 @@ $_MODULE['<{shoppingfeed}prestashop>adminprocessmonitorcontroller_e02d2ae03de9d4
 $_MODULE['<{shoppingfeed}prestashop>adminprocessmonitorcontroller_236d0eb7130ba05580fa0cb21f6b968d'] = 'Dernière mise à jour';
 $_MODULE['<{shoppingfeed}prestashop>adminprocessmonitorcontroller_84435c8fed125c1f06699e20bdcee63d'] = 'Arrêté';
 $_MODULE['<{shoppingfeed}prestashop>adminprocessmonitorcontroller_d9dd12e6e62d185649ff67198ec022cf'] = 'En cours...';
+$_MODULE['<{shoppingfeed}prestashop>adminprocessmonitorcontroller_b6543e6dabc6a1cbf66f92026508ec24'] = 'Aucune tâche n\'est définie dans le module.';
 $_MODULE['<{shoppingfeed}prestashop>adminprocessmonitorcontroller_965834fed9e23894a358742da10f6343'] = 'Nom technique';
 $_MODULE['<{shoppingfeed}prestashop>adminprocessmonitorcontroller_7cf395303ce3665a9834721d4b748e4b'] = 'Fréquence recommandée';
 $_MODULE['<{shoppingfeed}prestashop>adminprocessmonitorcontroller_e6b391a8d2c4d45902a23a8b6585703d'] = 'URL';
@@ -49,6 +50,7 @@ $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedconfiguration_f6039d44b2945
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedconfiguration_dc647eb65e6711e155375218212b3964'] = 'Mot de passe';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedconfiguration_94966d90747b97d1f0f206c98a8b1ac3'] = 'Envoyer';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedconfiguration_43699bea013a28e4b04c1f974a488d72'] = 'Pour vous, le paramètre temps réél à OUI est conseillé. Vous disposez de peu de stock de chaque référence et pour vous la disponibilité au plus juste est primordiale. De plus aucune tâche  cron à configurer n’est nécessaire. L’envoi des mises à jour de stocks en temps réel à l’API de Shopping flux vous garanti  une synchronisation des stocks en moins de 15 min. Cependant, cela multiplie les appels à l’API Shopping flux ce qui peut ralentir  le temps de chargement les pages qui décrémentent ou incrémentent du stock, notamment lors de la mise à jour du statut des commandes.';
+$_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedconfiguration_6a20984e21f5f88f29df12b2d33429b2'] = 'Pour vous, le paramètre temps réél à NON est conseillé. Les mises à jour sont mis en file d’attente et la configuration d’une tâche cron (URL) toutes les 5 minutes  permettra de synchroniser tous les produits en attente de synchronisation. Cela optimise les appels à l’API  Shopping Flux et les performances de chargement des pages.';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedconfiguration_b64313787f100e22dda1770ce3a4cae2'] = 'Pour vous, le paramètre temps réél à NON est indispensable. Vous utilisez probablement un outil externe (type ERP) pour gérer vos stocks ce qui peut engendrer de nombreuses mises à jour en parallèle.  Dans ce cas, les mises à jour sont mis en file d’attente et la configuration d’une tâche cron (URL) toutes les 5 minutes   permettra de synchroniser tous les produits en attente de synchronisation. Cela optimise les appels à l’API Shopping   Flux et les performances de chargement des pages.';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedconfiguration_254f642527b45bc260048e30704edb39'] = 'Configuration';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedconfiguration_ac715a83144f3c02f2b5ec41ae740866'] = 'Synchonisation temps réel';
@@ -83,3 +85,4 @@ $_MODULE['<{shoppingfeed}prestashop>faq_2793263c2bade54c4525d2bc46dc80e1'] = 'Co
 $_MODULE['<{shoppingfeed}prestashop>faq_f6a70f226098c7874633c7eb93e2e9bd'] = 'Pour contacter le support vous devez vous rendre sur la fiche développeur du module puis envoyer';
 $_MODULE['<{shoppingfeed}prestashop>faq_a0e9af2fe3e128809dccc9d39b55f415'] = 'un message complétant les informations suivantes :';
 $_MODULE['<{shoppingfeed}prestashop>form_login_200ce6af3bb279938aa46fcda096d747'] = 'Vous pouvez aussi entrer vos identifiant Shopping Feed pour retrouver votre Token.';
+$_MODULE['<{shoppingfeed}prestashop>form_token_08c9126c100fb53b59dbfedb1ba37cda'] = 'Accélérez la vitesse de synchronisation des stocks Marketplaces de votre module Shopping Feed.';

@@ -31,10 +31,7 @@
 
        <div class="col-lg-6 desc_shoppingfeed">
            <p>
-               {l s='Accélérez la vitesse de synchronisation des stocks Marketplaces de votre module Shopping Feed.
-Ce module est complémentaire et indépendant du module « Shopping flux officiel ».
-Il permet d’envoyer vos mises à jour de stocks sur les marketplaces soit à chaque mise à jour de stock,
-soit par lot si vous utilisez un ERP.' mod='shoppingfeed'}
+               {l s='Improve your Shopping Feed module\'s  Marketplaces stocks synchronization speed.' mod='shoppingfeed'}
            </p>
        </div>
    </div>

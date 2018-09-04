@@ -81,30 +81,28 @@ class ShoppingfeedDbTable
     {
         $tableExists = $this->db->executeS("SHOW TABLES LIKE '$this->name'");
         if ($tableExists == false) {
-            return $this->db->execute("CREATE TABLE IF NOT EXISTS `$this->name` (".
-                implode(', ', array_merge($this->columns, $this->keys)).
-            ") ENGINE=$this->engine CHARSET=$this->charset COLLATE=$this->collation;");
+            foreach ($this->keys as $modelDef) {
+                if (strpos($modelDef, 'FOREIGN KEY') === 0) {
+                    continue;
+                }
+                $keys[] = $modelDef;
+            }
+            $result = $this->db->execute("CREATE TABLE IF NOT EXISTS `$this->name` (".
+                            implode(', ', array_merge($this->columns, $keys)).
+                        ") ENGINE=$this->engine CHARSET=$this->charset COLLATE=$this->collation;");
+            if ($result == true) {
+                $this->alterKeys();
+            }
+            return $result;
         }
-
         // table exists
         $alter = $this->alterFields();
-        // @ToDo drop index only if he exists
-        // $alterKeys = $this->alterKeys();
-        // foreach ($alterKeys as $typeKey => $alterKey) {
-        //     if (!empty($alterKey)) {
-        //         if ($typeKey == 'KEY') {
-        //             foreach ($alterKey as $key) {
-        //                 $alter .= "DROP INDEX ".$key." ON `$this->name`;";
-        //             }
-        //         }
-
-        //         $alter .= "ALTER TABLE `$this->name` ADD ".$typeKey." (".implode(', ', $alterKey).");";
-        //     }
-        // }
 
         if (!empty($alter)) {
             return $this->db->execute($alter);
         }
+        $this->alterKeys();
+
         return true;
     }
 
@@ -155,33 +153,45 @@ class ShoppingfeedDbTable
     {
         $describe = $this->db->executeS("SHOW KEYS FROM `$this->name`");
 
-        $altersArray = array();
-        foreach ($this->keys as $modelDef) {
-            $keyInfo = explode(' ', $modelDef);
-            preg_match('#\((.*?)\)#', $modelDef, $info);
-
-            $keys = explode(', ', $info[1]);
-            foreach ($keys as $key) {
-                $altersArray[$keyInfo[0]][] = trim(str_replace('`', '', $key));
+        foreach ($describe as $k => $key) {
+            if ($key['Key_name'] != 'PRIMARY') {
+                try {
+                    $this->db->execute("ALTER TABLE `$this->name` DROP KEY `".$key['Key_name']."`; ");
+                } catch (Exception $e) {
+                    continue;
+                }
             }
         }
 
-        foreach ($altersArray as $key => $alter) {
-            foreach ($alter as $k => $al) {
-                foreach ($describe as $col) {
-                    $TypeOfKey = 'UNIQUE';
-                    if (empty($col['Non_unique']) && $col['Key_name'] === 'PRIMARY') {
-                        $TypeOfKey = 'PRIMARY';
-                    }
-
-                    if ($al == $col['Column_name'] && $k == $TypeOfKey) {
-                        unset($altersArray[$key][$k]);
+        if (version_compare(_PS_VERSION_, '1.7', '>')) {
+            $i = 0;
+            foreach ($this->keys as $modelDef) {
+                if (strpos($modelDef, 'FOREIGN KEY') === 0) {
+                    $i++;
+                    try {
+                        $this->db->execute("ALTER TABLE `$this->name` DROP FOREIGN KEY `" . $this->name . "_ibfk_$i`; ");
+                    } catch (Exception $e) {
+                        continue;
                     }
                 }
             }
         }
 
-        return $altersArray;
+        foreach ($this->keys as $modelDef) {
+            if (strpos($modelDef, 'PRIMARY KEY') === 0) {
+                continue;
+            }
+            try {
+                if (strpos($modelDef, 'FOREIGN KEY') === 0 && version_compare(_PS_VERSION_, '1.7', '<')) {
+                    continue;
+                }
+                $this->db->execute("ALTER TABLE `$this->name` ADD ".$modelDef.";");
+            } catch (Exception $e) {
+                continue;
+            }
+        }
+
+        return true;
     }
 
     /**

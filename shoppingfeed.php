@@ -88,8 +88,8 @@ class Shoppingfeed extends ShoppingfeedModule
         ),
         array(
             'name' => array(
-                'en' => 'Configuration',
-                'fr' => 'Configuration'
+                'en' => 'Dashboard',
+                'fr' => 'Tableau de bord'
             ),
             'class_name' => 'AdminShoppingfeedConfiguration',
             'parent_class_name' => 'shoppingfeed',
@@ -146,7 +146,7 @@ class Shoppingfeed extends ShoppingfeedModule
     public function __construct()
     {
         $this->name = 'shoppingfeed';
-        $this->version = '1.0.0';
+        $this->version = '@version@';
         $this->author = '202 ecommerce';
         $this->tab = 'market_place';
         $this->ps_versions_compliancy = array('min' => '1.6', 'max' => '1.7');
