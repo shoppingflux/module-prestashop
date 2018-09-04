@@ -81,11 +81,7 @@ class AdminShoppingfeedConfigurationController extends ModuleAdminController
                 array(
                     'type' => 'html',
                     'name' => 'employee_avatar',
-                    'html_content' => '<div id="employee-avatar-thumbnail" class="alert alert-info">
-                    '.str_replace("%url%",
-                            '<a href="https://app.shopping-feed.com/v3/en/login" class="alert-link" target="_blank">'. $this->module->l('My Access page', 'AdminShoppingfeedConfiguration').'</a>'
-                            , $this->module->l('Your token can be found on the %url% of your merchant interface', 'AdminShoppingfeedConfiguration', 'AdminShoppingfeedConfiguration')
-                        ).'</div>',
+                    'html_content' => '<div id="employee-avatar-thumbnail" class="alert alert-info">' . str_replace("%url%", '<a href="https://app.shopping-feed.com/v3/en/login" class="alert-link" target="_blank">' . $this->module->l('My Access page', 'AdminShoppingfeedConfiguration') . '</a>', $this->module->l('Your token can be found on the %url% of your merchant interface', 'AdminShoppingfeedConfiguration')) . '</div>',
                 ),
                 array(
                     'type' => 'text',
