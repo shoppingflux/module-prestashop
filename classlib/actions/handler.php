@@ -120,6 +120,7 @@ class ShoppingfeedHandler
                     continue;
                 }
                 if (!call_user_func_array(array($classAction, $action), array())) {
+                    $this->setConveyor($classAction->getConveyor());
                     return false;
                 }
             }

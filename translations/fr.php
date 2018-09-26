@@ -4,8 +4,8 @@ global $_MODULE;
 $_MODULE = array();
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeed_08c9126c100fb53b59dbfedb1ba37cda'] = 'Accélérez la vitesse de synchronisation des stocks Marketplaces de votre module Shopping Feed.';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeed_876f23178c29dc2552c0b48bf23cd9bd'] = 'Êtes vous sûr de vouloir désinstaller le module ?';
-$_MODULE['<{shoppingfeed}prestashop>shoppingfeedproductstocksyncactions_c2b8886e0369cbed802b86030a8043e1'] = '[Stock] Mise à jour de %s quantité : %s';
-$_MODULE['<{shoppingfeed}prestashop>shoppingfeedproductstocksyncactions_e4b29f311f7cb594f0eb3cdf1eeb11a9'] = '[Stock] %s non référencé dans le catalogue Shopping Feed - quantité : %d';
+$_MODULE['<{shoppingfeed}prestashop>shoppingfeedproductstocksyncactions_3aabe1a84b7e23da03e69bc531b3195e'] = '[Stock shop:%s] Mise à jour de %s quantité : %s';
+$_MODULE['<{shoppingfeed}prestashop>shoppingfeedproductstocksyncactions_48f84fd62b550a2fdd36f185f98a6dd9'] = '[Stock shop:%s] %s non référencé dans le catalogue Shopping Feed - quantité : %d';
 $_MODULE['<{shoppingfeed}prestashop>adminprocessloggercontroller_d3b206d196cd6be3a2764c1fb90b200f'] = 'Supprimer la sélection';
 $_MODULE['<{shoppingfeed}prestashop>adminprocessloggercontroller_53c6a96a3df980c3270d6ed82b6f174b'] = 'Souhaitez-vous supprimer les éléments sélectionnés ?';
 $_MODULE['<{shoppingfeed}prestashop>adminprocessloggercontroller_b718adec73e04ce3ec720dd11a06a308'] = 'ID';
@@ -45,7 +45,7 @@ $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedconfiguration_54f502658896a
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedconfiguration_459a6f79ad9b13cbcb5f692d2cc7a94d'] = 'Token';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedconfiguration_c9cc8cce247e49bae79f15173ce97354'] = 'Sauvegarder';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedconfiguration_99dea78007133396a7b8ed70578ac6ae'] = 'Login';
-$_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedconfiguration_200ce6af3bb279938aa46fcda096d747'] = 'Vous pouvez aussi saisir vos identifiants Shopping Feeds pour retrouver votre Token.';
+$_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedconfiguration_66e159d9f5d405f84cd3739bf5891b4f'] = 'Sinon, vous pouvez aussi remplir directement le formulaire de token situé plus bas.';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedconfiguration_f6039d44b29456b20f8f373155ae4973'] = 'Identifiant';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedconfiguration_dc647eb65e6711e155375218212b3964'] = 'Mot de passe';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedconfiguration_94966d90747b97d1f0f206c98a8b1ac3'] = 'Envoyer';
@@ -69,6 +69,7 @@ $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedconfiguration_4b73403641faf
 $_MODULE['<{shoppingfeed}prestashop>syncstock_459e6d173c916e8185df5f6d346cabdc'] = '[Stock] Démarrage du processus de synchronisation';
 $_MODULE['<{shoppingfeed}prestashop>syncstock_8ff1f44ace42fd972f75fdcb6ff0d953'] = '[Stock] Échec : %s';
 $_MODULE['<{shoppingfeed}prestashop>syncstock_abe40bbdf4981bf484e94268b413c00f'] = '[Stock] %d mis à jour - %d non présent - %d en erreur';
+$_MODULE['<{shoppingfeed}prestashop>error_multishop_3a1a76b717c8e3f9dec989f9e70d049f'] = 'Vous devez choisir une boutique en particulier afin de continuer.';
 $_MODULE['<{shoppingfeed}prestashop>faq_12fb11d91fe23e9a4fb6e1a19d053c80'] = 'Le module 15 min Marketplace Updates - Shopping Feed fonctionne-t-il avec le module Shopping Flux Officiel ?';
 $_MODULE['<{shoppingfeed}prestashop>faq_026c1a69b0d4f0877ac5ba214d9413b0'] = 'Oui. Ce nouveau module fonctionne avec ou sans l’autre module.';
 $_MODULE['<{shoppingfeed}prestashop>faq_7d5921a8c8d93ef3eb77254e2aeb9378'] = 'Le module 15 min Marketplace Updates - Shopping Feed synchronise-t-il d’autres données de mes fiches produits ?';
@@ -84,5 +85,5 @@ $_MODULE['<{shoppingfeed}prestashop>faq_b64313787f100e22dda1770ce3a4cae2'] = 'Vo
 $_MODULE['<{shoppingfeed}prestashop>faq_2793263c2bade54c4525d2bc46dc80e1'] = 'Comment contacter le support ?';
 $_MODULE['<{shoppingfeed}prestashop>faq_f6a70f226098c7874633c7eb93e2e9bd'] = 'Pour contacter le support vous devez vous rendre sur la fiche développeur du module puis envoyer';
 $_MODULE['<{shoppingfeed}prestashop>faq_a0e9af2fe3e128809dccc9d39b55f415'] = 'un message complétant les informations suivantes :';
-$_MODULE['<{shoppingfeed}prestashop>form_login_200ce6af3bb279938aa46fcda096d747'] = 'Vous pouvez aussi entrer vos identifiant Shopping Feed pour retrouver votre Token.';
+$_MODULE['<{shoppingfeed}prestashop>form_login_06561afdf83f91a2ddd1c49fbbcf8a6c'] = 'Vous pouvez entrer vos identifiant Shopping Feed pour retrouver votre Token.';
 $_MODULE['<{shoppingfeed}prestashop>form_token_08c9126c100fb53b59dbfedb1ba37cda'] = 'Accélérez la vitesse de synchronisation des stocks Marketplaces de votre module Shopping Feed.';

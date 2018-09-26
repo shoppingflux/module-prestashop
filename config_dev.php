@@ -27,7 +27,7 @@
  */
 
 if (!defined('TOTPSCLASSLIB_DEV_PATH')) {
-    define('TOTPSCLASSLIB_DEV_PATH', __DIR__ . '/../totpsclasslib/');
+    define('TOTPSCLASSLIB_DEV_PATH', __DIR__ . '/../../../../modules/totpsclasslib/');
 }
 
 if (defined('TOTPSCLASSLIB_DEV_PATH') &&

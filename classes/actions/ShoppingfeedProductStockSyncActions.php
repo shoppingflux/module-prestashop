@@ -49,6 +49,13 @@ class ShoppingfeedProductStockSyncActions extends ShoppingfeedDefaultActions
         // Save the product for each shop
         $id_shop_list = Context::getContext()->shop->getContextListShopID();
         foreach ($id_shop_list as $id_shop) {
+            $this->conveyor['id_shop'] = $id_shop;
+
+            $productExist = DB::getInstance()->executeS('SELECT id_product FROM ' . _DB_PREFIX_ . "product_shop WHERE id_product = " . (int)$this->conveyor['id_product'] . " AND id_shop = " . (int)$id_shop);
+            if (!ShoppingfeedApi::getInstanceByToken($id_shop) || !count($productExist)) {
+                continue;
+            }
+
             try {
                 $sfProduct = new ShoppingfeedProduct();
                 $sfProduct->action = ShoppingfeedProduct::ACTION_SYNC_STOCK;
@@ -60,13 +67,13 @@ class ShoppingfeedProductStockSyncActions extends ShoppingfeedDefaultActions
             } catch (Exception $e) {
                 // We can't do an "insert ignore", so use a try catch for when in debug mode...
             }
+            if (true == Configuration::get(Shoppingfeed::REAL_TIME_SYNCHRONIZATION)) {
+                $this->conveyor['id_shop'] = $id_shop;
+                $this->forward('getBatch');
+            }
         }
 
-        if (true == Configuration::get(Shoppingfeed::REAL_TIME_SYNCHRONIZATION)) {
-            return $this->forward('getBatch');
-        } else {
-            return true;
-        }
+        return true;
     }
 
 
@@ -87,6 +94,7 @@ class ShoppingfeedProductStockSyncActions extends ShoppingfeedDefaultActions
             ->from('shoppingfeed_product')
             ->where("action = '" . pSQL(ShoppingfeedProduct::ACTION_SYNC_STOCK) . "'")
             ->where("update_at IS NOT NULL")
+            ->where("id_shop ='". (int) $this->conveyor['id_shop'])
             ->where("update_at <= '" . date('Y-m-d H:i:s') . "'")
             ->limit(Configuration::get(Shoppingfeed::STOCK_SYNC_MAX_PRODUCTS))
             ->orderBy('date_add ASC');
@@ -129,11 +137,11 @@ class ShoppingfeedProductStockSyncActions extends ShoppingfeedDefaultActions
                 $sfProduct->id_shop
             );
 
-            if (!isset($this->conveyor['preparedBatch'][$sfProduct->id_shop])) {
-                $this->conveyor['preparedBatch'][$sfProduct->id_shop] = array();
+            if (!isset($this->conveyor['preparedBatch'])) {
+                $this->conveyor['preparedBatch'] = array();
             }
 
-            $this->conveyor['preparedBatch'][$sfProduct->id_shop][$newData['reference']] = $newData;
+            $this->conveyor['preparedBatch'][$newData['reference']] = $newData;
         }
 
         return $this->forward('executeBatch');
@@ -164,17 +172,14 @@ class ShoppingfeedProductStockSyncActions extends ShoppingfeedDefaultActions
      */
     public function executeBatch()
     {
-        // TODO : for now, only use the default shop... But we'll have to support multishop at some point...
-        $id_shop_default = Configuration::get('PS_SHOP_DEFAULT');
-
-        $res = ShoppingfeedApi::getInstanceByToken($id_shop_default)->updateMainStoreInventory($this->conveyor['preparedBatch'][$id_shop_default]);
+        $res = ShoppingfeedApi::getInstanceByToken($this->conveyor['id_shop'])->updateMainStoreInventory($this->conveyor['preparedBatch']);
 
         /*
          * If we send a product reference that isn't in SF's catalog, the API doesn't send a confirmation for this product.
          * This means we must make a diff between what we sent and what we received to know which product wasn't
          * updated.
          */
-        $preparedBatchShop = $this->conveyor['preparedBatch'][$id_shop_default];
+        $preparedBatchShop = $this->conveyor['preparedBatch'];
         /** @var ShoppingFeed\Sdk\Api\Catalog\InventoryResource $inventoryResource */
         foreach ($res as $inventoryResource) {
             $reference = $inventoryResource->getReference();
@@ -184,7 +189,8 @@ class ShoppingfeedProductStockSyncActions extends ShoppingfeedDefaultActions
 
             ShoppingfeedProcessLoggerHandler::logInfo(
                 sprintf(
-                    $this->l('[Stock] Updated %s qty: %s', 'ShoppingfeedProductStockSyncActions'),
+                    $this->l('[Stock shop:%s] Updated %s qty: %s', 'ShoppingfeedProductStockSyncActions'),
+                    $this->conveyor['id_shop'],
                     $reference,
                     $preparedBatchShop[$reference]['quantity']
                 ),
@@ -208,7 +214,8 @@ class ShoppingfeedProductStockSyncActions extends ShoppingfeedDefaultActions
 
                 ShoppingfeedProcessLoggerHandler::logInfo(
                     sprintf(
-                        $this->l('[Stock] %s not in Shopping Feed catalog - qty: %d', 'ShoppingfeedProductStockSyncActions'),
+                        $this->l('[Stock shop:%s] %s not in Shopping Feed catalog - qty: %d', 'ShoppingfeedProductStockSyncActions'),
+                        $this->conveyor['id_shop'],
                         $data['reference'],
                         $data['quantity']
                     ),
@@ -225,14 +232,4 @@ class ShoppingfeedProductStockSyncActions extends ShoppingfeedDefaultActions
         return true;
     }
 
-    /**
-     * Translation function; needed so PS will properly parse the file
-     * @param string $string the string to translate
-     * @param string $source the file with the translation; should always be the current file
-     * @return mixed|string
-     */
-    protected function l($string, $source)
-    {
-        return Translate::getModuleTranslation('shoppingfeed', $string, $source);
-    }
 }
