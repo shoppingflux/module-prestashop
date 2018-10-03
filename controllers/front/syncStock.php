@@ -65,7 +65,11 @@ class ShoppingfeedSyncStockModuleFrontController extends ShoppingfeedCronControl
             /** @var ShoppingfeedHandler $handler */
             $handler = TotLoader::getInstance('shoppingfeed\classlib\actions\handler');
             $handler->addActions("getBatch");
-            $handler->process("shoppingfeedProductStockSync");
+            $id_shop_list = Context::getContext()->shop->getContextListShopID();
+            foreach ($id_shop_list as $id_shop) {
+                $this->conveyor['id_shop'] = $id_shop;
+                $handler->process("shoppingfeedProductStockSync");
+            }
         } catch (Exception $e) {
             ShoppingfeedProcessLoggerHandler::logError(
                 sprintf(

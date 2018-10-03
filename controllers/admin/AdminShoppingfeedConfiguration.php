@@ -44,26 +44,36 @@ class AdminShoppingfeedConfigurationController extends ModuleAdminController
      */
     public function initContent()
     {
-        $this->addCSS($this->module->getPathUri() . 'views/css/shoppingfeed_configuration/form.css');
-        $this->addJS($this->module->getPathUri() . 'views/js/form_config.js');
-        $this->addCSS($this->module->getPathUri() . 'views/css/font-awesome.min.css');
-
-        $id_shop = Configuration::get('PS_SHOP_DEFAULT');
-        $token = Configuration::get(shoppingfeed::AUTH_TOKEN, null, null, $id_shop);
-        $this->nbr_prpoducts = count(Product::getSimpleProducts($this->context->language->id));
-        $this->content = $this->welcomeForm();
-
-        $this->content .= $this->renderTokenForm();
-
-        if ($token) {
-            $this->content .= $this->renderConfigurationForm();
+        if ($this->context->cookie->shopContext == null || $this->context->cookie->shopContext[0] == 'g') {
+            Context::getContext()->controller->addCSS(_PS_MODULE_DIR_ .'shoppingfeed/views/css/config.css');
+            $this->content = $this->context->smarty->fetch(_PS_MODULE_DIR_ . 'shoppingfeed/views/templates/admin/error_multishop.tpl');
+            $this->context->smarty->assign('content', $this->content);
         } else {
-            $this->content .= $this->renderLoginForm();
+
+            $this->addCSS($this->module->getPathUri() . 'views/css/shoppingfeed_configuration/form.css');
+            $this->addJS($this->module->getPathUri() . 'views/js/form_config.js');
+            $this->addCSS($this->module->getPathUri() . 'views/css/font-awesome.min.css');
+
+            $id_shop = $this->context->shop->id;
+            $token = Configuration::get(shoppingfeed::AUTH_TOKEN, null, null, $id_shop);
+
+            $this->nbr_prpoducts = count(Product::getSimpleProducts($this->context->language->id));
+            $this->content = $this->welcomeForm();
+
+            if (!$token) {
+                $this->content .= $this->renderLoginForm();
+            }
+
+            $this->content .= $this->renderTokenForm();
+
+            if ($token) {
+                $this->content .= $this->renderConfigurationForm();
+            }
+
+            $this->content .= $this->faqForm();
+
+            parent::initContent();
         }
-
-        $this->content .= $this->faqForm();
-
-        return parent::initContent();
     }
 
     /**
@@ -96,7 +106,7 @@ class AdminShoppingfeedConfigurationController extends ModuleAdminController
             )
         );
 
-        $id_shop = Configuration::get('PS_SHOP_DEFAULT');
+        $id_shop = $this->context->shop->id;
         $fields_value = array(
             Shoppingfeed::AUTH_TOKEN => Configuration::get(ShoppingFeed::AUTH_TOKEN, null, null, $id_shop),
         );
@@ -141,7 +151,7 @@ class AdminShoppingfeedConfigurationController extends ModuleAdminController
                     'type' => 'html',
                     'name' => 'employee_avatar',
                     'html_content' => '<div id="employee-avatar-thumbnail" class="alert alert-info">
-                    '.$this->module->l('You may also enter your Shopping Feed credentials here to retrieve your token.', 'AdminShoppingfeedConfiguration').'</div>',
+                    '.$this->module->l('Otherwise you can also fill directly the token form located lower', 'AdminShoppingfeedConfiguration').'</div>',
                 ),
                 array(
                     'type' => 'text',
@@ -162,7 +172,6 @@ class AdminShoppingfeedConfigurationController extends ModuleAdminController
             )
         );
 
-        $id_shop = Configuration::get('PS_SHOP_DEFAULT');
         $fields_value = array(
             'username' => '',
             'password' => '',
@@ -302,7 +311,7 @@ class AdminShoppingfeedConfigurationController extends ModuleAdminController
             return false;
         }
 
-        $id_shop = Configuration::get('PS_SHOP_DEFAULT');
+        $id_shop = $this->context->shop->id;
         Configuration::updateValue(shoppingfeed::AUTH_TOKEN, $token, null, null, $id_shop);
 
         $this->confirmations[] = $this->module->l('Your token has been saved.', 'AdminShoppingfeedConfiguration');
@@ -337,7 +346,7 @@ class AdminShoppingfeedConfigurationController extends ModuleAdminController
             return false;
         }
 
-        $id_shop = Configuration::get('PS_SHOP_DEFAULT');
+        $id_shop = $this->context->shop->id;
         Configuration::updateValue(shoppingfeed::AUTH_TOKEN, $shoppingFeedApi->getToken(), null, null, $id_shop);
 
         $this->confirmations[] = $this->module->l('Login successful; your token has been saved.', 'AdminShoppingfeedConfiguration');
