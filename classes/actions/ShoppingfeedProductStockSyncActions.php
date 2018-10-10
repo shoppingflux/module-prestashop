@@ -47,27 +47,26 @@ class ShoppingfeedProductStockSyncActions extends ShoppingfeedDefaultActions
     public function saveProduct()
     {
         // Save the product for each shop
-        $id_shop_list = Context::getContext()->shop->getContextListShopID();
-        foreach ($id_shop_list as $id_shop) {
-            $this->conveyor['id_shop'] = $id_shop;
+        $shops = Shop::getShops();
+        foreach ($shops as $shop) {
+            $this->conveyor['id_shop'] = $shop['id_shop'];
 
-            if (ShoppingfeedApi::getInstanceByToken($id_shop) == false) {
+            if (ShoppingfeedApi::getInstanceByToken($this->conveyor['id_shop']) == false) {
                 continue;
             }
 
+            $sfProduct = new ShoppingfeedProduct();
+            $sfProduct->action = ShoppingfeedProduct::ACTION_SYNC_STOCK;
+            $sfProduct->id_product = $this->conveyor['id_product'];
+            $sfProduct->id_product_attribute = $this->conveyor['id_product_attribute'];
+            $sfProduct->id_shop = $this->conveyor['id_shop'];
+            $sfProduct->update_at = date('Y-m-d H:i:s');
             try {
-                $sfProduct = new ShoppingfeedProduct();
-                $sfProduct->action = ShoppingfeedProduct::ACTION_SYNC_STOCK;
-                $sfProduct->id_product = $this->conveyor['id_product'];
-                $sfProduct->id_product_attribute = $this->conveyor['id_product_attribute'];
-                $sfProduct->id_shop = $id_shop;
-                $sfProduct->update_at = date('Y-m-d H:i:s');
                 $sfProduct->save();
             } catch (Exception $e) {
                 // We can't do an "insert ignore", so use a try catch for when in debug mode...
             }
             if (true == Configuration::get(Shoppingfeed::REAL_TIME_SYNCHRONIZATION)) {
-                $this->conveyor['id_shop'] = $id_shop;
                 $this->forward('getBatch');
             }
         }

@@ -172,14 +172,14 @@ class Shoppingfeed extends ShoppingfeedModule
         $res = parent::install();
 
         // Try to retrieve the token from the other SF module
-        $id_shop_list = Context::getContext()->shop->getContextListShopID();
-        foreach ($id_shop_list as $id_shop) {
-            $token = Configuration::get('SHOPPING_FLUX_TOKEN', null, null, $id_shop);
+        $shops = Shop::getShops();
+        foreach ($shops as $shop) {
+            $token = Configuration::get('SHOPPING_FLUX_TOKEN', null, null, $shop['id_shop']);
             if ($token) {
-                Configuration::updateValue(self::AUTH_TOKEN, $token, false, false, $id_shop);
+                Configuration::updateValue(self::AUTH_TOKEN, $token, false, false, $shop['id_shop']);
             }
-            Configuration::updateValue(self::STOCK_SYNC_MAX_PRODUCTS, 100);
-            Configuration::updateValue(self::REAL_TIME_SYNCHRONIZATION, false);
+            Configuration::updateValue(self::STOCK_SYNC_MAX_PRODUCTS, 100, $shop['id_shop']);
+            Configuration::updateValue(self::REAL_TIME_SYNCHRONIZATION, false, $shop['id_shop']);
         }
 
         return $res;
@@ -217,7 +217,7 @@ class Shoppingfeed extends ShoppingfeedModule
                 'id_product' => $id_product,
                 'id_product_attribute' => $id_product_attribute,
             ))
-            ->addActions("saveProduct")
+            ->addActions('saveProduct')
             ->process('shoppingfeedProductStockSync');
 
         ShoppingfeedProcessLoggerHandler::closeLogger();

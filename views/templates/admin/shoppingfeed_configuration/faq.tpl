@@ -108,7 +108,8 @@
                </div>
                <div id="collapse6" class="collapse" aria-labelledby="heading6" data-parent="#accordion">
                    <div class="card-body">
-{l s='Please contact your system admin or your webhost to configure this line.' mod='shoppingfeed'}<br>
+<p>{l s='Only one cron task call is mendatory for all shops.' mod='shoppingfeed'}</p>
+<p>{l s='Please contact your system admin or your webhost to configure this line.' mod='shoppingfeed'}</p>
 <pre>
 */5 * * * *     curl -s {$syncStockUrl|escape:'htmlall':'UTF-8'}  >/dev/null
 </pre>
