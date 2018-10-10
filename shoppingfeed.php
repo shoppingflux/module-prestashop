@@ -172,14 +172,15 @@ class Shoppingfeed extends ShoppingfeedModule
         $res = parent::install();
 
         // Try to retrieve the token from the other SF module
-        $id_shop = Configuration::get('PS_SHOP_DEFAULT');
-        $token = Configuration::get('SHOPPING_FLUX_TOKEN', null, null, $id_shop);
-        if ($token) {
-            Configuration::updateValue(self::AUTH_TOKEN, $token, false, false, $id_shop);
+        $id_shop_list = Context::getContext()->shop->getContextListShopID();
+        foreach ($id_shop_list as $id_shop) {
+            $token = Configuration::get('SHOPPING_FLUX_TOKEN', null, null, $id_shop);
+            if ($token) {
+                Configuration::updateValue(self::AUTH_TOKEN, $token, false, false, $id_shop);
+            }
+            Configuration::updateValue(self::STOCK_SYNC_MAX_PRODUCTS, 100);
+            Configuration::updateValue(self::REAL_TIME_SYNCHRONIZATION, false);
         }
-
-        Configuration::updateValue(self::STOCK_SYNC_MAX_PRODUCTS, 100);
-        Configuration::updateValue(self::REAL_TIME_SYNCHRONIZATION, false);
 
         return $res;
     }
@@ -190,7 +191,6 @@ class Shoppingfeed extends ShoppingfeedModule
      */
     public function getContent()
     {
-
         Tools::redirectAdmin(
             Context::getContext()->link->getAdminLink('AdminShoppingfeedConfiguration')
         );

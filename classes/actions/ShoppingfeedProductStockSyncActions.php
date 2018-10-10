@@ -32,7 +32,7 @@ require_once(_PS_MODULE_DIR_ . 'shoppingfeed/classes/ShoppingfeedApi.php');
 require_once(_PS_MODULE_DIR_ . 'shoppingfeed/classes/ShoppingfeedProduct.php');
 
 /**
- * The Actions class responsible for synchronizing product stocks using the SF API
+ * The Actions class is in charge of synchronizing product stocks using the SF API
  * This class can be overide in the Prestashop overide path.
  * - Respect the override path override/modules/shoppingfeed/classes/actions/ShoppingfeedProductStockSyncActions.php
  * - Name your override class ShoppingfeedProductStockSyncActionsOverride extended with ShoppingfeedProductStockSyncActions

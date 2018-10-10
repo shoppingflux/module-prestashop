@@ -44,36 +44,37 @@ class AdminShoppingfeedConfigurationController extends ModuleAdminController
      */
     public function initContent()
     {
-        if ($this->context->cookie->shopContext == null || $this->context->cookie->shopContext[0] == 'g') {
+        $current_shop_context = $this->context->shop->getContext();
+        if ($current_shop_context === Shop::CONTEXT_ALL) {
             Context::getContext()->controller->addCSS(_PS_MODULE_DIR_ .'shoppingfeed/views/css/config.css');
             $this->content = $this->context->smarty->fetch(_PS_MODULE_DIR_ . 'shoppingfeed/views/templates/admin/error_multishop.tpl');
             $this->context->smarty->assign('content', $this->content);
-        } else {
-
-            $this->addCSS($this->module->getPathUri() . 'views/css/shoppingfeed_configuration/form.css');
-            $this->addJS($this->module->getPathUri() . 'views/js/form_config.js');
-            $this->addCSS($this->module->getPathUri() . 'views/css/font-awesome.min.css');
-
-            $id_shop = $this->context->shop->id;
-            $token = Configuration::get(shoppingfeed::AUTH_TOKEN, null, null, $id_shop);
-
-            $this->nbr_prpoducts = count(Product::getSimpleProducts($this->context->language->id));
-            $this->content = $this->welcomeForm();
-
-            if (!$token) {
-                $this->content .= $this->renderLoginForm();
-            }
-
-            $this->content .= $this->renderTokenForm();
-
-            if ($token) {
-                $this->content .= $this->renderConfigurationForm();
-            }
-
-            $this->content .= $this->faqForm();
-
-            parent::initContent();
+            return;
         }
+
+        $this->addCSS($this->module->getPathUri() . 'views/css/shoppingfeed_configuration/form.css');
+        $this->addJS($this->module->getPathUri() . 'views/js/form_config.js');
+        $this->addCSS($this->module->getPathUri() . 'views/css/font-awesome.min.css');
+
+        $id_shop = $this->context->shop->id;
+        $token = Configuration::get(shoppingfeed::AUTH_TOKEN, null, null, $id_shop);
+
+        $this->nbr_prpoducts = count(Product::getSimpleProducts($this->context->language->id));
+        $this->content = $this->welcomeForm();
+
+        if (!$token) {
+            $this->content .= $this->renderLoginForm();
+        }
+
+        $this->content .= $this->renderTokenForm();
+
+        if ($token) {
+            $this->content .= $this->renderConfigurationForm();
+        }
+
+        $this->content .= $this->faqForm();
+
+        parent::initContent();
     }
 
     /**
