@@ -51,8 +51,7 @@ class ShoppingfeedProductStockSyncActions extends ShoppingfeedDefaultActions
         foreach ($id_shop_list as $id_shop) {
             $this->conveyor['id_shop'] = $id_shop;
 
-            $productExist = DB::getInstance()->executeS('SELECT id_product FROM ' . _DB_PREFIX_ . "product_shop WHERE id_product = " . (int)$this->conveyor['id_product'] . " AND id_shop = " . (int)$id_shop);
-            if (!ShoppingfeedApi::getInstanceByToken($id_shop) || !count($productExist)) {
+            if (ShoppingfeedApi::getInstanceByToken($id_shop) == false) {
                 continue;
             }
 
@@ -76,7 +75,6 @@ class ShoppingfeedProductStockSyncActions extends ShoppingfeedDefaultActions
         return true;
     }
 
-
     /**
      * Gets a batch of ShoppindfeedProduct requiring their stock to be synchronized, and saves it
      * in the conveyor at ['batch'].
@@ -88,13 +86,12 @@ class ShoppingfeedProductStockSyncActions extends ShoppingfeedDefaultActions
      */
     public function getBatch()
     {
-
         $query = new DbQuery();
         $query->select('*')
             ->from('shoppingfeed_product')
             ->where("action = '" . pSQL(ShoppingfeedProduct::ACTION_SYNC_STOCK) . "'")
-            ->where("update_at IS NOT NULL")
-            ->where("id_shop ='". (int) $this->conveyor['id_shop'])
+            ->where('update_at IS NOT NULL')
+            ->where('id_shop ='. (int) $this->conveyor['id_shop'])
             ->where("update_at <= '" . date('Y-m-d H:i:s') . "'")
             ->limit(Configuration::get(Shoppingfeed::STOCK_SYNC_MAX_PRODUCTS))
             ->orderBy('date_add ASC');
@@ -174,7 +171,7 @@ class ShoppingfeedProductStockSyncActions extends ShoppingfeedDefaultActions
     {
         $res = ShoppingfeedApi::getInstanceByToken($this->conveyor['id_shop'])->updateMainStoreInventory($this->conveyor['preparedBatch']);
 
-        /*
+        /**
          * If we send a product reference that isn't in SF's catalog, the API doesn't send a confirmation for this product.
          * This means we must make a diff between what we sent and what we received to know which product wasn't
          * updated.
@@ -202,7 +199,7 @@ class ShoppingfeedProductStockSyncActions extends ShoppingfeedDefaultActions
 
             unset($preparedBatchShop[$reference]);
 
-            $sfProduct = ShoppingFeedProduct::getFromUniqueKey($id_product, $id_product_attribute, $id_shop_default);
+            $sfProduct = ShoppingFeedProduct::getFromUniqueKey($id_product, $id_product_attribute, $this->conveyor['id_shop']);
             $sfProduct->delete();
         }
 
@@ -224,7 +221,7 @@ class ShoppingfeedProductStockSyncActions extends ShoppingfeedDefaultActions
                 );
                 ShoppingfeedRegistry::increment('not-in-catalog');
 
-                $sfProduct = ShoppingFeedProduct::getFromUniqueKey($id_product, $id_product_attribute, $id_shop_default);
+                $sfProduct = ShoppingFeedProduct::getFromUniqueKey($id_product, $id_product_attribute, $this->conveyor['id_shop']);
                 $sfProduct->delete();
             }
         }
