@@ -385,6 +385,11 @@ class AdminShoppingfeedConfigurationController extends ModuleAdminController
             )
         );
 
+        $syncStockUrl = $this->context->link->getModuleLink(
+            'shoppingfeed',
+            'syncStock',
+            array('secure_key' => $this->module->secure_key)
+        );
 
         $helper = new HelperForm($this);
         $helper->tpl_vars['REAL_TIME_SYNCHRONIZATION'] = Configuration::get(Shoppingfeed::REAL_TIME_SYNCHRONIZATION)?'true':'false';
@@ -392,8 +397,11 @@ class AdminShoppingfeedConfigurationController extends ModuleAdminController
         $helper->tpl_vars['shop_url'] = Tools::getShopDomain();
         $helper->tpl_vars['php_version'] = PHP_VERSION;
         $helper->tpl_vars['prestashop_version'] = _PS_VERSION_;
+        $helper->tpl_vars['module_version'] = $this->module->version;
         $helper->tpl_vars['token'] = Configuration::get(Shoppingfeed::AUTH_TOKEN);
-        $helper->tpl_vars['multiboutique'] = Configuration::get('PS_MULTISHOP_FEATURE_ACTIVE') ? 'true' : 'false';
+        $helper->tpl_vars['multishop'] = Configuration::get('PS_MULTISHOP_FEATURE_ACTIVE') ? 'true' : 'false';
+        $helper->tpl_vars['combination'] = Configuration::get('PS_COMBINATION_FEATURE_ACTIVE');
+        $helper->tpl_vars['syncStockUrl'] = $syncStockUrl;
         $helper->tpl_vars['STOCK_SYNC_MAX_PRODUCTS'] = Configuration::get(Shoppingfeed::STOCK_SYNC_MAX_PRODUCTS);
         $helper->tpl_vars['LAST_CRON_TIME_SYNCHRONIZATION'] = Configuration::get(Shoppingfeed::LAST_CRON_TIME_SYNCHRONIZATION);
         $helper->base_folder = $this->getTemplatePath() . $this->override_folder;
