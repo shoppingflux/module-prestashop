@@ -38,12 +38,13 @@ class AdminShoppingfeedProcessMonitorController extends ShoppingfeedAdminProcess
 {
     public function initContent()
     {
-        if ($this->context->cookie->shopContext == null || $this->context->cookie->shopContext[0] == 'g') {
+        $current_shop_context = $this->context->shop->getContext();
+        if ($current_shop_context === Shop::CONTEXT_ALL) {
             Context::getContext()->controller->addCSS(_PS_MODULE_DIR_ .'shoppingfeed/views/css/config.css');
             $this->content = $this->context->smarty->fetch(_PS_MODULE_DIR_ . 'shoppingfeed/views/templates/admin/error_multishop.tpl');
             $this->context->smarty->assign('content', $this->content);
-        } else {
-            parent::initContent();
+            return;
         }
+        parent::initContent();
     }
 }
