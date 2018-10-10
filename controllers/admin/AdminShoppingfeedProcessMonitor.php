@@ -36,15 +36,5 @@ TotLoader::import('shoppingfeed\classlib\extensions\ProcessMonitor\AdminProcessM
  */
 class AdminShoppingfeedProcessMonitorController extends ShoppingfeedAdminProcessMonitorController
 {
-    public function initContent()
-    {
-        $current_shop_context = $this->context->shop->getContext();
-        if ($current_shop_context === Shop::CONTEXT_ALL) {
-            Context::getContext()->controller->addCSS(_PS_MODULE_DIR_ .'shoppingfeed/views/css/config.css');
-            $this->content = $this->context->smarty->fetch(_PS_MODULE_DIR_ . 'shoppingfeed/views/templates/admin/error_multishop.tpl');
-            $this->context->smarty->assign('content', $this->content);
-            return;
-        }
-        parent::initContent();
-    }
+
 }
