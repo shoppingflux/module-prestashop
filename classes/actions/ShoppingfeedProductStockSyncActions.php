@@ -66,7 +66,7 @@ class ShoppingfeedProductStockSyncActions extends ShoppingfeedDefaultActions
             } catch (Exception $e) {
                 // We can't do an "insert ignore", so use a try catch for when in debug mode...
             }
-            if (true == Configuration::get(Shoppingfeed::REAL_TIME_SYNCHRONIZATION)) {
+            if (true == Configuration::get(Shoppingfeed::REAL_TIME_SYNCHRONIZATION, null, null, $this->conveyor['id_shop'])) {
                 $this->forward('getBatch');
             }
         }
@@ -92,7 +92,7 @@ class ShoppingfeedProductStockSyncActions extends ShoppingfeedDefaultActions
             ->where('update_at IS NOT NULL')
             ->where('id_shop ='. (int) $this->conveyor['id_shop'])
             ->where("update_at <= '" . date('Y-m-d H:i:s') . "'")
-            ->limit(Configuration::get(Shoppingfeed::STOCK_SYNC_MAX_PRODUCTS))
+            ->limit(Configuration::get(Shoppingfeed::STOCK_SYNC_MAX_PRODUCTS, null, null, $this->conveyor['id_shop']))
             ->orderBy('date_add ASC');
         $sfProductsRows = Db::getInstance()->executeS($query);
 

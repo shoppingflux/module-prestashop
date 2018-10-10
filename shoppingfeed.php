@@ -176,10 +176,10 @@ class Shoppingfeed extends ShoppingfeedModule
         foreach ($shops as $shop) {
             $token = Configuration::get('SHOPPING_FLUX_TOKEN', null, null, $shop['id_shop']);
             if ($token) {
-                Configuration::updateValue(self::AUTH_TOKEN, $token, false, false, $shop['id_shop']);
+                Configuration::updateValue(self::AUTH_TOKEN, $token, false, null, $shop['id_shop']);
             }
-            Configuration::updateValue(self::STOCK_SYNC_MAX_PRODUCTS, 100, $shop['id_shop']);
-            Configuration::updateValue(self::REAL_TIME_SYNCHRONIZATION, false, $shop['id_shop']);
+            Configuration::updateValue(self::STOCK_SYNC_MAX_PRODUCTS, 100, false, null, $shop['id_shop']);
+            Configuration::updateValue(self::REAL_TIME_SYNCHRONIZATION, false, false, null, $shop['id_shop']);
         }
 
         return $res;

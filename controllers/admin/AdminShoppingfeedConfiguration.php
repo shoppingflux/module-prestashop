@@ -360,22 +360,20 @@ class AdminShoppingfeedConfigurationController extends ModuleAdminController
      */
     public function saveConfiguration()
     {
-
         $shops = Shop::getShops();
         foreach ($shops as $shop) {
-            $this->conveyor['id_shop'] = $shop['id_shop'];
 
             $realtime_sync = Tools::getValue(Shoppingfeed::REAL_TIME_SYNCHRONIZATION);
             $stock_sync_max_products = (int)Tools::getValue(Shoppingfeed::STOCK_SYNC_MAX_PRODUCTS);
 
-            Configuration::updateValue(Shoppingfeed::REAL_TIME_SYNCHRONIZATION, $realtime_sync ? true : false, $shop['id_shop']);
+            Configuration::updateValue(Shoppingfeed::REAL_TIME_SYNCHRONIZATION, ($realtime_sync ? true : false), false, null, $shop['id_shop']);
 
             if (!is_numeric($stock_sync_max_products)) {
                 $this->errors[] = $this->module->l('You must specify a valid \"Max. product update per request\" number.', 'AdminShoppingfeedConfiguration');
             } elseif ($stock_sync_max_products > 200 || $stock_sync_max_products <= 0) {
                 $this->errors[] = $this->module->l('You must specify a \"Max. product update per request\" number between 1 and 200.', 'AdminShoppingfeedConfiguration');
             } else {
-                Configuration::updateValue(Shoppingfeed::STOCK_SYNC_MAX_PRODUCTS, $stock_sync_max_products, $shop['id_shop']);
+                Configuration::updateValue(Shoppingfeed::STOCK_SYNC_MAX_PRODUCTS, $stock_sync_max_products, false, null, $shop['id_shop']);
             }
         }
 
