@@ -110,7 +110,7 @@
                    <div class="card-body">
 {l s='Please contact your system admin or your webhost to configure this line.' mod='shoppingfeed'}<br>
 <pre>
-*/5 * * * *     curl -s {$stockSyncUrl|escape:'htmlall':'UTF-8'}  >/dev/null
+*/5 * * * *     curl -s {$syncStockUrl|escape:'htmlall':'UTF-8'}  >/dev/null
 </pre>
                    </div>
                </div>
@@ -135,14 +135,14 @@ URL: {$shop_url|escape:'htmlall':'UTF-8'}
 Version PHP: {$php_version|escape:'htmlall':'UTF-8'}
 Version PrestaShop: {$prestashop_version|escape:'htmlall':'UTF-8'}
 Version ShoppingFeed: {$module_version|escape:'htmlall':'UTF-8'}
-Multishop: {$multiboutique|escape:'htmlall':'UTF-8'}
+Multishop: {$multishop|escape:'htmlall':'UTF-8'}
 Combination: {$combination|escape:'htmlall':'UTF-8'}
 
 Products: {$nbr_prpoducts|escape:'htmlall':'UTF-8'}
 Token : {$token|escape:'htmlall':'UTF-8'}
 Real time active: {$REAL_TIME_SYNCHRONIZATION|escape:'htmlall':'UTF-8'}
 Real time count products: {$STOCK_SYNC_MAX_PRODUCTS|escape:'htmlall':'UTF-8'}
-Cron url: {$stockSyncUrl|escape:'htmlall':'UTF-8'}
+Cron url: {$syncStockUrl|escape:'htmlall':'UTF-8'}
 Last sync: {$LAST_CRON_TIME_SYNCHRONIZATION|escape:'htmlall':'UTF-8'}</textarea>
                    </div>
                </div>
