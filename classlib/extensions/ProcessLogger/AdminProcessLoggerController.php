@@ -51,6 +51,8 @@ class ShoppingfeedAdminProcessLoggerController extends ModuleAdminController
     /** @var bool List content lines are clickable if true */
     protected $list_no_link = true;
 
+    public $multishop_context = 0;
+
     /**
      * @see AdminController::__construct()
      */
@@ -118,7 +120,7 @@ class ShoppingfeedAdminProcessLoggerController extends ModuleAdminController
                         'defaultValue' => 5,
                     ),
                 ),
-                'submit'      => array('title' => $this->module->l('Save', 'AdminProcessLoggerController')),
+                'submit'      => array('title' => $this->module->l('Save', 'AdminProcessLoggerController'), 'name' => 'submitSaveConf'),
             ),
         );
     }
@@ -195,5 +197,33 @@ class ShoppingfeedAdminProcessLoggerController extends ModuleAdminController
         }
 
         return $result;
+    }
+
+    public function postProcess()
+{
+
+    if (Tools::isSubmit('submitSaveConf')) {
+        return $this->saveConfiguration();
+    }
+}
+
+
+    public function saveConfiguration()
+    {
+        $shops = Shop::getShops();
+        foreach ($shops as $shop) {
+            $extlogs_erasing_daysmax = Tools::getValue('SHOPPINGFEED_EXTLOGS_ERASING_DAYSMAX');
+            $extlogs_erasing_disabled = Tools::getValue('SHOPPINGFEED_EXTLOGS_ERASING_DISABLED');
+            
+            Configuration::updateValue('SHOPPINGFEED_EXTLOGS_ERASING_DISABLED', ($extlogs_erasing_disabled ? true : false), false, null, $shop['id_shop']);
+
+            if (!is_numeric($extlogs_erasing_daysmax)) {
+                $this->errors[] = $this->module->l('You must specify a valid \"Auto erasing delay (in days)\" number.', 'AdminProcessLoggerController');
+            } else {
+                Configuration::updateValue('SHOPPINGFEED_EXTLOGS_ERASING_DAYSMAX', $extlogs_erasing_daysmax, false, null, $shop['id_shop']);
+            }
+        }
+
+        return true;
     }
 }
