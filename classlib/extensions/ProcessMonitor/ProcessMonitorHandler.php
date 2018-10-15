@@ -55,7 +55,7 @@ class ShoppingfeedProcessMonitorHandler
         }
         if (!empty($this->process->pid)) {
             $oldpid = $this->process->pid;
-            exec("ps -ef| awk '\$3 == \"$oldpid\" { print \$2 }'", $output, $ret);
+            exec("ps -ef| awk '\$3 == \"$oldpid\" { print \$2 }'", $output, $ret); //get pid of cron process
             if (false === empty($output)) {
                 return false;
             }

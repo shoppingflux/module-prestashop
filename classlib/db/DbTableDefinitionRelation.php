@@ -335,7 +335,7 @@ class ShoppingfeedDbTableDefinitionRelation
         /** @var ObjectModel $class */
         $class = $this->get('object');
 
-        $classDefinition = $class::$definition;
+        $classDefinition = $class::$definition; // static definition ObjectModel named $class
 
         return $classDefinition['table'];
     }
