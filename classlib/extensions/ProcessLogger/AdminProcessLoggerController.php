@@ -200,13 +200,11 @@ class ShoppingfeedAdminProcessLoggerController extends ModuleAdminController
     }
 
     public function postProcess()
-{
-
-    if (Tools::isSubmit('submitSaveConf')) {
-        return $this->saveConfiguration();
+    {
+        if (Tools::isSubmit('submitSaveConf')) {
+            return $this->saveConfiguration();
+        }
     }
-}
-
 
     public function saveConfiguration()
     {
