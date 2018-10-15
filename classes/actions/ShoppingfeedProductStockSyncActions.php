@@ -227,5 +227,4 @@ class ShoppingfeedProductStockSyncActions extends ShoppingfeedDefaultActions
 
         return true;
     }
-
 }

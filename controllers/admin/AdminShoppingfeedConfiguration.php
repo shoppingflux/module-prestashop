@@ -274,9 +274,9 @@ class AdminShoppingfeedConfigurationController extends ModuleAdminController
     {
         if (Tools::isSubmit('saveToken')) {
             return $this->saveToken();
-        } else if (Tools::isSubmit('login')) {
+        } elseif (Tools::isSubmit('login')) {
             return $this->login();
-        } else if (Tools::isSubmit('saveConfiguration')) {
+        } elseif (Tools::isSubmit('saveConfiguration')) {
             return $this->saveConfiguration();
         }
     }
@@ -362,7 +362,6 @@ class AdminShoppingfeedConfigurationController extends ModuleAdminController
     {
         $shops = Shop::getShops();
         foreach ($shops as $shop) {
-
             $realtime_sync = Tools::getValue(Shoppingfeed::REAL_TIME_SYNCHRONIZATION);
             $stock_sync_max_products = (int)Tools::getValue(Shoppingfeed::STOCK_SYNC_MAX_PRODUCTS);
 

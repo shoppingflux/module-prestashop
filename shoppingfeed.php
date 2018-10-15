@@ -205,7 +205,6 @@ class Shoppingfeed extends ShoppingfeedModule
     {
         $id_product = $params['id_product'];
         $id_product_attribute = $params['id_product_attribute'];
-        $new_quantity = $params['quantity'];
 
         TotLoader::import('shoppingfeed\classlib\extensions\ProcessLogger\ProcessLoggerHandler');
         TotLoader::import('shoppingfeed\classlib\registry');
