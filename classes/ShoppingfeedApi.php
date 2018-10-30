@@ -64,16 +64,26 @@ class ShoppingfeedApi
         if (!$token && !$id_shop) {
             return false;
         } else if ($id_shop) {
-            $token = Configuration::get(Shoppingfeed::AUTH_TOKEN, null, null, $id_shop);
+            $token = Configuration::get(Shoppingfeed::AUTH_TOKEN, null, null, $id_shop)  ;
         }
 
-        // Setup token to connect to the API, and create session
-        $credential = new Token($token);
-        /** @var \ShoppingFeed\Sdk\Api\Session\SessionResource $session */
-        $session = Client::createSession($credential);
+        try {
+            // Setup token to connect to the API, and create session
+            $credential = new Token($token);
+            /** @var \ShoppingFeed\Sdk\Api\Session\SessionResource $session */
+            $session = Client::createSession($credential);
 
-        static::$instance = new ShoppingfeedApi($session);
-        return static::$instance;
+            static::$instance = new ShoppingfeedApi($session);
+            return static::$instance;
+        } catch (Exception $e) {
+            ShoppingfeedProcessLoggerHandler::logInfo(
+                sprintf(
+                    'API error: %s',
+                    $e->getMessage()
+                )
+            );
+            return false;
+        }
     }
 
     /**
@@ -84,13 +94,23 @@ class ShoppingfeedApi
      */
     public static function getInstanceByCredentials($username, $password)
     {
-        // Setup credentials to connect to the API, and create session
-        $credential = new Password($username, $password);
-        /** @var \ShoppingFeed\Sdk\Api\Session\SessionResource $session */
-        $session = Client::createSession($credential);
+        try {
+            // Setup credentials to connect to the API, and create session
+            $credential = new Password($username, $password);
+            /** @var \ShoppingFeed\Sdk\Api\Session\SessionResource $session */
+            $session = Client::createSession($credential);
+            static::$instance = new ShoppingfeedApi($session);
 
-        static::$instance = new ShoppingfeedApi($session);
-        return static::$instance;
+            return static::$instance;
+        } catch (Exception $e) {
+            ShoppingfeedProcessLoggerHandler::logInfo(
+                sprintf(
+                    'API error: %s',
+                    $e->getMessage()
+                )
+            );
+            return false;
+        }
     }
 
     public function getToken()
@@ -117,12 +137,22 @@ class ShoppingfeedApi
      */
     public function updateMainStoreInventory($products)
     {
-        $inventoryApi = $this->session->getMainStore()->getInventoryApi();
-        $inventoryUpdate = new InventoryUpdate();
-        foreach ($products as $product) {
-            $inventoryUpdate->add($product['reference'], $product['quantity']);
-        }
+        try {
+            $inventoryApi = $this->session->getMainStore()->getInventoryApi();
+            $inventoryUpdate = new InventoryUpdate();
+            foreach ($products as $product) {
+                $inventoryUpdate->add($product['reference'], $product['quantity']);
+            }
 
-        return $inventoryApi->execute($inventoryUpdate);
+            return $inventoryApi->execute($inventoryUpdate);
+        } catch (Exception $e) {
+            ShoppingfeedProcessLoggerHandler::logInfo(
+                sprintf(
+                    'API error (getInventoryApi): %s',
+                    $e->getMessage()
+                )
+            );
+            return false;
+        }
     }
 }

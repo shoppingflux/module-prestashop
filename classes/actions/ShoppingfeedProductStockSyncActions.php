@@ -51,7 +51,8 @@ class ShoppingfeedProductStockSyncActions extends ShoppingfeedDefaultActions
         foreach ($shops as $shop) {
             $this->conveyor['id_shop'] = $shop['id_shop'];
 
-            if (ShoppingfeedApi::getInstanceByToken($this->conveyor['id_shop']) == false) {
+            $token = Configuration::get(Shoppingfeed::AUTH_TOKEN, null, null, $id_shop);
+            if ($token == false) {
                 continue;
             }
 
@@ -168,7 +169,12 @@ class ShoppingfeedProductStockSyncActions extends ShoppingfeedDefaultActions
      */
     public function executeBatch()
     {
-        $res = ShoppingfeedApi::getInstanceByToken($this->conveyor['id_shop'])->updateMainStoreInventory($this->conveyor['preparedBatch']);
+        $shoppingfeedApi = ShoppingfeedApi::getInstanceByToken($this->conveyor['id_shop']);
+        if ($shoppingfeedApi == false) {
+            ShoppingfeedRegistry::increment('errors');
+            return false;
+        }
+        $res = $shoppingfeedApi->updateMainStoreInventory($this->conveyor['preparedBatch']);
 
         /**
          * If we send a product reference that isn't in SF's catalog, the API doesn't send a confirmation for this product.
