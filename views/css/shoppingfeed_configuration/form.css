@@ -1,0 +1,123 @@
+/**
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to a commercial license from SARL 202 ecommence
+ * Use, copy, modification or distribution of this source file without written
+ * license agreement from the SARL 202 ecommence is strictly forbidden.
+ * In order to obtain a license, please contact us: tech@202-ecommerce.com
+ * ...........................................................................
+ * INFORMATION SUR LA LICENCE D'UTILISATION
+ *
+ * L'utilisation de ce fichier source est soumise a une licence commerciale
+ * concedee par la societe 202 ecommence
+ * Toute utilisation, reproduction, modification ou distribution du present
+ * fichier source sans contrat de licence ecrit de la part de la SARL 202 ecommence est
+ * expressement interdite.
+ * Pour obtenir une licence, veuillez contacter 202-ecommerce <tech@202-ecommerce.com>
+ * ...........................................................................
+ *
+ * @author    202-ecommerce <tech@202-ecommerce.com>
+ * @copyright Copyright (c) 202-ecommerce
+ * @license   Commercial license
+ */
+
+#logo_sf {
+    height: 5em;
+}
+
+#accordion {
+    max-width: 600px;
+    margin: 0 auto;
+}
+#accordion h5{
+    margin: 0;
+
+}
+
+#accordion h5 i {
+   margin: 0 0 0 10px;
+    text-decoration: none;
+}
+
+#accordion a{
+    text-align: left;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: justify;
+    -webkit-justify-content: space-between;
+    -moz-box-pack: justify;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+    -webkit-box-align: center;
+    -webkit-align-items: center;
+    -moz-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    padding: 15px 10px;
+    text-decoration: none;
+}
+
+#accordion a span{
+   white-space: normal;
+    color: #666;
+    font-size: 13px;
+    font-weight: normal;
+    font: 400 12px/1.42857 "Open Sans",Helvetica,Arial,sans-serif;
+}
+
+#accordion .card{
+    margin: 15px;
+}
+
+#accordion .card-header{
+    border: 2px solid #333;
+
+}
+
+#accordion .card-body{
+    border: 2px solid #666;
+    border-top: 0;
+    padding: 15px;
+}
+
+#accordion a.collapsed i {
+    -webkit-transform: rotate(180deg);
+    transform: rotate(180deg);
+}
+
+#accordion a i {
+    color: #666;
+}
+
+.logo_shoppingfeed {
+    padding-left: 40px;
+    text-align: center;
+}
+
+.desc_shoppingfeed {
+    max-width: 600px;
+    font-size: 16px;
+    font-style: italic;
+    line-height: 26px;
+}
+
+.desc_shoppingfeed p {
+    margin: 0;
+}
+
+.welcome_shoppingfeed.form-group{
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -webkit-align-items: center;
+    -moz-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    margin: 0 ;
+}
