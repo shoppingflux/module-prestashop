@@ -51,7 +51,7 @@ class ShoppingfeedProductStockSyncActions extends ShoppingfeedDefaultActions
         foreach ($shops as $shop) {
             $this->conveyor['id_shop'] = $shop['id_shop'];
 
-            $token = Configuration::get(Shoppingfeed::AUTH_TOKEN, null, null, $id_shop);
+            $token = Configuration::get(Shoppingfeed::AUTH_TOKEN, null, null, $shop['id_shop']);
             if ($token == false) {
                 continue;
             }
