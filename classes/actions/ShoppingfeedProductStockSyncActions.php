@@ -122,10 +122,20 @@ class ShoppingfeedProductStockSyncActions extends ShoppingfeedDefaultActions
     public function prepareBatch()
     {
         $this->conveyor['preparedBatch'] = array();
+        $sfModule = Module::getInstanceByName('shoppingfeed');
+        
         /** @var ShoppingfeedProduct $sfProduct */
         foreach ($this->conveyor['batch'] as $sfProduct) {
+            $sfReference = $sfModule->mapReference($sfProduct);
+            
+            // The developer can skip products to sync by overriding
+            // ShoppingFeed::mapReference and have it return false
+            if (empty($sfReference)) {
+                continue;
+            }
+            
             $newData = array(
-                'reference' => $sfProduct->getShoppingfeedReference()
+                'reference' => $sfReference
             );
 
             $newData['quantity'] = StockAvailable::getQuantityAvailableByProduct(

@@ -27,6 +27,7 @@ if (!defined('_PS_VERSION_')) {
 }
 
 require_once _PS_MODULE_DIR_ . 'shoppingfeed/config_dev.php';
+require_once _PS_MODULE_DIR_ . 'shoppingfeed/classes/ShoppingfeedProduct.php';
 
 TotLoader::import('shoppingfeed\classlib\module');
 
@@ -220,5 +221,16 @@ class Shoppingfeed extends ShoppingfeedModule
             ->process('shoppingfeedProductStockSync');
 
         ShoppingfeedProcessLoggerHandler::closeLogger();
+    }
+    
+    /**
+     * Returns the product's Shopping Feed reference. The developer can skip
+     * products to sync by overriding this method and have it return false.
+     * @param ShoppingFeedProduct $sfProduct
+     * @return string
+     */
+    public function mapReference(ShoppingfeedProduct $sfProduct)
+    {
+        return $sfProduct->id_product . ($sfProduct->id_product_attribute ? "_" . $sfProduct->id_product_attribute : "");
     }
 }
