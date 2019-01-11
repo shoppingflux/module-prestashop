@@ -46,7 +46,9 @@ class ShoppingfeedProcessMonitorHandler
     public function lock($name)
     {
         $this->startTime = $this->microtimeFloat();
-        $processMonitorObjectModel = TotLoader::getInstance('shoppingfeed\classlib\extensions\ProcessMonitor\ProcessMonitorObjectModel');
+        $processMonitorObjectModel = TotLoader::getInstance(
+            'shoppingfeed\classlib\extensions\ProcessMonitor\ProcessMonitorObjectModel'
+        );
         $this->process = $processMonitorObjectModel->findOneByName($name);
         if (empty($this->process->id)) {
             $this->process = new ShoppingfeedProcessMonitorObjectModel();
@@ -54,13 +56,17 @@ class ShoppingfeedProcessMonitorHandler
             $this->process->data = Tools::jsonEncode(array());
         }
         if (!empty($this->process->pid)) {
-            $oldpid = $this->process->pid;
-            exec("ps -ef| awk '\$3 == \"$oldpid\" { print \$2 }'", $output, $ret); //get pid of cron process
-            if (false === empty($output)) {
+            $last_update = new \DateTime($this->process->last_update);
+            $data_now = new \DateTime('NOW');
+            $diff = $data_now->diff($last_update);
+            $hours = $diff->h;
+            $hours = $hours + ($diff->days*24);
+            if ($hours < 1) {
                 return false;
             }
         }
 
+        $this->process->last_update = date('Y-m-d H:i:s');
         $this->process->pid = getmypid();
         $this->process->save();
 

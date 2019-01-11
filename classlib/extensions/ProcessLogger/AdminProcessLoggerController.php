@@ -65,7 +65,10 @@ class ShoppingfeedAdminProcessLoggerController extends ModuleAdminController
         $this->bulk_actions = array(
             'delete' => array(
                 'text' => $this->module->l('Delete selected', 'AdminProcessLoggerController'),
-                'confirm' => $this->module->l('Would you like to delete the selected items?', 'AdminProcessLoggerController'),
+                'confirm' => $this->module->l(
+                    'Would you like to delete the selected items?',
+                    'AdminProcessLoggerController'
+                ),
             )
         );
 
@@ -102,25 +105,42 @@ class ShoppingfeedAdminProcessLoggerController extends ModuleAdminController
             'processLogger' => array(
                 'image'       => '../img/admin/cog.gif',
                 'title'       => $this->module->l('Process Logger Settings', 'AdminProcessLoggerController'),
-                'description' => $this->module->l('Here you can change the default configuration for this Process Logger', 'AdminProcessLoggerController'),
+                'description' => $this->module->l(
+                    'Here you can change the default configuration for this Process Logger',
+                    'AdminProcessLoggerController'
+                ),
                 'fields'      => array(
                     'SHOPPINGFEED_EXTLOGS_ERASING_DISABLED' => array(
-                        'title'        => $this->module->l('Disable auto erasing', 'AdminProcessLoggerController'),
-                        'hint'         => $this->module->l('If disabled, logs will be automatically erased after the delay', 'AdminProcessLoggerController'),
+                        'title'        => $this->module->l(
+                            'Disable auto erasing',
+                            'AdminProcessLoggerController'
+                        ),
+                        'hint'         => $this->module->l(
+                            'If disabled, logs will be automatically erased after the delay',
+                            'AdminProcessLoggerController'
+                        ),
                         'validation'   => 'isBool',
                         'cast'         => 'intval',
                         'type'         => 'bool',
                     ),
                     'SHOPPINGFEED_EXTLOGS_ERASING_DAYSMAX' => array(
-                        'title'        => $this->module->l('Auto erasing delay (in days)', 'AdminProcessLoggerController'),
-                        'hint'         => $this->module->l('Choose the number of days you want to keep logs in database', 'AdminProcessLoggerController'),
+                        'title'        => $this->module->l(
+                            'Auto erasing delay (in days)',
+                            'AdminProcessLoggerController'
+                        ),
+                        'hint'         => $this->module->l(
+                            'Choose the number of days you want to keep logs in database',
+                            'AdminProcessLoggerController'
+                        ),
                         'validation'   => 'isInt',
                         'cast'         => 'intval',
                         'type'         => 'text',
                         'defaultValue' => 5,
                     ),
                 ),
-                'submit'      => array('title' => $this->module->l('Save', 'AdminProcessLoggerController'), 'name' => 'submitSaveConf'),
+                'submit'      => array(
+                    'title' => $this->module->l('Save', 'AdminProcessLoggerController'),
+                    'name' => 'submitSaveConf'),
             ),
         );
     }
@@ -179,7 +199,9 @@ class ShoppingfeedAdminProcessLoggerController extends ModuleAdminController
         $this->toolbar_btn['delete'] = array(
             'short' => 'Erase',
             'desc' => $this->module->l('Erase all'),
-            'js' => 'if (confirm(\''.$this->module->l('Are you sure?', 'AdminProcessLoggerController').'\')) document.location = \''.self::$currentIndex.'&amp;token='.$this->token.'&amp;action=erase\';'
+            'js' => 'if (confirm(\''.
+                $this->module->l('Are you sure?', 'AdminProcessLoggerController').
+                '\')) document.location = \''.self::$currentIndex.'&amp;token='.$this->token.'&amp;action=erase\';'
         );
     }
 
@@ -204,6 +226,8 @@ class ShoppingfeedAdminProcessLoggerController extends ModuleAdminController
         if (Tools::isSubmit('submitSaveConf')) {
             return $this->saveConfiguration();
         }
+
+        return parent::postProcess();
     }
 
     public function saveConfiguration()
@@ -213,12 +237,31 @@ class ShoppingfeedAdminProcessLoggerController extends ModuleAdminController
             $extlogs_erasing_daysmax = Tools::getValue('SHOPPINGFEED_EXTLOGS_ERASING_DAYSMAX');
             $extlogs_erasing_disabled = Tools::getValue('SHOPPINGFEED_EXTLOGS_ERASING_DISABLED');
             
-            Configuration::updateValue('SHOPPINGFEED_EXTLOGS_ERASING_DISABLED', ($extlogs_erasing_disabled ? true : false), false, null, $shop['id_shop']);
+            Configuration::updateValue(
+                'SHOPPINGFEED_EXTLOGS_ERASING_DISABLED',
+                ($extlogs_erasing_disabled ? true : false),
+                false,
+                null,
+                $shop['id_shop']
+            );
 
             if (!is_numeric($extlogs_erasing_daysmax)) {
-                $this->errors[] = $this->module->l('You must specify a valid \"Auto erasing delay (in days)\" number.', 'AdminProcessLoggerController');
+                $this->errors[] = $this->module->l(
+                    'You must specify a valid \"Auto erasing delay (in days)\" number.',
+                    'AdminProcessLoggerController'
+                );
             } else {
-                Configuration::updateValue('SHOPPINGFEED_EXTLOGS_ERASING_DAYSMAX', $extlogs_erasing_daysmax, false, null, $shop['id_shop']);
+                Configuration::updateValue(
+                    'SHOPPINGFEED_EXTLOGS_ERASING_DAYSMAX',
+                    $extlogs_erasing_daysmax,
+                    false,
+                    null,
+                    $shop['id_shop']
+                );
+                $this->confirmations[] = $this->module->l(
+                    'Log parameters are successfully updated!',
+                    'AdminProcessLoggerController'
+                );
             }
         }
 

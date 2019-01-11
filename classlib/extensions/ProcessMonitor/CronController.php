@@ -90,7 +90,9 @@ abstract class ShoppingfeedCronController extends ModuleFrontController
      */
     public function initContent()
     {
-        $this->processMonitor = TotLoader::getInstance('shoppingfeed\classlib\extensions\ProcessMonitor\ProcessMonitorHandler');
+        $this->processMonitor = TotLoader::getInstance(
+            'shoppingfeed\classlib\extensions\ProcessMonitor\ProcessMonitorHandler'
+        );
         if (false === ($data = $this->processMonitor->lock($this->getProcessName()))) {
             $return = array('success' => false, 'error' => 'Lock return false. Process ID already in run.');
             $this->ajaxDie(Tools::jsonEncode($return));
