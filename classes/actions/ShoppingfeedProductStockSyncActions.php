@@ -133,20 +133,16 @@ class ShoppingfeedProductStockSyncActions extends ShoppingfeedDefaultActions
             if (empty($sfReference)) {
                 continue;
             }
-            
+
             $newData = array(
-                'reference' => $sfReference
+                'reference' => $sfReference,
+                'quantity' => StockAvailable::getQuantityAvailableByProduct(
+                    $sfProduct->id_product,
+                    $sfProduct->id_product_attribute ? $sfProduct->id_product_attribute : null,
+                    $sfProduct->id_shop
+                ),
+                'sfProduct' => $sfProduct,
             );
-
-            $newData['quantity'] = StockAvailable::getQuantityAvailableByProduct(
-                $sfProduct->id_product,
-                $sfProduct->id_product_attribute ? $sfProduct->id_product_attribute : null,
-                $sfProduct->id_shop
-            );
-
-            if (!isset($this->conveyor['preparedBatch'])) {
-                $this->conveyor['preparedBatch'] = array();
-            }
 
             $this->conveyor['preparedBatch'][$newData['reference']] = $newData;
         }
@@ -195,10 +191,8 @@ class ShoppingfeedProductStockSyncActions extends ShoppingfeedDefaultActions
         /** @var ShoppingFeed\Sdk\Api\Catalog\InventoryResource $inventoryResource */
         foreach ($res as $inventoryResource) {
             $reference = $inventoryResource->getReference();
-            $explodedReference = explode('_', $reference);
-            $id_product = $explodedReference[0];
-            $id_product_attribute = isset($explodedReference[1]) ? $explodedReference[1] : 0;
-
+            $sfProduct = $preparedBatchShop[$reference]['sfProduct'];
+            
             ShoppingfeedProcessLoggerHandler::logInfo(
                 sprintf(
                     $this->l('[Stock shop:%s] Updated %s qty: %s', 'ShoppingfeedProductStockSyncActions'),
@@ -207,22 +201,19 @@ class ShoppingfeedProductStockSyncActions extends ShoppingfeedDefaultActions
                     $preparedBatchShop[$reference]['quantity']
                 ),
                 'Product',
-                $id_product
+                $sfProduct->id_product
             );
 
             ShoppingfeedRegistry::increment('updatedProducts');
 
             unset($preparedBatchShop[$reference]);
 
-            $sfProduct = ShoppingFeedProduct::getFromUniqueKey($id_product, $id_product_attribute, $this->conveyor['id_shop']);
             $sfProduct->delete();
         }
 
         if (!empty($preparedBatchShop)) {
             foreach ($preparedBatchShop as $data) {
-                $explodedReference = explode('_', $data['reference']);
-                $id_product = $explodedReference[0];
-                $id_product_attribute = isset($explodedReference[1]) ? $explodedReference[1] : 0;
+                $sfProduct = $data['sfProduct'];
 
                 ShoppingfeedProcessLoggerHandler::logInfo(
                     sprintf(
@@ -232,11 +223,10 @@ class ShoppingfeedProductStockSyncActions extends ShoppingfeedDefaultActions
                         $data['quantity']
                     ),
                     'Product',
-                    $id_product
+                    $sfProduct->id_product
                 );
                 ShoppingfeedRegistry::increment('not-in-catalog');
 
-                $sfProduct = ShoppingFeedProduct::getFromUniqueKey($id_product, $id_product_attribute, $this->conveyor['id_shop']);
                 $sfProduct->delete();
             }
         }
