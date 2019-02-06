@@ -26,13 +26,14 @@
  * @desc: parameters for this module. Please complete also config_prod.php
  */
 
-if (!defined('TOTPSCLASSLIB_DEV_PATH')) {
-    define('TOTPSCLASSLIB_DEV_PATH', __DIR__ . '/../../../../modules/totpsclasslib/');
-}
-
-if (defined('TOTPSCLASSLIB_DEV_PATH') &&
-        file_exists(TOTPSCLASSLIB_DEV_PATH .'classlib/_config_dev.php')) {
-    eval(file_get_contents(TOTPSCLASSLIB_DEV_PATH .'classlib/_config_dev.php'));
+$totpsclasslibpath = getenv('TOTPSCLASSLIB_DEV_PATH');
+if (!empty($totpsclasslibpath) && file_exists($totpsclasslibpath . '_config_dev.php')) {
+    
+    if (!defined('TOTPSCLASSLIB_DEV_PATH')) {
+        define('TOTPSCLASSLIB_DEV_PATH', $totpsclasslibpath);
+    }
+    
+    eval(file_get_contents(TOTPSCLASSLIB_DEV_PATH .'_config_dev.php'));
     TotLoader::checkVersion('release/1.2.0');
 } else {
     include 'config_prod.php';
