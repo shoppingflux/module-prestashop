@@ -2,17 +2,17 @@
 /**
  * NOTICE OF LICENSE
  *
- * This source file is subject to a commercial license from SARL 202 ecommence
+ * This source file is subject to a commercial license from SARL 202 ecommerce
  * Use, copy, modification or distribution of this source file without written
- * license agreement from the SARL 202 ecommence is strictly forbidden.
+ * license agreement from the SARL 202 ecommerce is strictly forbidden.
  * In order to obtain a license, please contact us: tech@202-ecommerce.com
  * ...........................................................................
  * INFORMATION SUR LA LICENCE D'UTILISATION
  *
  * L'utilisation de ce fichier source est soumise a une licence commerciale
- * concedee par la societe 202 ecommence
+ * concedee par la societe 202 ecommerce
  * Toute utilisation, reproduction, modification ou distribution du present
- * fichier source sans contrat de licence ecrit de la part de la SARL 202 ecommence est
+ * fichier source sans contrat de licence ecrit de la part de la SARL 202 ecommerce est
  * expressement interdite.
  * Pour obtenir une licence, veuillez contacter 202-ecommerce <tech@202-ecommerce.com>
  * ...........................................................................
@@ -20,13 +20,20 @@
  * @author    202-ecommerce <tech@202-ecommerce.com>
  * @copyright Copyright (c) 202-ecommerce
  * @license   Commercial license
- * @version   release/1.2.0
+ * @version   develop
  */
 
-class ShoppingfeedProcessLoggerHandler
+namespace ShoppingfeedClasslib\Extensions\ProcessLogger;
+
+use \Db;
+use \Configuration;
+use \Hook;
+
+class ProcessLoggerHandler
 {
     /**
-     * @var ShoppingfeedProcessMonitorHandler Instance of ProcessMonitorHandler
+     * @var ShoppingfeedClasslib\Extensions\ProcessMonitor\ProcessMonitorHandler
+     * Instance of ProcessMonitorHandler
      */
     private static $process;
 
@@ -38,7 +45,7 @@ class ShoppingfeedProcessLoggerHandler
     /**
      * Set process name and remove oldest logs
      *
-     * @param ShoppingfeedProcessMonitorHandler|null $process
+     * @param ShoppingfeedClasslib\Extensions\ProcessMonitor\ProcessMonitorHandler|null $process
      */
     public static function openLogger($process = null)
     {
@@ -71,7 +78,7 @@ class ShoppingfeedProcessLoggerHandler
             'msg' => pSQL($msg),
             'level' => pSQL($level),
             'object_name' => pSQL($objectModel),
-            'object_id' => pSQL($objectId),
+            'object_id' => (int)$objectId,
             'date_add' => date("Y-m-d H:i:s"),
         );
 
@@ -128,7 +135,25 @@ class ShoppingfeedProcessLoggerHandler
     public static function saveLogsInDb()
     {
         $result = true;
-        if (false === empty(self::$logs)) {
+        if (false === empty(self::$logs) && self::getSkippingHooksResult()) {
+            
+            Hook::exec(
+                    'actionProcessLoggerSave',
+                    array(
+                        'logs' => &self::$logs,
+                    ),
+                    null,
+                    true
+            );
+            Hook::exec(
+                    'actionShoppingfeedProcessLoggerSave',
+                    array(
+                        'logs' => &self::$logs,
+                    ),
+                    null,
+                    true
+            );
+            
             $result = Db::getInstance()->insert(
                 'shoppingfeed_processlogger',
                 self::$logs
@@ -180,5 +205,65 @@ class ShoppingfeedProcessLoggerHandler
         }
 
         return (int)$numberOfDays;
+    }
+    
+    /**
+     * Executes the hooks used to skip a ProcessLogger save. This will return
+     * false if any module hooked to either 'actionSkipProcessLoggerSave' or
+     * 'actionSkipShoppingfeedProcessLoggerSave' returns false (weak comparison)
+     * 
+     * @return bool
+     */
+    protected static function getSkippingHooksResult() {
+        
+        if (Hook::getIdByName('actionSkipProcessLoggerSave')) {
+            $hookProcessLoggerReturnArray = Hook::exec(
+                    'actionSkipProcessLoggerSave',
+                    array(
+                        'logs' => self::$logs,
+                    ),
+                    null,
+                    true
+            );
+
+            if (!is_array($hookProcessLoggerReturnArray)) {
+                return false;
+            }
+            
+            if (!empty($hookProcessLoggerReturnArray)) {
+                $hookReturn = array_reduce($hookProcessLoggerReturnArray, function($and, $hookReturn) {
+                    return $and && (bool)$hookReturn;
+                });
+                if (!$hookReturn) {
+                    return false;
+                }
+            }
+        }
+        
+        if (Hook::getIdByName('actionSkipShoppingfeedProcessLoggerSave')) {
+            $hookModuleProcessLoggerReturnArray = Hook::exec(
+                    'actionSkipShoppingfeedProcessLoggerSave',
+                    array(
+                        'logs' => self::$logs,
+                    ),
+                    null,
+                    true
+            );
+
+            if (!is_array($hookModuleProcessLoggerReturnArray)) {
+                return false;
+            }
+            
+            if (!empty($hookModuleProcessLoggerReturnArray)) {
+                $hookReturn = array_reduce($hookModuleProcessLoggerReturnArray, function($and, $hookReturn) {
+                    return $and && (bool)$hookReturn;
+                });
+                if (!$hookReturn) {
+                    return false;
+                }
+            }
+        }
+        
+        return true;
     }
 }

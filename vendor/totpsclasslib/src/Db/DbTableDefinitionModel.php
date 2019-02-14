@@ -2,17 +2,17 @@
 /**
  * NOTICE OF LICENSE
  *
- * This source file is subject to a commercial license from SARL 202 ecommence
+ * This source file is subject to a commercial license from SARL 202 ecommerce
  * Use, copy, modification or distribution of this source file without written
- * license agreement from the SARL 202 ecommence is strictly forbidden.
+ * license agreement from the SARL 202 ecommerce is strictly forbidden.
  * In order to obtain a license, please contact us: tech@202-ecommerce.com
  * ...........................................................................
  * INFORMATION SUR LA LICENCE D'UTILISATION
  *
  * L'utilisation de ce fichier source est soumise a une licence commerciale
- * concedee par la societe 202 ecommence
+ * concedee par la societe 202 ecommerce
  * Toute utilisation, reproduction, modification ou distribution du present
- * fichier source sans contrat de licence ecrit de la part de la SARL 202 ecommence est
+ * fichier source sans contrat de licence ecrit de la part de la SARL 202 ecommerce est
  * expressement interdite.
  * Pour obtenir une licence, veuillez contacter 202-ecommerce <tech@202-ecommerce.com>
  * ...........................................................................
@@ -20,10 +20,17 @@
  * @author    202-ecommerce <tech@202-ecommerce.com>
  * @copyright Copyright (c) 202-ecommerce
  * @license   Commercial license
- * @version   release/1.2.0
+ * @version   develop
  */
 
-class ShoppingfeedDbTableDefinitionModel
+namespace ShoppingfeedClasslib\Db;
+
+use ShoppingfeedClasslib\Db\ObjectModelDefinition;
+use ShoppingfeedClasslib\Db\DbTableDefinitionRelation;
+
+use \ObjectModel;
+
+class DbTableDefinitionModel
 {
     /**
      * Internal ID.
@@ -31,13 +38,13 @@ class ShoppingfeedDbTableDefinitionModel
     const ID = 'm';
 
     /**
-     * @var ShoppingfeedObjectModelDefinition
+     * @var ShoppingfeedClasslib\Db\ObjectModelDefinition
      */
     protected $def;
 
     /**
-     * Register ShoppingfeedObjectModelDefinition
-     * @param ShoppingfeedObjectModelDefinition $def
+     * Register ShoppingfeedClasslib\Db\ObjectModelDefinition
+     * @param ShoppingfeedClasslib\Db\ObjectModelDefinition $def
      */
     public function __construct($def)
     {
@@ -49,7 +56,7 @@ class ShoppingfeedDbTableDefinitionModel
      */
     public function getName()
     {
-        return ShoppingfeedObjectModelDefinition::DB_PREFIX . $this->def->get('table');
+        return ObjectModelDefinition::DB_PREFIX . $this->def->get('table');
     }
 
     /**
@@ -65,7 +72,7 @@ class ShoppingfeedDbTableDefinitionModel
      */
     public function getEngine()
     {
-        return !empty($this->def->get('engine')) ? $this->def->get('engine') : ShoppingfeedObjectModelDefinition::ENGINE;
+        return !empty($this->def->get('engine')) ? $this->def->get('engine') : ObjectModelDefinition::ENGINE;
     }
 
     /**
@@ -73,7 +80,8 @@ class ShoppingfeedDbTableDefinitionModel
      */
     public function getCharset()
     {
-        return !empty($this->def->get('charset')) ? $this->def->get('charset') : ShoppingfeedObjectModelDefinition::CHARSET;
+        return !empty($this->def->get('charset')) ?
+            $this->def->get('charset') : ObjectModelDefinition::CHARSET;
     }
 
     /**
@@ -81,7 +89,8 @@ class ShoppingfeedDbTableDefinitionModel
      */
     public function getCollation()
     {
-        return !empty($this->def->get('collation')) ? $this->def->get('collation') : ShoppingfeedObjectModelDefinition::COLLATION;
+        return !empty($this->def->get('collation')) ?
+            $this->def->get('collation') : ObjectModelDefinition::COLLATION;
     }
 
     /**
@@ -112,7 +121,7 @@ class ShoppingfeedDbTableDefinitionModel
         $ids = $this->def->getIdsSingleRelations();
         $relations = $this->def->getRelations($ids);
 
-        return array_map(function (ShoppingfeedDbTableDefinitionRelation $relation) {
+        return array_map(function (DbTableDefinitionRelation $relation) {
             return array("{$relation->getName()}.{$relation->getPrimary()}");
         }, $relations);
     }
@@ -166,9 +175,9 @@ class ShoppingfeedDbTableDefinitionModel
     public function has($relation)
     {
         switch ($relation) {
-            case ShoppingfeedDbTableDefinitionRelation::ID_LANG:
+            case DbTableDefinitionRelation::ID_LANG:
                 return $this->def->get('multilang');
-            case ShoppingfeedDbTableDefinitionRelation::ID_SHOP:
+            case DbTableDefinitionRelation::ID_SHOP:
                 return $this->def->get('multishop');
             default:
                 return isset($this->def->get('associations')[$relation]);
@@ -212,7 +221,7 @@ class ShoppingfeedDbTableDefinitionModel
     protected function getFieldPrimary()
     {
         return array(
-            $this->getPrimary() => ShoppingfeedObjectModelDefinition::PRIMARY_KEY_FIELD
+            $this->getPrimary() => ObjectModelDefinition::PRIMARY_KEY_FIELD
         );
     }
 

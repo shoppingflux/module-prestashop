@@ -2,17 +2,17 @@
 /**
  * NOTICE OF LICENSE
  *
- * This source file is subject to a commercial license from SARL 202 ecommence
+ * This source file is subject to a commercial license from SARL 202 ecommerce
  * Use, copy, modification or distribution of this source file without written
- * license agreement from the SARL 202 ecommence is strictly forbidden.
+ * license agreement from the SARL 202 ecommerce is strictly forbidden.
  * In order to obtain a license, please contact us: tech@202-ecommerce.com
  * ...........................................................................
  * INFORMATION SUR LA LICENCE D'UTILISATION
  *
  * L'utilisation de ce fichier source est soumise a une licence commerciale
- * concedee par la societe 202 ecommence
+ * concedee par la societe 202 ecommerce
  * Toute utilisation, reproduction, modification ou distribution du present
- * fichier source sans contrat de licence ecrit de la part de la SARL 202 ecommence est
+ * fichier source sans contrat de licence ecrit de la part de la SARL 202 ecommerce est
  * expressement interdite.
  * Pour obtenir une licence, veuillez contacter 202-ecommerce <tech@202-ecommerce.com>
  * ...........................................................................
@@ -20,10 +20,14 @@
  * @author    202-ecommerce <tech@202-ecommerce.com>
  * @copyright Copyright (c) 202-ecommerce
  * @license   Commercial license
- * @version   release/1.2.0
+ * @version   develop
  */
 
-class ShoppingfeedDbTable
+namespace ShoppingfeedClasslib\Db;
+
+use \Tools;
+
+class DbTable
 {
     /**
      * Key identifiers.
@@ -63,8 +67,8 @@ class ShoppingfeedDbTable
 
     /**
      * Hydrate properties
-     * @param ShoppingfeedDbSchema $schema
-     * @return ShoppingfeedDbTable
+     * @param ShoppingfeedClasslib\Db\DbSchema $schema
+     * @return ShoppingfeedClasslib\Db\DbTable
      */
     public function hydrate($schema)
     {
@@ -158,7 +162,7 @@ class ShoppingfeedDbTable
             if ($key['Key_name'] != 'PRIMARY') {
                 try {
                     $this->db->execute("ALTER TABLE `$this->name` DROP KEY `".$key['Key_name']."`; ");
-                } catch (Exception $e) {
+                } catch (\Exception $e) {
                     continue;
                 }
             }
@@ -170,8 +174,8 @@ class ShoppingfeedDbTable
                 if (strpos($modelDef, 'FOREIGN KEY') === 0) {
                     $i++;
                     try {
-                        $this->db->execute("ALTER TABLE `$this->name` DROP FOREIGN KEY `" . $this->name . "_ibfk_$i`; ");
-                    } catch (Exception $e) {
+                        $this->db->execute("ALTER TABLE `$this->name` DROP FOREIGN KEY `".$this->name . "_ibfk_$i`;");
+                    } catch (\Exception $e) {
                         continue;
                     }
                 }
@@ -187,7 +191,7 @@ class ShoppingfeedDbTable
                     continue;
                 }
                 $this->db->execute("ALTER TABLE `$this->name` ADD ".$modelDef.";");
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 continue;
             }
         }
@@ -206,7 +210,7 @@ class ShoppingfeedDbTable
 
     /**
      * @param string $name
-     * @return ShoppingfeedDbTable
+     * @return ShoppingfeedClasslib\Db\DbTable
      */
     public function setName($name)
     {
@@ -217,7 +221,7 @@ class ShoppingfeedDbTable
 
     /**
      * @param string $engine
-     * @return ShoppingfeedDbTable
+     * @return ShoppingfeedClasslib\Db\DbTable
      */
     public function setEngine($engine)
     {
@@ -228,7 +232,7 @@ class ShoppingfeedDbTable
 
     /**
      * @param string $charset
-     * @return ShoppingfeedDbTable
+     * @return ShoppingfeedClasslib\Db\DbTable
      */
     public function setCharset($charset)
     {
@@ -239,7 +243,7 @@ class ShoppingfeedDbTable
 
     /**
      * @param string $collation
-     * @return ShoppingfeedDbTable
+     * @return ShoppingfeedClasslib\Db\DbTable
      */
     public function setCollation($collation)
     {
@@ -250,7 +254,7 @@ class ShoppingfeedDbTable
 
     /**
      * @param array $columns
-     * @return ShoppingfeedDbTable
+     * @return ShoppingfeedClasslib\Db\DbTable
      */
     public function setColumns($columns)
     {
@@ -261,7 +265,7 @@ class ShoppingfeedDbTable
 
     /**
      * @param array $columns
-     * @return ShoppingfeedDbTable
+     * @return ShoppingfeedClasslib\Db\DbTable
      */
     public function setKeyPrimary($columns)
     {
@@ -270,7 +274,7 @@ class ShoppingfeedDbTable
 
     /**
      * @param array $keys
-     * @return ShoppingfeedDbTable
+     * @return ShoppingfeedClasslib\Db\DbTable
      */
     public function setKeysForeign($keys)
     {
@@ -283,7 +287,7 @@ class ShoppingfeedDbTable
 
     /**
      * @param array $columns
-     * @return ShoppingfeedDbTable
+     * @return ShoppingfeedClasslib\Db\DbTable
      */
     public function setKeyForeign($columns)
     {
@@ -292,7 +296,7 @@ class ShoppingfeedDbTable
 
     /**
      * @param array $keys
-     * @return ShoppingfeedDbTable
+     * @return ShoppingfeedClasslib\Db\DbTable
      */
     public function setKeysUnique($keys)
     {
@@ -301,7 +305,7 @@ class ShoppingfeedDbTable
 
     /**
      * @param array $columns
-     * @return ShoppingfeedDbTable
+     * @return ShoppingfeedClasslib\Db\DbTable
      */
     public function setKeyUnique($columns)
     {
@@ -310,7 +314,7 @@ class ShoppingfeedDbTable
 
     /**
      * @param array $keys
-     * @return ShoppingfeedDbTable
+     * @return ShoppingfeedClasslib\Db\DbTable
      */
     public function setKeysFulltext($keys)
     {
@@ -319,7 +323,7 @@ class ShoppingfeedDbTable
 
     /**
      * @param array $columns
-     * @return ShoppingfeedDbTable
+     * @return ShoppingfeedClasslib\Db\DbTable
      */
     public function setKeyFulltext($columns)
     {
@@ -328,7 +332,7 @@ class ShoppingfeedDbTable
 
     /**
      * @param array $keys
-     * @return ShoppingfeedDbTable
+     * @return ShoppingfeedClasslib\Db\DbTable
      */
     public function setKeysSimple($keys)
     {
@@ -337,7 +341,7 @@ class ShoppingfeedDbTable
 
     /**
      * @param array $columns
-     * @return ShoppingfeedDbTable
+     * @return ShoppingfeedClasslib\Db\DbTable
      */
     public function setKeySimple($columns)
     {
@@ -347,7 +351,7 @@ class ShoppingfeedDbTable
     /**
      * @param array    $columns
      * @param int|null $type
-     * @return ShoppingfeedDbTable
+     * @return ShoppingfeedClasslib\Db\DbTable
      */
     protected function setKey($columns, $type = null)
     {
@@ -364,7 +368,8 @@ class ShoppingfeedDbTable
                 break;
             case static::FOREIGN:
                 list($table, $columns) = explode('.', $name);
-                $this->keys[] = "FOREIGN KEY (`$columns`) REFERENCES $table (`$columns`) ON UPDATE CASCADE ON DELETE CASCADE";
+                $this->keys[] = "FOREIGN KEY (`$columns`) REFERENCES $table (`$columns`) 
+                ON UPDATE CASCADE ON DELETE CASCADE";
                 break;
             case static::UNIQUE:
                 $this->keys[] = "UNIQUE KEY (`$columns`)";

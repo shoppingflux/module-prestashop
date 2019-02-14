@@ -29,8 +29,6 @@ if (!defined('_PS_VERSION_')) {
 require_once(_PS_MODULE_DIR_ . 'shoppingfeed/shoppingfeed.php');
 require_once(_PS_MODULE_DIR_ . 'shoppingfeed/classes/ShoppingfeedApi.php');
 
-TotLoader::import('shoppingfeed\classlib\extensions\ProcessLogger\AdminProcessLoggerController');
-
 /**
  * This admin controller displays the module's general configuration forms
  */

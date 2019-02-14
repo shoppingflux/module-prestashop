@@ -2,17 +2,17 @@
 /**
  * NOTICE OF LICENSE
  *
- * This source file is subject to a commercial license from SARL 202 ecommence
+ * This source file is subject to a commercial license from SARL 202 ecommerce
  * Use, copy, modification or distribution of this source file without written
- * license agreement from the SARL 202 ecommence is strictly forbidden.
+ * license agreement from the SARL 202 ecommerce is strictly forbidden.
  * In order to obtain a license, please contact us: tech@202-ecommerce.com
  * ...........................................................................
  * INFORMATION SUR LA LICENCE D'UTILISATION
  *
  * L'utilisation de ce fichier source est soumise a une licence commerciale
- * concedee par la societe 202 ecommence
+ * concedee par la societe 202 ecommerce
  * Toute utilisation, reproduction, modification ou distribution du present
- * fichier source sans contrat de licence ecrit de la part de la SARL 202 ecommence est
+ * fichier source sans contrat de licence ecrit de la part de la SARL 202 ecommerce est
  * expressement interdite.
  * Pour obtenir une licence, veuillez contacter 202-ecommerce <tech@202-ecommerce.com>
  * ...........................................................................
@@ -20,12 +20,18 @@
  * @author    202-ecommerce <tech@202-ecommerce.com>
  * @copyright Copyright (c) 202-ecommerce
  * @license   Commercial license
- * @version   release/1.2.0
+ * @version   develop
  */
 
-TotLoader::import('shoppingfeed\classlib\extensions\ProcessMonitor\ProcessMonitorObjectModel');
+namespace ShoppingfeedClasslib\Extensions\ProcessMonitor;
 
-class ShoppingfeedAdminProcessMonitorController extends ModuleAdminController
+use ShoppingfeedClasslib\Extensions\ProcessMonitor\ProcessMonitorObjectModel;
+use \HelperList;
+use \Validate;
+use \ObjectModel;
+use \Db;
+
+class AdminProcessMonitorController extends \ModuleAdminController
 {
     /** @var bool $bootstrap Active bootstrap for Prestashop 1.6 */
     public $bootstrap = true;
@@ -34,7 +40,7 @@ class ShoppingfeedAdminProcessMonitorController extends ModuleAdminController
     public $module;
 
     /** @var string Associated object class name */
-    public $className = 'ShoppingfeedProcessMonitorObjectModel';
+    public $className = 'ShoppingfeedClasslib\Extensions\ProcessMonitor\ProcessMonitorObjectModel';
 
     /** @var string Associated table name */
     public $table = 'shoppingfeed_processmonitor';
@@ -63,13 +69,16 @@ class ShoppingfeedAdminProcessMonitorController extends ModuleAdminController
         $this->bulk_actions = array(
             'delete' => array(
                 'text' => $this->module->l('Delete selected', 'AdminProcessMonitorController'),
-                'confirm' => $this->module->l('Would you like to delete the selected items?', 'AdminProcessMonitorController'),
+                'confirm' => $this->module->l(
+                    'Would you like to delete the selected items?',
+                    'AdminProcessMonitorController'
+                ),
             )
         );
 
         $this->fields_list = array(
             'id_shoppingfeed_processmonitor' => array(
-                'title'  => $this->module->l('ID', 'ShoppingfeedAdminProcessMonitorController'),
+                'title'  => $this->module->l('ID', 'AdminProcessMonitorController'),
                 'align'  => 'center',
                 'class'  => 'fixed-width-xs',
                 'search' => true,
@@ -102,7 +111,11 @@ class ShoppingfeedAdminProcessMonitorController extends ModuleAdminController
     public function getStatus($echo, $tr)
     {
         unset($tr);
-        return empty($echo) ? '<span class="badge badge-info">'.$this->module->l('Not running', 'AdminProcessMonitorController').'</span>' : '<span class="badge badge-warning">'.$this->module->l('Is running', 'AdminProcessMonitorController').'</span>';
+        return empty($echo) ? '<span class="badge badge-info">'.
+            $this->module->l('Not running', 'AdminProcessMonitorController').
+            '</span>' : '<span class="badge badge-warning">'.
+            $this->module->l('Is running', 'AdminProcessMonitorController').
+            '</span>';
     }
 
     /**
@@ -127,7 +140,7 @@ class ShoppingfeedAdminProcessMonitorController extends ModuleAdminController
 
     /**
      * @inheritdoc
-     * @throws SmartyException
+     * @throws \SmartyException
      */
     public function initContent()
     {
@@ -142,13 +155,13 @@ class ShoppingfeedAdminProcessMonitorController extends ModuleAdminController
      * Renders a list with all cron tasks
      *
      * @return null|string
-     * @throws SmartyException
-     * @throws Exception
+     * @throws \SmartyException
+     * @throws \Exception
      */
     public function renderCronTasks()
     {
         if (empty($this->module->cronTasks)) {
-            throw new Exception(
+            throw new \Exception(
                 $this->module->l('Unable to find cronTasks declaration in module.', 'AdminProcessMonitorController')
             );
         }
@@ -178,7 +191,7 @@ class ShoppingfeedAdminProcessMonitorController extends ModuleAdminController
             $title = null;
             if (isset($data['title'][$this->context->language->iso_code])) {
                 $title = $data['title'][$this->context->language->iso_code];
-            } else if (isset($data['title']['en'])) {
+            } elseif (isset($data['title']['en'])) {
                 $title = $data['title']['en'];
             }
             $list[] = array(
@@ -202,5 +215,33 @@ class ShoppingfeedAdminProcessMonitorController extends ModuleAdminController
         $helper->bulk_actions = array();
         $helper->no_link = true;
         return $helper->generateList($list, $fieldsList);
+    }
+    
+    /**
+     * We can't use the ObjectModel's "save", "add" or "update" methods.
+     * PS will natively call ObjectModel hooks, using the class name of the
+     * ObjectModel. On PS 1.6, the namespace is not escaped from the class name,
+     * resulting in an invalid hook name, e.g. :
+     * actionObjectShoppingfeedClasslib\Extensions\ProcessMonitor\ProcessMonitorObjectModelUpdateBefore
+     */
+    public function processDelete()
+    {
+        if (Validate::isLoadedObject($object = $this->loadObject()))
+        {
+            $objectDefinition = ObjectModel::getDefinition($object);
+            if ($res = Db::getInstance()->delete(
+                    $objectDefinition['table'],
+                    '`'.pSQL($objectDefinition['primary']).'` = '.(int)$object->id
+            )) {
+                $this->redirect_after = self::$currentIndex.'&conf=1&token='.$this->token;
+            }
+            $this->errors[] = $this->module->l('An error occurred during deletion.', 'AdminProcessMonitorController');
+        } else {
+            $this->errors[] = $this->module->l('An error occurred while deleting the object.', 'AdminProcessMonitorController').
+                ' <b>'.$this->table.'</b> '.
+                $this->module->l('(cannot load object)', 'AdminProcessMonitorController');
+        }
+        
+        return $object;
     }
 }

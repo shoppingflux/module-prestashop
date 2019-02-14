@@ -26,8 +26,8 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-TotLoader::import('shoppingfeed\classlib\extensions\ProcessLogger\ProcessLoggerObjectModel');
+use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerObjectModel;
 
-class ShoppingfeedProcessLogger extends ShoppingfeedProcessLoggerObjectModel
+class ShoppingfeedProcessLogger extends ProcessLoggerObjectModel
 {
 }

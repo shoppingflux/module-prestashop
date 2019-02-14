@@ -2,17 +2,17 @@
 /**
  * NOTICE OF LICENSE
  *
- * This source file is subject to a commercial license from SARL 202 ecommence
+ * This source file is subject to a commercial license from SARL 202 ecommerce
  * Use, copy, modification or distribution of this source file without written
- * license agreement from the SARL 202 ecommence is strictly forbidden.
+ * license agreement from the SARL 202 ecommerce is strictly forbidden.
  * In order to obtain a license, please contact us: tech@202-ecommerce.com
  * ...........................................................................
  * INFORMATION SUR LA LICENCE D'UTILISATION
  *
  * L'utilisation de ce fichier source est soumise a une licence commerciale
- * concedee par la societe 202 ecommence
+ * concedee par la societe 202 ecommerce
  * Toute utilisation, reproduction, modification ou distribution du present
- * fichier source sans contrat de licence ecrit de la part de la SARL 202 ecommence est
+ * fichier source sans contrat de licence ecrit de la part de la SARL 202 ecommerce est
  * expressement interdite.
  * Pour obtenir une licence, veuillez contacter 202-ecommerce <tech@202-ecommerce.com>
  * ...........................................................................
@@ -20,10 +20,17 @@
  * @author    202-ecommerce <tech@202-ecommerce.com>
  * @copyright Copyright (c) 202-ecommerce
  * @license   Commercial license
- * @version   release/1.2.0
+ * @version   develop
  */
 
-class ShoppingfeedDbTableDefinitionRelation
+namespace ShoppingfeedClasslib\Db;
+
+use ShoppingfeedClasslib\Db\ObjectModelDefinition;
+use ShoppingfeedClasslib\Db\DbTableDefinitionRelation;
+
+use \ObjectModel;
+
+class DbTableDefinitionRelation
 {
     /**
      * Internal IDs.
@@ -63,9 +70,11 @@ class ShoppingfeedDbTableDefinitionRelation
     {
         switch ($key) {
             case 'fields':
-                return isset($this->def->get('associations')[$this->id][$key]) ? $this->def->get('associations')[$this->id][$key] : array();
+                return isset($this->def->get('associations')[$this->id][$key]) ?
+                    $this->def->get('associations')[$this->id][$key] : array();
             default:
-                return isset($this->def->get('associations')[$this->id][$key]) ? $this->def->get('associations')[$this->id][$key] : null;
+                return isset($this->def->get('associations')[$this->id][$key]) ?
+                    $this->def->get('associations')[$this->id][$key] : null;
         }
     }
 
@@ -80,7 +89,7 @@ class ShoppingfeedDbTableDefinitionRelation
             case static::ID_SHOP:
                 return $this->def->getModel()->getName().'_shop';
             default:
-                return ShoppingfeedObjectModelDefinition::DB_PREFIX.$this->get('association');
+                return ObjectModelDefinition::DB_PREFIX.$this->get('association');
         }
     }
 
@@ -104,7 +113,7 @@ class ShoppingfeedDbTableDefinitionRelation
      */
     public function getEngine()
     {
-        return !empty($this->get('engine')) ? (string)$this->get('engine') : ShoppingfeedObjectModelDefinition::ENGINE;
+        return !empty($this->get('engine')) ? (string)$this->get('engine') : ObjectModelDefinition::ENGINE;
     }
 
     /**
@@ -112,7 +121,7 @@ class ShoppingfeedDbTableDefinitionRelation
      */
     public function getCharset()
     {
-        return !empty($this->get('charset')) ? (string)$this->get('charset') : ShoppingfeedObjectModelDefinition::CHARSET;
+        return !empty($this->get('charset')) ? (string)$this->get('charset') : ObjectModelDefinition::CHARSET;
     }
 
     /**
@@ -120,7 +129,8 @@ class ShoppingfeedDbTableDefinitionRelation
      */
     public function getCollation()
     {
-        return !empty($this->get('collation')) ? (string)$this->get('collation') : ShoppingfeedObjectModelDefinition::COLLATION;
+        return !empty($this->get('collation')) ?
+            (string)$this->get('collation') : ObjectModelDefinition::COLLATION;
     }
 
     /**
@@ -186,8 +196,8 @@ class ShoppingfeedDbTableDefinitionRelation
     public function getKeysSimple()
     {
         switch ($this->id) {
-            case ShoppingfeedDbTableDefinitionRelation::ID_LANG:
-            case ShoppingfeedDbTableDefinitionRelation::ID_SHOP:
+            case DbTableDefinitionRelation::ID_LANG:
+            case DbTableDefinitionRelation::ID_SHOP:
                 return array();
             default:
                 return array_filter(
@@ -206,8 +216,8 @@ class ShoppingfeedDbTableDefinitionRelation
     public function getKeysUnique()
     {
         switch ($this->id) {
-            case ShoppingfeedDbTableDefinitionRelation::ID_LANG:
-            case ShoppingfeedDbTableDefinitionRelation::ID_SHOP:
+            case DbTableDefinitionRelation::ID_LANG:
+            case DbTableDefinitionRelation::ID_SHOP:
                 return array();
             default:
                 return array_filter(
@@ -226,8 +236,8 @@ class ShoppingfeedDbTableDefinitionRelation
     public function getKeysFulltext()
     {
         switch ($this->id) {
-            case ShoppingfeedDbTableDefinitionRelation::ID_LANG:
-            case ShoppingfeedDbTableDefinitionRelation::ID_SHOP:
+            case DbTableDefinitionRelation::ID_LANG:
+            case DbTableDefinitionRelation::ID_SHOP:
                 return array();
             default:
                 return array_filter(
@@ -246,8 +256,8 @@ class ShoppingfeedDbTableDefinitionRelation
     public function getType()
     {
         switch ($this->id) {
-            case ShoppingfeedDbTableDefinitionRelation::ID_LANG:
-            case ShoppingfeedDbTableDefinitionRelation::ID_SHOP:
+            case DbTableDefinitionRelation::ID_LANG:
+            case DbTableDefinitionRelation::ID_SHOP:
                 return ObjectModel::HAS_MANY;
             default:
                 return (int)$this->get('type');
@@ -273,16 +283,16 @@ class ShoppingfeedDbTableDefinitionRelation
     protected function getFieldsPrimary()
     {
         $fields = array(
-            $this->def->getModel()->getPrimary() => ShoppingfeedObjectModelDefinition::KEY_FIELD,
-            $this->getPrimary() => ShoppingfeedObjectModelDefinition::KEY_FIELD,
+            $this->def->getModel()->getPrimary() => ObjectModelDefinition::KEY_FIELD,
+            $this->getPrimary() => ObjectModelDefinition::KEY_FIELD,
         );
 
         if ($this->hasMany('shop')) {
-            $fields['id_shop'] = ShoppingfeedObjectModelDefinition::KEY_FIELD;
+            $fields['id_shop'] = ObjectModelDefinition::KEY_FIELD;
         }
 
         if ($this->hasMany('lang')) {
-            $fields['id_lang'] = ShoppingfeedObjectModelDefinition::KEY_FIELD;
+            $fields['id_lang'] = ObjectModelDefinition::KEY_FIELD;
         }
 
         return $fields;
@@ -295,8 +305,8 @@ class ShoppingfeedDbTableDefinitionRelation
     protected function getFieldsCommon()
     {
         switch ($this->id) {
-            case ShoppingfeedDbTableDefinitionRelation::ID_LANG:
-            case ShoppingfeedDbTableDefinitionRelation::ID_SHOP:
+            case DbTableDefinitionRelation::ID_LANG:
+            case DbTableDefinitionRelation::ID_SHOP:
                 return array_filter(
                     $this->def->get('fields'),
                     array(
@@ -317,9 +327,9 @@ class ShoppingfeedDbTableDefinitionRelation
     protected function getForeignTable()
     {
         switch ($this->id) {
-            case ShoppingfeedDbTableDefinitionRelation::ID_LANG:
+            case DbTableDefinitionRelation::ID_LANG:
                 return _DB_PREFIX_ . 'lang';
-            case ShoppingfeedDbTableDefinitionRelation::ID_SHOP:
+            case DbTableDefinitionRelation::ID_SHOP:
                 return _DB_PREFIX_ . 'shop';
             default:
                 return _DB_PREFIX_ . $this->getForeignModelTableName();
@@ -332,10 +342,10 @@ class ShoppingfeedDbTableDefinitionRelation
      */
     protected function getForeignModelTableName()
     {
-        /** @var ObjectModel $class */
+        /** @var \ObjectModel $class */
         $class = $this->get('object');
 
-        $classDefinition = $class::$definition; // static definition ObjectModel named $class
+        $classDefinition = $class::$definition; //static definition \ObjectModel named $class
 
         return $classDefinition['table'];
     }
@@ -348,7 +358,7 @@ class ShoppingfeedDbTableDefinitionRelation
     protected function hasMany($relation)
     {
         switch ($this->id) {
-            case ShoppingfeedDbTableDefinitionRelation::ID_LANG:
+            case DbTableDefinitionRelation::ID_LANG:
                 return !empty($this->def->get("multilang_$relation"));
             default:
                 return !empty($this->get("multi$relation"));
@@ -364,9 +374,9 @@ class ShoppingfeedDbTableDefinitionRelation
     protected function hasField($field, $name)
     {
         switch ($this->id) {
-            case ShoppingfeedDbTableDefinitionRelation::ID_LANG:
+            case DbTableDefinitionRelation::ID_LANG:
                 return !empty($field['lang']);
-            case ShoppingfeedDbTableDefinitionRelation::ID_SHOP:
+            case DbTableDefinitionRelation::ID_SHOP:
                 return !empty($field['shop']);
             default:
                 return isset($this->get('fields')[$name]);

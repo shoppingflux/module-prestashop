@@ -12,10 +12,14 @@
       "vendor/prefixed/guzzlehttp/promises/src/functions_include.php"
     ],
     "psr-4": {
+      "ShoppingfeedClasslib\\":          "vendor/totpsclasslib/src/",
       "SfGuzzle\\GuzzleHttp\\":          "vendor/prefixed/guzzlehttp/guzzle/src/",
       "SfGuzzle\\GuzzleHttp\\Psr7\\":    "vendor/prefixed/guzzlehttp/psr7/src/",
       "SfGuzzle\\GuzzleHttp\\Promise\\": "vendor/prefixed/guzzlehttp/promises/src/",
       "ShoppingFeed\\Sdk\\":             "vendor/prefixed/shoppingfeed/php-sdk/src/"
     }
+  },
+  "scripts": {
+    "pre-autoload-dump": "php ${TOTPSCLASSLIB_DEV_PATH}/classlib/refresh.php ."
   }
 }

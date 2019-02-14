@@ -26,8 +26,8 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-TotLoader::import('shoppingfeed\classlib\extensions\ProcessMonitor\ProcessMonitorObjectModel');
+use ShoppingfeedClasslib\Extensions\ProcessMonitor\ProcessMonitorObjectModel;
 
-class ShoppingfeedProcessMonitor extends ShoppingfeedProcessMonitorObjectModel
+class ShoppingfeedProcessMonitor extends ProcessMonitorObjectModel
 {
 }

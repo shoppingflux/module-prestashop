@@ -20,16 +20,18 @@
  * @author    202-ecommerce <tech@202-ecommerce.com>
  * @copyright Copyright (c) 202-ecommerce
  * @license   Commercial license
- * @version   release/1.2.0
+ * @version   develop
  */
 
+namespace ShoppingfeedClasslib\Actions;
+
 /**
- * Actions Handler
+ * DefaultActions
  */
-class ShoppingfeedHandler
+class DefaultActions
 {
     /**
-     * @var ObjectModel $modelObject
+     * @var \ObjectModel $modelObject
      */
     protected $modelObject;
 
@@ -41,16 +43,9 @@ class ShoppingfeedHandler
     protected $conveyor = array();
 
     /**
-     * List of actions
+     * Set the modelObject
      *
-     * @var array $actions
-     */
-    protected $actions;
-
-    /**
-     * Set an modelObject
-     *
-     * @param ObjectModel $modelObject
+     * @param \ObjectModel $modelObject
      * @return $this
      */
     public function setModelObject($modelObject)
@@ -84,52 +79,31 @@ class ShoppingfeedHandler
     }
 
     /**
-     * Call sevral actions
+     * Call next action call back of cross modules
      *
-     * @param mixed $actions
-     * @return $this
+     * @param mixed $action Name of the actions chain
+     * @return bool
      */
-    public function addActions($actions)
+    protected function forward($action)
     {
-        $this->actions = func_get_args();
-        return $this;
+        if (!is_callable(array($this, $action), false)) {
+            echo $action.' not defined';
+            exit;
+        }
+        if (!call_user_func_array(array($this, $action), array())) {
+            return false;
+        }
+        return true;
     }
 
     /**
-     * Process the action call back of cross modules
-     *
-     * @param string $chain Name of the actions chain
-     * @return bool
+     * Translation function; needed so PS will properly parse the file
+     * @param string $string the string to translate
+     * @param string $source the file with the translation; should always be the current file
+     * @return mixed|string
      */
-    public function process($chain)
+    protected function l($string, $source)
     {
-        $className = Tools::ucfirst($chain).'Actions';
-        include_once _PS_MODULE_DIR_.'shoppingfeed/classes/actions/'.$className.'.php';
-        $overridePath = _PS_OVERRIDE_DIR_.'modules/shoppingfeed/classes/actions/'.$className.'.php';
-        if (file_exists($overridePath)) {
-            $className .= 'Override';
-            include_once $overridePath;
-        }
-        if (class_exists($className)) {
-            /** @var ShoppingfeedDefaultActions $classAction */
-            $classAction = new $className;
-            $classAction->setModelObject($this->modelObject);
-            $classAction->setConveyor($this->conveyor);
-            foreach ($this->actions as $action) {
-                if (!is_callable(array($classAction, $action), false, $callable_name)) {
-                    continue;
-                }
-                if (!call_user_func_array(array($classAction, $action), array())) {
-                    $this->setConveyor($classAction->getConveyor());
-                    return false;
-                }
-            }
-            $this->setConveyor($classAction->getConveyor());
-        } else {
-            echo $className.' not defined';
-            exit;
-        }
-
-        return true;
+        return Translate::getModuleTranslation('shoppingfeed', $string, $source);
     }
 }

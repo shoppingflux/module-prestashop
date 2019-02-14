@@ -2,17 +2,17 @@
 /**
  * NOTICE OF LICENSE
  *
- * This source file is subject to a commercial license from SARL 202 ecommence
+ * This source file is subject to a commercial license from SARL 202 ecommerce
  * Use, copy, modification or distribution of this source file without written
- * license agreement from the SARL 202 ecommence is strictly forbidden.
+ * license agreement from the SARL 202 ecommerce is strictly forbidden.
  * In order to obtain a license, please contact us: tech@202-ecommerce.com
  * ...........................................................................
  * INFORMATION SUR LA LICENCE D'UTILISATION
  *
  * L'utilisation de ce fichier source est soumise a une licence commerciale
- * concedee par la societe 202 ecommence
+ * concedee par la societe 202 ecommerce
  * Toute utilisation, reproduction, modification ou distribution du present
- * fichier source sans contrat de licence ecrit de la part de la SARL 202 ecommence est
+ * fichier source sans contrat de licence ecrit de la part de la SARL 202 ecommerce est
  * expressement interdite.
  * Pour obtenir une licence, veuillez contacter 202-ecommerce <tech@202-ecommerce.com>
  * ...........................................................................
@@ -20,10 +20,19 @@
  * @author    202-ecommerce <tech@202-ecommerce.com>
  * @copyright Copyright (c) 202-ecommerce
  * @license   Commercial license
- * @version   release/1.2.0
+ * @version   develop
  */
 
-class ShoppingfeedObjectModelDefinition
+namespace ShoppingfeedClasslib\Db;
+
+use ShoppingfeedClasslib\Db\DbTableDefinitionModel;
+use ShoppingfeedClasslib\Db\DbTableDefinitionRelation;
+use ShoppingfeedClasslib\Db\DbSchema;
+
+use \ObjectModel;
+use \Tools;
+
+class ObjectModelDefinition
 {
     /**
      * Defaults.
@@ -58,12 +67,12 @@ class ShoppingfeedObjectModelDefinition
     protected $def;
 
     /**
-     * @var ShoppingfeedDbTableDefinitionModel
+     * @var DbTableDefinitionModel
      */
     protected $model;
 
     /**
-     * @var array of ShoppingfeedDbTableDefinitionRelation
+     * @var array of ShoppingfeedClasslib\Db\DbTableDefinitionRelation
      */
     protected $relations;
 
@@ -76,7 +85,7 @@ class ShoppingfeedObjectModelDefinition
         $this->def = $def;
         // Prestashop doesn't define shop association when fetching definition.
         if ($this->get('multishop')) {
-            $this->def['associations'][ShoppingfeedDbTableDefinitionRelation::ID_SHOP] = array(
+            $this->def['associations'][DbTableDefinitionRelation::ID_SHOP] = array(
                 'type'  => ObjectModel::HAS_MANY,
                 'field' => $this->get('primary'),
             );
@@ -121,19 +130,19 @@ class ShoppingfeedObjectModelDefinition
 
     /**
      * @param string $id
-     * @return ShoppingfeedDbSchema
+     * @return ShoppingfeedClasslib\Db\DbSchema
      */
     public function getSchema($id)
     {
-        return new ShoppingfeedDbSchema($this, $id);
+        return new DbSchema($this, $id);
     }
 
     /**
-     * @return ShoppingfeedDbTableDefinitionModel
+     * @return DbTableDefinitionModel
      */
     public function getModel()
     {
-        return isset($this->model) ? $this->model : $this->model = new ShoppingfeedDbTableDefinitionModel($this);
+        return isset($this->model) ? $this->model : $this->model = new DbTableDefinitionModel($this);
     }
 
     /**
@@ -153,11 +162,12 @@ class ShoppingfeedObjectModelDefinition
 
     /**
      * @param string $id
-     * @return ShoppingfeedDbTableDefinitionRelation
+     * @return ShoppingfeedClasslib\Db\DbTableDefinitionRelation
      */
     public function getRelation($id)
     {
-        return isset($this->relations[$id]) ? $this->relations[$id] : $this->relations[$id] = new ShoppingfeedDbTableDefinitionRelation($this, $id);
+        return isset($this->relations[$id]) ?
+            $this->relations[$id] : $this->relations[$id] = new DbTableDefinitionRelation($this, $id);
     }
 
     /**
@@ -176,7 +186,7 @@ class ShoppingfeedObjectModelDefinition
      */
     public function getIdModel()
     {
-        return ShoppingfeedDbTableDefinitionModel::ID;
+        return DbTableDefinitionModel::ID;
     }
 
     /**
@@ -208,8 +218,8 @@ class ShoppingfeedObjectModelDefinition
             default:
                 return array_merge(
                     array(
-                        ShoppingfeedDbTableDefinitionRelation::ID_LANG,
-                        ShoppingfeedDbTableDefinitionRelation::ID_SHOP
+                        DbTableDefinitionRelation::ID_LANG,
+                        DbTableDefinitionRelation::ID_SHOP
                     ),
                     array_keys($this->get('associations'))
                 );
@@ -253,7 +263,7 @@ class ShoppingfeedObjectModelDefinition
     public function getName($id)
     {
         switch ($id) {
-            case ShoppingfeedDbTableDefinitionModel::ID:
+            case DbTableDefinitionModel::ID:
                 return $this->getModel()->getName();
             default:
                 return $this->getRelation($id)->getName();
@@ -267,7 +277,7 @@ class ShoppingfeedObjectModelDefinition
     public function getEngine($id)
     {
         switch ($id) {
-            case ShoppingfeedDbTableDefinitionModel::ID:
+            case DbTableDefinitionModel::ID:
                 return $this->getModel()->getEngine();
             default:
                 return $this->getRelation($id)->getEngine();
@@ -281,7 +291,7 @@ class ShoppingfeedObjectModelDefinition
     public function getCharset($id)
     {
         switch ($id) {
-            case ShoppingfeedDbTableDefinitionModel::ID:
+            case DbTableDefinitionModel::ID:
                 return $this->getModel()->getCharset();
             default:
                 return $this->getRelation($id)->getCharset();
@@ -295,7 +305,7 @@ class ShoppingfeedObjectModelDefinition
     public function getCollation($id)
     {
         switch ($id) {
-            case ShoppingfeedDbTableDefinitionModel::ID:
+            case DbTableDefinitionModel::ID:
                 return $this->getModel()->getCollation();
             default:
                 return $this->getRelation($id)->getCollation();
@@ -309,7 +319,7 @@ class ShoppingfeedObjectModelDefinition
     public function getColumns($id)
     {
         switch ($id) {
-            case ShoppingfeedDbTableDefinitionModel::ID:
+            case DbTableDefinitionModel::ID:
                 return $this->getModel()->getColumns();
             default:
                 return $this->getRelation($id)->getColumns();
@@ -336,7 +346,7 @@ class ShoppingfeedObjectModelDefinition
      * @param string $name
      * @param array  $constraints
      * @return string
-     * @throws PrestaShopException
+     * @throws \PrestaShopException
      */
     public function getColumnFromField($name, $constraints)
     {
@@ -364,7 +374,8 @@ class ShoppingfeedObjectModelDefinition
                     break;
                 case ObjectModel::TYPE_INT:
                     $description .= 'INT(10)'.(
-                        !empty($constraints['validate']) && strpos(Tools::strtolower($constraints['validate']), 'unsigned')
+                        !empty($constraints['validate'])
+                        && strpos(Tools::strtolower($constraints['validate']), 'unsigned')
                             ? ' UNSIGNED'
                             : ' SIGNED'
                     );
@@ -375,7 +386,7 @@ class ShoppingfeedObjectModelDefinition
                     $description .= "VARCHAR($length)";
                     break;
                 default:
-                    throw new PrestaShopException("Missing type constraint definition for field $name");
+                    throw new \PrestaShopException("Missing type constraint definition for field $name");
             }
         }
         if (!empty($constraints['values'])) {
@@ -401,7 +412,7 @@ class ShoppingfeedObjectModelDefinition
     public function getKeyPrimary($id)
     {
         switch ($id) {
-            case ShoppingfeedDbTableDefinitionModel::ID:
+            case DbTableDefinitionModel::ID:
                 return $this->getModel()->getKeyPrimary();
             default:
                 return $this->getRelation($id)->getKeyPrimary();
@@ -415,7 +426,7 @@ class ShoppingfeedObjectModelDefinition
     public function getKeysForeign($id)
     {
         switch ($id) {
-            case ShoppingfeedDbTableDefinitionModel::ID:
+            case DbTableDefinitionModel::ID:
                 return $this->getModel()->getKeysForeign();
             default:
                 return $this->getRelation($id)->getKeysForeign();
@@ -429,7 +440,7 @@ class ShoppingfeedObjectModelDefinition
     public function getKeysSimple($id)
     {
         switch ($id) {
-            case ShoppingfeedDbTableDefinitionModel::ID:
+            case DbTableDefinitionModel::ID:
                 return $this->getModel()->getKeysSimple();
             default:
                 return $this->getRelation($id)->getKeysSimple();
@@ -443,7 +454,7 @@ class ShoppingfeedObjectModelDefinition
     public function getKeysUnique($id)
     {
         switch ($id) {
-            case ShoppingfeedDbTableDefinitionModel::ID:
+            case DbTableDefinitionModel::ID:
                 return $this->getModel()->getKeysUnique();
             default:
                 return $this->getRelation($id)->getKeysUnique();
@@ -457,7 +468,7 @@ class ShoppingfeedObjectModelDefinition
     public function getKeysFulltext($id)
     {
         switch ($id) {
-            case ShoppingfeedDbTableDefinitionModel::ID:
+            case DbTableDefinitionModel::ID:
                 return $this->getModel()->getKeysFulltext();
             default:
                 return $this->getRelation($id)->getKeysFulltext();

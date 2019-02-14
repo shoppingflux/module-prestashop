@@ -20,10 +20,21 @@
  * @author    202-ecommerce <tech@202-ecommerce.com>
  * @copyright Copyright (c) 202-ecommerce
  * @license   Commercial license
- * @version   release/1.2.0
+ * @version   develop
  */
 
-class ShoppingfeedInstaller
+namespace ShoppingfeedClasslib\Install;
+
+use ShoppingfeedClasslib\Db\ObjectModelExtension;
+
+use \Db;
+use \DbQuery;
+use \Tools;
+use \Tab;
+use \Language;
+use \Configuration;
+
+class Installer
 {
     /**
      * @var Shoppingfeed
@@ -44,8 +55,8 @@ class ShoppingfeedInstaller
     /**
      * @param Shoppingfeed $module
      * @return bool
-     * @throws PrestaShopDatabaseException
-     * @throws PrestaShopException
+     * @throws \PrestaShopDatabaseException
+     * @throws \PrestaShopException
      */
     public function install($module)
     {
@@ -61,7 +72,7 @@ class ShoppingfeedInstaller
     /**
      * @param Shoppingfeed $module
      * @return bool
-     * @throws Exception
+     * @throws \Exception
      */
     public function checkPhpVersion($module)
     {
@@ -72,7 +83,7 @@ class ShoppingfeedInstaller
         $phpVersion = Tools::checkPhpVersion();
 
         if (Tools::version_compare($phpVersion, $module->php_version_required, '<')) {
-            throw new Exception(sprintf(
+            throw new \Exception(sprintf(
                 '[%s] This module requires at least PHP %s or newer versions.',
                 $module->name,
                 $module->php_version_required
@@ -85,8 +96,8 @@ class ShoppingfeedInstaller
     /**
      * @param Shoppingfeed $module
      * @return bool
-     * @throws PrestaShopDatabaseException
-     * @throws PrestaShopException
+     * @throws \PrestaShopDatabaseException
+     * @throws \PrestaShopException
      */
     public function uninstall($module)
     {
@@ -104,8 +115,8 @@ class ShoppingfeedInstaller
      *
      * @param Shoppingfeed $module
      * @return bool
-     * @throws PrestaShopDatabaseException
-     * @throws PrestaShopException
+     * @throws \PrestaShopDatabaseException
+     * @throws \PrestaShopException
      */
     public function reset($module)
     {
@@ -135,7 +146,7 @@ class ShoppingfeedInstaller
      * Clear hooks used by our module
      *
      * @return bool
-     * @throws PrestaShopException
+     * @throws \PrestaShopException
      */
     public function clearHookUsed()
     {
@@ -197,8 +208,8 @@ class ShoppingfeedInstaller
      * Add Tabs for our ModuleAdminController
      *
      * @return bool
-     * @throws PrestaShopDatabaseException
-     * @throws PrestaShopException
+     * @throws \PrestaShopDatabaseException
+     * @throws \PrestaShopException
      */
     public function installModuleAdminControllers()
     {
@@ -264,8 +275,8 @@ class ShoppingfeedInstaller
      * Delete Tabs of our ModuleAdminController
      *
      * @return bool
-     * @throws PrestaShopDatabaseException
-     * @throws PrestaShopException
+     * @throws \PrestaShopDatabaseException
+     * @throws \PrestaShopException
      */
     public function uninstallModuleAdminControllers()
     {
@@ -289,7 +300,7 @@ class ShoppingfeedInstaller
     }
 
     /**
-     * Install all our ObjectModel
+     * Install all our \ObjectModel
      *
      * @return bool
      */
@@ -307,24 +318,27 @@ class ShoppingfeedInstaller
      *
      * @param string $objectModelClassName
      * @return bool
-     * @throws Exception
+     * @throws \Exception
      */
     public function installObjectModel($objectModelClassName)
     {
+        if (!preg_match("/^[a-zA-Z]+$/", $objectModelClassName)) {
+            throw new \Exception('Installer error : ModelObject "' . $objectModelClassName .
+                '" class name not valid "');
+        }
         $objectModelPath = _PS_MODULE_DIR_ . 'shoppingfeed/classes/'.$objectModelClassName.'.php';
         if (file_exists($objectModelPath)) {
             require_once $objectModelPath;
         } else {
-            throw new Exception('Installer error : ModelObject "' . $objectModelClassName .
+            throw new \Exception('Installer error : ModelObject "' . $objectModelClassName .
                     '" not found or file "' . $objectModelPath .
                     '" doesn\'t exist. Please check a typo ?');
         }
 
-        /** @var ObjectModel $objectModel */
+        /** @var \ObjectModel $objectModel */
         $objectModel = new $objectModelClassName();
 
-        TotLoader::import('shoppingfeed\classlib\db\ObjectModelExtension');
-        $objectModelExtended = new ShoppingfeedObjectModelExtension(
+        $objectModelExtended = new ObjectModelExtension(
             $objectModel,
             Db::getInstance()
         );
@@ -351,24 +365,27 @@ class ShoppingfeedInstaller
      *
      * @param string $objectModelClassName
      * @return bool
-     * @throws Exception
+     * @throws \Exception
      */
     public function uninstallObjectModel($objectModelClassName)
     {
+        if (!preg_match("/^[a-zA-Z]+$/", $objectModelClassName)) {
+            throw new \Exception('Installer error : ModelObject "' . $objectModelClassName .
+                '" class name not valid "');
+        }
         $objectModelPath = _PS_MODULE_DIR_ . 'shoppingfeed/classes/'.$objectModelClassName.'.php';
         if (file_exists($objectModelPath)) {
             require_once $objectModelPath;
         } else {
-            throw new Exception('Installer error : ModelObject "' . $objectModelClassName .
+            throw new \Exception('Installer error : ModelObject "' . $objectModelClassName .
                     '" not found or file "' . $objectModelPath .
                     '" doesn\'t exist. Please check a typo ?');
         }
         
-        /** @var ObjectModel $objectModel */
+        /** @var \ObjectModel $objectModel */
         $objectModel = new $objectModelClassName();
 
-        TotLoader::import('shoppingfeed\classlib\db\ObjectModelExtension');
-        $objectModelExtended = new ShoppingfeedObjectModelExtension(
+        $objectModelExtended = new ObjectModelExtension(
             $objectModel,
             Db::getInstance()
         );
@@ -408,8 +425,8 @@ class ShoppingfeedInstaller
      * Register Order State : create new order state for this module
      *
      * @return bool
-     * @throws PrestaShopDatabaseException
-     * @throws PrestaShopException
+     * @throws \PrestaShopDatabaseException
+     * @throws \PrestaShopException
      */
     public function registerOrderStates()
     {
@@ -446,8 +463,8 @@ class ShoppingfeedInstaller
      * Unregister Order State : mark them as deleted
      *
      * @return bool
-     * @throws PrestaShopDatabaseException
-     * @throws PrestaShopException
+     * @throws \PrestaShopDatabaseException
+     * @throws \PrestaShopException
      */
     public function unregisterOrderStates()
     {

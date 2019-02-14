@@ -26,10 +26,12 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-TotLoader::import('shoppingfeed\classlib\actions\defaultActions');
-
 require_once(_PS_MODULE_DIR_ . 'shoppingfeed/classes/ShoppingfeedApi.php');
 require_once(_PS_MODULE_DIR_ . 'shoppingfeed/classes/ShoppingfeedProduct.php');
+
+use ShoppingfeedClasslib\Actions\DefaultActions;
+use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
+use ShoppingfeedClasslib\Registry;
 
 /**
  * The Actions class is in charge of synchronizing product stocks using the SF API
@@ -38,7 +40,7 @@ require_once(_PS_MODULE_DIR_ . 'shoppingfeed/classes/ShoppingfeedProduct.php');
  * - Name your override class ShoppingfeedProductStockSyncActionsOverride extended with ShoppingfeedProductStockSyncActions
  * @see ShoppingfeedDefaultActions
  */
-class ShoppingfeedProductStockSyncActions extends ShoppingfeedDefaultActions
+class ShoppingfeedProductStockSyncActions extends DefaultActions
 {
     /**
      * Saves a ShoppingfeedProduct to be synchronized. Runs the synchronization if real-time is enabled.
@@ -177,7 +179,7 @@ class ShoppingfeedProductStockSyncActions extends ShoppingfeedDefaultActions
     {
         $shoppingfeedApi = ShoppingfeedApi::getInstanceByToken($this->conveyor['id_shop']);
         if ($shoppingfeedApi == false) {
-            ShoppingfeedRegistry::increment('errors');
+            Registry::increment('errors');
             return false;
         }
         $res = $shoppingfeedApi->updateMainStoreInventory($this->conveyor['preparedBatch']);
@@ -193,7 +195,7 @@ class ShoppingfeedProductStockSyncActions extends ShoppingfeedDefaultActions
             $reference = $inventoryResource->getReference();
             $sfProduct = $preparedBatchShop[$reference]['sfProduct'];
             
-            ShoppingfeedProcessLoggerHandler::logInfo(
+            ProcessLoggerHandler::logInfo(
                 sprintf(
                     $this->l('[Stock shop:%s] Updated %s qty: %s', 'ShoppingfeedProductStockSyncActions'),
                     $this->conveyor['id_shop'],
@@ -204,7 +206,7 @@ class ShoppingfeedProductStockSyncActions extends ShoppingfeedDefaultActions
                 $sfProduct->id_product
             );
 
-            ShoppingfeedRegistry::increment('updatedProducts');
+            Registry::increment('updatedProducts');
 
             unset($preparedBatchShop[$reference]);
 
@@ -215,7 +217,7 @@ class ShoppingfeedProductStockSyncActions extends ShoppingfeedDefaultActions
             foreach ($preparedBatchShop as $data) {
                 $sfProduct = $data['sfProduct'];
 
-                ShoppingfeedProcessLoggerHandler::logInfo(
+                ProcessLoggerHandler::logInfo(
                     sprintf(
                         $this->l('[Stock shop:%s] %s not in Shopping Feed catalog - qty: %d', 'ShoppingfeedProductStockSyncActions'),
                         $this->conveyor['id_shop'],
@@ -225,7 +227,7 @@ class ShoppingfeedProductStockSyncActions extends ShoppingfeedDefaultActions
                     'Product',
                     $sfProduct->id_product
                 );
-                ShoppingfeedRegistry::increment('not-in-catalog');
+                Registry::increment('not-in-catalog');
 
                 $sfProduct->delete();
             }

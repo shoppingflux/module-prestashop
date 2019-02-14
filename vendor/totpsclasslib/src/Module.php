@@ -20,10 +20,16 @@
  * @author    202-ecommerce <tech@202-ecommerce.com>
  * @copyright Copyright (c) 202-ecommerce
  * @license   Commercial license
- * @version   release/1.2.0
+ * @version   develop
  */
 
-class ShoppingfeedModule extends Module
+namespace ShoppingfeedClasslib;
+
+use ShoppingfeedClasslib\Install\Installer;
+
+use \Tools;
+
+class Module extends \Module
 {
 
     /**
@@ -33,12 +39,12 @@ class ShoppingfeedModule extends Module
      */
     public function install()
     {
-        $installer = TotLoader::getInstance('shoppingfeed\classlib\install\installer');
+        $installer = new Installer();
 
         $isPhpVersionCompliant = false;
         try {
             $isPhpVersionCompliant = $installer->checkPhpVersion($this);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $this->_errors[] = Tools::displayError($e->getMessage());
         }
 
@@ -52,7 +58,7 @@ class ShoppingfeedModule extends Module
      */
     public function uninstall()
     {
-        $installer = TotLoader::getInstance('shoppingfeed\classlib\install\installer');
+        $installer = new Installer();
 
         return parent::uninstall() && $installer->uninstall($this);
     }
@@ -64,7 +70,7 @@ class ShoppingfeedModule extends Module
      */
     public function reset()
     {
-        $installer = TotLoader::getInstance('shoppingfeed\classlib\install\installer');
+        $installer = new Installer();
 
         return $installer->reset($this);
     }
@@ -82,7 +88,7 @@ class ShoppingfeedModule extends Module
         if (Tools::version_compare($module->version, $module->database_version, '>')) {
             $module = Module::getInstanceByName($module->name);
             if ($module instanceof Module) {
-                $installer = TotLoader::getInstance('shoppingfeed\classlib\install\installer');
+                $installer = new Installer();
                 $installer->upgrade($module);
             }
         }

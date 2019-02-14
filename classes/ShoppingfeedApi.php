@@ -26,7 +26,7 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-require_once _PS_MODULE_DIR_ . "shoppingfeed/vendor/autoload.php";
+use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 
 use ShoppingFeed\Sdk\Credential\Token;
 use ShoppingFeed\Sdk\Credential\Password;
@@ -76,7 +76,7 @@ class ShoppingfeedApi
             static::$instance = new ShoppingfeedApi($session);
             return static::$instance;
         } catch (Exception $e) {
-            ShoppingfeedProcessLoggerHandler::logInfo(
+            ProcessLoggerHandler::logInfo(
                 sprintf(
                     'API error: %s',
                     $e->getMessage()
@@ -103,7 +103,7 @@ class ShoppingfeedApi
 
             return static::$instance;
         } catch (Exception $e) {
-            ShoppingfeedProcessLoggerHandler::logInfo(
+            ProcessLoggerHandler::logInfo(
                 sprintf(
                     'API error: %s',
                     $e->getMessage()
@@ -146,7 +146,7 @@ class ShoppingfeedApi
 
             return $inventoryApi->execute($inventoryUpdate);
         } catch (Exception $e) {
-            ShoppingfeedProcessLoggerHandler::logInfo(
+            ProcessLoggerHandler::logInfo(
                 sprintf(
                     'API error (getInventoryApi): %s',
                     $e->getMessage()

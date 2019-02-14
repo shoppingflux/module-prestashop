@@ -26,14 +26,18 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-TotLoader::import('shoppingfeed\classlib\extensions\ProcessMonitor\CronController');
 require_once(_PS_MODULE_DIR_ . 'shoppingfeed/classes/ShoppingfeedProduct.php');
+
+use ShoppingfeedClasslib\Extensions\ProcessMonitor\CronController;
+use ShoppingfeedClasslib\Actions\ActionsHandler;
+use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
+use ShoppingfeedClasslib\Registry;
 
 /**
  * This front controller receives the HTTP call for the CRON. It is used to synchronize the ShoppingfeedProduct's stocks.
  * @see ShoppingfeedCronController
  */
-class ShoppingfeedSyncStockModuleFrontController extends ShoppingfeedCronController
+class ShoppingfeedSyncStockModuleFrontController extends CronController
 {
     public $taskDefinition = array(
         'name' => 'shoppingfeed:syncStock',
@@ -51,11 +55,8 @@ class ShoppingfeedSyncStockModuleFrontController extends ShoppingfeedCronControl
      */
     protected function processCron($data)
     {
-        TotLoader::import('shoppingfeed\classlib\extensions\ProcessLogger\ProcessLoggerHandler');
-        TotLoader::import('shoppingfeed\classlib\registry');
-
-        ShoppingfeedProcessLoggerHandler::openLogger($this->processMonitor);
-        ShoppingfeedProcessLoggerHandler::logInfo(
+        ProcessLoggerHandler::openLogger($this->processMonitor);
+        ProcessLoggerHandler::logInfo(
             $this->module->l('[Stock] Process start', 'syncStock'),
             $this->processMonitor->getProcessObjectModelName(),
             $this->processMonitor->getProcessObjectModelId()
@@ -63,7 +64,7 @@ class ShoppingfeedSyncStockModuleFrontController extends ShoppingfeedCronControl
 
         try {
             /** @var ShoppingfeedHandler $handler */
-            $handler = TotLoader::getInstance('shoppingfeed\classlib\actions\handler');
+            $handler = new ActionsHandler();
             $handler->addActions('getBatch');
             $shops = Shop::getShops();
             foreach ($shops as $shop) {
@@ -71,21 +72,21 @@ class ShoppingfeedSyncStockModuleFrontController extends ShoppingfeedCronControl
                 $handler->process('shoppingfeedProductStockSync');
             }
         } catch (Exception $e) {
-            ShoppingfeedProcessLoggerHandler::logError(
+            ProcessLoggerHandler::logError(
                 sprintf(
                     $this->module->l('[Stock] Fail : %s', 'syncStock'),
                     $e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine()
                 )
             );
-            ShoppingfeedRegistry::increment('errors');
+            Registry::increment('errors');
         }
 
-        ShoppingfeedProcessLoggerHandler::closeLogger(
+        ProcessLoggerHandler::closeLogger(
             sprintf(
                 $this->module->l('[Stock] %d products updated - %d not in catalog - %d errors', 'syncStock'),
-                (int)ShoppingfeedRegistry::get('updatedProducts'),
-                (int)ShoppingfeedRegistry::get('not-in-catalog'),
-                (int)ShoppingfeedRegistry::get('errors')
+                (int)Registry::get('updatedProducts'),
+                (int)Registry::get('not-in-catalog'),
+                (int)Registry::get('errors')
             )
         );
         Configuration::updateValue(shoppingfeed::LAST_CRON_TIME_SYNCHRONIZATION, date("Y-m-d H:i:s"));

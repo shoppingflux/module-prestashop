@@ -20,17 +20,19 @@
  * @author    202-ecommerce <tech@202-ecommerce.com>
  * @copyright Copyright (c) 202-ecommerce
  * @license   Commercial license
- * @version   release/1.2.0
+ * @version   develop
  */
+
+namespace ShoppingfeedClasslib;
 
 /**
  * Design pattern Registry
  */
-class ShoppingfeedRegistry
+class Registry
 {
 
     /**
-     * @var ShoppingfeedRegistry $_registry Instance of this class
+     * @var ShoppingfeedClasslib\Registry $_registry Instance of this class
      */
     private static $_registry = null;
 
@@ -42,12 +44,12 @@ class ShoppingfeedRegistry
     /**
      * Get instance of this class
      *
-     * @return ShoppingfeedRegistry
+     * @return ShoppingfeedClasslib\Registry
      */
     public static function getInstance()
     {
         if (self::$_registry === null) {
-            self::$_registry = new ShoppingfeedRegistry;
+            self::$_registry = new Registry;
         }
         return self::$_registry;
     }

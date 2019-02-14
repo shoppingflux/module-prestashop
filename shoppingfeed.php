@@ -26,15 +26,17 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-require_once _PS_MODULE_DIR_ . 'shoppingfeed/config_dev.php';
+require_once _PS_MODULE_DIR_ . "shoppingfeed/vendor/autoload.php";
 require_once _PS_MODULE_DIR_ . 'shoppingfeed/classes/ShoppingfeedProduct.php';
 
-TotLoader::import('shoppingfeed\classlib\module');
+use ShoppingfeedClasslib\Module;
+use ShoppingfeedClasslib\Actions\ActionsHandler;
+use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 
 /**
  * The base module class
  */
-class Shoppingfeed extends ShoppingfeedModule
+class Shoppingfeed extends Module
 {
     /**
      * This module requires at least PHP version
@@ -207,11 +209,8 @@ class Shoppingfeed extends ShoppingfeedModule
         $id_product = $params['id_product'];
         $id_product_attribute = $params['id_product_attribute'];
 
-        TotLoader::import('shoppingfeed\classlib\extensions\ProcessLogger\ProcessLoggerHandler');
-        TotLoader::import('shoppingfeed\classlib\registry');
-
         /** @var ShoppingfeedHandler $handler */
-        $handler = TotLoader::getInstance('shoppingfeed\classlib\actions\handler');
+        $handler = new ActionsHandler();
         $handler
             ->setConveyor(array(
                 'id_product' => $id_product,
@@ -220,7 +219,7 @@ class Shoppingfeed extends ShoppingfeedModule
             ->addActions('saveProduct')
             ->process('shoppingfeedProductStockSync');
 
-        ShoppingfeedProcessLoggerHandler::closeLogger();
+        ProcessLoggerHandler::closeLogger();
     }
     
     /**
