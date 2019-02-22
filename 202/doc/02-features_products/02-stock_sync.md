@@ -1,6 +1,6 @@
 ---
 category: 'Features : Products'
-name: Stock synchronization
+name: 2. Stock synchronization
 ---
 
 # Overview
