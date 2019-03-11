@@ -28,10 +28,13 @@ if (!defined('_PS_VERSION_')) {
 
 require_once _PS_MODULE_DIR_ . "shoppingfeed/vendor/autoload.php";
 require_once _PS_MODULE_DIR_ . 'shoppingfeed/classes/ShoppingfeedProduct.php';
+require_once(_PS_MODULE_DIR_ . 'shoppingfeed/classes/actions/ShoppingfeedProductSyncStockActions.php');
+require_once(_PS_MODULE_DIR_ . 'shoppingfeed/classes/actions/ShoppingfeedProductSyncPriceActions.php');
 
 use ShoppingfeedClasslib\Module;
 use ShoppingfeedClasslib\Actions\ActionsHandler;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
+use ShoppingfeedClasslib\Registry;
 
 /**
  * The base module class
@@ -45,6 +48,8 @@ class Shoppingfeed extends Module
     public $php_version_required = '5.6';
 
     const AUTH_TOKEN = "SHOPPINGFEED_AUTH_TOKEN";
+    const STOCK_SYNC_ENABLED = "SHOPPINGFEED_STOCK_SYNC_ENABLED";
+    const PRICE_SYNC_ENABLED = "SHOPPINGFEED_PRICE_SYNC_ENABLED";
     const STOCK_SYNC_MAX_PRODUCTS = "SHOPPINGFEED_STOCK_SYNC_MAX_PRODUCTS";
     const REAL_TIME_SYNCHRONIZATION = "SHOPPINGFEED_REAL_TIME_SYNCHRONIZATION";
     const LAST_CRON_TIME_SYNCHRONIZATION = "SHOPPINGFEED_LAST_CRON_TIME_SYNCHRONIZATION";
@@ -70,8 +75,16 @@ class Shoppingfeed extends Module
         'syncStock' => array(
             'name' => 'shoppingfeed:syncStock',
             'title' => array(
-                'en' => 'Synchronize stock on Shopping Feed',
-                'fr' => 'Synchronisation du stock sur Shopping Feed'
+                'en' => '[Deprecated] This task was renamed to shoppingfeed:syncProduct',
+                'fr' => '[Dépréciée] Cette tâche a été renommée en shoppingfeed:syncProduct'
+            ),
+            'frequency' => '5min',
+        ),
+        'syncProduct' => array(
+            'name' => 'shoppingfeed:syncProduct',
+            'title' => array(
+                'en' => 'Synchronize products on Shopping Feed',
+                'fr' => 'Synchronisation des produits sur Shopping Feed'
             ),
             'frequency' => '5min',
         )
@@ -133,6 +146,8 @@ class Shoppingfeed extends Module
      */
     public $hooks = array(
         'actionUpdateQuantity',
+        'actionObjectProductUpdateBefore',
+        'actionObjectCombinationUpdateBefore',
     );
 
     /**
@@ -181,6 +196,9 @@ class Shoppingfeed extends Module
             if ($token) {
                 Configuration::updateValue(self::AUTH_TOKEN, $token, false, null, $shop['id_shop']);
             }
+            // Set default values for configuration variables
+            Configuration::updateValue(self::STOCK_SYNC_ENABLED, true, false, null, $shop['id_shop']);
+            Configuration::updateValue(self::PRICE_SYNC_ENABLED, true, false, null, $shop['id_shop']);
             Configuration::updateValue(self::STOCK_SYNC_MAX_PRODUCTS, 100, false, null, $shop['id_shop']);
             Configuration::updateValue(self::REAL_TIME_SYNCHRONIZATION, false, false, null, $shop['id_shop']);
         }
@@ -198,38 +216,221 @@ class Shoppingfeed extends Module
             Context::getContext()->link->getAdminLink('AdminShoppingfeedConfiguration')
         );
     }
-
-    /**
-     * Saves a product for stock synchronization, or synchronizes it directly using the Actions handler
-     * @param array $params The hook parameters
-     * @throws Exception
-     */
-    public function hookActionUpdateQuantity($params)
-    {
-        $id_product = $params['id_product'];
-        $id_product_attribute = $params['id_product_attribute'];
-
-        /** @var ShoppingfeedHandler $handler */
-        $handler = new ActionsHandler();
-        $handler
-            ->setConveyor(array(
-                'id_product' => $id_product,
-                'id_product_attribute' => $id_product_attribute,
-            ))
-            ->addActions('saveProduct')
-            ->process('shoppingfeedProductStockSync');
-
-        ProcessLoggerHandler::closeLogger();
-    }
     
     /**
      * Returns the product's Shopping Feed reference. The developer can skip
      * products to sync by overriding this method and have it return false.
      * @param ShoppingFeedProduct $sfProduct
+     * @param array $arguments Should you want to pass more arguments to this
+     * function, you can find them in this array
      * @return string
      */
-    public function mapReference(ShoppingfeedProduct $sfProduct)
+    public function mapReference(ShoppingfeedProduct $sfProduct, ...$arguments)
     {
-        return $sfProduct->id_product . ($sfProduct->id_product_attribute ? "_" . $sfProduct->id_product_attribute : "");
+        $reference = $sfProduct->id_product . ($sfProduct->id_product_attribute ? "_" . $sfProduct->id_product_attribute : "");
+        
+        Hook::exec(
+            'ShoppingfeedMapProductReference', // hook_name
+            array(
+                'ShoppingFeedProduct' => &$sfProduct,
+                'reference' => &$reference
+            ) // hook_args
+        );
+        
+        return $reference;
+    }
+    
+    /**
+     * Returns the product's price sent to the Shopping Feed API. The developer
+     * can skip products to sync by overriding this method and have it return
+     * false. Note that the comparison with the return value is strict to allow
+     * "0" as a valid price.
+     * @param ShoppingFeedProduct $sfProduct
+     * @param array $arguments Should you want to pass more arguments to this
+     * function, you can find them in this array
+     * @return string
+     */
+    public function mapProductPrice(ShoppingfeedProduct $sfProduct, ...$arguments)
+    {
+        $price = Product::getPriceStatic(
+                $sfProduct->id_product,
+                true,
+                $sfProduct->id_product_attribute ? $sfProduct->id_product_attribute : null,
+                2,
+                null,
+                false,
+                false,
+                1
+        );
+        
+        Hook::exec(
+            'ShoppingfeedMapProductPrice', // hook_name
+            array(
+                'ShoppingFeedProduct' => &$sfProduct,
+                'price' => &$price
+            ) // hook_args
+        );
+        
+        return $price;
+    }
+    
+    /****************************** Stock hook *******************************/
+
+    /**
+     * Saves a product for stock synchronization, or synchronizes it directly
+     * using the Actions handler
+     * @param array $params The hook parameters
+     * @throws Exception
+     */
+    public function hookActionUpdateQuantity($params)
+    {
+        if (!Configuration::get(Shoppingfeed::STOCK_SYNC_ENABLED)) {
+            return;
+        }
+
+        $id_product = $params['id_product'];
+        $id_product_attribute = $params['id_product_attribute'];
+
+        try {
+            /** @var ShoppingfeedHandler $handler */
+            $handler = new ActionsHandler();
+            $handler
+                ->setConveyor(array(
+                    'id_product' => $id_product,
+                    'id_product_attribute' => $id_product_attribute,
+                    'product_action' => ShoppingfeedProduct::ACTION_SYNC_STOCK,
+                ))
+                ->addActions('saveProduct')
+                ->process('shoppingfeedProductSyncStock');
+        } catch (Exception $e) {
+            ProcessLoggerHandler::logInfo(
+                sprintf(
+                    ShoppingfeedProductSyncStockActions::getLogPrefix() . ' ' . $this->l('Product %s not registered for synchronization: %s', 'ShoppingfeedProductSyncActions'),
+                    $id_product . ($id_product_attribute ? '_' . $id_product_attribute : ''),
+                    $e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine()
+                ),
+                'Product',
+                $id_product
+            );
+        }
+
+        ProcessLoggerHandler::closeLogger();
+    }
+    
+    /****************************** Prices hooks ******************************/
+    
+    /* We'll have to check for products updates and combinations updates.
+     * For each object, we'll use the "UpdateBefore" hooks.
+     * We won't check the "Add" and "Delete" hooks, since the export module
+     * should export the first prices and the deletion from the catalog.
+     */
+    
+    /**
+     * Compares an updated product's price with its old price. If the new price
+     * is different, saves the product for price synchronization, or
+     * synchronizes it directly using the Actions handler.
+     * @param array $params The hook parameters
+     */
+    public function hookActionObjectProductUpdateBefore($params)
+    {
+        if (!Configuration::get(Shoppingfeed::PRICE_SYNC_ENABLED)) {
+            return;
+        }
+        
+        $product = $params['object'];
+        if (!Validate::isLoadedObject($product)) {
+            return;
+        }
+        
+        // Retrieve previous values in DB
+        // If all goes well, they should already be cached...
+        $old_product = new Product($product->id);
+        if ((float)$old_product->price == (float)$product->price) {
+            return;
+        }
+        
+        try {
+            /** @var ShoppingfeedHandler $handler */
+            $handler = new ActionsHandler();
+            $handler
+                ->setConveyor(array(
+                    'id_product' => $product->id,
+                    'product_action' => ShoppingfeedProduct::ACTION_SYNC_PRICE,
+                ))
+                ->addActions('saveProduct')
+                ->process('shoppingfeedProductSyncPrice');
+        } catch (Exception $e) {
+            ProcessLoggerHandler::logInfo(
+                sprintf(
+                    ShoppingfeedProductSyncPriceActions::getLogPrefix() . ' ' . $this->l('Product %s not registered for synchronization: %s', 'ShoppingfeedProductSyncActions'),
+                    $product->id,
+                    $e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine()
+                ),
+                'Product',
+                $product->id
+            );
+        }
+        
+        if(!Registry::offsetExists('updated_product_prices_ids')) {
+            Registry::set('updated_product_prices_ids', array());
+        }
+        $updatedProductPricesIds = Registry::get('updated_product_prices_ids');
+        $updatedProductPricesIds[] = $product->id;
+        Registry::set('updated_product_prices_ids', $updatedProductPricesIds);
+
+        ProcessLoggerHandler::closeLogger();
+    }
+    
+    /**
+     * Compares an updated combinations's price with its old price. If the new
+     * price is different, saves the combination for price synchronization, or
+     * synchronizes it directly using the Actions handler.
+     * @param array $params The hook parameters
+     */
+    public function hookActionObjectCombinationUpdateBefore($params)
+    {
+        if (!Configuration::get(Shoppingfeed::PRICE_SYNC_ENABLED)) {
+            return;
+        }
+        
+        $combination = $params['object'];
+        if (!Validate::isLoadedObject($combination)) {
+            return;
+        }
+        
+        // Retrieve previous values in DB
+        // If all goes well, they should already be cached...
+        $old_combination = new Combination($combination->id);
+        if ((float)$old_combination->price == (float)$combination->price &&
+            (!Registry::isRegistered('updated_product_prices_ids') ||
+                !in_array($combination->id_product, Registry::get('updated_product_prices_ids'))
+            )) {
+            return;
+        }
+        
+        try {
+            /** @var ShoppingfeedHandler $handler */
+            $handler = new ActionsHandler();
+            $handler
+                ->setConveyor(array(
+                    'id_product' => $combination->id_product,
+                    'id_product_attribute' => $combination->id,
+                    'product_action' => ShoppingfeedProduct::ACTION_SYNC_PRICE,
+                ))
+                ->addActions('saveProduct')
+                ->process('shoppingfeedProductSyncPrice');
+        } catch (Exception $e) {
+            ProcessLoggerHandler::logInfo(
+                sprintf(
+                    ShoppingfeedProductSyncPriceActions::getLogPrefix() . ' ' . $this->l('Combination %s not registered for synchronization: %s', 'ShoppingfeedProductSyncActions'),
+                    $combination->id_product . ($combination->id ? '_' . $combination->id : ''),
+                    $e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine()
+                ),
+                'Product',
+                $combination->id
+            );
+        }
+
+        ProcessLoggerHandler::closeLogger();
     }
 }

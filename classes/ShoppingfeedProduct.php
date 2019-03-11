@@ -32,6 +32,7 @@ if (!defined('_PS_VERSION_')) {
 class ShoppingfeedProduct extends ObjectModel
 {
     const ACTION_SYNC_STOCK = "SYNC_STOCK";
+    const ACTION_SYNC_PRICE = "SYNC_PRICE";
 
     /** @var string The action to execute for this product */
     public $action;
@@ -63,7 +64,7 @@ class ShoppingfeedProduct extends ObjectModel
                 'validate' => 'isGenericName',
                 'required' => true,
                 'unique' => true,
-                'values' => array(self::ACTION_SYNC_STOCK),
+                'values' => array(self::ACTION_SYNC_STOCK, self::ACTION_SYNC_PRICE),
             ),
             'id_product' => array(
                 'type' => ObjectModel::TYPE_INT,
@@ -119,6 +120,7 @@ class ShoppingfeedProduct extends ObjectModel
 
     /**
      * Attempts to retrieve an object using its unique key; returns false if none was found.
+     * @param $action
      * @param $id_product
      * @param $id_product_attribute
      * @param $id_shop
@@ -126,11 +128,12 @@ class ShoppingfeedProduct extends ObjectModel
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public static function getFromUniqueKey($id_product, $id_product_attribute, $id_shop)
+    public static function getFromUniqueKey($action, $id_product, $id_product_attribute, $id_shop)
     {
         $sql = new DbQuery();
         $sql->select('id_shoppingfeed_product')
             ->from(self::$definition['table'])
+            ->where('action = \'' . pSQL($action). '\'')
             ->where('id_product = ' . (int)$id_product)
             ->where('id_product_attribute = ' . (int)$id_product_attribute)
             ->where('id_shop = ' . (int)$id_shop);

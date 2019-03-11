@@ -27,70 +27,40 @@ if (!defined('_PS_VERSION_')) {
 }
 
 require_once(_PS_MODULE_DIR_ . 'shoppingfeed/classes/ShoppingfeedProduct.php');
+require_once(_PS_MODULE_DIR_ . 'shoppingfeed/controllers/front/syncProduct.php');
 
-use ShoppingfeedClasslib\Extensions\ProcessMonitor\CronController;
-use ShoppingfeedClasslib\Actions\ActionsHandler;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
-use ShoppingfeedClasslib\Registry;
 
 /**
- * This front controller receives the HTTP call for the CRON. It is used to synchronize the ShoppingfeedProduct's stocks.
- * @see ShoppingfeedCronController
+ * This front controller receives the HTTP call for the CRON. It is used to
+ * synchronize the ShoppingfeedProduct's stocks.
+ * @deprecated The syncProduct controller now manages all product updates.
+ * @see ShoppingfeedClasslib\Extensions\ProcessMonitor\CronController
  */
-class ShoppingfeedSyncStockModuleFrontController extends CronController
+class ShoppingfeedSyncStockModuleFrontController extends ShoppingfeedSyncProductModuleFrontController
 {
-    public $taskDefinition = array(
-        'name' => 'shoppingfeed:syncStock',
-        'title' => array(
-            'en' => 'Sync shoppingfeed stock',
-            'fr' => 'Sync shoppingfeed stock'
-        ),
-    );
-
-    /**
-     * Executed by the CRON
-     * @param $data the data saved for this CRON (see totpsclasslib doc)
-     * @return mixed
-     * @throws Exception
-     */
     protected function processCron($data)
     {
+        $deprecatedWarning = $this->l('WARNING : This task has been renamed to shoppingfeed:syncProduct. Your CRON task is still using the URL to the shoppingfeed:syncStock task.');
+        
+        // Open and close the logger immediately since it's not even supposed
+        // to be open when the process starts
         ProcessLoggerHandler::openLogger($this->processMonitor);
-        ProcessLoggerHandler::logInfo(
-            $this->module->l('[Stock] Process start', 'syncStock'),
+        ProcessLoggerHandler::logError(
+            $deprecatedWarning,
             $this->processMonitor->getProcessObjectModelName(),
             $this->processMonitor->getProcessObjectModelId()
         );
-
-        try {
-            /** @var ShoppingfeedHandler $handler */
-            $handler = new ActionsHandler();
-            $handler->addActions('getBatch');
-            $shops = Shop::getShops();
-            foreach ($shops as $shop) {
-                $handler->setConveyor(array('id_shop' => $shop['id_shop']));
-                $handler->process('shoppingfeedProductStockSync');
-            }
-        } catch (Exception $e) {
-            ProcessLoggerHandler::logError(
-                sprintf(
-                    $this->module->l('[Stock] Fail : %s', 'syncStock'),
-                    $e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine()
-                )
-            );
-            Registry::increment('errors');
-        }
-
-        ProcessLoggerHandler::closeLogger(
-            sprintf(
-                $this->module->l('[Stock] %d products updated - %d not in catalog - %d errors', 'syncStock'),
-                (int)Registry::get('updatedProducts'),
-                (int)Registry::get('not-in-catalog'),
-                (int)Registry::get('errors')
-            )
+        ProcessLoggerHandler::closeLogger();
+        
+        parent::processCron($data);
+        
+        ProcessLoggerHandler::openLogger($this->processMonitor);
+        ProcessLoggerHandler::logError(
+            $deprecatedWarning,
+            $this->processMonitor->getProcessObjectModelName(),
+            $this->processMonitor->getProcessObjectModelId()
         );
-        Configuration::updateValue(shoppingfeed::LAST_CRON_TIME_SYNCHRONIZATION, date("Y-m-d H:i:s"));
-        // The data to be saved in the CRON table
-        return $data;
+        ProcessLoggerHandler::closeLogger();
     }
 }

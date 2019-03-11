@@ -105,28 +105,29 @@ abstract class CronController extends \ModuleFrontController
             $return = array('success' => false, 'error' => 'Lock return false. Process ID already in run.');
             $this->ajaxDie(Tools::jsonEncode($return));
         }
-        
-        Hook::exec(
-                'actionProcessMonitorExecution',
-                array(
-                    'processName' => $processName,
-                    'processData' => $data,
-                ),
-                null,
-                true
-        );
-
-        Hook::exec(
-                'actionShoppingfeedProcessMonitorExecution',
-                array(
-                    'processName' => $processName,
-                    'processData' => $data,
-                ),
-                null,
-                true
-        );
 
         try {
+        
+            Hook::exec(
+                    'actionProcessMonitorExecution',
+                    array(
+                        'processName' => $processName,
+                        'processData' => $data,
+                    ),
+                    null,
+                    true
+            );
+
+            Hook::exec(
+                    'actionShoppingfeedProcessMonitorExecution',
+                    array(
+                        'processName' => $processName,
+                        'processData' => $data,
+                    ),
+                    null,
+                    true
+            );
+        
             $data = $this->processCron($data);
         } catch (\Exception $e) {
             throw new \Exception('Process Monitor Failed.', 0, $e);

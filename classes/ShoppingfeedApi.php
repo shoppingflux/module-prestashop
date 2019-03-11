@@ -32,6 +32,7 @@ use ShoppingFeed\Sdk\Credential\Token;
 use ShoppingFeed\Sdk\Credential\Password;
 use ShoppingFeed\Sdk\Client\Client;
 use ShoppingFeed\Sdk\Api\Catalog\InventoryUpdate;
+use ShoppingFeed\Sdk\Api\Catalog\PricingUpdate;
 
 /**
  * This class is a singleton, which is responsible for calling the SF API using the SDK
@@ -149,6 +150,44 @@ class ShoppingfeedApi
             ProcessLoggerHandler::logInfo(
                 sprintf(
                     'API error (getInventoryApi): %s',
+                    $e->getMessage()
+                )
+            );
+            return false;
+        }
+    }
+
+    /**
+     * Makes the call to update the SF prices
+     * @param array $products an array of product's references and prices
+     * <pre>
+     * Array(
+     *      Array(
+     *          'reference' => 'ref1',
+     *          'price' => 7.2
+     *      ),
+     *      Array(
+     *          'reference' => 'ref2',
+     *          'price' => 1.4
+     *      ),
+     * )
+     * </pre>
+     * @return ShoppingFeed\Sdk\Api\Catalog\InventoryCollection
+     */
+    public function updateMainStorePrices($products)
+    {
+        try {
+            $pricingApi = $this->session->getMainStore()->getPricingApi();
+            $pricingUpdate = new PricingUpdate();
+            foreach ($products as $product) {
+                $pricingUpdate->add($product['reference'], $product['price']);
+            }
+
+            return $pricingApi->execute($pricingUpdate);
+        } catch (Exception $e) {
+            ProcessLoggerHandler::logInfo(
+                sprintf(
+                    'API error (getPricingApi): %s',
                     $e->getMessage()
                 )
             );

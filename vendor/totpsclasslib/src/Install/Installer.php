@@ -322,7 +322,7 @@ class Installer
      */
     public function installObjectModel($objectModelClassName)
     {
-        if (!preg_match("/^[a-zA-Z]+$/", $objectModelClassName)) {
+        if (!preg_match("/^[a-zA-Z0-9]+$/", $objectModelClassName)) {
             throw new \Exception('Installer error : ModelObject "' . $objectModelClassName .
                 '" class name not valid "');
         }

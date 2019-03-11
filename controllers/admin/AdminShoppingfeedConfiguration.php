@@ -211,8 +211,45 @@ class AdminShoppingfeedConfigurationController extends ModuleAdminController
             ),
             'input' => array(
                 array(
+                    'type' => 'switch',
+                    'is_bool' => true,
+                    'values' => array(
+                        array(
+                            'value' => 1,
+                        ),
+                        array(
+                            'value' => 0,
+                        )
+                    ),
+                    'label' => $this->module->l('Stock synchronization', 'AdminShoppingfeedConfiguration'),
+                    'name' => Shoppingfeed::STOCK_SYNC_ENABLED,
+                ),
+                array(
+                    'type' => 'switch',
+                    'is_bool' => true,
+                    'values' => array(
+                        array(
+                            'value' => 1,
+                        ),
+                        array(
+                            'value' => 0,
+                        )
+                    ),
+                    'label' => $this->module->l('Price synchronization', 'AdminShoppingfeedConfiguration'),
+                    'name' => Shoppingfeed::PRICE_SYNC_ENABLED,
+                ),
+                array(
                     'type' => 'html',
                     'name' => 'real_synch',
+                    'html_content' => '<div id="real_synch_notice" class="alert alert-info">
+                    '.sprintf(
+                            $this->module->l('You should select the type of synchronization (in real time or via a %s Cron job %s) for updating your product stocks and / or prices.', 'AdminShoppingfeedConfiguration'),
+                            '<a href="' . $this->context->link->getAdminLink('AdminShoppingfeedProcessMonitor') . '">', '</a>'
+                    ).'</div>',
+                ),
+                array(
+                    'type' => 'html',
+                    'name' => 'real_synch_help',
                     'html_content' => '<div id="real_synch" class="alert alert-info">
                     '.$message_realtime.'</div>',
                 ),
@@ -252,6 +289,8 @@ class AdminShoppingfeedConfigurationController extends ModuleAdminController
         );
 
         $fields_value = array(
+            Shoppingfeed::STOCK_SYNC_ENABLED => Configuration::get(Shoppingfeed::STOCK_SYNC_ENABLED),
+            Shoppingfeed::PRICE_SYNC_ENABLED => Configuration::get(Shoppingfeed::PRICE_SYNC_ENABLED),
             Shoppingfeed::REAL_TIME_SYNCHRONIZATION => Configuration::get(Shoppingfeed::REAL_TIME_SYNCHRONIZATION),
             Shoppingfeed::STOCK_SYNC_MAX_PRODUCTS => Configuration::get(Shoppingfeed::STOCK_SYNC_MAX_PRODUCTS),
         );
@@ -358,11 +397,15 @@ class AdminShoppingfeedConfigurationController extends ModuleAdminController
      */
     public function saveConfiguration()
     {
+        $realtime_sync = Tools::getValue(Shoppingfeed::REAL_TIME_SYNCHRONIZATION);
+        $stock_sync_max_products = (int)Tools::getValue(Shoppingfeed::STOCK_SYNC_MAX_PRODUCTS);
+        $stock_sync_enabled = Tools::getValue(Shoppingfeed::STOCK_SYNC_ENABLED);
+        $price_sync_enabled = Tools::getValue(Shoppingfeed::PRICE_SYNC_ENABLED);
+
         $shops = Shop::getShops();
         foreach ($shops as $shop) {
-            $realtime_sync = Tools::getValue(Shoppingfeed::REAL_TIME_SYNCHRONIZATION);
-            $stock_sync_max_products = (int)Tools::getValue(Shoppingfeed::STOCK_SYNC_MAX_PRODUCTS);
-
+            Configuration::updateValue(Shoppingfeed::STOCK_SYNC_ENABLED, ($stock_sync_enabled ? true : false), false, null, $shop['id_shop']);
+            Configuration::updateValue(Shoppingfeed::PRICE_SYNC_ENABLED, ($price_sync_enabled ? true : false), false, null, $shop['id_shop']);
             Configuration::updateValue(Shoppingfeed::REAL_TIME_SYNCHRONIZATION, ($realtime_sync ? true : false), false, null, $shop['id_shop']);
 
             if (!is_numeric($stock_sync_max_products)) {

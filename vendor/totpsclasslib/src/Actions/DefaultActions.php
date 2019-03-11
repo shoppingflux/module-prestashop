@@ -25,6 +25,8 @@
 
 namespace ShoppingfeedClasslib\Actions;
 
+use \Translate;
+
 /**
  * DefaultActions
  */
