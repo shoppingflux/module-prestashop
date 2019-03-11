@@ -21,9 +21,10 @@ class StoreResourceTest extends Sdk\Test\Api\AbstractResourceTest
 
         $instance = new Sdk\Api\Store\StoreResource($this->halResource);
 
-        $this->assertEquals($this->props['id'], $instance->getId());
-        $this->assertEquals($this->props['name'], $instance->getName());
-        $this->assertEquals($this->props['country'], $instance->getCountryCode());
+        $this->assertSame($this->props['id'], $instance->getId());
+        $this->assertSame($this->props['name'], $instance->getName());
+        $this->assertSame($this->props['country'], $instance->getCountryCode());
+        $this->assertSame('active', $instance->getStatus());
         $this->assertTrue($instance->isActive());
     }
 
@@ -42,6 +43,26 @@ class StoreResourceTest extends Sdk\Test\Api\AbstractResourceTest
         $instance = new Sdk\Api\Store\StoreResource($halResource);
 
         $this->assertInstanceOf(Sdk\Api\Catalog\InventoryDomain::class, $instance->getInventoryApi());
+    }
+
+    public function testGetChannelApi()
+    {
+        /** @var Sdk\Hal\HalResource|\PHPUnit_Framework_MockObject_MockObject $halResource */
+        $halResource = $this->createMock(Sdk\Hal\HalResource::class);
+        $halResource
+            ->expects($this->once())
+            ->method('getLink')
+            ->with('channel')
+            ->willReturn(
+                $this->createMock(Sdk\Hal\HalLink::class)
+            );
+
+        $instance = new Sdk\Api\Store\StoreResource($halResource);
+
+        $this->assertInstanceOf(
+            Sdk\Api\Store\StoreChannelDomain::class,
+            $instance->getChannelApi()
+        );
     }
 
     public function testGetOrderApi()

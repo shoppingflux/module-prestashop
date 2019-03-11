@@ -2,10 +2,10 @@
   "name": "shoppingfeed/php-sdk",
   "license": "Apache-2.0",
   "minimum-stability": "stable",
+  "description": "Shopping Feed SDK to ease integration of our API",
   "require": {
     "php": ">= 5.6",
-    "guzzlehttp/guzzle": "^6.3",
-    "shoppingfeed/php-feed-generator": "1.0.0"
+    "ext-json": "*"
   },
   "autoload": {
     "psr-4": {
@@ -14,10 +14,13 @@
     }
   },
   "suggest": {
-    "psr/log": "trace HTTP requests performed by the SDK"
+    "psr/log": "trace HTTP requests performed by the SDK",
+    "guzzlehttp/guzzle": "Guzzle Http 6 is the default http adapter integrated in the SDK",
+    "shoppingfeed/php-feed-generator": "Generates compliant Shopping-Feed XML feed with ease"
   },
   "require-dev": {
     "monolog/monolog": "^1.23",
+    "guzzlehttp/guzzle": "^6.0",
     "phpunit/phpunit": "^5.0",
     "squizlabs/php_codesniffer": "^2.8"
   },

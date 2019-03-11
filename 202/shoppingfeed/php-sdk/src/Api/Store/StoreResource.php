@@ -32,11 +32,33 @@ class StoreResource extends AbstractResource
     }
 
     /**
+     * @return string One of the following status:
+     *  - active
+     *  - demo
+     *  - deleted
+     *  - suspended
+     */
+    public function getStatus()
+    {
+        return $this->getProperty('status');
+    }
+
+    /**
      * @return string
      */
     public function getCountryCode()
     {
         return $this->getProperty('country');
+    }
+
+    /**
+     * @return StoreChannelDomain
+     */
+    public function getChannelApi()
+    {
+        return new StoreChannelDomain(
+            $this->resource->getLink('channel')
+        );
     }
 
     /**

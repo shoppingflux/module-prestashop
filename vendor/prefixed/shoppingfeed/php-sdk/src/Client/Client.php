@@ -1,16 +1,13 @@
 <?php
 namespace ShoppingFeed\Sdk\Client;
 
-use SfGuzzle\GuzzleHttp\HandlerStack;
-use SfGuzzle\GuzzleHttp\MessageFormatter;
-use SfGuzzle\GuzzleHttp\Middleware;
-use ShoppingFeed\Sdk\Hal;
-use ShoppingFeed\Sdk\Guzzle\Middleware as SfMiddleware;
 use ShoppingFeed\Sdk\Credential\CredentialInterface;
+use ShoppingFeed\Sdk\Hal;
+use ShoppingFeed\Sdk\Http;
 
 class Client
 {
-    const VERSION = '1.0.0';
+    const VERSION = '0.2.4';
 
     /**
      * @var Hal\HalClient
@@ -29,7 +26,7 @@ class Client
     }
 
     /**
-     * @param ClientOptions $options
+     * @param ClientOptions|null $options
      */
     public function __construct(ClientOptions $options = null)
     {
@@ -37,9 +34,13 @@ class Client
             $options = new ClientOptions();
         }
 
+        if (null === $options->getHttpAdapter()) {
+            $options->setHttpAdapter(new Http\Adapter\Guzzle6Adapter($options));
+        }
+
         $this->client = new Hal\HalClient(
             $options->getBaseUri(),
-            $this->createHandlerStack($options)
+            $options->getHttpAdapter()
         );
     }
 
@@ -52,6 +53,8 @@ class Client
     }
 
     /**
+     * Ping APi
+     *
      * @return bool
      */
     public function ping()
@@ -69,34 +72,6 @@ class Client
      */
     public function authenticate(CredentialInterface $credential)
     {
-        return $credential->authenticate($this->getHalClient());
-    }
-
-    /**
-     * @param ClientOptions $options
-     *
-     * @return HandlerStack
-     */
-    private function createHandlerStack(ClientOptions $options)
-    {
-        $stack  = HandlerStack::create();
-        $logger = $options->getLogger();
-
-        if ($options->handleRateLimit()) {
-            $handler = new SfMiddleware\RateLimitHandler(3, $logger);
-            $stack->push(Middleware::retry([$handler, 'decide'], [$handler, 'delay']));
-        }
-
-        $retryCount = $options->getRetryOnServerError();
-        if ($retryCount) {
-            $handler = new SfMiddleware\ServerErrorHandler($retryCount);
-            $stack->push(Middleware::retry([$handler, 'decide']));
-        }
-
-        if ($logger) {
-            $stack->push(Middleware::log($logger, new MessageFormatter()));
-        }
-
-        return $stack;
+        return $credential->authenticate($this->client);
     }
 }

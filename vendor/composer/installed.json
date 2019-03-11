@@ -1,96 +1,48 @@
 [
     {
-        "name": "psr/http-message",
-        "version": "1.0.1",
-        "version_normalized": "1.0.1.0",
+        "name": "shoppingfeed/php-sdk",
+        "version": "0.2.4",
+        "version_normalized": "0.2.4.0",
         "source": {
             "type": "git",
-            "url": "https://github.com/php-fig/http-message.git",
-            "reference": "f6561bf28d520154e4b0ec72be95418abe6d9363"
+            "url": "https://github.com/shoppingflux/php-sdk.git",
+            "reference": "dfada5064aca6d24b99a7ac16c13cb480cb4fdab"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/php-fig/http-message/zipball/f6561bf28d520154e4b0ec72be95418abe6d9363",
-            "reference": "f6561bf28d520154e4b0ec72be95418abe6d9363",
+            "url": "https://api.github.com/repos/shoppingflux/php-sdk/zipball/dfada5064aca6d24b99a7ac16c13cb480cb4fdab",
+            "reference": "dfada5064aca6d24b99a7ac16c13cb480cb4fdab",
             "shasum": ""
         },
         "require": {
-            "php": ">=5.3.0"
-        },
-        "time": "2016-08-06 14:39:51",
-        "type": "library",
-        "extra": {
-            "branch-alias": {
-                "dev-master": "1.0.x-dev"
-            }
-        },
-        "installation-source": "dist",
-        "autoload": {
-            "psr-4": {
-                "Psr\\Http\\Message\\": "src/"
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "MIT"
-        ],
-        "authors": [
-            {
-                "name": "PHP-FIG",
-                "homepage": "http://www.php-fig.org/"
-            }
-        ],
-        "description": "Common interface for HTTP messages",
-        "homepage": "https://github.com/php-fig/http-message",
-        "keywords": [
-            "http",
-            "http-message",
-            "psr",
-            "psr-7",
-            "request",
-            "response"
-        ]
-    },
-    {
-        "name": "shoppingfeed/php-feed-generator",
-        "version": "1.0.0",
-        "version_normalized": "1.0.0.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/shoppingflux/php-feed-generator.git",
-            "reference": "fcabf82472d32ebffcfccec9333484669988fb96"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/shoppingflux/php-feed-generator/zipball/fcabf82472d32ebffcfccec9333484669988fb96",
-            "reference": "fcabf82472d32ebffcfccec9333484669988fb96",
-            "shasum": ""
-        },
-        "require": {
-            "ext-xml": "*",
-            "php": ">=5.5"
+            "ext-json": "*",
+            "php": ">= 5.6"
         },
         "require-dev": {
-            "fzaninotto/faker": "^1.7",
-            "psr/log": "^1.0",
-            "shoppingfeed/feed-xml": "1.*"
+            "guzzlehttp/guzzle": "^6.0",
+            "monolog/monolog": "^1.23",
+            "phpunit/phpunit": "^5.0",
+            "squizlabs/php_codesniffer": "^2.8"
         },
-        "time": "2018-06-06 13:37:45",
+        "suggest": {
+            "guzzlehttp/guzzle": "Guzzle Http 6 is the default http adapter integrated in the SDK",
+            "psr/log": "trace HTTP requests performed by the SDK",
+            "shoppingfeed/php-feed-generator": "Generates compliant Shopping-Feed XML feed with ease"
+        },
+        "time": "2018-10-16 09:09:33",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
             "psr-4": {
-                "ShoppingFeed\\Feed\\": "src"
-            },
-            "files": [
-                "src/functions.php"
-            ]
+                "ShoppingFeed\\Sdk\\": "src/",
+                "ShoppingFeed\\Sdk\\Test\\": "tests/unit"
+            }
         },
         "notification-url": "https://packagist.org/downloads/",
         "license": [
             "Apache-2.0"
         ],
-        "description": "ShoppingFeed Feed manager"
+        "description": "Shopping Feed SDK to ease integration of our API"
     },
     {
         "name": "guzzlehttp/promises",
@@ -146,35 +98,130 @@
         ]
     },
     {
-        "name": "guzzlehttp/psr7",
-        "version": "1.4.2",
-        "version_normalized": "1.4.2.0",
+        "name": "ralouphie/getallheaders",
+        "version": "2.0.5",
+        "version_normalized": "2.0.5.0",
         "source": {
             "type": "git",
-            "url": "https://github.com/guzzle/psr7.git",
-            "reference": "f5b8a8512e2b58b0071a7280e39f14f72e05d87c"
+            "url": "https://github.com/ralouphie/getallheaders.git",
+            "reference": "5601c8a83fbba7ef674a7369456d12f1e0d0eafa"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/guzzle/psr7/zipball/f5b8a8512e2b58b0071a7280e39f14f72e05d87c",
-            "reference": "f5b8a8512e2b58b0071a7280e39f14f72e05d87c",
+            "url": "https://api.github.com/repos/ralouphie/getallheaders/zipball/5601c8a83fbba7ef674a7369456d12f1e0d0eafa",
+            "reference": "5601c8a83fbba7ef674a7369456d12f1e0d0eafa",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.3"
+        },
+        "require-dev": {
+            "phpunit/phpunit": "~3.7.0",
+            "satooshi/php-coveralls": ">=1.0"
+        },
+        "time": "2016-02-11 07:05:27",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "files": [
+                "src/getallheaders.php"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Ralph Khattar",
+                "email": "ralph.khattar@gmail.com"
+            }
+        ],
+        "description": "A polyfill for getallheaders."
+    },
+    {
+        "name": "psr/http-message",
+        "version": "1.0.1",
+        "version_normalized": "1.0.1.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/php-fig/http-message.git",
+            "reference": "f6561bf28d520154e4b0ec72be95418abe6d9363"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/php-fig/http-message/zipball/f6561bf28d520154e4b0ec72be95418abe6d9363",
+            "reference": "f6561bf28d520154e4b0ec72be95418abe6d9363",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.3.0"
+        },
+        "time": "2016-08-06 14:39:51",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "1.0.x-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "Psr\\Http\\Message\\": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "PHP-FIG",
+                "homepage": "http://www.php-fig.org/"
+            }
+        ],
+        "description": "Common interface for HTTP messages",
+        "homepage": "https://github.com/php-fig/http-message",
+        "keywords": [
+            "http",
+            "http-message",
+            "psr",
+            "psr-7",
+            "request",
+            "response"
+        ]
+    },
+    {
+        "name": "guzzlehttp/psr7",
+        "version": "1.5.2",
+        "version_normalized": "1.5.2.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/guzzle/psr7.git",
+            "reference": "9f83dded91781a01c63574e387eaa769be769115"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/guzzle/psr7/zipball/9f83dded91781a01c63574e387eaa769be769115",
+            "reference": "9f83dded91781a01c63574e387eaa769be769115",
             "shasum": ""
         },
         "require": {
             "php": ">=5.4.0",
-            "psr/http-message": "~1.0"
+            "psr/http-message": "~1.0",
+            "ralouphie/getallheaders": "^2.0.5"
         },
         "provide": {
             "psr/http-message-implementation": "1.0"
         },
         "require-dev": {
-            "phpunit/phpunit": "~4.0"
+            "phpunit/phpunit": "~4.8.36 || ^5.7.27 || ^6.5.8"
         },
-        "time": "2017-03-20 17:10:46",
+        "time": "2018-12-04 20:46:45",
         "type": "library",
         "extra": {
             "branch-alias": {
-                "dev-master": "1.4-dev"
+                "dev-master": "1.5-dev"
             }
         },
         "installation-source": "dist",
@@ -205,6 +252,7 @@
         "keywords": [
             "http",
             "message",
+            "psr-7",
             "request",
             "response",
             "stream",
@@ -277,48 +325,6 @@
             "http client",
             "rest",
             "web service"
-        ]
-    },
-    {
-        "name": "shoppingfeed/php-sdk",
-        "version": "0.2.1-beta.1",
-        "version_normalized": "0.2.1.0-beta1",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/shoppingflux/php-sdk.git",
-            "reference": "6735829afdd2e19f8ebd83be82dea64f42765a24"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/shoppingflux/php-sdk/zipball/6735829afdd2e19f8ebd83be82dea64f42765a24",
-            "reference": "6735829afdd2e19f8ebd83be82dea64f42765a24",
-            "shasum": ""
-        },
-        "require": {
-            "guzzlehttp/guzzle": "^6.3",
-            "php": ">= 5.6",
-            "shoppingfeed/php-feed-generator": "1.0.0"
-        },
-        "require-dev": {
-            "monolog/monolog": "^1.23",
-            "phpunit/phpunit": "^5.0",
-            "squizlabs/php_codesniffer": "^2.8"
-        },
-        "suggest": {
-            "psr/log": "trace HTTP requests performed by the SDK"
-        },
-        "time": "2018-06-28 14:55:36",
-        "type": "library",
-        "installation-source": "dist",
-        "autoload": {
-            "psr-4": {
-                "ShoppingFeed\\Sdk\\": "src/",
-                "ShoppingFeed\\Sdk\\Test\\": "tests/unit"
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "Apache-2.0"
         ]
     }
 ]

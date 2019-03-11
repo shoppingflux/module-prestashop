@@ -2,6 +2,7 @@
 namespace ShoppingFeed\Sdk\Client;
 
 use Psr\Log\LoggerInterface;
+use ShoppingFeed\Sdk\Http\Adapter\AdapterInterface;
 
 class ClientOptions
 {
@@ -24,6 +25,33 @@ class ClientOptions
      * @var LoggerInterface
      */
     private $logger;
+
+    /**
+     * @var AdapterInterface
+     */
+    private $httpAdapter;
+
+    /**
+     * Name of the platform using the SDK
+     *
+     * @var string
+     */
+    private $platform;
+
+    /**
+     * Version of the platform using the SDK
+     *
+     * @var string
+     */
+    private $platformVersion;
+
+    /**
+     * @var array
+     */
+    private $headers = [
+        'Accept'          => 'application/json',
+        'Accept-Encoding' => 'gzip',
+    ];
 
     /**
      * @return LoggerInterface
@@ -88,7 +116,7 @@ class ClientOptions
     /**
      * @param int $retryCount
      *
-     * @return $this
+     * @return ClientOptions
      */
     public function setRetryOnServerError($retryCount)
     {
@@ -103,5 +131,70 @@ class ClientOptions
     public function getRetryOnServerError()
     {
         return $this->retryOnServerError;
+    }
+
+    /**
+     * @return AdapterInterface
+     */
+    public function getHttpAdapter()
+    {
+        return $this->httpAdapter;
+    }
+
+    /**
+     * @param AdapterInterface $httpAdapter
+     *
+     * @return ClientOptions
+     */
+    public function setHttpAdapter(AdapterInterface $httpAdapter)
+    {
+        $this->httpAdapter = $httpAdapter;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getHeaders()
+    {
+        $headers               = $this->headers;
+        $headers['User-Agent'] = sprintf(
+            'SF-SDK-PHP/%s (%s; %s)',
+            Client::VERSION,
+            $this->platform ?: gethostname(),
+            $this->platformVersion ?: 'Unknown'
+        );
+
+        return $headers;
+    }
+
+    /**
+     * @param array $headers
+     *
+     * @return ClientOptions
+     */
+    public function addHeaders(array $headers)
+    {
+        $this->headers = array_merge($this->headers, $headers);
+
+        return $this;
+    }
+
+    /**
+     * Add platform information for SDK user agent, useful
+     * for getting more accurate help from SF support team
+     *
+     * @param string $platform  The platform name (ex: Magento, Prestashop...etc)
+     * @param string $version   The platform version (ex: "1.2", "1.4.2")
+     *
+     * @return ClientOptions
+     */
+    public function setPlatform($platform, $version)
+    {
+        $this->platform        = $platform;
+        $this->platformVersion = $version;
+
+        return $this;
     }
 }

@@ -37,8 +37,9 @@ $dest_dir = '../vendor/prefixed/';
 /** @var string $lib_to_prefix this library will have the prefix added to its declared namespaces */
 $lib_to_prefix = "guzzlehttp";
 
-/** @var array $libs_to_update these libraries will have their used namespaces updated with the prefixed version */
-$libs_to_update = array("guzzlehttp", "shoppingfeed");
+/** @var array $libs_to_update these libraries will have their used namespaces
+ * updated with the prefixed version; the lib to prefix will automatically be added */
+$libs_to_update = array("shoppingfeed");
 
 /**
  * Creates a path to a folder if it doesn't exist
@@ -87,30 +88,128 @@ foreach ($phpFiles as $phpFile) {
     file_put_contents($destFilePath, $newContent);
 }
 
+// Remove "leaves" from the namespace tree
+$namespaces = array_values($namespaces);
+for ($i = 0; $i < count($namespaces); ++$i) {
+    if(!$namespaces[$i]) {
+        continue;
+    }
+    
+    for ($j = 0; $j < count($namespaces); ++$j) {
+        if ($namespaces[$j] && $j != $i) {
+            if(strpos($namespaces[$j], $namespaces[$i]) === 0) {
+                $namespaces[$j] = false;
+            }
+        }
+    }
+}
+$namespaces = array_filter($namespaces);
+
 // For each library using the prefixed namespace
-$namespaceRegex = '/(\s\\\\?)(' . implode("|", array_map(function ($e) {
-        return "(?:" . str_replace('\\', '\\\\', $e) . ")";
-    }, $namespaces)) . ")/";
-$namespaceReplace = '$1' . $namespaces_prefix . '\\$2';
+$libs_to_update[] = $lib_to_prefix;
 foreach ($libs_to_update as $lib_to_update) {
     // Get all files, and prefix the namespaces where used
-    $allFiles = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($vendor_dir . $lib_to_update));
+    if($lib_to_prefix == $lib_to_update) {
+        $allFiles = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dest_dir . $lib_to_update));
+    } else {
+        $allFiles = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($vendor_dir . $lib_to_update));
+    }
     $phpFiles = new RegexIterator($allFiles, '/\.php$/');
 
     foreach ($phpFiles as $phpFile) {
         $content = file_get_contents($phpFile->getRealPath());
-        $newContent = preg_replace($namespaceRegex, $namespaceReplace, $content);
+        $file_namespaces = $namespaces;
+        $file_namespacesRegex = array();
+        $file_namespacesReplace = array();
+        
+        if (preg_match("/namespace\s+(.+)\s*;/", $content, $matches)) {
+            // If we have a "namespace" statement, don't replace in the code
+            // unless there's a '\', but replace in the "use" statements
+            $namespace_statement = $matches[1];
+            if (($key = array_search($namespace_statement, $file_namespaces)) !== false) {
+                $file_namespacesRegex[] = '/(use\s+)(' . 
+                    '(?:' . str_replace('\\', '\\\\', $namespace_statement) . ')'
+                    . ')/';
+                $file_namespacesReplace[] = '$1' . $namespaces_prefix . '\\$2';
+                
+                $file_namespacesRegex[] = '/(\s+\\\\)(' . 
+                    '(?:' . str_replace('\\', '\\\\', $namespace_statement) . ')'
+                    . ')/';
+                $file_namespacesReplace[] = '$1' . $namespaces_prefix . '\\$2';
+                
+                unset($file_namespaces[$key]);
+            }
+        }
+        
+        if (preg_match_all("/use\s+(.+)\s*;/", $content, $matches)) {
+            // For each namespace to prefix
+            foreach ($file_namespaces as $key => $file_namespace) {
+                $exceptions = array();
+                // For each "use" statement
+                foreach ($matches[1] as $use_statement) {
+                    // If the statement matches the namespace we're looking for
+                    if (strpos($use_statement, $file_namespace) === 0) {
+                        // Replace everywhere, except when matching the "use"
+                        // statement
+                        $exceptions[] = $use_statement;
+                    }
+                }
+                
+                // Replace the "use" statements
+                $file_namespacesRegex[] = '/(use\s+)(' . 
+                    '(?:' . str_replace('\\', '\\\\', $file_namespace) . ')'
+                    . ')/';
+                $file_namespacesReplace[] = '$1' . $namespaces_prefix . '\\$2';
+                
+                if(!empty($exceptions)) {
+                    // Do NOT replace the code using the "use" statements
+                    $file_namespacesRegex[] = '/(\s+\\\\?)(' . 
+                        '(?:' . str_replace('\\', '\\\\', $file_namespace) . ')(?!'
+                        . implode("|", array_map(function ($e) use ($file_namespace) {
+                            if ($file_namespace == $e) {
+                                return '';
+                            }
+                            return str_replace(array('\\', $file_namespace), array('\\\\', ''), $e . '[^\\]');
+                        }, $exceptions))
+                        . '))/';
+                    $file_namespacesReplace[] = '$1' . $namespaces_prefix . '\\$2';
+                } else {
+                    $file_namespacesRegex[] = '/(\s+\\\\?)(' . 
+                        '(?:' . str_replace('\\', '\\\\', $file_namespace) . ')'
+                        . ')/';
+                    $file_namespacesReplace[] = '$1' . $namespaces_prefix . '\\$2';
+                }
 
+                unset($file_namespaces[$key]);
+            }
+        }
+        
+        foreach($file_namespaces as $file_namespace) {
+            $file_namespacesRegex[] = '/(\s\\\\?)(' . 
+                        '(?:' . str_replace('\\', '\\\\', $file_namespace) . ')'
+                        . ")/";
+            $file_namespacesReplace[] = '$1' . $namespaces_prefix . '\\$2';
+        }
+        //$content = str_replace('<?php', "<?php/*\n".print_r($file_namespacesRegex, true).print_r($file_namespacesReplace, true)."\n*/" , $content);
+        
+        //$newContent = $content;
+        $newContent = preg_replace($file_namespacesRegex, $file_namespacesReplace, $content);
+        
         // Save the modified files in the dest folder
         $destFilePath = $phpFile->getRealPath();
-        $destFilePath = str_replace(realpath($vendor_dir) . '/', $dest_dir, $destFilePath);
-        createFolder(dirname($destFilePath));
+        
+        if ($lib_to_update != $lib_to_prefix) {
+            $destFilePath = str_replace(realpath($vendor_dir) . '/', $dest_dir, $destFilePath);
+            createFolder(dirname($destFilePath));
+        }
 
         file_put_contents($destFilePath, $newContent);
     }
 
-    // Move the library folder we just processed
-    rename($vendor_dir . $lib_to_update, $dir_202 . $lib_to_update);
+    // Move the library folder we just processed if necessary
+    if ($lib_to_update != $lib_to_prefix) {
+        rename($vendor_dir . $lib_to_update, $dir_202 . $lib_to_update);
+    }
 }
 
 // Move the library folder with the prefixed namespaces

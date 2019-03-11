@@ -28,9 +28,11 @@ if (!defined('_PS_VERSION_')) {
 
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 
+use ShoppingFeed\Sdk\Http\Adapter\Guzzle6Adapter;
 use ShoppingFeed\Sdk\Credential\Token;
 use ShoppingFeed\Sdk\Credential\Password;
 use ShoppingFeed\Sdk\Client\Client;
+use ShoppingFeed\Sdk\Client\ClientOptions;
 use ShoppingFeed\Sdk\Api\Catalog\InventoryUpdate;
 use ShoppingFeed\Sdk\Api\Catalog\PricingUpdate;
 
@@ -58,7 +60,7 @@ class ShoppingfeedApi
      */
     public static function getInstanceByToken($id_shop = null, $token = null)
     {
-        if (static::$instance) {
+        if (static::$instance && static::$instance->getToken() == $token) {
             return static::$instance;
         }
 
@@ -71,8 +73,11 @@ class ShoppingfeedApi
         try {
             // Setup token to connect to the API, and create session
             $credential = new Token($token);
+            // Add Guzzle as HTTP interface
+            $clientOptions = new ClientOptions();
+            $clientOptions->setHttpAdapter(new Guzzle6Adapter());
             /** @var \ShoppingFeed\Sdk\Api\Session\SessionResource $session */
-            $session = Client::createSession($credential);
+            $session = Client::createSession($credential, $clientOptions);
 
             static::$instance = new ShoppingfeedApi($session);
             return static::$instance;
@@ -98,8 +103,11 @@ class ShoppingfeedApi
         try {
             // Setup credentials to connect to the API, and create session
             $credential = new Password($username, $password);
+            // Add Guzzle as HTTP interface
+            $clientOptions = new ClientOptions();
+            $clientOptions->setHttpAdapter(new Guzzle6Adapter());
             /** @var \ShoppingFeed\Sdk\Api\Session\SessionResource $session */
-            $session = Client::createSession($credential);
+            $session = Client::createSession($credential, $clientOptions);
             static::$instance = new ShoppingfeedApi($session);
 
             return static::$instance;
@@ -193,5 +201,26 @@ class ShoppingfeedApi
             );
             return false;
         }
+    }
+    
+    /**
+     * Pings the Shopping Feed API. Always creates a new client.
+     */
+    public static function ping()
+    {
+        if (!interface_exists(SfGuzzle\GuzzleHttp\ClientInterface::class)) {
+            throw new Exception("Shoppingfeed : Guzzle does not seem to be installed.");
+        }
+        
+        if (version_compare(SfGuzzle\GuzzleHttp\ClientInterface::VERSION, '6', '<')
+            || version_compare(SfGuzzle\GuzzleHttp\ClientInterface::VERSION, '7', '>=')
+        ) {
+            throw new Exception("Shoppingfeed : the module only supports Guzzle v6.");
+        }
+        
+        $clientOptions = new ClientOptions();
+        $clientOptions->setHttpAdapter(new Guzzle6Adapter());
+        $client = new Client($clientOptions);
+        return $client->ping();
     }
 }
