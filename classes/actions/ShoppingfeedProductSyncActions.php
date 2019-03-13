@@ -107,7 +107,7 @@ abstract class ShoppingfeedProductSyncActions extends DefaultActions
     }
 
     /**
-     * Gets a batch of ShoppindfeedProduct requiring their stock to be synchronized, and saves it
+     * Gets a batch of ShoppindfeedProduct requiring synchronization, and saves it
      * in the conveyor at ['batch'].
      * Forwards to prepareBatch.
      * @see prepareBatch
@@ -117,7 +117,7 @@ abstract class ShoppingfeedProductSyncActions extends DefaultActions
      */
     public function getBatch()
     {
-        $logPrefix = static::getLogPrefix();
+        $logPrefix = static::getLogPrefix($this->conveyor['id_shop']);
             
         if (empty($this->conveyor['product_action'])) {
             ProcessLoggerHandler::logInfo(
@@ -140,6 +140,10 @@ abstract class ShoppingfeedProductSyncActions extends DefaultActions
         $sfProductsRows = Db::getInstance()->executeS($query);
 
         if (empty($sfProductsRows)) {
+            ProcessLoggerHandler::logError(
+                $logPrefix . ' ' . $this->l('Nothing to synchronize.', 'ShoppingfeedProductSyncActions'),
+                'Product'
+            );
             return false;
         }
 
@@ -184,8 +188,11 @@ abstract class ShoppingfeedProductSyncActions extends DefaultActions
      */
     abstract public function executeBatch();
     
-    public static function getLogPrefix()
+    public static function getLogPrefix($id_shop = '')
     {
-        return '[Product]';
+        return sprintf(
+            Translate::getModuleTranslation('shoppingfeed', '[Product shop:%s]', 'ShoppingfeedProductSyncActions'),
+            $id_shop
+        );
     }
 }

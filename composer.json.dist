@@ -1,6 +1,6 @@
 {
   "require": {
-    "shoppingfeed/php-sdk": "0.2.4",
+    "shoppingfeed/php-sdk": "0.2.5",
     "guzzlehttp/guzzle": "^6.0"
   },
   "config": {

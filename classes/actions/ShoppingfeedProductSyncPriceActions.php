@@ -34,17 +34,17 @@ use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 use ShoppingfeedClasslib\Registry;
 
 /**
- * The Actions class is in charge of synchronizing product stocks using the SF API
+ * The Actions class is in charge of synchronizing product prices using the SF API
  * This class can be overriden in the Prestashop override path.
- * - Respect the override path override/modules/shoppingfeed/classes/actions/ShoppingfeedProductSyncStockActions.php
- * - Name your override class ShoppingfeedProductSyncStockActionsOverride extended with ShoppingfeedProductSyncStockActions
+ * - Respect the override path override/modules/shoppingfeed/classes/actions/ShoppingfeedProductSyncPriceActions.php
+ * - Name your override class ShoppingfeedProductSyncPriceActionsOverride extended with ShoppingfeedProductSyncPriceActions
  * @see ShoppingfeedDefaultActions
  */
 class ShoppingfeedProductSyncPriceActions extends ShoppingfeedProductSyncActions
 {
     /**
      * Gets prepared ShoppingfeedProduct from the conveyor at ['preparedBatch']
-     * and synchronizes their stock using the API.
+     * and synchronizes their price using the API.
      * {@inheritdoc}
      */
     public function prepareBatch()
@@ -87,13 +87,17 @@ class ShoppingfeedProductSyncPriceActions extends ShoppingfeedProductSyncActions
 
     /**
      * Gets prepared ShoppingfeedProduct from the conveyor at ['preparedBatch']
-     * and synchronizes their stock using the API.
+     * and synchronizes their price using the API.
      * {@inheritdoc}
      */
     public function executeBatch()
     {
         $shoppingfeedApi = ShoppingfeedApi::getInstanceByToken($this->conveyor['id_shop']);
         if ($shoppingfeedApi == false) {
+            ProcessLoggerHandler::logError(
+                static::getLogPrefix($this->conveyor['id_shop']) . ' ' . $this->l('Could not retrieve Shopping Feed API.', 'ShoppingfeedProductSyncPriceActions'),
+                'Product'
+            );
             Registry::increment('errors');
             return false;
         }
@@ -113,8 +117,7 @@ class ShoppingfeedProductSyncPriceActions extends ShoppingfeedProductSyncActions
             
             ProcessLoggerHandler::logInfo(
                 sprintf(
-                    static::getLogPrefix() . ' ' . $this->l('Updated %s price: %s', 'ShoppingfeedProductSyncStockActions'),
-                    $this->conveyor['id_shop'],
+                    static::getLogPrefix($this->conveyor['id_shop']) . ' ' . $this->l('Updated %s price: %s', 'ShoppingfeedProductSyncPriceActions'),
                     $reference,
                     $preparedBatchShop[$reference]['price']
                 ),
@@ -135,8 +138,7 @@ class ShoppingfeedProductSyncPriceActions extends ShoppingfeedProductSyncActions
 
                 ProcessLoggerHandler::logInfo(
                     sprintf(
-                        static::getLogPrefix() . $this->l('[shop:%s] %s not in Shopping Feed catalog - price: %d', 'ShoppingfeedProductSyncStockActions'),
-                        $this->conveyor['id_shop'],
+                        static::getLogPrefix($this->conveyor['id_shop']) . $this->l('%s not in Shopping Feed catalog - price: %d', 'ShoppingfeedProductSyncPriceActions'),
                         $data['reference'],
                         $data['price']
                     ),
@@ -152,8 +154,11 @@ class ShoppingfeedProductSyncPriceActions extends ShoppingfeedProductSyncActions
         return true;
     }
     
-    public static function getLogPrefix()
+    public static function getLogPrefix($id_shop = '')
     {
-        return '[Price]';
+        return sprintf(
+            Translate::getModuleTranslation('shoppingfeed', '[Price shop:%s]', 'ShoppingfeedProductSyncPriceActions'),
+            $id_shop
+        );
     }
 }

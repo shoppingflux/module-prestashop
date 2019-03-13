@@ -88,6 +88,10 @@ class ShoppingfeedProductSyncStockActions extends ShoppingfeedProductSyncActions
     {
         $shoppingfeedApi = ShoppingfeedApi::getInstanceByToken($this->conveyor['id_shop']);
         if ($shoppingfeedApi == false) {
+            ProcessLoggerHandler::logError(
+                static::getLogPrefix($this->conveyor['id_shop']) . ' ' . $this->l('Could not retrieve Shopping Feed API.', 'ShoppingfeedProductSyncStockActions'),
+                'Product'
+            );
             Registry::increment('errors');
             return false;
         }
@@ -107,8 +111,7 @@ class ShoppingfeedProductSyncStockActions extends ShoppingfeedProductSyncActions
             
             ProcessLoggerHandler::logInfo(
                 sprintf(
-                    static::getLogPrefix() . ' ' . $this->l('Updated %s qty: %s', 'ShoppingfeedProductSyncStockActions'),
-                    $this->conveyor['id_shop'],
+                    static::getLogPrefix($this->conveyor['id_shop']) . ' ' . $this->l('Updated %s qty: %s', 'ShoppingfeedProductSyncStockActions'),
                     $reference,
                     $preparedBatchShop[$reference]['quantity']
                 ),
@@ -129,8 +132,7 @@ class ShoppingfeedProductSyncStockActions extends ShoppingfeedProductSyncActions
 
                 ProcessLoggerHandler::logInfo(
                     sprintf(
-                        static::getLogPrefix() . $this->l('[shop:%s] %s not in Shopping Feed catalog - qty: %d', 'ShoppingfeedProductSyncStockActions'),
-                        $this->conveyor['id_shop'],
+                        static::getLogPrefix($this->conveyor['id_shop']) . $this->l('[shop:%s] %s not in Shopping Feed catalog - qty: %d', 'ShoppingfeedProductSyncStockActions'),
                         $data['reference'],
                         $data['quantity']
                     ),
@@ -146,8 +148,11 @@ class ShoppingfeedProductSyncStockActions extends ShoppingfeedProductSyncActions
         return true;
     }
     
-    public static function getLogPrefix()
+    public static function getLogPrefix($id_shop = '')
     {
-        return '[Stock]';
+        return sprintf(
+            Translate::getModuleTranslation('shoppingfeed', '[Stock shop:%s]', 'ShoppingfeedProductSyncStockActions'),
+            $id_shop
+        );
     }
 }

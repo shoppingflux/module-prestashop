@@ -37,7 +37,7 @@ class InventoryDomainTest extends TestCase
         $this->assertInstanceOf(Sdk\Api\Catalog\InventoryResource::class, $instance->getByReference($reference));
     }
 
-    public function testGetByReferenceNoInvetory()
+    public function testGetByReferenceNoInventory()
     {
         $reference = 'abc213';
         $link      = $this->createMock(Sdk\Hal\HalLink::class);
