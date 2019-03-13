@@ -7,13 +7,9 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'ShoppingfeedClasslib\\' => array($vendorDir . '/totpsclasslib/src'),
-    'ShoppingFeed\\Sdk\\Test\\' => array($vendorDir . '/shoppingfeed/php-sdk/tests/unit'),
-    'ShoppingFeed\\Sdk\\' => array($vendorDir . '/prefixed/shoppingfeed/php-sdk/src', $vendorDir . '/shoppingfeed/php-sdk/src'),
+    'ShoppingFeed\\Sdk\\' => array($vendorDir . '/prefixed/shoppingfeed/php-sdk/src'),
     'SfGuzzle\\GuzzleHttp\\Psr7\\' => array($vendorDir . '/prefixed/guzzlehttp/psr7/src'),
     'SfGuzzle\\GuzzleHttp\\Promise\\' => array($vendorDir . '/prefixed/guzzlehttp/promises/src'),
     'SfGuzzle\\GuzzleHttp\\' => array($vendorDir . '/prefixed/guzzlehttp/guzzle/src'),
     'Psr\\Http\\Message\\' => array($vendorDir . '/psr/http-message/src'),
-    'GuzzleHttp\\Psr7\\' => array($vendorDir . '/guzzlehttp/psr7/src'),
-    'GuzzleHttp\\Promise\\' => array($vendorDir . '/guzzlehttp/promises/src'),
-    'GuzzleHttp\\' => array($vendorDir . '/guzzlehttp/guzzle/src'),
 );
