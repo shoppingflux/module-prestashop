@@ -66,7 +66,7 @@ class ShoppingfeedApi
 
         if (!$token && !$id_shop) {
             return false;
-        } else if ($id_shop) {
+        } elseif ($id_shop) {
             $token = Configuration::get(Shoppingfeed::AUTH_TOKEN, null, null, $id_shop)  ;
         }
 

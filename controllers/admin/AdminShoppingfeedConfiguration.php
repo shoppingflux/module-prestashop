@@ -243,8 +243,9 @@ class AdminShoppingfeedConfigurationController extends ModuleAdminController
                     'name' => 'real_synch',
                     'html_content' => '<div id="real_synch_notice" class="alert alert-info">
                     '.sprintf(
-                            $this->module->l('You should select the type of synchronization (in real time or via a %s Cron job %s) for updating your product stocks and / or prices.', 'AdminShoppingfeedConfiguration'),
-                            '<a href="' . $this->context->link->getAdminLink('AdminShoppingfeedProcessMonitor') . '">', '</a>'
+                        $this->module->l('You should select the type of synchronization (in real time or via a %s Cron job %s) for updating your product stocks and / or prices.', 'AdminShoppingfeedConfiguration'),
+                        '<a href="' . $this->context->link->getAdminLink('AdminShoppingfeedProcessMonitor') . '">',
+                        '</a>'
                     ).'</div>',
                 ),
                 array(

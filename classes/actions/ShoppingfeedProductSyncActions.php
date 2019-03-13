@@ -55,7 +55,7 @@ abstract class ShoppingfeedProductSyncActions extends DefaultActions
         $id_product = $this->conveyor['id_product'];
         
         $id_product_attribute = null;
-        if(!empty($this->conveyor['id_product_attribute'])) {
+        if (!empty($this->conveyor['id_product_attribute'])) {
             $id_product_attribute = $this->conveyor['id_product_attribute'];
         }
         
@@ -82,10 +82,10 @@ abstract class ShoppingfeedProductSyncActions extends DefaultActions
             }
 
             $sfProduct = ShoppingfeedProduct::getFromUniqueKey(
-                    $action,
-                    $id_product,
-                    $id_product_attribute,
-                    $this->conveyor['id_shop']
+                $action,
+                $id_product,
+                $id_product_attribute,
+                $this->conveyor['id_shop']
             );
             if (false === $sfProduct || !Validate::isLoadedObject($sfProduct)) {
                 $sfProduct = new ShoppingfeedProduct();
@@ -184,7 +184,8 @@ abstract class ShoppingfeedProductSyncActions extends DefaultActions
      */
     abstract public function executeBatch();
     
-    public static function getLogPrefix() {
+    public static function getLogPrefix()
+    {
         return '[Product]';
     }
 }

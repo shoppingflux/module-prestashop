@@ -152,7 +152,8 @@ class ShoppingfeedProductSyncPriceActions extends ShoppingfeedProductSyncActions
         return true;
     }
     
-    public static function getLogPrefix() {
+    public static function getLogPrefix()
+    {
         return '[Price]';
     }
 }

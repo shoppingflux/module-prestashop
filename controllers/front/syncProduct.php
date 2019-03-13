@@ -57,24 +57,24 @@ class ShoppingfeedSyncProductModuleFrontController extends CronController
     protected function processCron($data)
     {
         $actions = array();
-        if(Configuration::get(Shoppingfeed::STOCK_SYNC_ENABLED)) {
+        if (Configuration::get(Shoppingfeed::STOCK_SYNC_ENABLED)) {
             $actions[ShoppingFeedProduct::ACTION_SYNC_STOCK] = array(
                 'actions_suffix' => 'Stock'
             );
         }
-        if(Configuration::get(Shoppingfeed::PRICE_SYNC_ENABLED)) {
+        if (Configuration::get(Shoppingfeed::PRICE_SYNC_ENABLED)) {
             $actions[ShoppingFeedProduct::ACTION_SYNC_PRICE] = array(
                 'actions_suffix' => 'Price'
             );
         }
         
-        if(empty($actions)) {
+        if (empty($actions)) {
             // The data to be saved in the CRON table
             return $data;
         }
         
         ProcessLoggerHandler::openLogger($this->processMonitor);
-        foreach($actions as $action => $actionData) {
+        foreach ($actions as $action => $actionData) {
             $this->processAction($action, $actionData['actions_suffix']);
         }
         
@@ -108,7 +108,7 @@ class ShoppingfeedSyncProductModuleFrontController extends CronController
                 ));
 
                 $processResult = $handler->process('shoppingfeedProductSync' . $actions_suffix);
-                if(!$processResult) {
+                if (!$processResult) {
                     ProcessLoggerHandler::logError(
                         $logPrefix . ' ' . $this->module->l('Fail : An error occurred during process.', 'syncStock'),
                         $this->processMonitor->getProcessObjectModelName(),

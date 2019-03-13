@@ -253,14 +253,14 @@ class Shoppingfeed extends Module
     public function mapProductPrice(ShoppingfeedProduct $sfProduct, ...$arguments)
     {
         $price = Product::getPriceStatic(
-                $sfProduct->id_product,
-                true,
-                $sfProduct->id_product_attribute ? $sfProduct->id_product_attribute : null,
-                2,
-                null,
-                false,
-                false,
-                1
+            $sfProduct->id_product,
+            true,
+            $sfProduct->id_product_attribute ? $sfProduct->id_product_attribute : null,
+            2,
+            null,
+            false,
+            false,
+            1
         );
         
         Hook::exec(
@@ -371,7 +371,7 @@ class Shoppingfeed extends Module
             );
         }
         
-        if(!Registry::offsetExists('updated_product_prices_ids')) {
+        if (!Registry::offsetExists('updated_product_prices_ids')) {
             Registry::set('updated_product_prices_ids', array());
         }
         $updatedProductPricesIds = Registry::get('updated_product_prices_ids');
