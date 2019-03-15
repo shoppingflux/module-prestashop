@@ -31,15 +31,10 @@ require_once _PS_MODULE_DIR_ . 'shoppingfeed/classes/ShoppingfeedProduct.php';
 require_once(_PS_MODULE_DIR_ . 'shoppingfeed/classes/actions/ShoppingfeedProductSyncStockActions.php');
 require_once(_PS_MODULE_DIR_ . 'shoppingfeed/classes/actions/ShoppingfeedProductSyncPriceActions.php');
 
-use ShoppingfeedClasslib\Module;
-use ShoppingfeedClasslib\Actions\ActionsHandler;
-use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
-use ShoppingfeedClasslib\Registry;
-
 /**
  * The base module class
  */
-class Shoppingfeed extends Module
+class Shoppingfeed extends \ShoppingfeedClasslib\Module
 {
     /**
      * This module requires at least PHP version
@@ -293,7 +288,7 @@ class Shoppingfeed extends Module
 
         try {
             /** @var ShoppingfeedHandler $handler */
-            $handler = new ActionsHandler();
+            $handler = new \ShoppingfeedClasslib\Actions\ActionsHandler();
             $handler
                 ->setConveyor(array(
                     'id_product' => $id_product,
@@ -303,7 +298,7 @@ class Shoppingfeed extends Module
                 ->addActions('saveProduct')
                 ->process('shoppingfeedProductSyncStock');
         } catch (Exception $e) {
-            ProcessLoggerHandler::logInfo(
+            \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logInfo(
                 sprintf(
                     ShoppingfeedProductSyncStockActions::getLogPrefix() . ' ' . $this->l('Product %s not registered for synchronization: %s', 'ShoppingfeedProductSyncActions'),
                     $id_product . ($id_product_attribute ? '_' . $id_product_attribute : ''),
@@ -314,7 +309,7 @@ class Shoppingfeed extends Module
             );
         }
 
-        ProcessLoggerHandler::closeLogger();
+        \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::closeLogger();
     }
     
     /****************************** Prices hooks ******************************/
@@ -351,7 +346,7 @@ class Shoppingfeed extends Module
         
         try {
             /** @var ShoppingfeedHandler $handler */
-            $handler = new ActionsHandler();
+            $handler = new \ShoppingfeedClasslib\Actions\ActionsHandler();
             $handler
                 ->setConveyor(array(
                     'id_product' => $product->id,
@@ -360,7 +355,7 @@ class Shoppingfeed extends Module
                 ->addActions('saveProduct')
                 ->process('shoppingfeedProductSyncPrice');
         } catch (Exception $e) {
-            ProcessLoggerHandler::logInfo(
+            \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logInfo(
                 sprintf(
                     ShoppingfeedProductSyncPriceActions::getLogPrefix() . ' ' . $this->l('Product %s not registered for synchronization: %s', 'ShoppingfeedProductSyncActions'),
                     $product->id,
@@ -371,14 +366,14 @@ class Shoppingfeed extends Module
             );
         }
         
-        if (!Registry::offsetExists('updated_product_prices_ids')) {
-            Registry::set('updated_product_prices_ids', array());
+        if (!\ShoppingfeedClasslib\Registry::offsetExists('updated_product_prices_ids')) {
+            \ShoppingfeedClasslib\Registry::set('updated_product_prices_ids', array());
         }
-        $updatedProductPricesIds = Registry::get('updated_product_prices_ids');
+        $updatedProductPricesIds = \ShoppingfeedClasslib\Registry::get('updated_product_prices_ids');
         $updatedProductPricesIds[] = $product->id;
-        Registry::set('updated_product_prices_ids', $updatedProductPricesIds);
+        \ShoppingfeedClasslib\Registry::set('updated_product_prices_ids', $updatedProductPricesIds);
 
-        ProcessLoggerHandler::closeLogger();
+        \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::closeLogger();
     }
     
     /**
@@ -402,15 +397,15 @@ class Shoppingfeed extends Module
         // If all goes well, they should already be cached...
         $old_combination = new Combination($combination->id);
         if ((float)$old_combination->price == (float)$combination->price &&
-            (!Registry::isRegistered('updated_product_prices_ids') ||
-                !in_array($combination->id_product, Registry::get('updated_product_prices_ids'))
+            (!\ShoppingfeedClasslib\Registry::isRegistered('updated_product_prices_ids') ||
+                !in_array($combination->id_product, \ShoppingfeedClasslib\Registry::get('updated_product_prices_ids'))
             )) {
             return;
         }
         
         try {
             /** @var ShoppingfeedHandler $handler */
-            $handler = new ActionsHandler();
+            $handler = new \ShoppingfeedClasslib\Actions\ActionsHandler();
             $handler
                 ->setConveyor(array(
                     'id_product' => $combination->id_product,
@@ -420,7 +415,7 @@ class Shoppingfeed extends Module
                 ->addActions('saveProduct')
                 ->process('shoppingfeedProductSyncPrice');
         } catch (Exception $e) {
-            ProcessLoggerHandler::logInfo(
+            \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logInfo(
                 sprintf(
                     ShoppingfeedProductSyncPriceActions::getLogPrefix() . ' ' . $this->l('Combination %s not registered for synchronization: %s', 'ShoppingfeedProductSyncActions'),
                     $combination->id_product . ($combination->id ? '_' . $combination->id : ''),
@@ -431,6 +426,6 @@ class Shoppingfeed extends Module
             );
         }
 
-        ProcessLoggerHandler::closeLogger();
+        \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::closeLogger();
     }
 }
