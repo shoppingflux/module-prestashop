@@ -31,6 +31,15 @@ require_once _PS_MODULE_DIR_ . 'shoppingfeed/classes/ShoppingfeedProduct.php';
 require_once(_PS_MODULE_DIR_ . 'shoppingfeed/classes/actions/ShoppingfeedProductSyncStockActions.php');
 require_once(_PS_MODULE_DIR_ . 'shoppingfeed/classes/actions/ShoppingfeedProductSyncPriceActions.php');
 
+// Set this as comment so Classlib will import the files; but don't uncomment !
+// Installation will fail on PS 1.6 if "use" statements are in the main module
+// file
+// 
+// use ShoppingfeedClasslib\Module;
+// use ShoppingfeedClasslib\Actions\ActionsHandler;
+// use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
+// use ShoppingfeedClasslib\Registry;
+
 /**
  * The base module class
  */
