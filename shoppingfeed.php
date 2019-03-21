@@ -250,21 +250,36 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
      * false. Note that the comparison with the return value is strict to allow
      * "0" as a valid price.
      * @param ShoppingFeedProduct $sfProduct
+     * @param int $id_shop
      * @param array $arguments Should you want to pass more arguments to this
      * function, you can find them in this array
      * @return string
      */
-    public function mapProductPrice(ShoppingfeedProduct $sfProduct, ...$arguments)
+    public function mapProductPrice(ShoppingfeedProduct $sfProduct, $id_shop, ...$arguments)
     {
+        $cloneContext = Context::getContext()->cloneContext();
+        $cloneContext->shop = new Shop($id_shop);
+        
         $price = Product::getPriceStatic(
-            $sfProduct->id_product,
-            true,
-            $sfProduct->id_product_attribute ? $sfProduct->id_product_attribute : null,
-            2,
-            null,
-            false,
-            false,
-            1
+            $sfProduct->id_product, // id_product
+            true, // usetax
+            $sfProduct->id_product_attribute ? // id_product_attribute
+                $sfProduct->id_product_attribute : null,
+            2, // decimals
+            null, // divisor
+            false, // only_reduc
+            false, // usereduc
+            1, // quantity
+            false, // force_associated_tax
+            null, // id_customer
+            null, // id_cart
+            null, // id_address
+            $specific_price_output = null, // specific_price_output
+            true, // with_ecotax
+            true, // use_group_reduction
+            $cloneContext, // context; get the price for the specified shop
+            true, // use_customer_price
+            null // id_customization
         );
         
         Hook::exec(
