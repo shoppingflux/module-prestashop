@@ -44,15 +44,21 @@ class AdminShoppingfeedConfigurationController extends ModuleAdminController
     {
         $current_shop_context = $this->context->shop->getContext();
         if ($current_shop_context === Shop::CONTEXT_ALL) {
-            Context::getContext()->controller->addCSS(_PS_MODULE_DIR_ .'shoppingfeed/views/css/config.css');
-            $this->content = $this->context->smarty->fetch(_PS_MODULE_DIR_ . 'shoppingfeed/views/templates/admin/error_multishop.tpl');
+            Context::getContext()->controller->addCSS(
+                _PS_MODULE_DIR_ . 'shoppingfeed/views/css/config.css'
+            );
+            $this->content = $this->context->smarty->fetch(
+                _PS_MODULE_DIR_ . 'shoppingfeed/views/templates/admin/error_multishop.tpl'
+            );
             $this->context->smarty->assign('content', $this->content);
             return;
         }
 
-        $this->addCSS($this->module->getPathUri() . 'views/css/shoppingfeed_configuration/form.css');
+        $this->addCSS(array(
+            $this->module->getPathUri() . 'views/css/shoppingfeed_configuration/form.css',
+            $this->module->getPathUri() . 'views/css/font-awesome.min.css'
+        ));
         $this->addJS($this->module->getPathUri() . 'views/js/form_config.js');
-        $this->addCSS($this->module->getPathUri() . 'views/css/font-awesome.min.css');
 
         $id_shop = $this->context->shop->id;
         $token = Configuration::get(shoppingfeed::AUTH_TOKEN, null, null, $id_shop);
@@ -90,7 +96,15 @@ class AdminShoppingfeedConfigurationController extends ModuleAdminController
                 array(
                     'type' => 'html',
                     'name' => 'employee_avatar',
-                    'html_content' => '<div id="employee-avatar-thumbnail" class="alert alert-info">' . str_replace("%url%", '<a href="https://app.shopping-feed.com/v3/en/login" class="alert-link" target="_blank">' . $this->module->l('My Access page', 'AdminShoppingfeedConfiguration') . '</a>', $this->module->l('Your token can be found on the %url% of your merchant interface', 'AdminShoppingfeedConfiguration')) . '</div>',
+                    'html_content' => '<div id="employee-avatar-thumbnail" class="alert alert-info">' .
+                        str_replace(
+                            "%url%",
+                            '<a href="https://app.shopping-feed.com/v3/en/login" class="alert-link" target="_blank">' .
+                                $this->module->l('My Access page', 'AdminShoppingfeedConfiguration') .
+                                '</a>',
+                            $this->module->l('Your token can be found on the %url% of your merchant interface', 'AdminShoppingfeedConfiguration')
+                        ) .
+                        '</div>',
                 ),
                 array(
                     'type' => 'text',

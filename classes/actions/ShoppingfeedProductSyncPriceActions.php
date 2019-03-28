@@ -37,7 +37,8 @@ use ShoppingfeedClasslib\Registry;
  * The Actions class is in charge of synchronizing product prices using the SF API
  * This class can be overriden in the Prestashop override path.
  * - Respect the override path override/modules/shoppingfeed/classes/actions/ShoppingfeedProductSyncPriceActions.php
- * - Name your override class ShoppingfeedProductSyncPriceActionsOverride extended with ShoppingfeedProductSyncPriceActions
+ * - Name your override class ShoppingfeedProductSyncPriceActionsOverride
+ *   extended with ShoppingfeedProductSyncPriceActions
  * @see ShoppingfeedDefaultActions
  */
 class ShoppingfeedProductSyncPriceActions extends ShoppingfeedProductSyncActions
@@ -95,7 +96,8 @@ class ShoppingfeedProductSyncPriceActions extends ShoppingfeedProductSyncActions
         $shoppingfeedApi = ShoppingfeedApi::getInstanceByToken($this->conveyor['id_shop']);
         if ($shoppingfeedApi == false) {
             ProcessLoggerHandler::logError(
-                static::getLogPrefix($this->conveyor['id_shop']) . ' ' . $this->l('Could not retrieve Shopping Feed API.', 'ShoppingfeedProductSyncPriceActions'),
+                static::getLogPrefix($this->conveyor['id_shop']) . ' ' .
+                    $this->l('Could not retrieve Shopping Feed API.', 'ShoppingfeedProductSyncPriceActions'),
                 'Product'
             );
             Registry::increment('errors');
@@ -117,7 +119,8 @@ class ShoppingfeedProductSyncPriceActions extends ShoppingfeedProductSyncActions
             
             ProcessLoggerHandler::logInfo(
                 sprintf(
-                    static::getLogPrefix($this->conveyor['id_shop']) . ' ' . $this->l('Updated %s price: %s', 'ShoppingfeedProductSyncPriceActions'),
+                    static::getLogPrefix($this->conveyor['id_shop']) . ' ' .
+                        $this->l('Updated %s price: %s', 'ShoppingfeedProductSyncPriceActions'),
                     $reference,
                     $preparedBatchShop[$reference]['price']
                 ),
@@ -138,7 +141,8 @@ class ShoppingfeedProductSyncPriceActions extends ShoppingfeedProductSyncActions
 
                 ProcessLoggerHandler::logInfo(
                     sprintf(
-                        static::getLogPrefix($this->conveyor['id_shop']) . $this->l('%s not in Shopping Feed catalog - price: %d', 'ShoppingfeedProductSyncPriceActions'),
+                        static::getLogPrefix($this->conveyor['id_shop']) . ' ' .
+                            $this->l('%s not in Shopping Feed catalog - price: %d', 'ShoppingfeedProductSyncPriceActions'),
                         $data['reference'],
                         $data['price']
                     ),

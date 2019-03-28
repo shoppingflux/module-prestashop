@@ -37,7 +37,8 @@ use ShoppingFeed\Sdk\Api\Catalog\InventoryUpdate;
 use ShoppingFeed\Sdk\Api\Catalog\PricingUpdate;
 
 /**
- * This class is a singleton, which is responsible for calling the SF API using the SDK
+ * This class is a singleton, which is responsible for calling the SF API using
+ * the SDK
  */
 class ShoppingfeedApi
 {
@@ -53,7 +54,9 @@ class ShoppingfeedApi
     }
 
     /**
-     * Returns the object's instance, using a token. If no session was initialized, creates it. No exceptions are handled here.
+     * Returns the object's instance, using a token. If no session was
+     * initialized, creates it. No exceptions are handled here.
+     *
      * @param $id_shop the shop to use (one token per shop)
      * @param $token the token to use, if no shop is specified
      * @return ShoppingfeedApi
@@ -93,7 +96,9 @@ class ShoppingfeedApi
     }
 
     /**
-     * Returns the object's instance, using credentials. Always creates a new session. No exceptions are handled here.
+     * Returns the object's instance, using credentials. Always creates a new
+     * session. No exceptions are handled here.
+     *
      * @param $username
      * @param $password
      * @return ShoppingfeedApi

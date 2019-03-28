@@ -274,7 +274,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             null, // id_customer
             null, // id_cart
             null, // id_address
-            $specific_price_output = null, // specific_price_output
+            $specific_price_output = null, // specific_price_output; reference
             true, // with_ecotax
             true, // use_group_reduction
             $cloneContext, // context; get the price for the specified shop
@@ -400,15 +400,14 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::closeLogger();
 
         // Combinations hook are not called when saving the product on 1.6
-        if(version_compare(_PS_VERSION_, '1.7', '<')) {
+        if (version_compare(_PS_VERSION_, '1.7', '<')) {
             $attributes = $product->getAttributesResume(Context::getContext()->language->id);
-            foreach($attributes as $attribute) {
+            foreach ($attributes as $attribute) {
                 $this->hookActionObjectCombinationUpdateBefore(array(
                     'object' => new Combination($attribute['id_product_attribute'])
                 ));
             }
         }
-
     }
     
     /**

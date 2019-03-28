@@ -38,7 +38,8 @@ use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 abstract class ShoppingfeedProductSyncActions extends DefaultActions
 {
     /**
-     * Saves a ShoppingfeedProduct to be synchronized. Runs the synchronization if real-time is enabled.
+     * Saves a ShoppingfeedProduct to be synchronized. Runs the synchronization
+     * if real-time is enabled.
      * @return bool
      */
     public function saveProduct()
@@ -47,7 +48,8 @@ abstract class ShoppingfeedProductSyncActions extends DefaultActions
             
         if (empty($this->conveyor['id_product'])) {
             ProcessLoggerHandler::logInfo(
-                $logPrefix . ' ' . $this->l('Product not registered for synchronization; no ID product found', 'ShoppingfeedProductSyncActions'),
+                $logPrefix . ' ' .
+                    $this->l('Product not registered for synchronization; no ID product found', 'ShoppingfeedProductSyncActions'),
                 'Product'
             );
             return false;
@@ -62,7 +64,8 @@ abstract class ShoppingfeedProductSyncActions extends DefaultActions
         if (empty($this->conveyor['product_action'])) {
             ProcessLoggerHandler::logInfo(
                 sprintf(
-                    $logPrefix . ' ' . $this->l('Product %s not registered for synchronization; no Action found', 'ShoppingfeedProductSyncActions'),
+                    $logPrefix . ' ' .
+                        $this->l('Product %s not registered for synchronization; no Action found', 'ShoppingfeedProductSyncActions'),
                     $id_product . ($id_product_attribute ? '_' . $id_product_attribute : '')
                 ),
                 'Product'
@@ -121,7 +124,8 @@ abstract class ShoppingfeedProductSyncActions extends DefaultActions
             
         if (empty($this->conveyor['product_action'])) {
             ProcessLoggerHandler::logInfo(
-                $logPrefix . ' ' . $this->l('Could not retrieve batch for synchronization; no product action found', 'ShoppingfeedProductSyncActions'),
+                $logPrefix . ' ' .
+                    $this->l('Could not retrieve batch for synchronization; no product action found', 'ShoppingfeedProductSyncActions'),
                 'Product'
             );
             return false;
