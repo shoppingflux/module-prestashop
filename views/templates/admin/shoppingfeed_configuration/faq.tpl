@@ -139,7 +139,7 @@ Version ShoppingFeed: {$module_version|escape:'htmlall':'UTF-8'}
 Multishop: {$multishop|escape:'htmlall':'UTF-8'}
 Combination: {$combination|escape:'htmlall':'UTF-8'}
 
-Products: {$nbr_prpoducts|escape:'htmlall':'UTF-8'}
+Products: {$nbr_products|escape:'htmlall':'UTF-8'}
 Token : {$token|escape:'htmlall':'UTF-8'}
 Real time active: {$REAL_TIME_SYNCHRONIZATION|escape:'htmlall':'UTF-8'}
 Real time count products: {$STOCK_SYNC_MAX_PRODUCTS|escape:'htmlall':'UTF-8'}

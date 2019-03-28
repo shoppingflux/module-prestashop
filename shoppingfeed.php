@@ -209,6 +209,22 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
 
         return $res;
     }
+    
+    public function setBreakingChangesNotices() {
+        if (version_compare($this->version, '1.2', '<')) {
+            $this->context->controller->warnings[] = sprintf(
+                $this->l('If you are using a Cron task for synchronisation, please note that starting from the v1.1.0 of the module, you should change the URL of your Cron task. Please use the %s shoppingfeed:syncProduct %s Cron task instead of %s shoppingfeed:syncStock %s (you can still use the %s shoppingfeed:syncStock %s Cron task in the v1.1.0 of the module). To get the new Cron task URL please check the %s Scheduled tasks %s tab.'),
+                '<b>',
+                '</b>',
+                '<b>',
+                '</b>',
+                '<b>',
+                '</b>',
+                '<a href="' . $this->context->link->getAdminLink('AdminShoppingfeedProcessMonitor') . '">',
+                '</a>'
+            );
+        }
+    }
 
     /**
      * Redirects the user to our AdminController for configuration

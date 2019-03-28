@@ -142,7 +142,7 @@ class ShoppingfeedProductSyncPriceActions extends ShoppingfeedProductSyncActions
                 ProcessLoggerHandler::logInfo(
                     sprintf(
                         static::getLogPrefix($this->conveyor['id_shop']) . ' ' .
-                            $this->l('%s not in Shopping Feed catalog - price: %d', 'ShoppingfeedProductSyncPriceActions'),
+                            $this->l('%s not in Shopping Feed catalog - price: %s', 'ShoppingfeedProductSyncPriceActions'),
                         $data['reference'],
                         $data['price']
                     ),

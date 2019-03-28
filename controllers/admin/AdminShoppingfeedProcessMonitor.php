@@ -36,5 +36,8 @@ use ShoppingfeedClasslib\Extensions\ProcessMonitor\AdminProcessMonitorController
  */
 class AdminShoppingfeedProcessMonitorController extends AdminProcessMonitorController
 {
-
+    public function initContent() {
+        $this->module->setBreakingChangesNotices();
+        return parent::initContent();
+    }
 }

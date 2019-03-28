@@ -36,7 +36,7 @@ class AdminShoppingfeedConfigurationController extends ModuleAdminController
 {
     public $bootstrap = true;
 
-    public $nbr_prpoducts;
+    public $nbr_products;
     /**
      * @inheritdoc
      */
@@ -63,7 +63,7 @@ class AdminShoppingfeedConfigurationController extends ModuleAdminController
         $id_shop = $this->context->shop->id;
         $token = Configuration::get(shoppingfeed::AUTH_TOKEN, null, null, $id_shop);
 
-        $this->nbr_prpoducts = count(Product::getSimpleProducts($this->context->language->id));
+        $this->nbr_products = count(Product::getSimpleProducts($this->context->language->id));
         $this->content = $this->welcomeForm();
 
         if (!$token) {
@@ -77,7 +77,9 @@ class AdminShoppingfeedConfigurationController extends ModuleAdminController
         }
 
         $this->content .= $this->faqForm();
-
+        
+        $this->module->setBreakingChangesNotices();
+        
         parent::initContent();
     }
 
@@ -207,13 +209,13 @@ class AdminShoppingfeedConfigurationController extends ModuleAdminController
     public function renderConfigurationForm()
     {
         switch (true) {
-            case ($this->nbr_prpoducts <= 100):
+            case ($this->nbr_products <= 100):
                 $message_realtime = $this->module->l('You have less than 100 products, the RealTime parameter on YES is recommended. You have little stock for each reference and for you the stock precision is fundamental. Moreover, no need to set up any cron job. Sending real-time inventory updates to the Feed API makes it easy for you to sync inventory in less than 15 minutes. However, this multiplies the calls to the Shopping API stream wchich can slow the loading time of pages that decrement or increment the stock, especially during order status updates.', 'AdminShoppingfeedConfiguration');
                 break;
-            case ($this->nbr_prpoducts < 1000 && $this->nbr_prpoducts > 100):
+            case ($this->nbr_products < 1000 && $this->nbr_products > 100):
                 $message_realtime = $this->module->l('You have between 100 and 1000 products, the Realtime parameter on NO is recommended. Updates are queued and the configuration of a cron job (URL) every 5 minutes will allow you to synchronize of all products waiting for synchronization. This reduce calls sent to the Shopping Flux API and improve page loading performances.', 'AdminShoppingfeedConfiguration');
                 break;
-            case ($this->nbr_prpoducts > 1000):
+            case ($this->nbr_products > 1000):
                 $message_realtime = $this->module->l('You have more than 1000 products, Realtime parameter NO is required. You probably use an external tool (like an ERP) to manage your inventory which can lead to many updates at the same time. In this case, the updates are queued and the configuration of a cron job (URL) every 5 minutes will allow you to synchronize of all products waiting for synchronization. This reduce calls sent to the Shopping Flux API and improve page loading performances', 'AdminShoppingfeedConfiguration');
                 break;
         }
@@ -452,7 +454,7 @@ class AdminShoppingfeedConfigurationController extends ModuleAdminController
 
         $helper = new HelperForm($this);
         $helper->tpl_vars['REAL_TIME_SYNCHRONIZATION'] = Configuration::get(Shoppingfeed::REAL_TIME_SYNCHRONIZATION)?'true':'false';
-        $helper->tpl_vars['nbr_prpoducts'] = $this->nbr_prpoducts;
+        $helper->tpl_vars['nbr_products'] = $this->nbr_products;
         $helper->tpl_vars['shop_url'] = Tools::getShopDomain();
         $helper->tpl_vars['php_version'] = PHP_VERSION;
         $helper->tpl_vars['prestashop_version'] = _PS_VERSION_;

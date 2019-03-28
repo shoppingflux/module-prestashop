@@ -35,5 +35,8 @@ use ShoppingfeedClasslib\Extensions\ProcessLogger\AdminProcessLoggerController;
  */
 class AdminShoppingfeedProcessLoggerController extends AdminProcessLoggerController
 {
-
+    public function initContent() {
+        $this->module->setBreakingChangesNotices();
+        return parent::initContent();
+    }
 }
