@@ -37,6 +37,11 @@ use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
  */
 abstract class ShoppingfeedProductSyncActions extends DefaultActions
 {
+    /** @var bool $no_save_forward Should we stop after saving regardless of
+     * realtime sync ?
+     */
+    protected $no_forward_after_save = false;
+    
     /**
      * Saves a ShoppingfeedProduct to be synchronized. Runs the synchronization
      * if real-time is enabled.
@@ -101,7 +106,7 @@ abstract class ShoppingfeedProductSyncActions extends DefaultActions
             $sfProduct->update_at = date('Y-m-d H:i:s');
             $sfProduct->save();
             
-            if (true == Configuration::get(Shoppingfeed::REAL_TIME_SYNCHRONIZATION, null, null, $this->conveyor['id_shop'])) {
+            if (!$this->no_forward_after_save && true == Configuration::get(Shoppingfeed::REAL_TIME_SYNCHRONIZATION, null, null, $this->conveyor['id_shop'])) {
                 $this->forward('getBatch');
             }
         }

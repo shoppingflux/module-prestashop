@@ -87,7 +87,7 @@ class ShoppingfeedSyncProductModuleFrontController extends CronController
         $actionClassname = 'ShoppingfeedProductSync' . $actions_suffix . 'Actions';
         $logPrefix = $actionClassname::getLogPrefix();
         ProcessLoggerHandler::logInfo(
-            $logPrefix . ' ' . $this->module->l('Process start', 'syncStock'),
+            $logPrefix . ' ' . $this->module->l('Process start', 'syncProduct'),
             $this->processMonitor->getProcessObjectModelName(),
             $this->processMonitor->getProcessObjectModelId()
         );
@@ -110,7 +110,7 @@ class ShoppingfeedSyncProductModuleFrontController extends CronController
                 $processResult = $handler->process('shoppingfeedProductSync' . $actions_suffix);
                 if (!$processResult) {
                     ProcessLoggerHandler::logError(
-                        $logPrefix . ' ' . $this->module->l('Fail : An error occurred during process.', 'syncStock'),
+                        $logPrefix . ' ' . $this->module->l('Fail : An error occurred during process.', 'syncProduct'),
                         $this->processMonitor->getProcessObjectModelName(),
                         $this->processMonitor->getProcessObjectModelId()
                     );
@@ -120,7 +120,7 @@ class ShoppingfeedSyncProductModuleFrontController extends CronController
         } catch (Exception $e) {
             ProcessLoggerHandler::logError(
                 sprintf(
-                    $logPrefix . ' ' . $this->module->l('Fail : %s', 'syncStock'),
+                    $logPrefix . ' ' . $this->module->l('Fail : %s', 'syncProduct'),
                     $e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine()
                 ),
                 $this->processMonitor->getProcessObjectModelName(),
@@ -131,7 +131,7 @@ class ShoppingfeedSyncProductModuleFrontController extends CronController
 
         ProcessLoggerHandler::logInfo(
             sprintf(
-                $logPrefix . ' ' . $this->module->l('%d products updated - %d not in catalog - %d errors', 'syncStock'),
+                $logPrefix . ' ' . $this->module->l('%d products updated - %d not in catalog - %d errors', 'syncProduct'),
                 (int)Registry::get('updatedProducts'),
                 (int)Registry::get('not-in-catalog'),
                 (int)Registry::get('errors')

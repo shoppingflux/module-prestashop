@@ -152,6 +152,8 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         'actionUpdateQuantity',
         'actionObjectProductUpdateBefore',
         'actionObjectCombinationUpdateBefore',
+        'actionObjectProductUpdateAfter',
+        'actionObjectCombinationUpdateAfter',
     );
 
     /**
@@ -276,6 +278,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         $cloneContext = Context::getContext()->cloneContext();
         $cloneContext->shop = new Shop($id_shop);
         
+        $specific_price_output = null;
         $price = Product::getPriceStatic(
             $sfProduct->id_product, // id_product
             true, // usetax
@@ -290,7 +293,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             null, // id_customer
             null, // id_cart
             null, // id_address
-            $specific_price_output = null, // specific_price_output; reference
+            $specific_price_output, // specific_price_output; reference
             true, // with_ecotax
             true, // use_group_reduction
             $cloneContext, // context; get the price for the specified shop
@@ -358,12 +361,13 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
      * For each object, we'll use the "UpdateBefore" hooks.
      * We won't check the "Add" and "Delete" hooks, since the export module
      * should export the first prices and the deletion from the catalog.
+     * If we're using realtime sync, the SF call will be done in the
+     * "UpdateAfter" hooks, otherwise we'll send non-updated values.
      */
     
     /**
      * Compares an updated product's price with its old price. If the new price
-     * is different, saves the product for price synchronization, or
-     * synchronizes it directly using the Actions handler.
+     * is different, saves the product for price synchronization.
      * @param array $params The hook parameters
      */
     public function hookActionObjectProductUpdateBefore($params)
@@ -385,7 +389,6 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         }
         
         try {
-            /** @var ShoppingfeedHandler $handler */
             $handler = new \ShoppingfeedClasslib\Actions\ActionsHandler();
             $handler
                 ->setConveyor(array(
@@ -428,8 +431,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     
     /**
      * Compares an updated combinations's price with its old price. If the new
-     * price is different, saves the combination for price synchronization, or
-     * synchronizes it directly using the Actions handler.
+     * price is different, saves the combination for price synchronization.
      * @param array $params The hook parameters
      */
     public function hookActionObjectCombinationUpdateBefore($params)
@@ -454,7 +456,6 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         }
         
         try {
-            /** @var ShoppingfeedHandler $handler */
             $handler = new \ShoppingfeedClasslib\Actions\ActionsHandler();
             $handler
                 ->setConveyor(array(
@@ -476,6 +477,67 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             );
         }
 
+        \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::closeLogger();
+    }
+    
+    /**
+     * Updates a product on SF if realtime sync is enabled.
+     * On PS1.6, it should also update the product's combinations if needed.
+     * @param array $params The hook parameters
+     */
+    public function hookActionObjectProductUpdateAfter($params)
+    {
+        $this->updateShoppingFeedPriceRealtime();
+    }
+    
+    /**
+     * Updates a combination on SF if realtime sync is enabled.
+     * @param array $params The hook parameters
+     */
+    public function hookActionObjectCombinationUpdateAfter($params)
+    {
+        $this->updateShoppingFeedPriceRealtime();
+    }
+    
+    /**
+     * Processes saved price updates if realtime sync is enabled.
+     */
+    public function updateShoppingFeedPriceRealtime()
+    {
+        if (!Configuration::get(Shoppingfeed::PRICE_SYNC_ENABLED)) {
+            return;
+        }
+
+        try {
+            $handler = new \ShoppingfeedClasslib\Actions\ActionsHandler();
+            $handler->addActions('getBatch');
+            $shops = Shop::getShops();
+            foreach ($shops as $shop) {
+                if (false == Configuration::get(Shoppingfeed::REAL_TIME_SYNCHRONIZATION, null, null, $shop)) {
+                    continue;
+                }
+                
+                $handler->setConveyor(array(
+                    'id_shop' => $shop['id_shop'],
+                    'product_action' => ShoppingfeedProduct::ACTION_SYNC_PRICE,
+                ));
+
+                $processResult = $handler->process('shoppingfeedProductSyncPrice');
+                if (!$processResult) {
+                    \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logError(
+                        ShoppingfeedProductSyncPriceActions::getLogPrefix() . ' ' . $this->module->l('Fail : An error occurred during process.')
+                    );
+                }
+            }
+        } catch (Exception $e) {
+            \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logError(
+                sprintf(
+                    ShoppingfeedProductSyncPriceActions::getLogPrefix() . ' ' . $this->l('Fail : %s'),
+                    $e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine()
+                )
+            );
+        }
+        
         \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::closeLogger();
     }
 }

@@ -43,6 +43,9 @@ use ShoppingfeedClasslib\Registry;
  */
 class ShoppingfeedProductSyncPriceActions extends ShoppingfeedProductSyncActions
 {
+    /** @inheritdoc */
+    protected $no_forward_after_save = true;
+    
     /**
      * Gets prepared ShoppingfeedProduct from the conveyor at ['preparedBatch']
      * and synchronizes their price using the API.
