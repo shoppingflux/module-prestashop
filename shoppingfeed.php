@@ -513,7 +513,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             $handler->addActions('getBatch');
             $shops = Shop::getShops();
             foreach ($shops as $shop) {
-                if (false == Configuration::get(Shoppingfeed::REAL_TIME_SYNCHRONIZATION, null, null, $shop)) {
+                if (false == Configuration::get(Shoppingfeed::REAL_TIME_SYNCHRONIZATION, null, null, $shop['id_shop'])) {
                     continue;
                 }
                 
