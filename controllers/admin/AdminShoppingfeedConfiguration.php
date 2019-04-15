@@ -91,7 +91,7 @@ class AdminShoppingfeedConfigurationController extends ModuleAdminController
     {
         $fields_form = array(
             'legend' => array(
-                'title' => $this->l('API Token'),
+                'title' => $this->l('API Token', 'AdminShoppingfeedConfiguration'),
                 'icon' => 'icon-user'
             ),
             'input' => array(
@@ -116,7 +116,7 @@ class AdminShoppingfeedConfigurationController extends ModuleAdminController
                 ),
             ),
             'submit' => array(
-                'title' => $this->l('Save'),
+                'title' => $this->l('Save', 'AdminShoppingfeedConfiguration'),
                 'name' => 'saveToken'
             )
         );
@@ -158,7 +158,7 @@ class AdminShoppingfeedConfigurationController extends ModuleAdminController
     {
         $fields_form = array(
             'legend' => array(
-                'title' => $this->l('Login'),
+                'title' => $this->l('Login', 'AdminShoppingfeedConfiguration'),
                 'icon' => 'icon-user'
             ),
             'input' => array(
@@ -393,7 +393,7 @@ class AdminShoppingfeedConfigurationController extends ModuleAdminController
             if ($e->getResponse()->getStatusCode() == 401) {
                 $this->errors[] = $this->module->l('These credentials were not recognized by the Shopping Feed API.', 'AdminShoppingfeedConfiguration');
             } else {
-                $this->errors[] = $this->l($e->getMessage());
+                $this->errors[] = $e->getMessage();
             }
             return false;
         } catch (Exception $e) {

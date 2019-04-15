@@ -525,7 +525,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
                 $processResult = $handler->process('shoppingfeedProductSyncPrice');
                 if (!$processResult) {
                     \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logError(
-                        ShoppingfeedProductSyncPriceActions::getLogPrefix() . ' ' . $this->module->l('Fail : An error occurred during process.')
+                        ShoppingfeedProductSyncPriceActions::getLogPrefix() . ' ' . $this->l('Fail : An error occurred during process.')
                     );
                 }
             }
