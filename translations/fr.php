@@ -33,6 +33,7 @@ $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedconfiguration_b64313787f100
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedconfiguration_3435aee107feb6274dfaa9a2aa3aaae0'] = 'Configuration (valable pour toutes les boutiques)';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedconfiguration_359b58785b7a17a42e133e31afef20b4'] = 'Synchronisation des stocks';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedconfiguration_8acab50140834d22b7019514ed2f1c90'] = 'Synchronisation des prix';
+$_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedconfiguration_a20d0342abfbfddd2b8247b0e0966e7c'] = 'Vous devez sélectionner le type de synchronisation (en temps réel ou via une %s tâche Cron %s) pour la synchronisation de stocks et/ou de prix de produits.';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedconfiguration_ac715a83144f3c02f2b5ec41ae740866'] = 'Synchonisation temps réel';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedconfiguration_b2c0b3fc1d2812bf71b9ad1559655e9b'] = 'Si coché, aucune tâche Cron sera nécessaire. La synchronisation sera effectuée dès qu\'un changement est effectué. Cela peut impacter les performances générales du site en cas de mises à jour nombreuses des stocks.';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedconfiguration_1110c4e66540bdf83b5442e7e3244000'] = 'Ce paramètre est réservé aux experts (100 par défaut). Vous pouvez configurer le nombre de produits à traiter lors de chaque appel de la tâche cron. Plus vous augmentez ce chiffre, plus le nombre de requêtes en base de données sera importantes.  La valeur de ce paramètre est à calibrer en fonction des capacités de votre serveur mysql et de votre taux de rotation des stocks pour écouler la file d’attente dans le délais qui vous conviendra.';
@@ -50,6 +51,7 @@ $_MODULE['<{shoppingfeed}prestashop>syncproduct_a7078868bc7b6f6f63ffcea83a377cb4
 $_MODULE['<{shoppingfeed}prestashop>syncproduct_09e1e7ac3f48896d83ef2f619bc54b33'] = 'Échec : Une erreur s\'est produit durant le processus';
 $_MODULE['<{shoppingfeed}prestashop>syncproduct_ca1adcba37d0d2a6b1a2dd7d730b94cb'] = 'Échec : %s';
 $_MODULE['<{shoppingfeed}prestashop>syncproduct_2c398010836fffa0d93881d00d483381'] = '%d mis à jour - %d non présent - %d en erreur';
+$_MODULE['<{shoppingfeed}prestashop>syncstock_bceb522de517683cbc30693709594945'] = 'ATTENTION : Cette tâche a été renommée à shoppingfeed:syncProduct. Votre tâche CRON utilise encore l\'URL de la tâche shoppingfeed:syncStock.';
 $_MODULE['<{shoppingfeed}prestashop>adminprocessloggercontroller_d3b206d196cd6be3a2764c1fb90b200f'] = 'Supprimer la sélection';
 $_MODULE['<{shoppingfeed}prestashop>adminprocessloggercontroller_b718adec73e04ce3ec720dd11a06a308'] = 'ID';
 $_MODULE['<{shoppingfeed}prestashop>adminprocessloggercontroller_49ee3087348e8d44e1feda1917443987'] = 'Nom';
