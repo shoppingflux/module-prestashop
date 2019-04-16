@@ -279,6 +279,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         $cloneContext->shop = new Shop($id_shop);
         
         $specific_price_output = null;
+        Product::flushPriceCache();
         $price = Product::getPriceStatic(
             $sfProduct->id_product, // id_product
             true, // usetax
