@@ -149,11 +149,11 @@ abstract class ShoppingfeedProductSyncActions extends DefaultActions
         $sfProductsRows = Db::getInstance()->executeS($query);
 
         if (empty($sfProductsRows)) {
-            ProcessLoggerHandler::logError(
+            ProcessLoggerHandler::logInfo(
                 $logPrefix . ' ' . $this->l('Nothing to synchronize.', 'ShoppingfeedProductSyncActions'),
                 'Product'
             );
-            return false;
+            return true;
         }
 
         $this->conveyor['batch'] = array();
