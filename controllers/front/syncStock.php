@@ -41,7 +41,7 @@ class ShoppingfeedSyncStockModuleFrontController extends ShoppingfeedSyncProduct
 {
     protected function processCron($data)
     {
-        $deprecatedWarning = $this->l('WARNING : This task has been renamed to shoppingfeed:syncProduct. Your CRON task is still using the URL to the shoppingfeed:syncStock task.');
+        $deprecatedWarning = $this->module->l('WARNING : This task has been renamed to shoppingfeed:syncProduct. Your CRON task is still using the URL to the shoppingfeed:syncStock task.', 'syncStock');
         
         // Open and close the logger immediately since it's not even supposed
         // to be open when the process starts
