@@ -14,15 +14,6 @@
     <target name="package-zip" depends="build-common" description="Create ZIP package">
         <echo>Create ZIP package</echo>
         <exec executable="${env.TOTBUILDER_PATH}tot-package.sh" failonerror="true">
-            <arg value="dev" />
-            <arg value="${TARGETNAME}" />
-            <arg value="${TARGETBRANCH}" />
-            <arg value="${TARGETVERSION}" />
-            <arg value="${env.BUILD_TAG}" />
-            <arg value="${env.GIT_URL}" />
-        </exec>
-
-        <exec executable="${env.TOTBUILDER_PATH}tot-package.sh" failonerror="true">
             <arg value="prod" />
             <arg value="${TARGETNAME}" />
             <arg value="${TARGETBRANCH}" />
