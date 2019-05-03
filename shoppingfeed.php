@@ -410,7 +410,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             );
         }
         
-        if (!\ShoppingfeedClasslib\Registry::offsetExists('updated_product_prices_ids')) {
+        if (!\ShoppingfeedClasslib\Registry::isRegistered('updated_product_prices_ids')) {
             \ShoppingfeedClasslib\Registry::set('updated_product_prices_ids', array());
         }
         $updatedProductPricesIds = \ShoppingfeedClasslib\Registry::get('updated_product_prices_ids');
