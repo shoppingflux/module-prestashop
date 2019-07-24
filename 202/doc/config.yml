@@ -20,5 +20,7 @@ examples:
   js:
       
 order:
+    - Overview
     - Installation
-    - Features
+    - "Features : Products"
+    - "Features : Orders"
