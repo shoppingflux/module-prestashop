@@ -1,6 +1,6 @@
 ---
 category: 'Features : Orders (specifications)'
-name: '3. Questions'
+name: '5. Questions'
 ---
 
 Si je modifie le statut d'une commande (vers "livré" par exemple), mais que je
@@ -24,6 +24,8 @@ de la commande (probablement le plus simple pour nous).
     * Si le statut est "valide", il envoie la demande.
     * Sinon, il ne fait rien.
 
+-> On regarde toujours le dernier statut de la commande - Clotaire
+
 ---
 
 Pour vérifier le statut des tickets chez SF, on est obligé d'avoir une tâche
@@ -38,6 +40,8 @@ fonctionnent avec le même système, on peut mettre une colonne dans la table
 `shoppingfeed_order`; sinon, puisque c'est un process qui sort du cadre
 "basique" de synchronisation, on peut créer une table dédiée
 `shoppingfeed_order_tickets`.
+
+-> mettre une colonne dans sf_task_order 'ticket_number'
 
 ---
 
@@ -55,3 +59,22 @@ dépluggé. - Clotaire
 -> A priori, si on peut le faire dans un sens, on peut le faire dans l'autre. - Antoine
 
 -> A voir selon le temps qu'il reste; ca ne fait pas partie des specs actuelles - Tetiana
+
+-> A priori, non. On verra au kickoff, mais ca risque de poser plus de problèmes qu'autre chose.
+Par contre, on peut empêcher notre synchro de commande de se lancer tant que l'ancien
+module est encore greffé, et afficher un message d'erreur sur la page de conf.
+
+---
+
+A confirmer :
+
+Pour passer en "shipped" : il faudra vérifier à la fois le statut et le tracking_number  
+On devra détecter les changements de tracking_number ET les changements de statut  
+Si on change le "tracking_number", on envoie de toute facon, quel que soit le statut  
+Si on change le statut, mais qu'on a pas de "tracking_number" ou qu'on a déjà "tracking_sent", on envoie pas
+
+---
+
+A confirmer :
+
+On peut avoir plusieurs statuts qui déclenchent un changement chez SF

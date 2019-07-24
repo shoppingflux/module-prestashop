@@ -17,10 +17,16 @@ responsible for processing update batches.
 
 **Note : this module is not responsible for importing orders from the SF API**
 (yet). The module should only synchronize orders imported using the
-shoppingfluxexport module.
+shoppingfluxexport module.  
 A new CronController / Action pair will be created (one day, but not today) to
 support orders import; most likely named `ShoppingfeedOrdersImportActions` to
-separate the two features.
+separate the two features.  
+This module will use the `validateOrder` hook to detect orders added by the
+shoppingfluxexport module, and will then fill the `shoppingfeed_order` table.
+
+<i>To see where the necessary data is stored, check the
+`Shoppingfluxexport::hookPostUpdateOrderStatus()` method in the
+shoppingfluxexport module.</i>
 
 # Synchronization method
 
@@ -29,7 +35,7 @@ the Shopping Feed API each time a synchronizable order field is updated; this
 may be dangerous for shops with a lot of traffic.
 
 Whenever an order is updated, it will be added as "to synchronize" in the
-`shoppingfeed_order` table. From there, 2 possibilities :
+`shoppingfeed_task_order` table. From there, 2 possibilities :
 * If batch synchronization is selected, a CRON task will later read this table
 and send update requests to the Shopping Feed API with multiple orders. The
 number of updates to process each time the task is run may be changed in the
@@ -44,7 +50,7 @@ the `ShoppingfeedOrderSync[Field]Actions` will be executed.
 # The abstract ShoppingfeedOrderSyncActions class
 
 No matter which synchronization method is selected, an updated order will
-always be saved in the `shoppingfeed_order` table before being processed.
+always be saved in the `shoppingfeed_task_order` table before being processed.
 
 Every synchronizable field should have an associated classlib `Actions` class
 extending the `ShoppingfeedOrderSyncActions` class. **The class name is
