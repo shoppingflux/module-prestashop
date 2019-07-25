@@ -5,12 +5,12 @@ name: 1. Orders overview
 
 Most of the process is similar to the products synchronization. However,
 updating an order's status leads to the creation of a ticket rather than an
-immediate confirmation (see [2. Status synchronization](/#2-status-synchronization)).
+immediate confirmation (see [2. Status synchronization](#2-status-synchronization)).
   
-The module allows either real-time synchronization, or batch synchronization.  
+Orders allow only batch synchronization.  
 
 Every synchronizable field should have its associated classlib `Actions` class
-extending the abstract `ShoppingfeedOrderSyncActions` class.  
+extending the abstract `ShoppingfeedOrderSyncActions` class.
 
 The `syncOrderPostImport` controller extending classlib's `CronController` is
 responsible for processing update batches.
@@ -30,27 +30,13 @@ shoppingfluxexport module.</i>
 
 # Synchronization method
 
-When real-time synchronization is selected, the module will send a request to
-the Shopping Feed API each time a synchronizable order field is updated; this
-may be dangerous for shops with a lot of traffic.
-
-Whenever an order is updated, it will be added as "to synchronize" in the
-`shoppingfeed_task_order` table. From there, 2 possibilities :
-* If batch synchronization is selected, a CRON task will later read this table
-and send update requests to the Shopping Feed API with multiple orders. The
-number of updates to process each time the task is run may be changed in the
-module's configuration page.
-* If real-time synchronization is selected, the requests will be sent
-immediately.
-
-The only difference between real-time and batch synchronization lies in _when_
-the `ShoppingfeedOrderSync[Field]Actions` will be executed.
+Orders only supports batch synchronization.
 
 
 # The abstract ShoppingfeedOrderSyncActions class
 
-No matter which synchronization method is selected, an updated order will
-always be saved in the `shoppingfeed_task_order` table before being processed.
+Updated orders will always be saved in the `shoppingfeed_task_order` table
+before being processed.
 
 Every synchronizable field should have an associated classlib `Actions` class
 extending the `ShoppingfeedOrderSyncActions` class. **The class name is
@@ -69,10 +55,6 @@ Since saving and retrieving updates to process is similar for every
 synchronizable fields, the abstract `ShoppingfeedOrderSyncActions` is the one
 implementing those features. Every "field process" (e.g.
 `ShoppingfeedOrderSyncStatusActions`) should implement the remaining methods.
-Note that **when real-time synchronization is selected**, the
-`ShoppingfeedOrderSyncActions::saveOrder` method will **automatically
-forward** to the `ShoppingfeedOrderSyncActions::getBatch` method to run the
-synchronization process.
 
 
 # Processing the updates with batch synchronization
