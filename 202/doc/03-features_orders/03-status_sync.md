@@ -79,6 +79,8 @@ update chain immediately after saving the order. If not, a CRON task managed
 with Classlib's `ProcessMonitor` component will process the saved updates using
 the same chain of actions.
 
+Only the _current_ status of an order will be checked. No need to save
+the order status in the update.
 
 # Checking the ticket
 

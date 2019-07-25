@@ -14,34 +14,10 @@ question.
 
 ---
 
-Si je passe une commande en "livrée", puis "annulée" : 
-* Si la synchro est en temps réel, on enverra les 2 demandes de mise à jour.
-* Si la synchro est en différé (CRON), est ce qu'on peut se référer au statut de
-la commande au moment ou le CRON passe ? Ou est ce qu'il faut enregistrer qu'il
-y a eu 2 opérations ?
-  * L'idée c'est que si le CRON passe, il regarde uniquement le statut _actuel_
-de la commande (probablement le plus simple pour nous).
-    * Si le statut est "valide", il envoie la demande.
-    * Sinon, il ne fait rien.
-
--> On regarde toujours le dernier statut de la commande - Clotaire
-
----
-
 Pour vérifier le statut des tickets chez SF, on est obligé d'avoir une tâche
 CRON ?  
 Questions plus exacte : si on est en temps réel, après quel "événement" doit on
 faire la requête de vérification des tickets chez SF ?
-
----
-
-Ou stocker les numéros de ticket ? Si d'autres fonctionnalités de  l'API de SF
-fonctionnent avec le même système, on peut mettre une colonne dans la table
-`shoppingfeed_order`; sinon, puisque c'est un process qui sort du cadre
-"basique" de synchronisation, on peut créer une table dédiée
-`shoppingfeed_order_tickets`.
-
--> mettre une colonne dans sf_task_order 'ticket_number'
 
 ---
 
