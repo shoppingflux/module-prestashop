@@ -64,6 +64,11 @@ no matter the status. We'll also set `shoppingfeed_order.shipped_sent` to `1`.
   * If we don't have a tracking number, the update will fail and the merchant
     will be notified.
 
+To detect changes on the `tracking_number` field, we must use the
+`actionObjectOrderCarrierUpdateBefore` hook, as there's no process tied to this
+field. This is very similar to detecting
+[products price changes](/#4-price-synchronization-detecting-changes).
+
 # Processing changes
 
 Updated orders are _always_ saved in the database before being sent. The

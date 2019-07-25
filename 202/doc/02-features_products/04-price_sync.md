@@ -33,7 +33,7 @@ Updated products are _always_ saved in the database before being sent. The
 `ProcessLogger` component from Classlib is used to track every update process.
 
 If real-time synchronization is selected, the `ActionsHandler` will execute the
-update chain immediately after saving the product. If not, a CRON task managed
-with Classlib's `ProcessMonitor` component will process the saved updates using
-the same chain of actions.
-
+update chain in the `actionObjectProductUpdateAfter` and
+`actionObjectCombinationUpdateAfter` hooks. If not, a CRON task managed with
+Classlib's `ProcessMonitor` component will process the saved updates using the
+same chain of actions.
