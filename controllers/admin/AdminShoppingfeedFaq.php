@@ -48,11 +48,29 @@ class AdminShoppingfeedFaqController extends ModuleAdminController
 
         $this->nbr_products = count(Product::getSimpleProducts($this->context->language->id));
 
-        $this->content = $this->faqForm();
+        $this->content = $this->welcomeForm();
+        $this->content .= $this->faqForm();
 
         $this->module->setBreakingChangesNotices();
 
         parent::initContent();
+    }
+
+    public function welcomeForm()
+    {
+        $fields_form = array(
+            'legend' => array(
+                'title' => $this->module->l('15 min Marketplace Updates - Shopping', 'AdminShoppingfeedAccountSettings'),
+            )
+        );
+
+        $helper = new HelperForm($this);
+        $this->setHelperDisplay($helper);
+        $helper->tpl_vars['img_path'] = $this->module->getPathUri() . "views/img/";
+        $helper->base_folder = $this->getTemplatePath();
+        $helper->base_tpl = 'welcome.tpl';
+
+        return $helper->generateForm(array(array('form' => $fields_form)));
     }
 
     public function faqForm()

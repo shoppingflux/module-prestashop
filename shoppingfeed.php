@@ -152,15 +152,6 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             'parent_class_name' => 'shoppingfeed',
             'visible' => true,
         ),
-        array(
-            'name' => array(
-                'en' => 'aadad',
-                'fr' => 'fafzaaz'
-            ),
-            'class_name' => 'AdminShoppingfeedConfiguration',
-            'parent_class_name' => 'shoppingfeed',
-            'visible' => true,
-        ),
     );
 
     /**
