@@ -48,7 +48,7 @@ class AdminShoppingfeedFaqController extends ModuleAdminController
 
         $this->nbr_products = count(Product::getSimpleProducts($this->context->language->id));
 
-        $this->content .= $this->faqForm();
+        $this->content = $this->faqForm();
 
         parent::initContent();
     }

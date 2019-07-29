@@ -41,7 +41,14 @@ class AdminShoppingfeedAccountSettingsController extends ModuleAdminController
      */
     public function initContent()
     {
-        $this->content = $this->renderTokenForm();
+        $id_shop = $this->context->shop->id;
+        $token = Configuration::get(shoppingfeed::AUTH_TOKEN, null, null, $id_shop);
+
+        if (!$token) {
+            $this->content = $this->renderLoginForm();
+        }
+
+        $this->content .= $this->renderTokenForm();
 
         parent::initContent();
     }
@@ -97,12 +104,67 @@ class AdminShoppingfeedAccountSettingsController extends ModuleAdminController
     }
 
     /**
+     * Renders the HTML for the login form
+     * @return string the rendered form's HTML
+     */
+    public function renderLoginForm()
+    {
+        $fields_form = array(
+            'legend' => array(
+                'title' => $this->l('Login', 'AdminShoppingfeedAccountSettings'),
+                'icon' => 'icon-user'
+            ),
+            'input' => array(
+                array(
+                    'type' => 'html',
+                    'name' => 'employee_avatar',
+                    'html_content' => '<div id="employee-avatar-thumbnail" class="alert alert-info">
+                    '.$this->module->l('Otherwise you can also fill directly the token form located lower', 'AdminShoppingfeedAccountSettings').'</div>',
+                ),
+                array(
+                    'type' => 'text',
+                    'label' => $this->module->l('Username', 'AdminShoppingfeedAccountSettings'),
+                    'name' => 'username',
+                    'required' => true,
+                ),
+                array(
+                    'type' => 'password',
+                    'label' => $this->module->l('Password', 'AdminShoppingfeedAccountSettings'),
+                    'name' => 'password',
+                    'required' => true,
+                ),
+            ),
+            'submit' => array(
+                'title' => $this->module->l('Send', 'AdminShoppingfeedAccountSettings'),
+                'name' => 'login'
+            )
+        );
+
+        $fields_value = array(
+            'username' => '',
+            'password' => '',
+        );
+
+
+        $helper = new HelperForm($this);
+        $this->setHelperDisplay($helper);
+        $helper->fields_value = $fields_value;
+        $helper->tpl_vars = $this->getTemplateFormVars();
+        $helper->base_folder = $this->getTemplatePath() . $this->override_folder;
+        $helper->base_tpl = 'form_login.tpl';
+
+        return $helper->generateForm(array(array('form' => $fields_form)));
+    }
+
+    /**
      * @inheritdoc
      */
     public function postProcess()
     {
         if (Tools::isSubmit('saveToken')) {
             return $this->saveToken();
+        } elseif (Tools::isSubmit('login')) {
+            return $this->login();
         }
     }
 
@@ -142,6 +204,41 @@ class AdminShoppingfeedAccountSettingsController extends ModuleAdminController
         Configuration::updateValue(shoppingfeed::AUTH_TOKEN, $token, null, null, $id_shop);
 
         $this->confirmations[] = $this->module->l('Your token has been saved.', 'AdminShoppingfeedAccountSettings');
+        return true;
+    }
+
+    /**
+     * Attempts to retrieve a token from the SF API using credentials, and saves the token on success
+     * @return bool
+     */
+    public function login()
+    {
+        $username = Tools::getValue('username');
+        $password = Tools::getValue('password');
+
+        try {
+            $shoppingFeedApi = ShoppingfeedApi::getInstanceByCredentials($username, $password);
+
+            if (!$shoppingFeedApi) {
+                $this->errors[] = $this->module->l('An error has occurred.', 'AdminShoppingfeedConfiguration');
+                return false;
+            }
+        } catch (SfGuzzle\GuzzleHttp\Exception\ClientException $e) {
+            if ($e->getResponse()->getStatusCode() == 401) {
+                $this->errors[] = $this->module->l('These credentials were not recognized by the Shopping Feed API.', 'AdminShoppingfeedConfiguration');
+            } else {
+                $this->errors[] = $e->getMessage();
+            }
+            return false;
+        } catch (Exception $e) {
+            $this->errors[] = $e->getMessage();
+            return false;
+        }
+
+        $id_shop = $this->context->shop->id;
+        Configuration::updateValue(shoppingfeed::AUTH_TOKEN, $shoppingFeedApi->getToken(), null, null, $id_shop);
+
+        $this->confirmations[] = $this->module->l('Login successful; your token has been saved.', 'AdminShoppingfeedConfiguration');
         return true;
     }
 }

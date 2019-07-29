@@ -42,6 +42,7 @@ class AdminShoppingfeedConfigurationController extends ModuleAdminController
      */
     public function initContent()
     {
+        ////b
         $current_shop_context = $this->context->shop->getContext();
         if ($current_shop_context === Shop::CONTEXT_ALL) {
             Context::getContext()->controller->addCSS(
@@ -53,12 +54,19 @@ class AdminShoppingfeedConfigurationController extends ModuleAdminController
             $this->context->smarty->assign('content', $this->content);
             return;
         }
+        ////e
+
 
         $this->addCSS(array(
             $this->module->getPathUri() . 'views/css/shoppingfeed_configuration/form.css',
             $this->module->getPathUri() . 'views/css/font-awesome.min.css'
         ));
+
+
+        ////b
         $this->addJS($this->module->getPathUri() . 'views/js/form_config.js');
+        ////e
+
 
         $id_shop = $this->context->shop->id;
         $token = Configuration::get(shoppingfeed::AUTH_TOKEN, null, null, $id_shop);
@@ -77,9 +85,9 @@ class AdminShoppingfeedConfigurationController extends ModuleAdminController
         }
 
         $this->content .= $this->faqForm();
-        
+
         $this->module->setBreakingChangesNotices();
-        
+
         parent::initContent();
     }
 
