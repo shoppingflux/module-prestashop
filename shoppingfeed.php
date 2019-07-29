@@ -32,9 +32,8 @@ require_once(_PS_MODULE_DIR_ . 'shoppingfeed/classes/actions/ShoppingfeedProduct
 require_once(_PS_MODULE_DIR_ . 'shoppingfeed/classes/actions/ShoppingfeedProductSyncPriceActions.php');
 
 // Set this as comment so Classlib will import the files; but don't uncomment !
-// Installation will fail on PS 1.6 if "use" statements are in the main module
-// file
-// 
+// Installation will fail on PS 1.6 if "use" statements are in the main module file
+//
 // use ShoppingfeedClasslib\Module;
 // use ShoppingfeedClasslib\Actions\ActionsHandler;
 // use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
@@ -63,9 +62,11 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
      * @var array
      */
     public $objectModels = array(
+        'ShoppingfeedTaskOrder',
         'ShoppingfeedProcessMonitor',
         'ShoppingfeedProcessLogger',
         'ShoppingfeedProduct',
+        'ShoppingfeedOrder',
     );
 
     /**
@@ -108,17 +109,26 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         ),
         array(
             'name' => array(
-                'en' => 'Dashboard',
-                'fr' => 'Tableau de bord'
+                'en' => 'Account Settings',
+                'fr' => 'Paramètres du compte'
             ),
-            'class_name' => 'AdminShoppingfeedConfiguration',
+            'class_name' => 'AdminShoppingfeedAccountSettings',
             'parent_class_name' => 'shoppingfeed',
             'visible' => true,
         ),
         array(
             'name' => array(
-                'en' => 'Scheduled tasks',
-                'fr' => 'Tâches planifiées'
+                'en' => 'General Settings',
+                'fr' => 'Paramètres généraux'
+            ),
+            'class_name' => 'AdminShoppingfeedGeneralSettings',
+            'parent_class_name' => 'shoppingfeed',
+            'visible' => true,
+        ),
+        array(
+            'name' => array(
+                'en' => 'Cron Tasks',
+                'fr' => 'Tâches cron'
             ),
             'class_name' => 'AdminShoppingfeedProcessMonitor',
             'parent_class_name' => 'shoppingfeed',
@@ -126,10 +136,28 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         ),
         array(
             'name' => array(
-                'en' => 'Tasks logs',
-                'fr' => 'Journal des tâches'
+                'en' => 'Tasks activity',
+                'fr' => 'Journal d\'activité'
             ),
             'class_name' => 'AdminShoppingfeedProcessLogger',
+            'parent_class_name' => 'shoppingfeed',
+            'visible' => true,
+        ),
+        array(
+            'name' => array(
+                'en' => 'FAQ/Help',
+                'fr' => 'FAQ/Aide'
+            ),
+            'class_name' => 'AdminShoppingfeedFaq',
+            'parent_class_name' => 'shoppingfeed',
+            'visible' => true,
+        ),
+        array(
+            'name' => array(
+                'en' => 'aadad',
+                'fr' => 'fafzaaz'
+            ),
+            'class_name' => 'AdminShoppingfeedConfiguration',
             'parent_class_name' => 'shoppingfeed',
             'visible' => true,
         ),
@@ -235,7 +263,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     public function getContent()
     {
         Tools::redirectAdmin(
-            Context::getContext()->link->getAdminLink('AdminShoppingfeedConfiguration')
+            Context::getContext()->link->getAdminLink('AdminShoppingfeedAccountSettings')
         );
     }
     
