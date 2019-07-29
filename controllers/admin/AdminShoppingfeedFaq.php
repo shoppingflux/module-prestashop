@@ -50,6 +50,8 @@ class AdminShoppingfeedFaqController extends ModuleAdminController
 
         $this->content = $this->faqForm();
 
+        $this->module->setBreakingChangesNotices();
+
         parent::initContent();
     }
 

@@ -41,16 +41,53 @@ class AdminShoppingfeedAccountSettingsController extends ModuleAdminController
      */
     public function initContent()
     {
+        $current_shop_context = $this->context->shop->getContext();
+        if ($current_shop_context === Shop::CONTEXT_ALL) {
+            Context::getContext()->controller->addCSS(
+                _PS_MODULE_DIR_ . 'shoppingfeed/views/css/config.css'
+            );
+            $this->content = $this->context->smarty->fetch(
+                _PS_MODULE_DIR_ . 'shoppingfeed/views/templates/admin/error_multishop.tpl'
+            );
+            $this->context->smarty->assign('content', $this->content);
+            return;
+        }
+
+        $this->addCSS(array(
+            $this->module->getPathUri() . 'views/css/shoppingfeed_configuration/form.css',
+            $this->module->getPathUri() . 'views/css/font-awesome.min.css'
+        ));
+
+        $this->content = $this->welcomeForm();
+
         $id_shop = $this->context->shop->id;
         $token = Configuration::get(shoppingfeed::AUTH_TOKEN, null, null, $id_shop);
-
         if (!$token) {
-            $this->content = $this->renderLoginForm();
+            $this->content .= $this->renderLoginForm();
         }
 
         $this->content .= $this->renderTokenForm();
 
+        $this->module->setBreakingChangesNotices();
+
         parent::initContent();
+    }
+
+    public function welcomeForm()
+    {
+        $fields_form = array(
+            'legend' => array(
+                'title' => $this->module->l('15 min Marketplace Updates - Shopping', 'AdminShoppingfeedAccountSettings'),
+            )
+        );
+
+        $helper = new HelperForm($this);
+        $this->setHelperDisplay($helper);
+        $helper->tpl_vars['img_path'] = $this->module->getPathUri() . "views/img/";
+        $helper->base_folder = $this->getTemplatePath();
+        $helper->base_tpl = 'welcome.tpl';
+
+        return $helper->generateForm(array(array('form' => $fields_form)));
     }
 
     /**
@@ -61,7 +98,7 @@ class AdminShoppingfeedAccountSettingsController extends ModuleAdminController
     {
         $fields_form = array(
             'legend' => array(
-                'title' => $this->l('API Token', 'AdminShoppingfeedConfiguration'),
+                'title' => $this->l('API Token', 'AdminShoppingfeedAccountSettings'),
                 'icon' => 'icon-user'
             ),
             'input' => array(
@@ -74,19 +111,19 @@ class AdminShoppingfeedAccountSettingsController extends ModuleAdminController
                             '<a href="https://app.shopping-feed.com/v3/en/login" class="alert-link" target="_blank">' .
                             $this->module->l('My Access page', 'AdminShoppingfeedConfiguration') .
                             '</a>',
-                            $this->module->l('Your token can be found on the %url% of your merchant interface', 'AdminShoppingfeedConfiguration')
+                            $this->module->l('Your token can be found on the %url% of your merchant interface', 'AdminShoppingfeedAccountSettings')
                         ) .
                         '</div>',
                 ),
                 array(
                     'type' => 'text',
-                    'label' => $this->module->l('Token', 'AdminShoppingfeedConfiguration'),
+                    'label' => $this->module->l('Token', 'AdminShoppingfeedAccountSettings'),
                     'name' => Shoppingfeed::AUTH_TOKEN,
                     'required' => true,
                 ),
             ),
             'submit' => array(
-                'title' => $this->l('Save', 'AdminShoppingfeedConfiguration'),
+                'title' => $this->l('Save', 'AdminShoppingfeedAccountSettings'),
                 'name' => 'saveToken'
             )
         );
@@ -220,12 +257,12 @@ class AdminShoppingfeedAccountSettingsController extends ModuleAdminController
             $shoppingFeedApi = ShoppingfeedApi::getInstanceByCredentials($username, $password);
 
             if (!$shoppingFeedApi) {
-                $this->errors[] = $this->module->l('An error has occurred.', 'AdminShoppingfeedConfiguration');
+                $this->errors[] = $this->module->l('An error has occurred.', 'AdminShoppingfeedAccountSettings');
                 return false;
             }
         } catch (SfGuzzle\GuzzleHttp\Exception\ClientException $e) {
             if ($e->getResponse()->getStatusCode() == 401) {
-                $this->errors[] = $this->module->l('These credentials were not recognized by the Shopping Feed API.', 'AdminShoppingfeedConfiguration');
+                $this->errors[] = $this->module->l('These credentials were not recognized by the Shopping Feed API.', 'AdminShoppingfeedAccountSettings');
             } else {
                 $this->errors[] = $e->getMessage();
             }
@@ -238,7 +275,7 @@ class AdminShoppingfeedAccountSettingsController extends ModuleAdminController
         $id_shop = $this->context->shop->id;
         Configuration::updateValue(shoppingfeed::AUTH_TOKEN, $shoppingFeedApi->getToken(), null, null, $id_shop);
 
-        $this->confirmations[] = $this->module->l('Login successful; your token has been saved.', 'AdminShoppingfeedConfiguration');
+        $this->confirmations[] = $this->module->l('Login successful; your token has been saved.', 'AdminShoppingfeedAccountSettings');
         return true;
     }
 }

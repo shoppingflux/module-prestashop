@@ -41,14 +41,41 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
      */
     public function initContent()
     {
+        $this->addCSS(array(
+            $this->module->getPathUri() . 'views/css/shoppingfeed_configuration/form.css',
+            $this->module->getPathUri() . 'views/css/font-awesome.min.css'
+        ));
+
+        $this->addJS($this->module->getPathUri() . 'views/js/form_config.js');
+
+        $this->content = $this->welcomeForm();
+
         $id_shop = $this->context->shop->id;
         $token = Configuration::get(shoppingfeed::AUTH_TOKEN, null, null, $id_shop);
-
         if ($token) {
-            $this->content = $this->renderConfigurationForm();
+            $this->content .= $this->renderConfigurationForm();
         }
 
+        $this->module->setBreakingChangesNotices();
+
         parent::initContent();
+    }
+
+    public function welcomeForm()
+    {
+        $fields_form = array(
+            'legend' => array(
+                'title' => $this->module->l('15 min Marketplace Updates - Shopping', 'AdminShoppingfeedGeneralSettings'),
+            )
+        );
+
+        $helper = new HelperForm($this);
+        $this->setHelperDisplay($helper);
+        $helper->tpl_vars['img_path'] = $this->module->getPathUri() . "views/img/";
+        $helper->base_folder = $this->getTemplatePath();
+        $helper->base_tpl = 'welcome.tpl';
+
+        return $helper->generateForm(array(array('form' => $fields_form)));
     }
 
     /**
