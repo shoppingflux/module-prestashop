@@ -121,3 +121,15 @@
     align-items: center;
     margin: 0 ;
 }
+
+#status_generale_settings_div {
+    margin-top: -20px;
+}
+
+#status_generale_settings_div table tr td {
+    width: 300px;
+}
+
+.bold {
+    font-weight: bold;
+}

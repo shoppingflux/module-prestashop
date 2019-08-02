@@ -56,9 +56,76 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
             $this->content .= $this->renderConfigurationForm();
         }
 
+        $order_sync = Configuration::get(Shoppingfeed::ORDER_SYNC_ENABLED);
+
+        if ($order_sync) {
+            $this->content .= $this->renderOrderSyncForm();
+        }
+
         $this->module->setBreakingChangesNotices();
 
         parent::initContent();
+    }
+
+    /**
+     * @return string
+     */
+    public function renderOrderSyncForm()
+    {
+        $fields_form = array(
+            'legend' => array(
+                'title' => $this->module->l('Post-import orders synchronization settings (All shop)', 'AdminShoppingfeedGeneralSettings'),
+            ),
+            'submit' => array(
+                'title' => $this->module->l('Save', 'AdminShoppingfeedGeneralSettings'),
+                'name' => 'savePostImport'
+            )
+        );
+
+        $allState = OrderState::getOrderStates($this->context->language->id);
+
+        $orderShippedState = array();
+        $orderCancelledState = array();
+        $orderRefundedState = array();
+        $ids_shipped_status_selected = json_decode(Configuration::get(ShoppingFeed::SHIPPED_ORDERS));
+        $ids_cancelled_status_selected = json_decode(Configuration::get(ShoppingFeed::CANCELLED_ORDERS));
+
+        $ids_refunded_status_selected = json_decode(Configuration::get(ShoppingFeed::REFUNDED_ORDERS));
+            var_dump($ids_refunded_status_selected);
+        if (!is_array($ids_refunded_status_selected)) {
+            $ids_refunded_status_selected = [$ids_refunded_status_selected];
+        }
+
+        foreach ($allState as $state) {
+            if (in_array($state['id_order_state'], $ids_shipped_status_selected)) {
+                $orderShippedState['selected'][] = $state;
+            } else {
+                $orderShippedState['unselected'][] = $state;
+            }
+
+            if (in_array($state['id_order_state'], $ids_cancelled_status_selected)) {
+                $orderCancelledState['selected'][] = $state;
+            } else {
+                $orderCancelledState['unselected'][] = $state;
+            }
+
+            if (in_array($state['id_order_state'], $ids_refunded_status_selected)) {
+                $orderRefundedState['selected'][] = $state;
+            } else {
+                $orderRefundedState['unselected'][] = $state;
+            }
+        }
+
+        $helper = new HelperForm($this);
+        $helper->tpl_vars['order_shipped'] = $orderShippedState;
+        $helper->tpl_vars['order_cancelled'] = $orderCancelledState;
+        $helper->tpl_vars['order_refunded'] = $orderRefundedState;
+        $helper->tpl_vars['time_shit'] = Configuration::get(Shoppingfeed::STATUS_TIME_SHIT);
+        $helper->tpl_vars['max_orders'] = Configuration::get(Shoppingfeed::STATUS_MAX_ORDERS);
+        $helper->base_folder = $this->getTemplatePath() . $this->override_folder;
+        $helper->base_tpl = 'order_status_syncro.tpl';
+
+        return $helper->generateForm(array(array('form' => $fields_form)));
     }
 
     public function welcomeForm()
@@ -131,6 +198,20 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
                     'name' => Shoppingfeed::PRICE_SYNC_ENABLED,
                 ),
                 array(
+                    'type' => 'switch',
+                    'is_bool' => true,
+                    'values' => array(
+                        array(
+                            'value' => 1,
+                        ),
+                        array(
+                            'value' => 0,
+                        )
+                    ),
+                    'label' => $this->module->l('Orders post-import synchronization', 'AdminShoppingfeedGeneralSettings'),
+                    'name' => Shoppingfeed::ORDER_SYNC_ENABLED,
+                ),
+                array(
                     'type' => 'html',
                     'name' => 'real_synch',
                     'html_content' => '<div id="real_synch_notice" class="alert alert-info">
@@ -184,6 +265,7 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
         $fields_value = array(
             Shoppingfeed::STOCK_SYNC_ENABLED => Configuration::get(Shoppingfeed::STOCK_SYNC_ENABLED),
             Shoppingfeed::PRICE_SYNC_ENABLED => Configuration::get(Shoppingfeed::PRICE_SYNC_ENABLED),
+            Shoppingfeed::ORDER_SYNC_ENABLED => Configuration::get(Shoppingfeed::ORDER_SYNC_ENABLED),
             Shoppingfeed::REAL_TIME_SYNCHRONIZATION => Configuration::get(Shoppingfeed::REAL_TIME_SYNCHRONIZATION),
             Shoppingfeed::STOCK_SYNC_MAX_PRODUCTS => Configuration::get(Shoppingfeed::STOCK_SYNC_MAX_PRODUCTS),
         );
@@ -203,7 +285,24 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
     {
         if (Tools::isSubmit('saveConfiguration')) {
             return $this->saveConfiguration();
+        } elseif (Tools::isSubmit('savePostImport')) {
+            return $this->savePostImport();
         }
+    }
+
+    /**
+     * Save the post-import for the module
+     * @return bool
+     */
+    public function savePostImport()
+    {
+        Configuration::updateValue(Shoppingfeed::STATUS_TIME_SHIT, Tools::getValue('tracking_timeshit'));
+        Configuration::updateValue(Shoppingfeed::STATUS_MAX_ORDERS, Tools::getValue('max_order_update'));
+        Configuration::updateValue(Shoppingfeed::SHIPPED_ORDERS, json_encode(Tools::getValue('status_shipped_order')));
+        Configuration::updateValue(Shoppingfeed::CANCELLED_ORDERS, json_encode(Tools::getValue('status_cancelled_order')));
+        Configuration::updateValue(Shoppingfeed::REFUNDED_ORDERS, Tools::getValue('status_refunded_order'));
+
+        return true;
     }
 
     /**
@@ -216,11 +315,13 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
         $stock_sync_max_products = (int)Tools::getValue(Shoppingfeed::STOCK_SYNC_MAX_PRODUCTS);
         $stock_sync_enabled = Tools::getValue(Shoppingfeed::STOCK_SYNC_ENABLED);
         $price_sync_enabled = Tools::getValue(Shoppingfeed::PRICE_SYNC_ENABLED);
+        $order_sync_enabled = Tools::getValue(Shoppingfeed::ORDER_SYNC_ENABLED);
 
         $shops = Shop::getShops();
         foreach ($shops as $shop) {
             Configuration::updateValue(Shoppingfeed::STOCK_SYNC_ENABLED, ($stock_sync_enabled ? true : false), false, null, $shop['id_shop']);
             Configuration::updateValue(Shoppingfeed::PRICE_SYNC_ENABLED, ($price_sync_enabled ? true : false), false, null, $shop['id_shop']);
+            Configuration::updateValue(Shoppingfeed::ORDER_SYNC_ENABLED, ($order_sync_enabled ? true : false), false, null, $shop['id_shop']);
             Configuration::updateValue(Shoppingfeed::REAL_TIME_SYNCHRONIZATION, ($realtime_sync ? true : false), false, null, $shop['id_shop']);
 
             if (!is_numeric($stock_sync_max_products)) {

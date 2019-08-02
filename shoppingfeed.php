@@ -53,9 +53,15 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     const AUTH_TOKEN = "SHOPPINGFEED_AUTH_TOKEN";
     const STOCK_SYNC_ENABLED = "SHOPPINGFEED_STOCK_SYNC_ENABLED";
     const PRICE_SYNC_ENABLED = "SHOPPINGFEED_PRICE_SYNC_ENABLED";
+    const ORDER_SYNC_ENABLED = "SHOPPINGFEED_ORDER_SYNC_ENABLED";
     const STOCK_SYNC_MAX_PRODUCTS = "SHOPPINGFEED_STOCK_SYNC_MAX_PRODUCTS";
     const REAL_TIME_SYNCHRONIZATION = "SHOPPINGFEED_REAL_TIME_SYNCHRONIZATION";
     const LAST_CRON_TIME_SYNCHRONIZATION = "SHOPPINGFEED_LAST_CRON_TIME_SYNCHRONIZATION";
+    const STATUS_TIME_SHIT = "SHOPPINGFEED_STATUS_TIME_SHIT";
+    const STATUS_MAX_ORDERS = "SHOPPINGFEED_STATUS_MAX_ORDERS";
+    const SHIPPED_ORDERS = "SHOPPINGFEED_SHIPPED_ORDERS";
+    const CANCELLED_ORDERS = "SHOPPINGFEED_CANCELLED_ORDERS";
+    const REFUNDED_ORDERS = "SHOPPINGFEED_REFUNDED_ORDERS";
 
     /**
      * List of objectModel used in this Module
@@ -224,8 +230,14 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             // Set default values for configuration variables
             Configuration::updateValue(self::STOCK_SYNC_ENABLED, true, false, null, $shop['id_shop']);
             Configuration::updateValue(self::PRICE_SYNC_ENABLED, true, false, null, $shop['id_shop']);
+            Configuration::updateValue(self::ORDER_SYNC_ENABLED, true, false, null, $shop['id_shop']);
             Configuration::updateValue(self::STOCK_SYNC_MAX_PRODUCTS, 100, false, null, $shop['id_shop']);
             Configuration::updateValue(self::REAL_TIME_SYNCHRONIZATION, false, false, null, $shop['id_shop']);
+            Configuration::updateValue(self::STATUS_TIME_SHIT, 100, false, null, $shop['id_shop']);
+            Configuration::updateValue(self::STATUS_MAX_ORDERS, 100, false, null, $shop['id_shop']);
+            Configuration::updateValue(self::SHIPPED_ORDERS, json_encode(array()), false, null, $shop['id_shop']);
+            Configuration::updateValue(self::CANCELLED_ORDERS, json_encode(array()), false, null, $shop['id_shop']);
+            Configuration::updateValue(self::REFUNDED_ORDERS, json_encode(array()), false, null, $shop['id_shop']);
         }
 
         return $res;

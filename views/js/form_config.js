@@ -20,25 +20,214 @@
 * @copyright Copyright (c) 202-ecommerce
 * @license   Commercial license
 */
-$(document).ready(function () {
-
-    if ($('#SHOPPINGFEED_REAL_TIME_SYNCHRONIZATION_off').prop('checked')==false) {
-        $( '.for_real' ).closest('.form-group').hide();
-        $( '#for_real' ).closest('.form-group').hide();
+$(document).ready(function()
+{
+    if ($('#SHOPPINGFEED_REAL_TIME_SYNCHRONIZATION_off').prop('checked') == false) {
+        $('.for_real').closest('.form-group').hide();
+        $('#for_real').closest('.form-group').hide();
     }
-
 
     $('[name="SHOPPINGFEED_REAL_TIME_SYNCHRONIZATION"]').change(function()
     {
         if ($('#SHOPPINGFEED_REAL_TIME_SYNCHRONIZATION_off').is(':checked')) {
-            console.log('true');
-            $( '.for_real' ).closest('.form-group').show();
-            $( '#for_real' ).closest('.form-group').show();
+            $('.for_real').closest('.form-group').show();
+            $('#for_real').closest('.form-group').show();
         } else {
-            console.log('true');
-            $( '.for_real' ).closest('.form-group').hide();
-            $( '#for_real' ).closest('.form-group').hide();
+            $('.for_real').closest('.form-group').hide();
+            $('#for_real').closest('.form-group').hide();
         }
     });
 
+    $('#status_shipped_order_add_btn').click(function()
+    {
+        var i = 0;
+        var ids_status = [];
+
+        $("#status_shipped_order_add option:selected").each(function() {
+            ids_status[i] = $(this).val();
+            i++;
+        });
+
+        i = 0;
+        var texts_to_transfert = [];
+
+        $("#status_shipped_order_add option:selected").each(function() {
+            texts_to_transfert[i] = $(this).html();
+            i++;
+        });
+
+        if (!ids_status.length || !texts_to_transfert.length) {
+            return null;
+        }
+
+        $("#status_shipped_order_add option:selected").each(function() {
+            $(this).remove();
+        });
+
+        $.each(ids_status, function(i, val) {
+            $("#status_shipped_order_remove").append("<option value='" + val + "'>" + texts_to_transfert[i] + "</option>");
+        });
+    });
+
+    $('#status_shipped_order_remove_btn').click(function()
+    {
+        var i = 0;
+        var ids_status = [];
+
+        $("#status_shipped_order_remove option:selected").each(function() {
+            ids_status[i] = $(this).val();
+            i++;
+        });
+
+        i = 0;
+        var texts_to_transfert = [];
+
+        $("#status_shipped_order_remove option:selected").each(function() {
+            texts_to_transfert[i] = $(this).html();
+            i++;
+        });
+
+        if (!ids_status.length || !texts_to_transfert.length) {
+            return null;
+        }
+
+        $("#status_shipped_order_remove option:selected").each(function() {
+            $(this).remove();
+        });
+
+        $.each(ids_status, function(i, val) {
+            $("#status_shipped_order_add").append("<option value='" + val + "'>" + texts_to_transfert[i] + "</option>");
+        });
+    });
+
+    $('#status_cancelled_order_add_btn').click(function()
+    {
+        var i = 0;
+        var ids_status = [];
+
+        $("#status_cancelled_order_add option:selected").each(function() {
+            ids_status[i] = $(this).val();
+            i++;
+        });
+
+        i = 0;
+        var texts_to_transfert = [];
+
+        $("#status_cancelled_order_add option:selected").each(function() {
+            texts_to_transfert[i] = $(this).html();
+            i++;
+        });
+
+        if (!ids_status.length || !texts_to_transfert.length) {
+            return null;
+        }
+
+        $("#status_cancelled_order_add option:selected").each(function() {
+            $(this).remove();
+        });
+
+        $.each(ids_status, function(i, val) {
+            $("#status_cancelled_order_remove").append("<option value='" + val + "'>" + texts_to_transfert[i] + "</option>");
+        });
+    });
+
+    $('#status_cancelled_order_remove_btn').click(function()
+    {
+        var i = 0;
+        var ids_status = [];
+
+        $("#status_cancelled_order_remove option:selected").each(function() {
+            ids_status[i] = $(this).val();
+            i++;
+        });
+
+        i = 0;
+        var texts_to_transfert = [];
+
+        $("#status_cancelled_order_remove option:selected").each(function() {
+            texts_to_transfert[i] = $(this).html();
+            i++;
+        });
+
+        if (!ids_status.length || !texts_to_transfert.length) {
+            return null;
+        }
+
+        $("#status_cancelled_order_remove option:selected").each(function() {
+            $(this).remove();
+        });
+
+        $.each(ids_status, function(i, val) {
+            $("#status_cancelled_order_add").append("<option value='" + val + "'>" + texts_to_transfert[i] + "</option>");
+        });
+    });
+
+    $('#status_refunded_order_add_btn').click(function()
+    {
+        var i = 0;
+        var ids_status = [];
+
+        $("#status_refunded_order_add option:selected").each(function() {
+            ids_status[i] = $(this).val();
+            i++;
+        });
+
+        i = 0;
+        var texts_to_transfert = [];
+
+        $("#status_refunded_order_add option:selected").each(function() {
+            texts_to_transfert[i] = $(this).html();
+            i++;
+        });
+
+        if (!ids_status.length || !texts_to_transfert.length) {
+            return null;
+        }
+
+        $("#status_refunded_order_add option:selected").each(function() {
+            $(this).remove();
+        });
+
+        $.each(ids_status, function(i, val) {
+            $("#status_refunded_order_remove").append("<option value='" + val + "'>" + texts_to_transfert[i] + "</option>");
+        });
+    });
+
+    $('#status_refunded_order_remove_btn').click(function()
+    {
+        var i = 0;
+        var ids_status = [];
+
+        $("#status_refunded_order_remove option:selected").each(function() {
+            ids_status[i] = $(this).val();
+            i++;
+        });
+
+        i = 0;
+        var texts_to_transfert = [];
+
+        $("#status_refunded_order_remove option:selected").each(function() {
+            texts_to_transfert[i] = $(this).html();
+            i++;
+        });
+
+        if (!ids_status.length || !texts_to_transfert.length) {
+            return null;
+        }
+
+        $("#status_refunded_order_remove option:selected").each(function() {
+            $(this).remove();
+        });
+
+        $.each(ids_status, function(i, val) {
+            $("#status_refunded_order_add").append("<option value='" + val + "'>" + texts_to_transfert[i] + "</option>");
+        });
+    });
+
+    $('#configuration_form_2').submit(function()
+    {
+        $('#status_shipped_order_remove option').attr('selected', true);
+        $('#status_cancelled_order_remove option').attr('selected', true);
+        $('#status_refunded_order_remove option').attr('selected', true);
+    });
 });
