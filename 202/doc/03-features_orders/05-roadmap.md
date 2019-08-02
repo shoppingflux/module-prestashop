@@ -14,7 +14,8 @@ Ne pas oublier de mettre des logs un peu partout; notamment dans tout les appels
 
 3. Ajout de la configuration pour les commandes. Attention aux conditions pour :
   - Activer la synchro des commandes (l'ancien module doit être installé)
-  - Activer la configuration des statuts (l'ancien module doit être installé, et le hook degreffé)
+  - Activer la configuration des statuts (l'ancien module doit être installé, et
+la synchronisation des commandes désactivées)
 
 
 4. Ajout du hook pour "validateOrder" copier les données de l'ancien module lors de l'import des commandes
@@ -25,10 +26,6 @@ Ne pas oublier de mettre des logs un peu partout; notamment dans tout les appels
   - Il faudra ajouter dans la pile de données à envoyer (ShoppingfeedTaskOrder)
 
 
-6. Ajout du hook pour détecter les changements sur le tracking number
-  - Il faudra ajouter dans la pile de données à envoyer (ShoppingfeedTaskOrder)
-
-
-7. Création du CRON avec Classlib; très similaire à celui des produits
+6. Création du CRON avec Classlib; très similaire à celui des produits
   - 1er process : envoi des mise à jour de statut de commande, et récupération des numéros de ticket
   - 2ème process : vérification des tickets créés; alert marchand si erreur
