@@ -56,17 +56,6 @@ class ShoppingfeedSyncProductModuleFrontController extends CronController
      */
     protected function processCron($data)
     {
-        ProcessLoggerHandler::openLogger($this->processMonitor);
-        if (!ShoppingFeed::checkImportExportValidity()) {
-            ProcessLoggerHandler::logInfo(
-                'Synchronization error : the Shopping Feed Official module (shoppingfluxexport) is enabled for the post-import synchronization. The “Order shipment” & “Order cancellation” options must be disabled in the official module for enabling this type of synchronization in the new module.',
-                $this->processMonitor->getProcessObjectModelName(),
-                $this->processMonitor->getProcessObjectModelId()
-            );
-            ProcessLoggerHandler::closeLogger();
-            return null;
-        }
-
         $actions = array();
         if (Configuration::get(Shoppingfeed::STOCK_SYNC_ENABLED)) {
             $actions[ShoppingFeedProduct::ACTION_SYNC_STOCK] = array(
@@ -83,12 +72,13 @@ class ShoppingfeedSyncProductModuleFrontController extends CronController
             // The data to be saved in the CRON table
             return $data;
         }
-        
+
+        ProcessLoggerHandler::openLogger($this->processMonitor);
 
         foreach ($actions as $action => $actionData) {
             $this->processAction($action, $actionData['actions_suffix']);
         }
-        
+
         Configuration::updateValue(ShoppingFeed::LAST_CRON_TIME_SYNCHRONIZATION, date("Y-m-d H:i:s"));
         ProcessLoggerHandler::closeLogger();
     }

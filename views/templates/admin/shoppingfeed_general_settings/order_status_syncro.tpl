@@ -84,11 +84,11 @@
     <br />
 
     <div class="alert alert-info">
-        {l s="You should set the synchronization via a" mod="shoppingfeed"} <a href="{$cron_link}">{l s="Cron job" mod="shoppingfeed"}</a> {l s="for updating your orders status" mod="shoppingfeed"}
+        {l s="You should set the frequency of synchronization via a" mod="shoppingfeed"} <a href="{$cron_link}">{l s="Cron job" mod="shoppingfeed"}</a> {l s="for updating your orders status" mod="shoppingfeed"}
     </div>
 
     <div class="alert alert-warning">
-        {l s="The Max product update parameter is reserved for experts (100 by default). You can configure the number of products to be processed each time the cron job is called. The more you increase this number, the greater the number of database queries. The value of this parameter is to be calibrated according to the capacities of your MySQL server and your stock rotation rate to process the queue in the time that suits you." mod="shoppingfeed"}
+        {l s="The Max order update parameter is reserved for experts (100 by default). You can configure the number of orders to be processed each time the cron job is called. The more you increase this number, the greater the number of database queries. The value of this parameter is to be calibrated according to the capacities of your MySQL server and your stock rotation rate to process the queue in the time that suits you." mod="shoppingfeed"}
     </div>
     <br />
 
