@@ -52,8 +52,7 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
 
         $order_sync = Configuration::get(Shoppingfeed::ORDER_SYNC_ENABLED);
         $block_order_btn = false;
-        if (Module::isInstalled('shoppingfluxexport') && (Configuration::get('SHOPPING_FLUX_STATUS_SHIPPED') != '' ||
-            Configuration::get('SHOPPING_FLUX_STATUS_CANCELED') != '')) {
+        if (!ShoppingFeed::checkImportExportValidity()) {
             $order_sync = false;
             $block_order_btn = true;
         }

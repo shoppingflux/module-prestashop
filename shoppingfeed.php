@@ -259,6 +259,16 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         }
     }
 
+    static public function checkImportExportValidity()
+    {
+       if (Module::isInstalled('shoppingfluxexport') && (Configuration::get('SHOPPING_FLUX_STATUS_SHIPPED') != '' ||
+           Configuration::get('SHOPPING_FLUX_STATUS_CANCELED') != '')) {
+                return false;
+       }
+
+       return true;
+    }
+
     /**
      * Redirects the user to our AdminController for configuration
      * @throws PrestaShopException
