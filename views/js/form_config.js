@@ -224,7 +224,7 @@ $(document).ready(function()
         });
     });
 
-    $('#configuration_form_2').submit(function()
+    $('#configuration_form_3').submit(function()
     {
         $('#status_shipped_order_remove option').attr('selected', true);
         $('#status_cancelled_order_remove option').attr('selected', true);

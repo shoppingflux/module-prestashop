@@ -53,11 +53,16 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
         $id_shop = $this->context->shop->id;
         $token = Configuration::get(shoppingfeed::AUTH_TOKEN, null, null, $id_shop);
         if ($token) {
-            $this->content .= $this->renderConfigurationForm();
+            $this->content .= $this->renderGlobalConfigForm();
+        }
+
+        $price_sync = Configuration::get(Shoppingfeed::PRICE_SYNC_ENABLED);
+        $stock_sync = Configuration::get(Shoppingfeed::STOCK_SYNC_ENABLED);
+        if ($price_sync || $stock_sync) {
+            $this->content .= $this->renderSynchroConfigForm();
         }
 
         $order_sync = Configuration::get(Shoppingfeed::ORDER_SYNC_ENABLED);
-
         if ($order_sync) {
             $this->content .= $this->renderOrderSyncForm();
         }
@@ -91,7 +96,6 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
         $ids_cancelled_status_selected = json_decode(Configuration::get(ShoppingFeed::CANCELLED_ORDERS));
 
         $ids_refunded_status_selected = json_decode(Configuration::get(ShoppingFeed::REFUNDED_ORDERS));
-            var_dump($ids_refunded_status_selected);
         if (!is_array($ids_refunded_status_selected)) {
             $ids_refunded_status_selected = [$ids_refunded_status_selected];
         }
@@ -116,10 +120,13 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
             }
         }
 
+        $cronLink = $this->context->link->getAdminLink('AdminShoppingfeedProcessMonitor', false);
+
         $helper = new HelperForm($this);
         $helper->tpl_vars['order_shipped'] = $orderShippedState;
         $helper->tpl_vars['order_cancelled'] = $orderCancelledState;
         $helper->tpl_vars['order_refunded'] = $orderRefundedState;
+        $helper->tpl_vars['cron_link'] = $cronLink;
         $helper->tpl_vars['time_shit'] = Configuration::get(Shoppingfeed::STATUS_TIME_SHIT);
         $helper->tpl_vars['max_orders'] = Configuration::get(Shoppingfeed::STATUS_MAX_ORDERS);
         $helper->base_folder = $this->getTemplatePath() . $this->override_folder;
@@ -146,23 +153,11 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
     }
 
     /**
-     * Renders the HTML for the configuration form
+     * Renders the HTML for the global configuration form
      * @return string the rendered form's HTML
      */
-    public function renderConfigurationForm()
+    public function renderGlobalConfigForm()
     {
-        switch (true) {
-            case ($this->nbr_products <= 100):
-                $message_realtime = $this->module->l('You have less than 100 products, the RealTime parameter on YES is recommended. You have little stock for each reference and for you the stock precision is fundamental. Moreover, no need to set up any cron job. Sending real-time inventory updates to the Feed API makes it easy for you to sync inventory in less than 15 minutes. However, this multiplies the calls to the Shopping API stream wchich can slow the loading time of pages that decrement or increment the stock, especially during order status updates.', 'AdminShoppingfeedGeneralSettings');
-                break;
-            case ($this->nbr_products < 1000 && $this->nbr_products > 100):
-                $message_realtime = $this->module->l('You have between 100 and 1000 products, the Realtime parameter on NO is recommended. Updates are queued and the configuration of a cron job (URL) every 5 minutes will allow you to synchronize of all products waiting for synchronization. This reduce calls sent to the Shopping Flux API and improve page loading performances.', 'AdminShoppingfeedGeneralSettings');
-                break;
-            case ($this->nbr_products > 1000):
-                $message_realtime = $this->module->l('You have more than 1000 products, Realtime parameter NO is required. You probably use an external tool (like an ERP) to manage your inventory which can lead to many updates at the same time. In this case, the updates are queued and the configuration of a cron job (URL) every 5 minutes will allow you to synchronize of all products waiting for synchronization. This reduce calls sent to the Shopping Flux API and improve page loading performances', 'AdminShoppingfeedGeneralSettings');
-                break;
-        }
-
         $fields_form = array(
             'legend' => array(
                 'title' => $this->module->l('Configuration (all shops)', 'AdminShoppingfeedGeneralSettings'),
@@ -211,6 +206,51 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
                     'label' => $this->module->l('Orders post-import synchronization', 'AdminShoppingfeedGeneralSettings'),
                     'name' => Shoppingfeed::ORDER_SYNC_ENABLED,
                 ),
+            ),
+            'submit' => array(
+                'title' => $this->module->l('Save', 'AdminShoppingfeedGeneralSettings'),
+                'name' => 'saveGlobalConfig'
+            )
+        );
+
+        $fields_value = array(
+            Shoppingfeed::STOCK_SYNC_ENABLED => Configuration::get(Shoppingfeed::STOCK_SYNC_ENABLED),
+            Shoppingfeed::PRICE_SYNC_ENABLED => Configuration::get(Shoppingfeed::PRICE_SYNC_ENABLED),
+            Shoppingfeed::ORDER_SYNC_ENABLED => Configuration::get(Shoppingfeed::ORDER_SYNC_ENABLED),
+        );
+
+        $helper = new HelperForm($this);
+        $this->setHelperDisplay($helper);
+        $helper->fields_value = $fields_value;
+        $helper->tpl_vars = $this->getTemplateFormVars();
+
+        return $helper->generateForm(array(array('form' => $fields_form)));
+    }
+
+    /**
+     * Renders the HTML for the synchro configuration form
+     * @return string the rendered form's HTML
+     */
+    public function renderSynchroConfigForm()
+    {
+        switch (true) {
+            case ($this->nbr_products <= 100):
+                $message_realtime = $this->module->l('You have less than 100 products, the RealTime parameter on YES is recommended. You have little stock for each reference and for you the stock precision is fundamental. Moreover, no need to set up any cron job. Sending real-time inventory updates to the Feed API makes it easy for you to sync inventory in less than 15 minutes. However, this multiplies the calls to the Shopping API stream wchich can slow the loading time of pages that decrement or increment the stock, especially during order status updates.', 'AdminShoppingfeedGeneralSettings');
+                break;
+            case ($this->nbr_products < 1000 && $this->nbr_products > 100):
+                $message_realtime = $this->module->l('You have between 100 and 1000 products, the Realtime parameter on NO is recommended. Updates are queued and the configuration of a cron job (URL) every 5 minutes will allow you to synchronize of all products waiting for synchronization. This reduce calls sent to the Shopping Flux API and improve page loading performances.', 'AdminShoppingfeedGeneralSettings');
+                break;
+            case ($this->nbr_products > 1000):
+                $message_realtime = $this->module->l('You have more than 1000 products, Realtime parameter NO is required. You probably use an external tool (like an ERP) to manage your inventory which can lead to many updates at the same time. In this case, the updates are queued and the configuration of a cron job (URL) every 5 minutes will allow you to synchronize of all products waiting for synchronization. This reduce calls sent to the Shopping Flux API and improve page loading performances', 'AdminShoppingfeedGeneralSettings');
+                break;
+        }
+
+        $fields_form = array(
+            'legend' => array(
+                'title' => $this->module->l('Configuration (all shops)', 'AdminShoppingfeedGeneralSettings'),
+                'icon' => 'icon-cog'
+            ),
+            'input' => array(
                 array(
                     'type' => 'html',
                     'name' => 'real_synch',
@@ -258,14 +298,11 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
             ),
             'submit' => array(
                 'title' => $this->module->l('Save', 'AdminShoppingfeedGeneralSettings'),
-                'name' => 'saveConfiguration'
+                'name' => 'saveSynchroConfig'
             )
         );
 
         $fields_value = array(
-            Shoppingfeed::STOCK_SYNC_ENABLED => Configuration::get(Shoppingfeed::STOCK_SYNC_ENABLED),
-            Shoppingfeed::PRICE_SYNC_ENABLED => Configuration::get(Shoppingfeed::PRICE_SYNC_ENABLED),
-            Shoppingfeed::ORDER_SYNC_ENABLED => Configuration::get(Shoppingfeed::ORDER_SYNC_ENABLED),
             Shoppingfeed::REAL_TIME_SYNCHRONIZATION => Configuration::get(Shoppingfeed::REAL_TIME_SYNCHRONIZATION),
             Shoppingfeed::STOCK_SYNC_MAX_PRODUCTS => Configuration::get(Shoppingfeed::STOCK_SYNC_MAX_PRODUCTS),
         );
@@ -283,36 +320,21 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
      */
     public function postProcess()
     {
-        if (Tools::isSubmit('saveConfiguration')) {
-            return $this->saveConfiguration();
+        if (Tools::isSubmit('saveGlobalConfig')) {
+            return $this->saveGlobalConfig();
+        } elseif (Tools::isSubmit('saveSynchroConfig')) {
+            return $this->saveSynchroConfig();
         } elseif (Tools::isSubmit('savePostImport')) {
             return $this->savePostImport();
         }
     }
 
     /**
-     * Save the post-import for the module
+     * Saves the global configuration for the module
      * @return bool
      */
-    public function savePostImport()
+    public function saveGlobalConfig()
     {
-        Configuration::updateValue(Shoppingfeed::STATUS_TIME_SHIT, Tools::getValue('tracking_timeshit'));
-        Configuration::updateValue(Shoppingfeed::STATUS_MAX_ORDERS, Tools::getValue('max_order_update'));
-        Configuration::updateValue(Shoppingfeed::SHIPPED_ORDERS, json_encode(Tools::getValue('status_shipped_order')));
-        Configuration::updateValue(Shoppingfeed::CANCELLED_ORDERS, json_encode(Tools::getValue('status_cancelled_order')));
-        Configuration::updateValue(Shoppingfeed::REFUNDED_ORDERS, Tools::getValue('status_refunded_order'));
-
-        return true;
-    }
-
-    /**
-     * Saves the configuration for the module
-     * @return bool
-     */
-    public function saveConfiguration()
-    {
-        $realtime_sync = Tools::getValue(Shoppingfeed::REAL_TIME_SYNCHRONIZATION);
-        $stock_sync_max_products = (int)Tools::getValue(Shoppingfeed::STOCK_SYNC_MAX_PRODUCTS);
         $stock_sync_enabled = Tools::getValue(Shoppingfeed::STOCK_SYNC_ENABLED);
         $price_sync_enabled = Tools::getValue(Shoppingfeed::PRICE_SYNC_ENABLED);
         $order_sync_enabled = Tools::getValue(Shoppingfeed::ORDER_SYNC_ENABLED);
@@ -322,6 +344,22 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
             Configuration::updateValue(Shoppingfeed::STOCK_SYNC_ENABLED, ($stock_sync_enabled ? true : false), false, null, $shop['id_shop']);
             Configuration::updateValue(Shoppingfeed::PRICE_SYNC_ENABLED, ($price_sync_enabled ? true : false), false, null, $shop['id_shop']);
             Configuration::updateValue(Shoppingfeed::ORDER_SYNC_ENABLED, ($order_sync_enabled ? true : false), false, null, $shop['id_shop']);
+        }
+
+        return true;
+    }
+
+    /**
+     * Saves the synchro configuration for the module
+     * @return bool
+     */
+    public function saveSynchroConfig()
+    {
+        $realtime_sync = Tools::getValue(Shoppingfeed::REAL_TIME_SYNCHRONIZATION);
+        $stock_sync_max_products = (int)Tools::getValue(Shoppingfeed::STOCK_SYNC_MAX_PRODUCTS);
+
+        $shops = Shop::getShops();
+        foreach ($shops as $shop) {
             Configuration::updateValue(Shoppingfeed::REAL_TIME_SYNCHRONIZATION, ($realtime_sync ? true : false), false, null, $shop['id_shop']);
 
             if (!is_numeric($stock_sync_max_products)) {
@@ -332,6 +370,21 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
                 Configuration::updateValue(Shoppingfeed::STOCK_SYNC_MAX_PRODUCTS, $stock_sync_max_products, false, null, $shop['id_shop']);
             }
         }
+
+        return true;
+    }
+
+    /**
+     * Save the post-import for the module
+     * @return bool
+     */
+    public function savePostImport()
+    {
+        Configuration::updateValue(Shoppingfeed::SHIPPED_ORDERS, json_encode(Tools::getValue('status_shipped_order')));
+        Configuration::updateValue(Shoppingfeed::STATUS_TIME_SHIT, Tools::getValue('tracking_timeshit'));
+        Configuration::updateValue(Shoppingfeed::CANCELLED_ORDERS, json_encode(Tools::getValue('status_cancelled_order')));
+        Configuration::updateValue(Shoppingfeed::REFUNDED_ORDERS, json_encode(Tools::getValue('status_refunded_order')));
+        Configuration::updateValue(Shoppingfeed::STATUS_MAX_ORDERS, Tools::getValue('max_order_update'));
 
         return true;
     }

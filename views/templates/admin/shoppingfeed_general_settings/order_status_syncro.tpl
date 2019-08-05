@@ -84,7 +84,7 @@
     <br />
 
     <div class="alert alert-info">
-        {l s="You should set the synchronization via a" mod="shoppingfeed"} <a href="#">{l s="Cron job" mod="shoppingfeed"}</a> {l s="for updating your orders status" mod="shoppingfeed"}
+        {l s="You should set the synchronization via a" mod="shoppingfeed"} <a href="{$cron_link}">{l s="Cron job" mod="shoppingfeed"}</a> {l s="for updating your orders status" mod="shoppingfeed"}
     </div>
 
     <div class="alert alert-warning">
