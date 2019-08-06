@@ -597,7 +597,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     {
         $currentOrder = new Order($params['id_order']);
 
-        if ($currentOrder == "sfpayment") {
+        if ($currentOrder->module == "sfpayment") {
             $shipped_status = json_decode(Configuration::get(self::SHIPPED_ORDERS));
             $cancelled_status = json_decode(Configuration::get(self::CANCELLED_ORDERS));
             $refunded_status = json_decode(Configuration::get(self::REFUNDED_ORDERS));
