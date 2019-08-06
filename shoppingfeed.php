@@ -595,12 +595,16 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
 
     public function hookActionOrderStatusPostUpdate($params)
     {
-        $shipped_status = json_decode(Configuration::get(self::SHIPPED_ORDERS));
-        $cancelled_status = json_decode(Configuration::get(self::CANCELLED_ORDERS));
-        $refunded_status = json_decode(Configuration::get(self::REFUNDED_ORDERS));
+        $currentOrder = new Order($params['id_order']);
 
-        $this->stackOrders($params, $shipped_status, 'shipped');
-        $this->stackOrders($params, $cancelled_status, 'cancelled');
-        $this->stackOrders($params, $refunded_status, 'refunded');
+        if ($currentOrder == "sfpayment") {
+            $shipped_status = json_decode(Configuration::get(self::SHIPPED_ORDERS));
+            $cancelled_status = json_decode(Configuration::get(self::CANCELLED_ORDERS));
+            $refunded_status = json_decode(Configuration::get(self::REFUNDED_ORDERS));
+
+            $this->stackOrders($params, $shipped_status, 'shipped');
+            $this->stackOrders($params, $cancelled_status, 'cancelled');
+            $this->stackOrders($params, $refunded_status, 'refunded');
+        }
     }
 }
