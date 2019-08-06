@@ -57,18 +57,16 @@ class ShoppingfeedTaskOrder extends ObjectModel
                 'type' => ObjectModel::TYPE_STRING,
                 'validate' => 'isGenericName',
                 'required' => true,
-                'values' => array(self::ACTION_SYNC_STATUS),
             ),
             'id_order' => array(
                 'type' => ObjectModel::TYPE_INT,
                 'validate' => 'isUnsignedInt',
                 'required' => true,
-                'unique' => true
             ),
             'ticket_number' => array(
                 'type' => ObjectModel::TYPE_STRING,
                 'validate' => 'isString',
-                'required' => false
+                'allow_null' => true
             ),
             'update_at'=> array(
                 'type' => self::TYPE_DATE,

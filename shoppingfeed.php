@@ -179,6 +179,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         'actionObjectCombinationUpdateBefore',
         'actionObjectProductUpdateAfter',
         'actionObjectCombinationUpdateAfter',
+        'actionOrderStatusPostUpdate',
     );
 
     /**
@@ -581,5 +582,25 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         }
         
         \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::closeLogger();
+    }
+
+    private function stackOrders($params, $list_status, $actionName)
+    {
+        if (in_array($params['newOrderStatus']->id, $list_status)) {
+            $sql = "INSERT INTO " . _DB_PREFIX_ . "shoppingfeed_task_order (action, id_order, ticket_number, update_at, date_add, date_upd)
+                    VALUES ('" . pSQL($actionName) . "', " . (int)$params['id_order'] . ", null, '" . date("Y-m-d H:i:s") . "', '" . date("Y-m-d H:i:s") . "', '" . date("Y-m-d H:i:s") . "')";
+            DB::getInstance()->execute($sql);
+        }
+    }
+
+    public function hookActionOrderStatusPostUpdate($params)
+    {
+        $shipped_status = json_decode(Configuration::get(self::SHIPPED_ORDERS));
+        $cancelled_status = json_decode(Configuration::get(self::CANCELLED_ORDERS));
+        $refunded_status = json_decode(Configuration::get(self::REFUNDED_ORDERS));
+
+        $this->stackOrders($params, $shipped_status, 'shipped');
+        $this->stackOrders($params, $cancelled_status, 'cancelled');
+        $this->stackOrders($params, $refunded_status, 'refunded');
     }
 }
