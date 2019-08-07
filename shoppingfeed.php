@@ -587,8 +587,18 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     private function stackOrders($params, $list_status, $actionName)
     {
         if (in_array($params['newOrderStatus']->id, $list_status)) {
-            $sql = "INSERT INTO " . _DB_PREFIX_ . "shoppingfeed_task_order (action, id_order, ticket_number, update_at, date_add, date_upd)
-                    VALUES ('" . pSQL($actionName) . "', " . (int)$params['id_order'] . ", null, '" . date("Y-m-d H:i:s") . "', '" . date("Y-m-d H:i:s") . "', '" . date("Y-m-d H:i:s") . "')";
+            $sql = "SELECT * FROM " . _DB_PREFIX_ . "shoppingfeed_task_order WHERE id_order = " . (int)$params['id_order'] . " AND ticket_number IS NULL";
+            $exist = DB::getInstance()->executeS($sql);
+
+            if (empty($exist)) {
+                $sql = "INSERT INTO " . _DB_PREFIX_ . "shoppingfeed_task_order (action, id_order, ticket_number, update_at, date_add, date_upd)
+                        VALUES ('" . pSQL($actionName) . "', " . (int)$params['id_order'] . ", null, '" . date("Y-m-d H:i:s") . "', '" . date("Y-m-d H:i:s") . "', '" . date("Y-m-d H:i:s") . "')";
+            } else {
+                $sql = "UPDATE " . _DB_PREFIX_ . "shoppingfeed_task_order
+                        SET action = '" . pSQL($actionName) . "', update_at = '" . date("Y-m-d H:i:s") . "', date_upd = '" . date("Y-m-d H:i:s") . "' 
+                        WHERE id_order = " . (int)$params['id_order'] . " AND ticket_number IS NULL";
+            }
+
             DB::getInstance()->execute($sql);
         }
     }
