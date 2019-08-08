@@ -30,6 +30,7 @@ require_once _PS_MODULE_DIR_ . "shoppingfeed/vendor/autoload.php";
 require_once _PS_MODULE_DIR_ . 'shoppingfeed/classes/ShoppingfeedProduct.php';
 require_once(_PS_MODULE_DIR_ . 'shoppingfeed/classes/actions/ShoppingfeedProductSyncStockActions.php');
 require_once(_PS_MODULE_DIR_ . 'shoppingfeed/classes/actions/ShoppingfeedProductSyncPriceActions.php');
+require_once(_PS_MODULE_DIR_ . 'shoppingfeed/classes/actions/ShoppingfeedOrderSyncActions.php');
 
 // Set this as comment so Classlib will import the files; but don't uncomment !
 // Installation will fail on PS 1.6 if "use" statements are in the main module file
@@ -96,6 +97,14 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             'title' => array(
                 'en' => 'Synchronize products on Shopping Feed',
                 'fr' => 'Synchronisation des produits sur Shopping Feed'
+            ),
+            'frequency' => '5min',
+        ),
+        'syncOrder' => array(
+            'name' => 'shoppingfeed:syncOrder',
+            'title' => array(
+                'en' => 'Synchronize orders on Shopping Feed',
+                'fr' => 'Synchronisation des commandes sur Shopping Feed'
             ),
             'frequency' => '5min',
         )
@@ -166,7 +175,8 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
      * @var array
      */
     public $controllers = array(
-        'syncStock'
+        'syncStock',
+        'syncOrder',
     );
 
     /**
@@ -584,37 +594,52 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::closeLogger();
     }
 
-    private function stackOrders($params, $list_status, $actionName)
-    {
-        if (in_array($params['newOrderStatus']->id, $list_status)) {
-            $sql = "SELECT * FROM " . _DB_PREFIX_ . "shoppingfeed_task_order WHERE id_order = " . (int)$params['id_order'] . " AND ticket_number IS NULL";
-            $exist = DB::getInstance()->executeS($sql);
-
-            if (empty($exist)) {
-                $sql = "INSERT INTO " . _DB_PREFIX_ . "shoppingfeed_task_order (action, id_order, ticket_number, update_at, date_add, date_upd)
-                        VALUES ('" . pSQL($actionName) . "', " . (int)$params['id_order'] . ", null, '" . date("Y-m-d H:i:s") . "', '" . date("Y-m-d H:i:s") . "', '" . date("Y-m-d H:i:s") . "')";
-            } else {
-                $sql = "UPDATE " . _DB_PREFIX_ . "shoppingfeed_task_order
-                        SET action = '" . pSQL($actionName) . "', update_at = '" . date("Y-m-d H:i:s") . "', date_upd = '" . date("Y-m-d H:i:s") . "' 
-                        WHERE id_order = " . (int)$params['id_order'] . " AND ticket_number IS NULL";
-            }
-
-            DB::getInstance()->execute($sql);
-        }
-    }
-
     public function hookActionOrderStatusPostUpdate($params)
     {
+        if (!Configuration::get(Shoppingfeed::ORDER_SYNC_ENABLED)) {
+            return;
+        }
+
         $currentOrder = new Order($params['id_order']);
 
         if ($currentOrder->module == "sfpayment") {
             $shipped_status = json_decode(Configuration::get(self::SHIPPED_ORDERS));
             $cancelled_status = json_decode(Configuration::get(self::CANCELLED_ORDERS));
             $refunded_status = json_decode(Configuration::get(self::REFUNDED_ORDERS));
+            $order_action = null;
 
-            $this->stackOrders($params, $shipped_status, 'shipped');
-            $this->stackOrders($params, $cancelled_status, 'cancelled');
-            $this->stackOrders($params, $refunded_status, 'refunded');
+            if (in_array($params['newOrderStatus']->id, $shipped_status)) {
+                $order_action = "shipped";
+            } elseif (in_array($params['newOrderStatus']->id, $cancelled_status)) {
+                $order_action = "cancelled";
+            } elseif (in_array($params['newOrderStatus']->id, $refunded_status)) {
+                $order_action = "refunded";
+            }
+
+            if ($order_action != null) {
+                try {
+                    $handler = new \ShoppingfeedClasslib\Actions\ActionsHandler();
+                    $handler
+                        ->setConveyor(array(
+                            'id_order' => $params['id_order'],
+                            'order_action' => $order_action,
+                        ))
+                        ->addActions('saveOrder')
+                        ->process('shoppingfeedOrderSync');
+                } catch (Exception $e) {
+                    \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logInfo(
+                        sprintf(
+                            ShoppingfeedOrderSyncActions::getLogPrefix() . ' ' . $this->l('Order %s not registered for synchronization: %s', 'ShoppingfeedOrderActions'), $params['id_order'],
+                            $e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine()
+                        ),
+                        'Order',
+                        $params['id_order']
+                    );
+                }
+            }
         }
+
+        \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::closeLogger();
     }
+
 }

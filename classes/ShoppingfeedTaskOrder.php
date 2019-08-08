@@ -56,17 +56,19 @@ class ShoppingfeedTaskOrder extends ObjectModel
             'action' => array(
                 'type' => ObjectModel::TYPE_STRING,
                 'validate' => 'isGenericName',
+                'size'     => 10,
                 'required' => true,
             ),
             'id_order' => array(
                 'type' => ObjectModel::TYPE_INT,
                 'validate' => 'isUnsignedInt',
                 'required' => true,
-                'unique'   => true,
+                'unique'   => true
             ),
             'ticket_number' => array(
                 'type' => ObjectModel::TYPE_STRING,
                 'validate' => 'isString',
+                'size' => 50,
                 'allow_null' => true,
                 'unique'    => true
             ),
@@ -82,6 +84,15 @@ class ShoppingfeedTaskOrder extends ObjectModel
             'date_upd' => array(
                 'type' => self::TYPE_DATE,
                 'validate' => 'isDate'
+            ),
+        ),
+        'associations' => array(
+            'orders' => array(
+                'type' => ObjectModel::HAS_ONE,
+                'object' => 'Order',
+                'association' => 'order_shoppingfeedtask',
+                'field' => 'id_order',
+                'multishop' => true,
             ),
         ),
     );

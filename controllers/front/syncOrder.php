@@ -31,18 +31,13 @@ use ShoppingfeedClasslib\Actions\ActionsHandler;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 use ShoppingfeedClasslib\Registry;
 
-/**
- * This front controller receives the HTTP call for the CRON. It is used to
- * synchronize the ShoppingfeedProduct's stocks and prices.
- * @see ShoppingfeedClasslib\Extensions\ProcessMonitor\CronController
- */
-class ShoppingfeedOrderCronModuleFrontController extends CronController
+class ShoppingfeedSyncOrderModuleFrontController extends CronController
 {
     public $taskDefinition = array(
-        'name' => 'shoppingfeed:orderCron',
+        'name' => 'shoppingfeed:syncOrder',
         'title' => array(
-            'en' => 'Order cron',
-            'fr' => 'Commande cron'
+            'en' => 'Synchronize orders on Shopping Feed',
+            'fr' => 'Synchronisation des commandes sur Shopping Feed'
         ),
     );
 
@@ -65,10 +60,37 @@ class ShoppingfeedOrderCronModuleFrontController extends CronController
             return null;
         }
 
-        ProcessLoggerHandler::closeLogger();
-    }
+        $max_order = Configuration::get(ShoppingFeed::STATUS_MAX_ORDERS);
 
-    protected function processAction($action, $actions_suffix)
-    {
+        $sql = "SELECT * FROM " . _DB_PREFIX_ . "shoppingfeed_task_order WHERE ticket_number IS NULL ORDER BY date_upd ASC LIMIT " . (int)$max_order;
+        $requests = DB::getInstance()->executeS($sql);
+
+        foreach ($requests as $request) {
+
+            var_dump($request);die();
+
+            try {
+                $handler = new ActionsHandler();
+                $handler->setConveyor(
+                    array(
+                        'request' => $request,
+                        'url' => "urldelapi"
+                    )
+                )
+                ->addActions('sendOrder')
+                ->process('shoppingfeedOrderSync');
+            } catch (Exception $e) {
+                \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logInfo(
+                    sprintf(
+                        ShoppingfeedOrderSyncActions::getLogPrefix() . ' ' . $this->l('Order %s not sended for synchronization: %s', 'ShoppingfeedOrderActions'), $request['id_order'],
+                        $e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine()
+                    ),
+                    'Order',
+                    $request['id_order']
+                );
+            }
+        }
+
+        ProcessLoggerHandler::closeLogger();
     }
 }
