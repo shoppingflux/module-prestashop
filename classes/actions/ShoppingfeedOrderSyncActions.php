@@ -15,6 +15,8 @@
 
 use ShoppingfeedClasslib\Actions\DefaultActions;
 
+require_once(_PS_MODULE_DIR_ . 'shoppingfeed/classes/ShoppingfeedTaskOrder.php');
+
 class ShoppingfeedOrderSyncActions extends DefaultActions
 {
     public function saveOrder()
@@ -27,16 +29,22 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
         $exist = DB::getInstance()->executeS($query);
 
         if (empty($exist)) {
-            $sql = "INSERT INTO " . _DB_PREFIX_ . "shoppingfeed_task_order (action, id_order, ticket_number, update_at, date_add, date_upd)
-                    VALUES ('" . pSQL($this->conveyor['order_action']) . "', " . (int)$this->conveyor['id_order'] . ", null, '" . date("Y-m-d H:i:s") . "', '" . date("Y-m-d H:i:s") . "', '" . date("Y-m-d H:i:s") . "')";
-
+            $currentTaskOrder = new ShoppingfeedTaskOrder();
+            $currentTaskOrder->action = $this->conveyor['order_action'];
+            $currentTaskOrder->id_order = $this->conveyor['id_order'];
+            $currentTaskOrder->ticket_number = null;
+            $currentTaskOrder->update_at = date("Y-m-d H:i:s");
+            $currentTaskOrder->date_add = date("Y-m-d H:i:s");
+            $currentTaskOrder->date_upd = date("Y-m-d H:i:s");
         } else {
-            $sql = "UPDATE " . _DB_PREFIX_ . "shoppingfeed_task_order
-                    SET action = '" . pSQL($this->conveyor['order_action']) . "', update_at = '" . date("Y-m-d H:i:s") . "', date_upd = '" . date("Y-m-d H:i:s") . "' 
-                    WHERE id_order = " . (int)$this->conveyor['id_order'] . " AND ticket_number IS NULL";
+            $currentTaskOrder = new ShoppingfeedTaskOrder();
+            $currentTaskOrder->hydrate($exist[0]);
+            $currentTaskOrder->action = $this->conveyor['order_action'];
+            $currentTaskOrder->update_at = date("Y-m-d H:i:s");
+            $currentTaskOrder->date_upd = date("Y-m-d H:i:s");
         }
 
-        DB::getInstance()->execute($sql);
+        $currentTaskOrder->save();
     }
 
     public static function getLogPrefix($id_order = '')
