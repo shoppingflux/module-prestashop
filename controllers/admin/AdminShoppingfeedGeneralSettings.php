@@ -106,6 +106,13 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
             $ids_refunded_status_selected = [$ids_refunded_status_selected];
         }
 
+        $orderShippedState['selected'] = array();
+        $orderCancelledState['selected'] = array();
+        $orderRefundedState['selected'] = array();
+        $orderShippedState['unselected'] = array();
+        $orderCancelledState['unselected'] = array();
+        $orderRefundedState['unselected'] = array();
+
         foreach ($allState as $state) {
             if (in_array($state['id_order_state'], $ids_shipped_status_selected)) {
                 $orderShippedState['selected'][] = $state;
@@ -397,10 +404,25 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
      */
     public function savePostImport()
     {
-        Configuration::updateValue(Shoppingfeed::SHIPPED_ORDERS, json_encode(Tools::getValue('status_shipped_order')));
+        $sso = Tools::getValue('status_shipped_order');
+        if (!$sso) {
+            $sso = array();
+        }
+
+        $sco = Tools::getValue('status_cancelled_order');
+        if (!$sco) {
+            $sco = array();
+        }
+
+        $sro = Tools::getValue('status_refunded_order');
+        if (!$sro) {
+            $sro = array();
+        }
+
+        Configuration::updateValue(Shoppingfeed::SHIPPED_ORDERS, json_encode($sso));
         Configuration::updateValue(Shoppingfeed::STATUS_TIME_SHIT, Tools::getValue('tracking_timeshit'));
-        Configuration::updateValue(Shoppingfeed::CANCELLED_ORDERS, json_encode(Tools::getValue('status_cancelled_order')));
-        Configuration::updateValue(Shoppingfeed::REFUNDED_ORDERS, json_encode(Tools::getValue('status_refunded_order')));
+        Configuration::updateValue(Shoppingfeed::CANCELLED_ORDERS, json_encode($sco));
+        Configuration::updateValue(Shoppingfeed::REFUNDED_ORDERS, json_encode($sro));
         Configuration::updateValue(Shoppingfeed::STATUS_MAX_ORDERS, Tools::getValue('max_order_update'));
 
         return true;

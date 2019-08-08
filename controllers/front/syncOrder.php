@@ -65,9 +65,8 @@ class ShoppingfeedSyncOrderModuleFrontController extends CronController
         $sql = "SELECT * FROM " . _DB_PREFIX_ . "shoppingfeed_task_order WHERE ticket_number IS NULL ORDER BY date_upd ASC LIMIT " . (int)$max_order;
         $requests = DB::getInstance()->executeS($sql);
 
-        foreach ($requests as $request) {
 
-            var_dump($request);die();
+        foreach ($requests as $request) {
 
             try {
                 $handler = new ActionsHandler();
