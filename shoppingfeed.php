@@ -596,7 +596,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
 
     public function hookActionOrderStatusPostUpdate($params)
     {
-        if (!Configuration::get(Shoppingfeed::ORDER_SYNC_ENABLED)) {
+        if (!Configuration::get(Shoppingfeed::ORDER_SYNC_ENABLED) || !self::checkImportExportValidity()) {
             return;
         }
 
@@ -624,7 +624,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
                             'id_order' => $params['id_order'],
                             'order_action' => $order_action,
                         ))
-                        ->addActions('saveOrder')
+                        ->addActions('saveOrder', 'saveTaskOrder')
                         ->process('shoppingfeedOrderSync');
                 } catch (Exception $e) {
                     \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logInfo(

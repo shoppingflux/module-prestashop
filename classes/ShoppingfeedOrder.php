@@ -66,9 +66,9 @@ class ShoppingfeedOrder extends ObjectModel
                 'required' => true,
                 'unique' => true,
             ),
-            'shipped_sent' =>  array(
-                'type' => ObjectModel::TYPE_BOOL,
-                'validate' => 'isBool',
+            'payment' => array(
+                'type' => ObjectModel::TYPE_STRING,
+                'validate' => 'isString',
                 'required' => true,
             ),
             'date_add' => array(

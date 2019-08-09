@@ -26,10 +26,11 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-use ShoppingfeedClasslib\Extensions\ProcessMonitor\CronController;
+require_once(_PS_MODULE_DIR_ . 'shoppingfeed/classes/actions/ShoppingfeedOrderSyncActions.php');
+
 use ShoppingfeedClasslib\Actions\ActionsHandler;
+use ShoppingfeedClasslib\Extensions\ProcessMonitor\CronController;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
-use ShoppingfeedClasslib\Registry;
 
 class ShoppingfeedSyncOrderModuleFrontController extends CronController
 {
@@ -62,32 +63,29 @@ class ShoppingfeedSyncOrderModuleFrontController extends CronController
 
         $max_order = Configuration::get(ShoppingFeed::STATUS_MAX_ORDERS);
 
-        $sql = "SELECT * FROM " . _DB_PREFIX_ . "shoppingfeed_task_order WHERE ticket_number IS NULL ORDER BY date_upd ASC LIMIT " . (int)$max_order;
-        $requests = DB::getInstance()->executeS($sql);
+        $query = new DbQuery();
+        $query->select('*')
+            ->from('shoppingfeed_task_order')
+            ->orderBy('date_upd ASC')
+            ->limit($max_order);
+        $orders = DB::getInstance()->executeS($query);
 
-
-        foreach ($requests as $request) {
-
-            try {
-                $handler = new ActionsHandler();
-                $handler->setConveyor(
-                    array(
-                        'request' => $request,
-                        'url' => "urldelapi"
-                    )
+        try {
+            $handler = new ActionsHandler();
+            $handler->setConveyor(
+                array(
+                    'orders' => $orders
                 )
-                ->addActions('sendOrder')
-                ->process('shoppingfeedOrderSync');
-            } catch (Exception $e) {
-                \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logInfo(
-                    sprintf(
-                        ShoppingfeedOrderSyncActions::getLogPrefix() . ' ' . $this->l('Order %s not sended for synchronization: %s', 'ShoppingfeedOrderActions'), $request['id_order'],
-                        $e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine()
-                    ),
-                    'Order',
-                    $request['id_order']
-                );
-            }
+            )
+            ->addActions('sendOrders')
+            ->process('shoppingfeedOrderSync');
+        } catch (Exception $e) {
+            \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logInfo(
+                sprintf(
+                    ShoppingfeedOrderSyncActions::getLogPrefix() . ' ' . $this->l('One of all orders not sended for synchronization: %s', 'ShoppingfeedOrderActions'),
+                    $e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine()
+                )
+            );
         }
 
         ProcessLoggerHandler::closeLogger();
