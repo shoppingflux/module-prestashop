@@ -80,7 +80,10 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
         $currentTaskOrder->action = $this->conveyor['order_action'];
 
         $date = time("Y-m-d H:i:s");
-        $date = $date + (60 * Configuration::get(ShoppingFeed::STATUS_TIME_SHIT));
+
+        if ($currentTaskOrder->action == 'shipped' && $currentTaskOrder->ticket_number == null) {
+            $date = $date + (60 * Configuration::get(ShoppingFeed::STATUS_TIME_SHIT));
+        }
         $date = date("Y-m-d H:i:s", $date);
         $currentTaskOrder->update_at = $date;
 
@@ -105,17 +108,38 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
         foreach ($orders as $order) {
             $orderObj = new ShoppingfeedOrder($order['id_order']);
 
-            if ($order['action'] == 'shipped') {
-                $operation->ship($orderObj->payment, $orderObj->id_order_marketplace);
+            if ($order['ticket_number'] == null) {
+                if ($order['action'] == 'shipped') {
+                    $operation->ship($orderObj->payment, $orderObj->id_order_marketplace);
+                } elseif ($order['action'] == 'cancelled') {
+                    $operation->cancel($orderObj->payment, $orderObj->id_order_marketplace);
+                } elseif ($order['action'] == 'refunded') {
+                    //$operation->refuse($orderObj->payment, $orderObj->id_order_marketplace);
+                }
+            } elseif ($order['action'] == 'shipped') {
+                //operation->???
             } elseif ($order['action'] == 'cancelled') {
-                $operation->cancel($orderObj->payment, $orderObj->id_order_marketplace);
+                //operation->???
             } elseif ($order['action'] == 'refunded') {
-                $operation->refuse($orderObj->payment, $orderObj->id_order_marketplace);
+                //operation->???
             }
         }
 
         $tickets = $orderApi->execute($operation);
 
-        var_dump($tickets);die();
+        var_dump($tickets);
+        die();
+
+        $i = 0;
+        foreach ($orders as $order) {
+            if ($order['ticket_number'] == null) {
+                $orderObj = new ShoppingfeedOrder($order['id_order']);
+                $orderObj->ticket_number = $tickets[$i];
+                $orderObj->save();
+            } else {
+                //suppression row BDD???
+            }
+            $i++;
+        }
     }
 }

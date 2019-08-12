@@ -66,9 +66,11 @@ class ShoppingfeedSyncOrderModuleFrontController extends CronController
         $query = new DbQuery();
         $query->select('*')
             ->from('shoppingfeed_task_order')
+            ->where('update_at < "' . date('Y-m-d H:i:s') . '"')
             ->orderBy('date_upd ASC')
             ->limit($max_order);
         $orders = DB::getInstance()->executeS($query);
+
 
         try {
             $handler = new ActionsHandler();
