@@ -1,0 +1,6 @@
+Hi,
+
+There are some errors during synchronization of your orders with marketplaces via Shopping Feed. Please check the list of order with errors below :
+{order_error}
+
+Please try to synchronize the orders again using your Cron Task URL. You can see more details via Logs page.

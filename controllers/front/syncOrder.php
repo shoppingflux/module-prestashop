@@ -66,11 +66,10 @@ class ShoppingfeedSyncOrderModuleFrontController extends CronController
         $query = new DbQuery();
         $query->select('*')
             ->from('shoppingfeed_task_order')
-            ->where('update_at < "' . date('Y-m-d H:i:s') . '"')
+            ->where('update_at < "' . date('Y-m-d H:i:s') . '" AND ticket_number IS NULL')
             ->orderBy('date_upd ASC')
             ->limit($max_order);
         $orders = DB::getInstance()->executeS($query);
-
 
         try {
             $handler = new ActionsHandler();
@@ -79,8 +78,34 @@ class ShoppingfeedSyncOrderModuleFrontController extends CronController
                     'orders' => $orders
                 )
             )
-            ->addActions('sendOrders')
+            ->addActions('sendOrderWithoutTicket')
             ->process('shoppingfeedOrderSync');
+        } catch (Exception $e) {
+            \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logInfo(
+                sprintf(
+                    ShoppingfeedOrderSyncActions::getLogPrefix() . ' ' . $this->l('One of all orders not sended for synchronization: %s', 'ShoppingfeedOrderActions'),
+                    $e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine()
+                )
+            );
+        }
+
+        $query = new DbQuery();
+        $query->select('*')
+            ->from('shoppingfeed_task_order')
+            ->where('update_at < "' . date('Y-m-d H:i:s') . '" AND ticket_number IS NOT NULL')
+            ->orderBy('date_upd ASC')
+            ->limit($max_order);
+        $orders = DB::getInstance()->executeS($query);
+
+        try {
+            $handler = new ActionsHandler();
+            $handler->setConveyor(
+                array(
+                    'orders' => $orders
+                )
+            )
+                ->addActions('getTicketsFeedback')
+                ->process('shoppingfeedOrderSync');
         } catch (Exception $e) {
             \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logInfo(
                 sprintf(

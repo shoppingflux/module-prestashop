@@ -40,9 +40,10 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
             $message = DB::getInstance()->getValue($query);
 
             $message = explode(':', $message);
+
             $transaction_id = null;
             if (isset($message[1])) {
-                $transaction_id = $message[1];
+                $transaction_id = trim($message[1]);
             }
 
             if (!$transaction_id) {
@@ -51,9 +52,9 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
 
             $currentOrder = new ShoppingfeedOrder();
             $currentOrder->id_order_marketplace = $transaction_id;
-            $currentOrder->name_marketplace = $order->module;
+            $currentOrder->name_marketplace = $order->payment;
             $currentOrder->id_order = $this->conveyor['id_order'];
-            $currentOrder->payment = $order->payment;
+            $currentOrder->payment = $order->module;
 
             $currentOrder->save();
         }
@@ -98,7 +99,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
         );
     }
 
-    public function sendOrder()
+    public function sendOrderWithoutTicket()
     {
         $session = new SessionResource();
         $orders = $this->conveyor['orders'];
@@ -108,38 +109,81 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
         foreach ($orders as $order) {
             $orderObj = new ShoppingfeedOrder($order['id_order']);
 
-            if ($order['ticket_number'] == null) {
-                if ($order['action'] == 'shipped') {
-                    $operation->ship($orderObj->payment, $orderObj->id_order_marketplace);
-                } elseif ($order['action'] == 'cancelled') {
-                    $operation->cancel($orderObj->payment, $orderObj->id_order_marketplace);
-                } elseif ($order['action'] == 'refunded') {
-                    //$operation->refuse($orderObj->payment, $orderObj->id_order_marketplace);
-                }
-            } elseif ($order['action'] == 'shipped') {
-                //operation->???
+            if ($order['action'] == 'shipped') {
+                $operation->ship($orderObj->payment, $orderObj->id_order_marketplace);
             } elseif ($order['action'] == 'cancelled') {
-                //operation->???
+                $operation->cancel($orderObj->payment, $orderObj->id_order_marketplace);
             } elseif ($order['action'] == 'refunded') {
-                //operation->???
+                //$operation->refund($orderObj->payment, $orderObj->id_order_marketplace); //en cour de dev
             }
         }
 
-        $tickets = $orderApi->execute($operation);
+        $ticketsCollection = $orderApi->execute($operation);
 
         var_dump($tickets);
         die();
 
+        /*  // en cour de dev
         $i = 0;
-        foreach ($orders as $order) {
-            if ($order['ticket_number'] == null) {
-                $orderObj = new ShoppingfeedOrder($order['id_order']);
-                $orderObj->ticket_number = $tickets[$i];
+        foreach ($ticketsCollection->getAll() as $ticket) {
+            if ($ticket->number != null) {
+                $orderObj = new ShoppingfeedTaskOrder();
+                $ordersObj->hydrate($orders[$i]);
+                $orderObj->ticket_number = $tickets->getId();
                 $orderObj->save();
-            } else {
-                //suppression row BDD???
+                $i++;
             }
+        }
+        */
+    }
+
+    public function getTicketsFeedback()
+    {
+        $session = new SessionResource();
+        $orders = $this->conveyor['orders'];
+        $ticketApi = $session->getMainStore()->getTicketApi();
+
+        $operation = new \ShoppingFeed\Sdk\Api\Ticket\TicketOperations();
+        foreach ($orders as $order) {
+            //$operation->getTicketStatus();
+        }
+
+        $ticketsCollection = $ticketApi->execute($operation);
+
+        /*  // en cour de dev
+        $i = 0;
+        foreach ($ticketsCollection->getAll() as $ticket) {
+            $orderObj = new ShoppingfeedTaskOrder();
+            $ordersObj->hydrate($orders[$i]);
+            $orderObj->remove();
             $i++;
         }
+        */
+    }
+
+    public function sendMailOrderSynchroFail($orders)
+    {
+        $error = "";
+        foreach ($orders as $order) {
+            $error.= "<p><a href=\"https://app.shopping-feed.com/v3/fr/api\">Order id " . $order['reference'] . " - [" . $order['status'] . "]</a></p>";
+        }
+
+        Mail::Send(
+            $this->context->language->id,
+            'error_synchro',
+            Mail::l('Shopping Feed synchronization errors'),
+            array(
+                '{order_error}' => $error,
+                '{cron_task_url}' => Context::getContext()->link->getAdminLink('AdminShoppingfeedProcessMonitor'),
+                '{log_page_url}' =>  Context::getContext()->link->getAdminLink('AdminShoppingfeedProcessLogger'),
+            ),
+            Configuration::get('PS_SHOP_EMAIL'),
+            null,
+            Configuration::get('PS_SHOP_EMAIL'),
+            Configuration::get('PS_SHOP_NAME'),
+            null,
+            null,
+            dirname(__FILE__) . '/mails/'
+        );
     }
 }
