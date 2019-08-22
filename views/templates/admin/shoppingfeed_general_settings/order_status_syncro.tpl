@@ -29,7 +29,7 @@
     <br />
 
     <span title="In some cases, the tracking number can be sent to your shop after the order status update. For being sure and always sending the tracking numbers to the marketplaces you can set a shift time (in minutes). By default, the sending of the tracking number will be delayed by 5 minutes." class="bold">{l s="Time shit for tracking numbers synchronization" mod="shoppingfeed"}</span>
-    <input type="number" name="tracking_timeshit" value="{$time_shit}">
+    <input type="text" name="tracking_timeshit" value="{$time_shit}">
     <span class="bold">{l s="minutes" mod="shoppingfeed"}</span>
     <br /><br />
 
@@ -93,6 +93,6 @@
     <br />
 
     <span class="bold">{l s="Max. order update per request" mod="shoppingfeed"}</span>
-    <input type="number" name="max_order_update" value="{$max_orders}">
+    <input type="text" name="max_order_update" value="{$max_orders}">
 </div>
 {/block}
