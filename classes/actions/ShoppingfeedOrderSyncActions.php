@@ -15,9 +15,11 @@
 
 use ShoppingfeedClasslib\Actions\DefaultActions;
 use ShoppingFeed\Sdk\Api\Session\SessionResource;
+use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 
 require_once(_PS_MODULE_DIR_ . 'shoppingfeed/classes/ShoppingfeedOrder.php');
 require_once(_PS_MODULE_DIR_ . 'shoppingfeed/classes/ShoppingfeedTaskOrder.php');
+
 
 class ShoppingfeedOrderSyncActions extends DefaultActions
 {
@@ -57,6 +59,12 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
             $currentOrder->payment = $order->module;
 
             $currentOrder->save();
+
+            ProcessLoggerHandler::logSuccess(
+                'Shoppingfeed Order (id: ' . $this->conveyor['id_order'] . ') save successfully',
+                'order',
+                $this->conveyor['id_order']
+            );
         }
 
         return true;
@@ -89,6 +97,12 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
         $currentTaskOrder->update_at = $date;
 
         $currentTaskOrder->save(true);
+
+        ProcessLoggerHandler::logSuccess(
+            'Shoppingfeed Task Order (id: ' . $this->conveyor['id_order'] . ', action: ' . $this->conveyor['order_action'] . ') save successfully',
+            'order',
+            $this->conveyor['id_order']
+        );
     }
 
     public static function getLogPrefix($id_order = '')
@@ -104,8 +118,8 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
         $session = new SessionResource();
         $orders = $this->conveyor['orders'];
         $orderApi = $session->getMainStore()->getOrderApi();
-
         $operation = new \ShoppingFeed\Sdk\Api\Order\OrderOperation();
+
         foreach ($orders as $order) {
             $orderObj = new ShoppingfeedOrder($order['id_order']);
 
@@ -120,7 +134,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
 
         $ticketsCollection = $orderApi->execute($operation);
 
-        var_dump($tickets);
+        var_dump($ticketsCollection);
         die();
 
         /*  // en cour de dev
@@ -133,6 +147,8 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
                 $orderObj->save();
                 $i++;
             }
+
+
         }
         */
     }
@@ -140,6 +156,9 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
     public function getTicketsFeedback()
     {
         $session = new SessionResource();
+
+
+
         $orders = $this->conveyor['orders'];
         $ticketApi = $session->getMainStore()->getTicketApi();
 
