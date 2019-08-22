@@ -61,8 +61,8 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
             $currentOrder->save();
 
             ProcessLoggerHandler::logSuccess(
-                'Shoppingfeed Order (id: ' . $this->conveyor['id_order'] . ') save successfully',
-                'order',
+                'Shoppingfeed Order save successfully',
+                'Order',
                 $this->conveyor['id_order']
             );
         }
@@ -99,8 +99,8 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
         $currentTaskOrder->save(true);
 
         ProcessLoggerHandler::logSuccess(
-            'Shoppingfeed Task Order (id: ' . $this->conveyor['id_order'] . ', action: ' . $this->conveyor['order_action'] . ') save successfully',
-            'order',
+            'Shoppingfeed Task Order (action: ' . $this->conveyor['order_action'] . ') save successfully',
+            'Order',
             $this->conveyor['id_order']
         );
     }
