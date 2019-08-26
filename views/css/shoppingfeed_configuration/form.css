@@ -133,3 +133,41 @@
 .bold {
     font-weight: bold;
 }
+
+.number_require {
+    display: inline !important;
+    width: 50% !important;
+}
+
+.tableleftblock, #leftinputimeshit, .textleftblock {
+    width: 25%;
+    float: left;
+}
+
+.tablerightblock, #rightinputimeshit, .textrightblock {
+    width: 75%;
+    float: right;
+    margin-top: -5px;
+}
+
+.tableleftblock {
+    height: 185px;
+}
+
+.tablerightblock {
+    height: 190px;
+}
+
+#leftinputimeshit {
+    height: 60px;
+}
+
+#rightinputimeshit {
+    height: 65px;
+}
+
+#leftinputmax {
+    width: 25%;
+    float: left;
+    margin-top: 100px;
+}
