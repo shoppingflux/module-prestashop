@@ -1,9 +1,5 @@
 # Welcome to the Shopping Feed PHP SDK
 
-## Status
-
-[![Build Status](https://status.continuousphp.com/git-hub/shoppingflux/php-sdk?token=49445fa5-6900-499a-9a6c-57d8bdda94e1&branch=develop)](https://continuousphp.com/git-hub/shoppingflux/php-sdk)
-
 ## Install
 
 1. In your project root repository run 

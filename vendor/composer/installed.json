@@ -95,17 +95,17 @@
     },
     {
         "name": "shoppingfeed/php-sdk",
-        "version": "0.2.6",
-        "version_normalized": "0.2.6.0",
+        "version": "0.2.7",
+        "version_normalized": "0.2.7.0",
         "source": {
             "type": "git",
             "url": "https://github.com/shoppingflux/php-sdk.git",
-            "reference": "169b5786c666097b2c425bb15cdd1649b9f8b52f"
+            "reference": "762634c03a495ef23b43ec0f06a71512111c3420"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/shoppingflux/php-sdk/zipball/169b5786c666097b2c425bb15cdd1649b9f8b52f",
-            "reference": "169b5786c666097b2c425bb15cdd1649b9f8b52f",
+            "url": "https://api.github.com/repos/shoppingflux/php-sdk/zipball/762634c03a495ef23b43ec0f06a71512111c3420",
+            "reference": "762634c03a495ef23b43ec0f06a71512111c3420",
             "shasum": ""
         },
         "require": {
@@ -115,15 +115,16 @@
         "require-dev": {
             "guzzlehttp/guzzle": "^6.0",
             "monolog/monolog": "^1.23",
+            "overtrue/phplint": "^1.1",
             "phpunit/phpunit": "^5.0",
-            "squizlabs/php_codesniffer": "^2.8"
+            "shoppingfeed/coding-style-php": "^2.0"
         },
         "suggest": {
             "guzzlehttp/guzzle": "Guzzle Http 6 is the default http adapter integrated in the SDK",
             "psr/log": "trace HTTP requests performed by the SDK",
             "shoppingfeed/php-feed-generator": "Generates compliant Shopping-Feed XML feed with ease"
         },
-        "time": "2019-04-25 09:26:06",
+        "time": "2019-08-22 14:10:35",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
