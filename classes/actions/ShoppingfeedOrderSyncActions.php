@@ -115,42 +115,59 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
 
     public function sendOrderWithoutTicket()
     {
-        $session = new SessionResource();
-        $orders = $this->conveyor['orders'];
-        $orderApi = $session->getMainStore()->getOrderApi();
-        $operation = new \ShoppingFeed\Sdk\Api\Order\OrderOperation();
+        $shoppingfeedApi = ShoppingfeedApi::getInstanceByToken($this->conveyor['id_shop']);
+        $taskOrders = $this->conveyor['orders'];
 
-        foreach ($orders as $order) {
-            $orderObj = new ShoppingfeedOrder($order['id_order']);
-
-            if ($order['action'] == 'shipped') {
-                $operation->ship($orderObj->payment, $orderObj->id_order_marketplace);
-            } elseif ($order['action'] == 'cancelled') {
-                $operation->cancel($orderObj->payment, $orderObj->id_order_marketplace);
-            } elseif ($order['action'] == 'refunded') {
-                //$operation->refund($orderObj->payment, $orderObj->id_order_marketplace); //en cour de dev
-            }
+        $ordersTicketsCollection = $shoppingfeedApi->updateMainStoreOrdersStatus($taskOrders);
+        
+        if (!$ordersTicketsCollection) {
+            return false;
         }
-
-        $ticketsCollection = $orderApi->execute($operation);
-
-        var_dump($ticketsCollection);
-        die();
-
-        /*  // en cour de dev
-        $i = 0;
-        foreach ($ticketsCollection->getAll() as $ticket) {
-            if ($ticket->number != null) {
-                $orderObj = new ShoppingfeedTaskOrder();
-                $ordersObj->hydrate($orders[$i]);
-                $orderObj->ticket_number = $tickets->getId();
-                $orderObj->save();
-                $i++;
+        
+        foreach ($taskOrders as $taskOrder) {
+            $shoppingfeedOrder = new ShoppingfeedOrder($taskOrder['id_order']);
+            try {
+                // If we don't pass the order reference, all tickets matching the
+                // action are returned; but we can't link the tickets to their
+                // matching order this way
+                //
+                // We *must* use the action *and* the order reference
+                // to get an order's associated ticket number
+                //
+                // Also, it seems that a ticket number may be linked to multiple
+                // order references. An order always seems to have only one
+                // ticket though...
+                // see ShoppingFeed\Sdk\Api\Order\OrderTicketCollection::findTickets
+                switch ($taskOrder['action']) {
+                    case ShoppingFeed\Sdk\Api\Order\OrderOperation::TYPE_SHIP:
+                        $ticket = $ordersTicketsCollection->getShipped($shoppingfeedOrder->id_order_marketplace);
+                        break;
+                    case ShoppingFeed\Sdk\Api\Order\OrderOperation::TYPE_CANCEL:
+                        $ticket = $ordersTicketsCollection->getCanceled($shoppingfeedOrder->id_order_marketplace);
+                        break;
+                    case ShoppingFeed\Sdk\Api\Order\OrderOperation::TYPE_REFUND:
+                        $ticket = $ordersTicketsCollection->getRefunded($shoppingfeedOrder->id_order_marketplace);
+                        break;
+                    default:
+                       // TODO Logger
+                        echo "No action for order " . $shoppingfeedOrder->id_order_marketplace . "\n";
+                        // break the switch and continue the foreach
+                        continue 2;
+                }
+            } catch (Exception $e) {
+                // TODO Logger
+                echo "No ticket for order " . $shoppingfeedOrder->id_order_marketplace . "\n";
+                continue;
             }
-
-
+            
+            $shoppingfeedTaskOrder = new ShoppingfeedTaskOrder();
+            $shoppingfeedTaskOrder->hydrate($taskOrder);
+            // There's always exactly one ticket in the result when using
+            // the order reference
+            $shoppingfeedTaskOrder->ticket_number = $ticket[0]->getId();
+            $shoppingfeedTaskOrder->save();
         }
-        */
+        return true;
     }
 
     public function getTicketsFeedback()

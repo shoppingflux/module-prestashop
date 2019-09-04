@@ -209,6 +209,40 @@ class ShoppingfeedApi
     }
     
     /**
+     * Makes the call to request updates of the SF orders statuses
+     * @param array $taskOrders
+     */
+    public function updateMainStoreOrdersStatus($taskOrders)
+    {
+        try {
+            $orderApi = $this->session->getMainStore()->getOrderApi();
+            $operation = new \ShoppingFeed\Sdk\Api\Order\OrderOperation();
+
+            foreach ($taskOrders as $taskOrder) {
+                $shoppingfeedOrder = new ShoppingfeedOrder($taskOrder['id_order']);
+
+                if ($taskOrder['action'] == 'shipped') {
+                    $operation->ship($shoppingfeedOrder->name_marketplace, $shoppingfeedOrder->id_order_marketplace);
+                } elseif ($taskOrder['action'] == 'cancelled') {
+                    $operation->cancel($shoppingfeedOrder->name_marketplace, $shoppingfeedOrder->id_order_marketplace);
+                } elseif ($taskOrder['action'] == 'refunded') {
+                    $operation->refund($shoppingfeedOrder->payment, $shoppingfeedOrder->id_order_marketplace); //en cour de dev
+                }
+            }
+
+            return $orderApi->execute($operation);
+        } catch (Exception $e) {
+            ProcessLoggerHandler::logInfo(
+                sprintf(
+                    'API error (getOrderApi): %s',
+                    $e->getMessage()
+                )
+            );
+            return false;
+        }
+    }
+    
+    /**
      * Pings the Shopping Feed API. Always creates a new client.
      */
     public static function ping()
