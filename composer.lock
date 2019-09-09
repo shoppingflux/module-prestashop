@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "2c171f134f780498b56ff4135115d553",
-    "content-hash": "7fcb26b5de7e99075d708c0eee9e1274",
+    "hash": "5d6294557c1096dc4579968c2bae5352",
+    "content-hash": "8589b9eb5639c88cb17705ba89d33bea",
     "packages": [
         {
             "name": "guzzlehttp/guzzle",
@@ -286,16 +286,16 @@
         },
         {
             "name": "shoppingfeed/php-sdk",
-            "version": "0.2.7",
+            "version": "0.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shoppingflux/php-sdk.git",
-                "reference": "762634c03a495ef23b43ec0f06a71512111c3420"
+                "reference": "a8f42add1948e2c3b333538229cb1eb3f15ec15d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shoppingflux/php-sdk/zipball/762634c03a495ef23b43ec0f06a71512111c3420",
-                "reference": "762634c03a495ef23b43ec0f06a71512111c3420",
+                "url": "https://api.github.com/repos/shoppingflux/php-sdk/zipball/a8f42add1948e2c3b333538229cb1eb3f15ec15d",
+                "reference": "a8f42add1948e2c3b333538229cb1eb3f15ec15d",
                 "shasum": ""
             },
             "require": {
@@ -326,7 +326,7 @@
                 "Apache-2.0"
             ],
             "description": "Shopping Feed SDK to ease integration of our API",
-            "time": "2019-08-22 14:10:35"
+            "time": "2019-09-04 09:02:04"
         }
     ],
     "packages-dev": [],
