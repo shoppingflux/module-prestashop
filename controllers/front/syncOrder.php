@@ -51,7 +51,7 @@ class ShoppingfeedSyncOrderModuleFrontController extends CronController
     protected function processCron($data)
     {
         ProcessLoggerHandler::openLogger($this->processMonitor);
-        if (!ShoppingFeed::checkImportExportValidity()) {
+        if (!ShoppingFeed::isOrderSyncAvailable()) {
             ProcessLoggerHandler::logInfo(
                 'Synchronization error : the Shopping Feed Official module (shoppingfluxexport) is enabled for the post-import synchronization. The “Order shipment” & “Order cancellation” options must be disabled in the official module for enabling this type of synchronization in the new module.',
                 $this->processMonitor->getProcessObjectModelName(),
@@ -61,7 +61,7 @@ class ShoppingfeedSyncOrderModuleFrontController extends CronController
             return null;
         }
 
-        $max_order = Configuration::get(ShoppingFeed::STATUS_MAX_ORDERS);
+        $max_order = Configuration::get(ShoppingFeed::ORDER_STATUS_MAX_ORDERS);
 
         $query = new DbQuery();
         $query->select('*')
@@ -69,21 +69,21 @@ class ShoppingfeedSyncOrderModuleFrontController extends CronController
             ->where('update_at < "' . date('Y-m-d H:i:s') . '" AND ticket_number IS NULL')
             ->orderBy('date_upd ASC')
             ->limit($max_order);
-        $orders = DB::getInstance()->executeS($query);
+        $taskOrders = DB::getInstance()->executeS($query);
 
         try {
             $handler = new ActionsHandler();
             $handler->setConveyor(
                 array(
-                    'orders' => $orders
+                    'taskOrders' => $taskOrders
                 )
             )
-            ->addActions('sendOrderWithoutTicket')
+            ->addActions('sendTaskOrders')
             ->process('shoppingfeedOrderSync');
         } catch (Exception $e) {
             \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logInfo(
                 sprintf(
-                    ShoppingfeedOrderSyncActions::getLogPrefix() . ' ' . $this->l('One of all orders not sended for synchronization: %s', 'ShoppingfeedOrderActions'),
+                    ShoppingfeedOrderSyncActions::getLogPrefix() . ' ' . $this->l('One of all orders task not sended for synchronization: %s', 'ShoppingfeedOrderActions'),
                     $e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine()
                 )
             );
@@ -95,13 +95,13 @@ class ShoppingfeedSyncOrderModuleFrontController extends CronController
             ->where('update_at < "' . date('Y-m-d H:i:s') . '" AND ticket_number IS NOT NULL')
             ->orderBy('date_upd ASC')
             ->limit($max_order);
-        $orders = DB::getInstance()->executeS($query);
+        $taskOrders = DB::getInstance()->executeS($query);
 
         try {
             $handler = new ActionsHandler();
             $handler->setConveyor(
                 array(
-                    'orders' => $orders
+                    'taskOrders' => $taskOrders
                 )
             )
                 ->addActions('getTicketsFeedback')
@@ -109,7 +109,7 @@ class ShoppingfeedSyncOrderModuleFrontController extends CronController
         } catch (Exception $e) {
             \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logInfo(
                 sprintf(
-                    ShoppingfeedOrderSyncActions::getLogPrefix() . ' ' . $this->l('One of all orders not sended for synchronization: %s', 'ShoppingfeedOrderActions'),
+                    ShoppingfeedOrderSyncActions::getLogPrefix() . ' ' . $this->l('One of all orders task not sended for synchronization: %s', 'ShoppingfeedOrderActions'),
                     $e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine()
                 )
             );

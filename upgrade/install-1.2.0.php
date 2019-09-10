@@ -48,8 +48,8 @@ function upgrade_module_1_2_0($module)
         Configuration::updateValue(ShoppingFeed::ORDER_SYNC_ENABLED, true, false, null, $shop['id_shop']);
         Configuration::updateValue(ShoppingFeed::STOCK_SYNC_MAX_PRODUCTS, 100, false, null, $shop['id_shop']);
         Configuration::updateValue(ShoppingFeed::REAL_TIME_SYNCHRONIZATION, false, false, null, $shop['id_shop']);
-        Configuration::updateValue(ShoppingFeed::STATUS_TIME_SHIT, 100, false, null, $shop['id_shop']);
-        Configuration::updateValue(ShoppingFeed::STATUS_MAX_ORDERS, 100, false, null, $shop['id_shop']);
+        Configuration::updateValue(ShoppingFeed::ORDER_STATUS_TIME_SHIFT, 100, false, null, $shop['id_shop']);
+        Configuration::updateValue(ShoppingFeed::ORDER_STATUS_MAX_ORDERS, 100, false, null, $shop['id_shop']);
         Configuration::updateValue(ShoppingFeed::SHIPPED_ORDERS, json_encode(array()), false, null, $shop['id_shop']);
         Configuration::updateValue(ShoppingFeed::CANCELLED_ORDERS, json_encode(array()), false, null, $shop['id_shop']);
         Configuration::updateValue(ShoppingFeed::REFUNDED_ORDERS, json_encode(array()), false, null, $shop['id_shop']);

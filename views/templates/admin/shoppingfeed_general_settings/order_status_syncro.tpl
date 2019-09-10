@@ -32,11 +32,11 @@
     </div>
     <br />
 
-    <div id="leftinputimeshit">
-        <span title="In some cases, the tracking number can be sent to your shop after the order status update. For being sure and always sending the tracking numbers to the marketplaces you can set a shift time (in minutes). By default, the sending of the tracking number will be delayed by 5 minutes." class="bold">{l s="Time shit for tracking numbers synchronization" mod="shoppingfeed"}</span>
+    <div id="leftinputimeshift">
+        <span title="In some cases, the tracking number can be sent to your shop after the order status update. For being sure and always sending the tracking numbers to the marketplaces you can set a shift time (in minutes). By default, the sending of the tracking number will be delayed by 5 minutes." class="bold">{l s="Time shift for tracking numbers synchronization" mod="shoppingfeed"}</span>
     </div>
-    <div id="rightinputimeshit">
-        <input type="text" class="number_require" name="tracking_timeshit" value="{$time_shit}">
+    <div id="rightinputimeshift">
+        <input type="text" class="number_require" name="tracking_timeshift" value="{$time_shift}">
         <span class="bold">{l s="minutes" mod="shoppingfeed"}</span>
     </div>
     <br /><br />

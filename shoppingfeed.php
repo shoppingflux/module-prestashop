@@ -58,8 +58,8 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     const STOCK_SYNC_MAX_PRODUCTS = "SHOPPINGFEED_STOCK_SYNC_MAX_PRODUCTS";
     const REAL_TIME_SYNCHRONIZATION = "SHOPPINGFEED_REAL_TIME_SYNCHRONIZATION";
     const LAST_CRON_TIME_SYNCHRONIZATION = "SHOPPINGFEED_LAST_CRON_TIME_SYNCHRONIZATION";
-    const STATUS_TIME_SHIT = "SHOPPINGFEED_STATUS_TIME_SHIT";
-    const STATUS_MAX_ORDERS = "SHOPPINGFEED_STATUS_MAX_ORDERS";
+    const ORDER_STATUS_TIME_SHIFT = "SHOPPINGFEED_ORDER_STATUS_TIME_SHIFT";
+    const ORDER_STATUS_MAX_ORDERS = "SHOPPINGFEED_ORDER_STATUS_MAX_ORDERS";
     const SHIPPED_ORDERS = "SHOPPINGFEED_SHIPPED_ORDERS";
     const CANCELLED_ORDERS = "SHOPPINGFEED_CANCELLED_ORDERS";
     const REFUNDED_ORDERS = "SHOPPINGFEED_REFUNDED_ORDERS";
@@ -189,6 +189,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         'actionObjectCombinationUpdateBefore',
         'actionObjectProductUpdateAfter',
         'actionObjectCombinationUpdateAfter',
+        'actionValidateOrder',
         'actionOrderStatusPostUpdate',
     );
 
@@ -244,14 +245,20 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             Configuration::updateValue(self::ORDER_SYNC_ENABLED, true, false, null, $shop['id_shop']);
             Configuration::updateValue(self::STOCK_SYNC_MAX_PRODUCTS, 100, false, null, $shop['id_shop']);
             Configuration::updateValue(self::REAL_TIME_SYNCHRONIZATION, false, false, null, $shop['id_shop']);
-            Configuration::updateValue(self::STATUS_TIME_SHIT, 100, false, null, $shop['id_shop']);
-            Configuration::updateValue(self::STATUS_MAX_ORDERS, 100, false, null, $shop['id_shop']);
+            Configuration::updateValue(self::ORDER_STATUS_TIME_SHIFT, 100, false, null, $shop['id_shop']);
+            Configuration::updateValue(self::ORDER_STATUS_MAX_ORDERS, 100, false, null, $shop['id_shop']);
             Configuration::updateValue(self::SHIPPED_ORDERS, json_encode(array()), false, null, $shop['id_shop']);
             Configuration::updateValue(self::CANCELLED_ORDERS, json_encode(array()), false, null, $shop['id_shop']);
             Configuration::updateValue(self::REFUNDED_ORDERS, json_encode(array()), false, null, $shop['id_shop']);
         }
 
         return $res;
+    }
+    
+    public function uninstall()
+    {
+        // TODO DEBUG might want to remove this. Maybe.
+        return \Module::uninstall();
     }
     
     public function setBreakingChangesNotices() {
@@ -270,12 +277,21 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         }
     }
 
-    static public function checkImportExportValidity()
+    /**
+     * 
+     * @return boolean
+     */
+    static public function isOrderSyncAvailable()
     {
-       if (Module::isInstalled('shoppingfluxexport') && (Configuration::get('SHOPPING_FLUX_STATUS_SHIPPED') != '' ||
-           Configuration::get('SHOPPING_FLUX_STATUS_CANCELED') != '')) {
-                return false;
-       }
+        // Is the old module installed ?
+        if (!Module::isInstalled('shoppingfluxexport')
+            // Is order "shipped" status sync disabled in the old module ?
+            || Configuration::get('SHOPPING_FLUX_STATUS_SHIPPED') != ''
+            // Is order "canceled" status sync disabled in the old module ?
+            || Configuration::get('SHOPPING_FLUX_STATUS_CANCELED') != ''
+        ) {
+             return false;
+        }
 
        return true;
     }
@@ -593,50 +609,105 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         
         \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::closeLogger();
     }
+    
+    /****************************** Order status hooks ******************************/
 
-    public function hookActionOrderStatusPostUpdate($params)
+    public function hookActionValidateOrder($params)
     {
-        if (!Configuration::get(Shoppingfeed::ORDER_SYNC_ENABLED) || !self::checkImportExportValidity()) {
+        if (!Configuration::get(Shoppingfeed::ORDER_SYNC_ENABLED) || !self::isOrderSyncAvailable()) {
             return;
         }
 
-        $currentOrder = new Order($params['id_order']);
+        $currentOrder = $params['order'];
 
-        if ($currentOrder->module == "sfpayment") {
-            $shipped_status = json_decode(Configuration::get(self::SHIPPED_ORDERS));
-            $cancelled_status = json_decode(Configuration::get(self::CANCELLED_ORDERS));
-            $refunded_status = json_decode(Configuration::get(self::REFUNDED_ORDERS));
-            $order_action = null;
-
-            if (in_array($params['newOrderStatus']->id, $shipped_status)) {
-                $order_action = "shipped";
-            } elseif (in_array($params['newOrderStatus']->id, $cancelled_status)) {
-                $order_action = "cancelled";
-            } elseif (in_array($params['newOrderStatus']->id, $refunded_status)) {
-                $order_action = "refunded";
+        // Only process orders added via the shoppingflux module
+        if ($currentOrder->module != "sfpayment") {
+            return;
+        }
+        
+        try {
+            \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logInfo(
+                sprintf(
+                    ShoppingfeedOrderSyncActions::getLogPrefix($currentOrder->id) . ' ' . 
+                        $this->l('Start import Order %s ', 'ShoppingfeedOrderActions'),
+                    $currentOrder->id
+                ),
+                'Order',
+                $currentOrder->id
+            );
+            
+            $handler = new \ShoppingfeedClasslib\Actions\ActionsHandler();
+            $processResult = $handler
+                ->setConveyor(array('id_order' => $currentOrder->id))
+                ->addActions('saveOrder')
+                ->process('shoppingfeedOrderSync');
+            
+            if (!$processResult) {
+                \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logError(
+                    ShoppingfeedOrderSyncActions::getLogPrefix($currentOrder->id) . ' ' .
+                        $this->l('Fail : An error occurred during process.')
+                );
             }
+        } catch (Exception $e) {
+            \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logError(
+                sprintf(
+                    ShoppingfeedOrderSyncActions::getLogPrefix() . ' ' .
+                        $this->l('Order %s not imported : %s', 'ShoppingfeedOrderActions'),
+                    $params['id_order'],
+                    $e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine()
+                ),
+                'Order',
+                $currentOrder->id
+            );
+        }
+        \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::closeLogger();
+    }
+    
+    /**
+     * Saves an order for status synchronization
+     * 
+     * @param type $params
+     * @return type
+     */
+    public function hookActionOrderStatusPostUpdate($params)
+    {
+        if (!Configuration::get(Shoppingfeed::ORDER_SYNC_ENABLED) || !self::isOrderSyncAvailable()) {
+            return;
+        }
 
-            if ($order_action != null) {
-                try {
-                    $handler = new \ShoppingfeedClasslib\Actions\ActionsHandler();
-                    $handler
-                        ->setConveyor(array(
-                            'id_order' => $params['id_order'],
-                            'order_action' => $order_action,
-                        ))
-                        ->addActions('saveOrder', 'saveTaskOrder')
-                        ->process('shoppingfeedOrderSync');
-                } catch (Exception $e) {
-                    \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logInfo(
-                        sprintf(
-                            ShoppingfeedOrderSyncActions::getLogPrefix() . ' ' . $this->l('Order %s not registered for synchronization: %s', 'ShoppingfeedOrderActions'), $params['id_order'],
-                            $e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine()
-                        ),
-                        'Order',
-                        $params['id_order']
-                    );
-                }
-            }
+        $shoppingFeedOrder = ShoppingfeedOrder::getByIdOrder($params['id_order']);
+        if (!Validate::isLoadedObject($shoppingFeedOrder)) {
+            return;
+        }
+        
+        $logPrefix = ShoppingfeedOrderSyncActions::getLogPrefix($shoppingFeedOrder->id_order);
+        try {
+            \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logInfo(
+                sprintf(
+                    $logPrefix . ' ' . 
+                        $this->l('Start save SF Task Order %s ', 'ShoppingfeedOrderActions'),
+                    $shoppingFeedOrder->id_order
+                ),
+                'Order',
+                $shoppingFeedOrder->id_order
+            );
+            $handler = new \ShoppingfeedClasslib\Actions\ActionsHandler();
+            $handler
+                ->setConveyor(array(
+                    'id_order' => $params['id_order'],
+                    'order_action' => ShoppingfeedTaskOrder::ACTION_SYNC_STATUS,
+                ))
+                ->addActions('saveTaskOrder')
+                ->process('shoppingfeedOrderSync');
+        } catch (Exception $e) {
+            \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logInfo(
+                sprintf(
+                    $logPrefix . ' ' . $this->l('Order %s not registered for synchronization: %s', 'ShoppingfeedOrderActions'), $params['id_order'],
+                    $e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine()
+                ),
+                'Order',
+                $params['id_order']
+            );
         }
 
         \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::closeLogger();

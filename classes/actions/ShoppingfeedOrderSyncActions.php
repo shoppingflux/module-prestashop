@@ -23,88 +23,6 @@ require_once(_PS_MODULE_DIR_ . 'shoppingfeed/classes/ShoppingfeedTaskOrder.php')
 
 class ShoppingfeedOrderSyncActions extends DefaultActions
 {
-    public function saveOrder()
-    {
-        $query = new DbQuery();
-        $query->select('*')
-            ->from('shoppingfeed_order')
-            ->where("id_order = '" . (int)$this->conveyor['id_order'] . "'");
-        $shoppingfeed_order = DB::getInstance()->getRow($query);
-
-        if (!$shoppingfeed_order) {
-            $order = new Order($this->conveyor['id_order']);
-
-            $query = new DbQuery();
-            $query->select('message')
-                ->from('message')
-                ->where("id_order = '" . (int)$this->conveyor['id_order'] . "'")
-                ->orderBy("date_add ASC");
-            $message = DB::getInstance()->getValue($query);
-
-            $message = explode(':', $message);
-
-            $transaction_id = null;
-            if (isset($message[1])) {
-                $transaction_id = trim($message[1]);
-            }
-
-            if (!$transaction_id) {
-                throw new PrestaShopException('Fail: id_order_marketplace not found');
-            }
-
-            $currentOrder = new ShoppingfeedOrder();
-            $currentOrder->id_order_marketplace = $transaction_id;
-            $currentOrder->name_marketplace = $order->payment;
-            $currentOrder->id_order = $this->conveyor['id_order'];
-            $currentOrder->payment = $order->module;
-
-            $currentOrder->save();
-
-            ProcessLoggerHandler::logSuccess(
-                'Shoppingfeed Order save successfully',
-                'Order',
-                $this->conveyor['id_order']
-            );
-        }
-
-        return true;
-    }
-
-    public function saveTaskOrder()
-    {
-        $query = new DbQuery();
-        $query->select('*')
-              ->from('shoppingfeed_task_order')
-              ->where("id_order = '" . (int)$this->conveyor['id_order'] . "'")
-              ->where('ticket_number IS NULL');
-        $exist = DB::getInstance()->getRow($query);
-
-        $currentTaskOrder = new ShoppingfeedTaskOrder();
-        if (empty($exist)) {
-            $currentTaskOrder->id_order = $this->conveyor['id_order'];
-            $currentTaskOrder->ticket_number = null;
-        } else {
-            $currentTaskOrder->hydrate($exist);
-        }
-        $currentTaskOrder->action = $this->conveyor['order_action'];
-
-        $date = time("Y-m-d H:i:s");
-
-        if ($currentTaskOrder->action == 'shipped' && $currentTaskOrder->ticket_number == null) {
-            $date = $date + (60 * Configuration::get(ShoppingFeed::STATUS_TIME_SHIT));
-        }
-        $date = date("Y-m-d H:i:s", $date);
-        $currentTaskOrder->update_at = $date;
-
-        $currentTaskOrder->save(true);
-
-        ProcessLoggerHandler::logSuccess(
-            'Shoppingfeed Task Order (action: ' . $this->conveyor['order_action'] . ') save successfully',
-            'Order',
-            $this->conveyor['id_order']
-        );
-    }
-
     public static function getLogPrefix($id_order = '')
     {
         return sprintf(
@@ -112,16 +30,198 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
             $id_order
         );
     }
+    
+    public function saveOrder()
+    {
+        if (empty($this->conveyor['id_order'])) {
+            ProcessLoggerHandler::logInfo(
+                $this->l('SF Order not imported; no ID order found', 'ShoppingfeedOrderSyncActions'),
+                'Order'
+            );
+            return false;
+        }
+        $id_order = $this->conveyor['id_order'];
+        $logPrefix = static::getLogPrefix($id_order);
+        $order = new Order($id_order);
+        if (!Validate::isLoadedObject($order)) {
+            ProcessLoggerHandler::logError(
+                $logPrefix . ' ' .
+                    $this->l('SF Order not imported; Order could not be loaded.', 'ShoppingfeedOrderSyncActions'),
+                'Order',
+                $id_order
+            );
+            return false;
+        }
+        
+        $shoppingfeedOrder = ShoppingfeedOrder::getByIdOrder($id_order);
+        if (Validate::isLoadedObject($shoppingfeedOrder)) {
+            return true;
+        }
 
-    public function sendOrderWithoutTicket()
+        $newShoppingFeedOrder = new ShoppingfeedOrder();
+        $newShoppingFeedOrder->name_marketplace = $order->payment;
+        $newShoppingFeedOrder->id_order = $id_order;
+        $newShoppingFeedOrder->save();
+
+        ProcessLoggerHandler::logSuccess(
+            $logPrefix . ' ' .
+                $this->l('SF Order successfully saved', 'ShoppingfeedOrderSyncActions'),
+            'Order',
+            $id_order
+        );
+
+        return true;
+    }
+
+    public function saveTaskOrder()
+    {
+        if (empty($this->conveyor['id_order'])) {
+            ProcessLoggerHandler::logInfo(
+                $this->l('Order not registered for synchronization; no ID order found', 'ShoppingfeedOrderSyncActions'),
+                'Order'
+            );
+            return false;
+        }
+        $id_order = $this->conveyor['id_order'];
+        $logPrefix = static::getLogPrefix($id_order);
+        $order = new Order($id_order);
+        if (!Validate::isLoadedObject($order)) {
+            ProcessLoggerHandler::logError(
+                $logPrefix . ' ' .
+                    $this->l('Order not registered for synchronization; Order could not be loaded.', 'ShoppingfeedOrderSyncActions'),
+                'Order',
+                $id_order
+            );
+            return false;
+        }
+        
+        if (empty($this->conveyor['order_action'])) {
+            ProcessLoggerHandler::logError(
+                $logPrefix . ' ' .
+                    $this->l('Order not registered for synchronization; no Action found', 'ShoppingfeedOrderSyncActions'),
+                'Order',
+                $id_order
+            );
+            return false;
+        }
+        $action = $this->conveyor['order_action'];
+
+        // Before saving a task, we need to check if the SF order reference has
+        // been retrieved
+        $shoppingfeedOrder = ShoppingfeedOrder::getByIdOrder($id_order);
+        if (!Validate::isLoadedObject($shoppingfeedOrder)) {
+            ProcessLoggerHandler::logError(
+                $logPrefix . ' ' .
+                    $this->l('Order not registered for synchronization; SF Order could not be loaded.', 'ShoppingfeedOrderSyncActions'),
+                'Order',
+                $id_order
+            );
+            return false;
+        }
+        if (!$shoppingfeedOrder->setReferenceFromOrder()) {
+            ProcessLoggerHandler::logError(
+                $logPrefix . ' ' .
+                    $this->l('Could not retrieve SF Order reference.', 'ShoppingfeedOrderSyncActions'),
+                'Order',
+                $id_order
+            );
+            return false;
+        }
+        
+        // Check if task order already exists
+        $shoppingfeedTaskOrder = ShoppingfeedTaskOrder::getFromOrderAction(
+            $id_order,
+            $action
+        );
+        
+        if (false === $shoppingfeedTaskOrder || !Validate::isLoadedObject($shoppingfeedTaskOrder)) {
+            $shoppingfeedTaskOrder = new ShoppingfeedTaskOrder();
+            $shoppingfeedTaskOrder->action = $action;
+            $shoppingfeedTaskOrder->id_order = (int)$id_order;
+        }
+
+        // When setting a status to "shipped", the synchronization must be
+        // delayed to give the merchant time to fill the tracking number
+        $updateAt = time();
+        $shippedStatuses = json_decode(Configuration::get(ShoppingFeed::SHIPPED_ORDERS));
+        if (in_array($order->current_state, $shippedStatuses)) {
+            $updateAt += (60 * Configuration::get(ShoppingFeed::ORDER_STATUS_TIME_SHIFT));
+        }
+
+        // Save the task order
+        $shoppingfeedTaskOrder->update_at = date('Y-m-d H:i:s', $updateAt);
+        $shoppingfeedTaskOrder->save();
+
+        ProcessLoggerHandler::logSuccess(
+            sprintf(
+                $logPrefix . ' ' .
+                    $this->l('Order registered for synchronization; action %s', 'ShoppingfeedOrderSyncActions'),
+                $action
+            ),
+            'Order',
+            $id_order
+        );
+        
+        return true;
+    }
+    
+    public function getTaskOrders()
+    {
+        $query = new DbQuery();
+        $query->select('*')
+            ->from('shoppingfeed_task_order')
+            ->where('update_at < "' . date('Y-m-d H:i:s') . '"')
+            ->orderBy('date_upd ASC')
+            ->limit((int)Configuration::get(ShoppingFeed::ORDER_STATUS_MAX_ORDERS));
+        $taskOrdersData = DB::getInstance()->executeS($query);
+        if (empty($taskOrdersData)) {
+            return false;
+        }
+        
+        $taskOrders = array();
+        foreach($taskOrdersData as $taskOrderData) {
+            $taskOrder = new ShoppingfeedTaskOrder();
+            $taskOrder->hydrate($taskOrderData);
+            $taskOrders[] = $taskOrder;
+        }
+        
+        $this->conveyor['taskOrders'] = $taskOrders;
+        return true;
+    }
+    
+    public function prepareTaskOrders()
+    {
+        $taskOrders = $this->conveyor['taskOrders'];
+            
+        $shipped_status = json_decode(Configuration::get(self::SHIPPED_ORDERS));
+        $cancelled_status = json_decode(Configuration::get(self::CANCELLED_ORDERS));
+        $refunded_status = json_decode(Configuration::get(self::REFUNDED_ORDERS));
+        $order_action = null;
+
+        if (in_array($params['newOrderStatus']->id, $shipped_status)) {
+            $order_action = "shipped";
+        } elseif (in_array($params['newOrderStatus']->id, $cancelled_status)) {
+            $order_action = "cancelled";
+        } elseif (in_array($params['newOrderStatus']->id, $refunded_status)) {
+            $order_action = "refunded";
+        }
+    }
+
+    public function sendTaskOrders()
     {
         $shoppingfeedApi = ShoppingfeedApi::getInstanceByToken($this->conveyor['id_shop']);
-        $taskOrders = $this->conveyor['orders'];
+        $taskOrders = $this->conveyor['taskOrders'];
 
-        $ordersTicketsCollection = $shoppingfeedApi->updateMainStoreOrdersStatus($taskOrders);
+        $result = $shoppingfeedApi->updateMainStoreOrdersStatus($taskOrders);
         
-        if (!$ordersTicketsCollection) {
+        if (!$result) {
             return false;
+        }
+        
+        // Index each task order by the order reference
+        
+        foreach($result->getTickets() as $ticket) {
+            $ticketOrderReference = $ticket->getPayloadProperty('reference');
         }
         
         foreach ($taskOrders as $taskOrder) {

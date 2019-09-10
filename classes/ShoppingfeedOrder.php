@@ -53,7 +53,7 @@ class ShoppingfeedOrder extends ObjectModel
             'id_order_marketplace' => array(
                 'type' => ObjectModel::TYPE_STRING,
                 'validate' => 'isString',
-                'required' => true
+                'allow_null' => true,
             ),
             'name_marketplace' => array(
                 'type' => ObjectModel::TYPE_STRING,
@@ -66,11 +66,6 @@ class ShoppingfeedOrder extends ObjectModel
                 'required' => true,
                 'unique' => true,
             ),
-            'payment' => array(
-                'type' => ObjectModel::TYPE_STRING,
-                'validate' => 'isString',
-                'required' => true,
-            ),
             'date_add' => array(
                 'type' => self::TYPE_DATE,
                 'validate' => 'isDate'
@@ -81,4 +76,51 @@ class ShoppingfeedOrder extends ObjectModel
             ),
         ),
     );
+    
+    public static function getByIdOrder($id_order)
+    {
+        $query = new DbQuery();
+        $query->select('*')
+            ->from('shoppingfeed_order')
+            ->where("id_order = " . (int)$id_order);
+        $shoppingfeed_order_data = DB::getInstance()->getRow($query);
+
+        if ($shoppingfeed_order_data) {
+            $shoppingfeedOrder = new ShoppingfeedOrder();
+            $shoppingfeedOrder->hydrate($shoppingfeed_order_data);
+            return $shoppingfeedOrder;
+        }
+        
+        return false;
+    }
+    
+    public function setReferenceFromOrder($force = false)
+    {
+        if ($this->id_order_marketplace && !$force) {
+            return true;
+        }
+        
+        $messages = Message::getMessagesByOrderId($this->id_order, true);
+        if (empty($messages)) {
+            return false;
+        }
+        
+        // Check messages from first to last
+        $id_order_marketplace = null;
+        foreach (array_reverse($messages) as $message) {
+            $explodedMessage = explode(':', $message['message']);
+            if (!empty($explodedMessage[1])) {
+                $id_order_marketplace = trim($explodedMessage[1]);
+                break;
+            }
+        }
+
+        if (!$id_order_marketplace) {
+            return false;
+        }
+        
+        $this->id_order_marketplace = $id_order_marketplace;
+        $this->save();
+        return true;
+    }
 }

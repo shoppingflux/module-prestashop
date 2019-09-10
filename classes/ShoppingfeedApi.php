@@ -219,14 +219,17 @@ class ShoppingfeedApi
             $operation = new \ShoppingFeed\Sdk\Api\Order\OrderOperation();
 
             foreach ($taskOrders as $taskOrder) {
-                $shoppingfeedOrder = new ShoppingfeedOrder($taskOrder['id_order']);
+                $shoppingfeedOrder = new ShoppingfeedOrder($taskOrder['id_shoppingfeed_order']);
 
                 if ($taskOrder['action'] == 'shipped') {
-                    $operation->ship($shoppingfeedOrder->name_marketplace, $shoppingfeedOrder->id_order_marketplace);
+                    $operation->ship(
+                        $shoppingfeedOrder->id_order_marketplace,
+                        $shoppingfeedOrder->name_marketplace
+                    );
                 } elseif ($taskOrder['action'] == 'cancelled') {
-                    $operation->cancel($shoppingfeedOrder->name_marketplace, $shoppingfeedOrder->id_order_marketplace);
+                    $operation->cancel($shoppingfeedOrder->id_order_marketplace, $shoppingfeedOrder->name_marketplace);
                 } elseif ($taskOrder['action'] == 'refunded') {
-                    $operation->refund($shoppingfeedOrder->payment, $shoppingfeedOrder->id_order_marketplace); //en cour de dev
+                    $operation->refund($shoppingfeedOrder->id_order_marketplace, $shoppingfeedOrder->name_marketplace);
                 }
             }
 

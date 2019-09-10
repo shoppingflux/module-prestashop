@@ -52,7 +52,7 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
 
         $order_sync = Configuration::get(Shoppingfeed::ORDER_SYNC_ENABLED);
         $block_order_btn = false;
-        if (!ShoppingFeed::checkImportExportValidity()) {
+        if (!ShoppingFeed::isOrderSyncAvailable()) {
             $order_sync = false;
             $block_order_btn = true;
         }
@@ -140,8 +140,8 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
         $helper->tpl_vars['order_cancelled'] = $orderCancelledState;
         $helper->tpl_vars['order_refunded'] = $orderRefundedState;
         $helper->tpl_vars['cron_link'] = $cronLink;
-        $helper->tpl_vars['time_shit'] = Configuration::get(Shoppingfeed::STATUS_TIME_SHIT);
-        $helper->tpl_vars['max_orders'] = Configuration::get(Shoppingfeed::STATUS_MAX_ORDERS);
+        $helper->tpl_vars['time_shift'] = Configuration::get(Shoppingfeed::ORDER_STATUS_TIME_SHIFT);
+        $helper->tpl_vars['max_orders'] = Configuration::get(Shoppingfeed::ORDER_STATUS_MAX_ORDERS);
         $helper->base_folder = $this->getTemplatePath() . $this->override_folder;
         $helper->base_tpl = 'order_status_syncro.tpl';
 
@@ -417,19 +417,19 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
             $sro = array();
         }
 
-        $tracking_timeshit = Tools::getValue('tracking_timeshit');
+        $tracking_timeshift = Tools::getValue('tracking_timeshift');
         $max_orders = Tools::getValue('max_order_update');
 
-        if (!is_numeric($tracking_timeshit) || $tracking_timeshit <= 0) {
-            $this->errors[] = $this->module->l('You must specify a valid \"Time Shit\" number (superior to 0).', 'AdminShoppingfeedGeneralSettings');
+        if (!is_numeric($tracking_timeshift) || (int)$tracking_timeshift <= 0) {
+            $this->errors[] = $this->module->l('You must specify a valid \"Time shift\" number (superior to 0).', 'AdminShoppingfeedGeneralSettings');
         } elseif (!is_numeric($max_orders) || $max_orders > 200 || $max_orders <= 0) {
             $this->errors[] = $this->module->l('You must specify a valid \"Max Order update\" number (between 1 and 200 included).', 'AdminShoppingfeedGeneralSettings');
         } else {
             Configuration::updateValue(Shoppingfeed::SHIPPED_ORDERS, json_encode($sso));
-            Configuration::updateValue(Shoppingfeed::STATUS_TIME_SHIT, $tracking_timeshit);
+            Configuration::updateValue(Shoppingfeed::ORDER_STATUS_TIME_SHIFT, (int)$tracking_timeshift);
             Configuration::updateValue(Shoppingfeed::CANCELLED_ORDERS, json_encode($sco));
             Configuration::updateValue(Shoppingfeed::REFUNDED_ORDERS, json_encode($sro));
-            Configuration::updateValue(Shoppingfeed::STATUS_MAX_ORDERS, $max_orders);
+            Configuration::updateValue(Shoppingfeed::ORDER_STATUS_MAX_ORDERS, $max_orders);
         }
 
         return true;

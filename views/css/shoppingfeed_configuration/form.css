@@ -139,12 +139,12 @@
     width: 50% !important;
 }
 
-.tableleftblock, #leftinputimeshit, .textleftblock {
+.tableleftblock, #leftinputimeshift, .textleftblock {
     width: 25%;
     float: left;
 }
 
-.tablerightblock, #rightinputimeshit, .textrightblock {
+.tablerightblock, #rightinputimeshift, .textrightblock {
     width: 75%;
     float: right;
     margin-top: -5px;
@@ -158,11 +158,11 @@
     height: 190px;
 }
 
-#leftinputimeshit {
+#leftinputimeshift {
     height: 60px;
 }
 
-#rightinputimeshit {
+#rightinputimeshift {
     height: 65px;
 }
 
