@@ -1,0 +1,3 @@
+{foreach from=$failedTaskOrders item="taskOrder"}
+- Order {$taskOrder->id}
+{/foreach}

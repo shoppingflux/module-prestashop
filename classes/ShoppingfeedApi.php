@@ -35,6 +35,7 @@ use ShoppingFeed\Sdk\Client\Client;
 use ShoppingFeed\Sdk\Client\ClientOptions;
 use ShoppingFeed\Sdk\Api\Catalog\InventoryUpdate;
 use ShoppingFeed\Sdk\Api\Catalog\PricingUpdate;
+use ShoppingFeed\Sdk\Api\Order\OrderOperation;
 
 /**
  * This class is a singleton, which is responsible for calling the SF API using
@@ -70,7 +71,7 @@ class ShoppingfeedApi
         if (!$token && !$id_shop) {
             return false;
         } elseif ($id_shop) {
-            $token = Configuration::get(Shoppingfeed::AUTH_TOKEN, null, null, $id_shop)  ;
+            $token = Configuration::get(Shoppingfeed::AUTH_TOKEN, null, null, $id_shop);
         }
 
         try {
@@ -160,7 +161,7 @@ class ShoppingfeedApi
 
             return $inventoryApi->execute($inventoryUpdate);
         } catch (Exception $e) {
-            ProcessLoggerHandler::logInfo(
+            ProcessLoggerHandler::logError(
                 sprintf(
                     'API error (getInventoryApi): %s',
                     $e->getMessage()
@@ -198,7 +199,7 @@ class ShoppingfeedApi
 
             return $pricingApi->execute($pricingUpdate);
         } catch (Exception $e) {
-            ProcessLoggerHandler::logInfo(
+            ProcessLoggerHandler::logError(
                 sprintf(
                     'API error (getPricingApi): %s',
                     $e->getMessage()
@@ -219,23 +220,34 @@ class ShoppingfeedApi
             $operation = new \ShoppingFeed\Sdk\Api\Order\OrderOperation();
 
             foreach ($taskOrders as $taskOrder) {
-                $shoppingfeedOrder = new ShoppingfeedOrder($taskOrder['id_shoppingfeed_order']);
-
-                if ($taskOrder['action'] == 'shipped') {
-                    $operation->ship(
-                        $shoppingfeedOrder->id_order_marketplace,
-                        $shoppingfeedOrder->name_marketplace
-                    );
-                } elseif ($taskOrder['action'] == 'cancelled') {
-                    $operation->cancel($shoppingfeedOrder->id_order_marketplace, $shoppingfeedOrder->name_marketplace);
-                } elseif ($taskOrder['action'] == 'refunded') {
-                    $operation->refund($shoppingfeedOrder->id_order_marketplace, $shoppingfeedOrder->name_marketplace);
+                switch($taskOrder['operation']) {
+                    case OrderOperation::TYPE_SHIP:
+                        $operation->ship(
+                            $taskOrder['reference_marketplace'],
+                            $taskOrder['marketplace'],
+                            $taskOrder['payload']['carrier_name'],
+                            $taskOrder['payload']['tracking_number'],
+                            $taskOrder['payload']['tracking_url']
+                        );
+                        break;
+                    case OrderOperation::TYPE_CANCEL:
+                        $operation->cancel(
+                            $taskOrder['reference_marketplace'],
+                            $taskOrder['marketplace']
+                        );
+                        break;
+                    case OrderOperation::TYPE_REFUND:
+                        $operation->refund(
+                            $taskOrder['reference_marketplace'],
+                            $taskOrder['marketplace']
+                        );
+                        break;
                 }
             }
 
             return $orderApi->execute($operation);
         } catch (Exception $e) {
-            ProcessLoggerHandler::logInfo(
+            ProcessLoggerHandler::logError(
                 sprintf(
                     'API error (getOrderApi): %s',
                     $e->getMessage()
@@ -243,6 +255,45 @@ class ShoppingfeedApi
             );
             return false;
         }
+    }
+    
+    public function getTicketsByReference($taskOrders)
+    {
+        try {
+            $ticketApi = $this->session->getMainStore()->getTicketApi();
+        } catch (Exception $e) {
+            ProcessLoggerHandler::logError(
+                sprintf(
+                    'API error (getTicketApi): %s',
+                    $e->getMessage()
+                )
+            );
+            return false;
+        }
+
+        // There's no method to retrieve tickets in bulk using an array
+        // of ticket numbers, so get them one by one...
+        $tickets = array();
+        foreach ($taskOrders as $taskOrder) {
+            try {
+                $ticket = $ticketApi->getOne($taskOrder['ticket_number']);
+            } catch (Exception $e) {
+                ProcessLoggerHandler::logError(
+                    sprintf(
+                        'API error (getTicketApi): %s',
+                        $e->getMessage()
+                    )
+                );
+                return false;
+            }
+            
+            if (!$ticket || !$ticket->getId()) {
+                continue;
+            }
+            $tickets[] = $ticket;
+        }
+
+        return $tickets;
     }
     
     /**

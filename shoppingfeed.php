@@ -239,17 +239,18 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             if ($token) {
                 Configuration::updateValue(self::AUTH_TOKEN, $token, false, null, $shop['id_shop']);
             }
+            
             // Set default values for configuration variables
-            Configuration::updateValue(self::STOCK_SYNC_ENABLED, true, false, null, $shop['id_shop']);
-            Configuration::updateValue(self::PRICE_SYNC_ENABLED, true, false, null, $shop['id_shop']);
-            Configuration::updateValue(self::ORDER_SYNC_ENABLED, true, false, null, $shop['id_shop']);
-            Configuration::updateValue(self::STOCK_SYNC_MAX_PRODUCTS, 100, false, null, $shop['id_shop']);
-            Configuration::updateValue(self::REAL_TIME_SYNCHRONIZATION, false, false, null, $shop['id_shop']);
-            Configuration::updateValue(self::ORDER_STATUS_TIME_SHIFT, 100, false, null, $shop['id_shop']);
-            Configuration::updateValue(self::ORDER_STATUS_MAX_ORDERS, 100, false, null, $shop['id_shop']);
-            Configuration::updateValue(self::SHIPPED_ORDERS, json_encode(array()), false, null, $shop['id_shop']);
-            Configuration::updateValue(self::CANCELLED_ORDERS, json_encode(array()), false, null, $shop['id_shop']);
-            Configuration::updateValue(self::REFUNDED_ORDERS, json_encode(array()), false, null, $shop['id_shop']);
+            $this->setConfigurationDefault(self::STOCK_SYNC_ENABLED, true, $shop['id_shop']);
+            $this->setConfigurationDefault(self::PRICE_SYNC_ENABLED, true, $shop['id_shop']);
+            $this->setConfigurationDefault(self::ORDER_SYNC_ENABLED, true, $shop['id_shop']);
+            $this->setConfigurationDefault(self::STOCK_SYNC_MAX_PRODUCTS, 100, $shop['id_shop']);
+            $this->setConfigurationDefault(self::REAL_TIME_SYNCHRONIZATION, false, $shop['id_shop']);
+            $this->setConfigurationDefault(self::ORDER_STATUS_TIME_SHIFT, 5, $shop['id_shop']);
+            $this->setConfigurationDefault(self::ORDER_STATUS_MAX_ORDERS, 100, $shop['id_shop']);
+            $this->setConfigurationDefault(self::SHIPPED_ORDERS, json_encode(array()), $shop['id_shop']);
+            $this->setConfigurationDefault(self::CANCELLED_ORDERS, json_encode(array()), $shop['id_shop']);
+            $this->setConfigurationDefault(self::REFUNDED_ORDERS, json_encode(array()), $shop['id_shop']);
         }
 
         return $res;
@@ -257,8 +258,13 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     
     public function uninstall()
     {
-        // TODO DEBUG might want to remove this. Maybe.
         return \Module::uninstall();
+    }
+    
+    protected function setConfigurationDefault($key, $defaultValue, $id_shop) {
+        if (!Configuration::hasKey($key, null, null, $id_shop)) {
+            Configuration::updateValue($key, $defaultValue, null, null, $id_shop);
+        }
     }
     
     public function setBreakingChangesNotices() {
@@ -281,14 +287,14 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
      * 
      * @return boolean
      */
-    static public function isOrderSyncAvailable()
+    static public function isOrderSyncAvailable($id_shop = null)
     {
         // Is the old module installed ?
         if (!Module::isInstalled('shoppingfluxexport')
             // Is order "shipped" status sync disabled in the old module ?
-            || Configuration::get('SHOPPING_FLUX_STATUS_SHIPPED') != ''
+            || Configuration::get('SHOPPING_FLUX_STATUS_SHIPPED', null, null, $id_shop) != ''
             // Is order "canceled" status sync disabled in the old module ?
-            || Configuration::get('SHOPPING_FLUX_STATUS_CANCELED') != ''
+            || Configuration::get('SHOPPING_FLUX_STATUS_CANCELED', null, null, $id_shop) != ''
         ) {
              return false;
         }

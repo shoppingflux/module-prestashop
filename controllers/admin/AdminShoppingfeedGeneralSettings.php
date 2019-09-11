@@ -402,19 +402,19 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
      */
     public function savePostImport()
     {
-        $sso = Tools::getValue('status_shipped_order');
-        if (!$sso) {
-            $sso = array();
+        $orderStatusesShipped = Tools::getValue('status_shipped_order');
+        if (!$orderStatusesShipped) {
+            $orderStatusesShipped = array();
         }
 
-        $sco = Tools::getValue('status_cancelled_order');
-        if (!$sco) {
-            $sco = array();
+        $orderStatusesCancelled = Tools::getValue('status_cancelled_order');
+        if (!$orderStatusesCancelled) {
+            $orderStatusesCancelled = array();
         }
 
-        $sro = Tools::getValue('status_refunded_order');
-        if (!$sro) {
-            $sro = array();
+        $orderStatusRefunded = Tools::getValue('status_refunded_order');
+        if (!$orderStatusRefunded) {
+            $orderStatusRefunded = array();
         }
 
         $tracking_timeshift = Tools::getValue('tracking_timeshift');
@@ -425,10 +425,10 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
         } elseif (!is_numeric($max_orders) || $max_orders > 200 || $max_orders <= 0) {
             $this->errors[] = $this->module->l('You must specify a valid \"Max Order update\" number (between 1 and 200 included).', 'AdminShoppingfeedGeneralSettings');
         } else {
-            Configuration::updateValue(Shoppingfeed::SHIPPED_ORDERS, json_encode($sso));
+            Configuration::updateValue(Shoppingfeed::SHIPPED_ORDERS, json_encode($orderStatusesShipped));
             Configuration::updateValue(Shoppingfeed::ORDER_STATUS_TIME_SHIFT, (int)$tracking_timeshift);
-            Configuration::updateValue(Shoppingfeed::CANCELLED_ORDERS, json_encode($sco));
-            Configuration::updateValue(Shoppingfeed::REFUNDED_ORDERS, json_encode($sro));
+            Configuration::updateValue(Shoppingfeed::CANCELLED_ORDERS, json_encode($orderStatusesCancelled));
+            Configuration::updateValue(Shoppingfeed::REFUNDED_ORDERS, json_encode($orderStatusRefunded));
             Configuration::updateValue(Shoppingfeed::ORDER_STATUS_MAX_ORDERS, $max_orders);
         }
 

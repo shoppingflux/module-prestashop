@@ -1,0 +1,23 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/1999/REC-html401-19991224/strict.dtd">
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>Shopping Feed synchronization errors</title>
+</head>
+
+<body>
+    <h3>Hi,</h3>
+    <p>
+        There are some errors during synchronization of your orders with
+        marketplaces via Shopping Feed. Please check the list of order with
+        errors below :
+    </p>
+    {list_order_sync_errors_html}
+
+    <p>
+        Please try to synchronize the orders again using your
+        <a href="{cron_task_url}">Cron Task URL</a>. You can see more details
+        via <a href="{log_page_url}">Logs</a> page.
+    </p>
+</body>

@@ -32,6 +32,9 @@ if (!defined('_PS_VERSION_')) {
 class ShoppingfeedTaskOrder extends ObjectModel
 {
     const ACTION_SYNC_STATUS = 'SYNC_STATUS';
+    
+    // As in, "check the ticket related to the Order Status synchronization"
+    const ACTION_CHECK_TICKET_SYNC_STATUS = 'CHECK_TICKET_SYNC_STATUS';
 
     /** @var string The action to execute for this order */
     public $action;
@@ -63,7 +66,7 @@ class ShoppingfeedTaskOrder extends ObjectModel
                 'validate' => 'isGenericName',
                 'required' => true,
                 'unique' => true,
-                'values' => array(self::ACTION_SYNC_STATUS),
+                'values' => array(self::ACTION_SYNC_STATUS, self::ACTION_CHECK_TICKET_SYNC_STATUS),
             ),
             'id_order' => array(
                 'type' => ObjectModel::TYPE_INT,
