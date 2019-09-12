@@ -271,7 +271,7 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
 
         $fields_form = array(
             'legend' => array(
-                'title' => $this->module->l('Configuration (all shops)', 'AdminShoppingfeedGeneralSettings'),
+                'title' => $this->module->l('Products synchronization type (all shops)', 'AdminShoppingfeedGeneralSettings'),
                 'icon' => 'icon-cog'
             ),
             'input' => array(

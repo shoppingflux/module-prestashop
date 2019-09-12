@@ -21,6 +21,10 @@
  * @license   Commercial license
  */
 
+.bold {
+    font-weight: bold;
+}
+
 #logo_sf {
     height: 5em;
 }
@@ -122,52 +126,13 @@
     margin: 0 ;
 }
 
-#status_generale_settings_div {
-    margin-top: -20px;
+.shoppingfeed_double-list-left-container,
+.shoppingfeed_double-list-right-container {
+    padding-top: 7px;
+    font-size: 13px;
+    text-align: center;
 }
 
-#status_generale_settings_div table tr td {
-    width: 300px;
-}
-
-.bold {
-    font-weight: bold;
-}
-
-.number_require {
-    display: inline !important;
-    width: 50% !important;
-}
-
-.tableleftblock, #leftinputimeshift, .textleftblock {
-    width: 25%;
-    float: left;
-}
-
-.tablerightblock, #rightinputimeshift, .textrightblock {
-    width: 75%;
-    float: right;
-    margin-top: -5px;
-}
-
-.tableleftblock {
-    height: 185px;
-}
-
-.tablerightblock {
-    height: 190px;
-}
-
-#leftinputimeshift {
-    height: 60px;
-}
-
-#rightinputimeshift {
-    height: 65px;
-}
-
-#leftinputmax {
-    width: 25%;
-    float: left;
-    margin-top: 100px;
+.shoppingfeed_double-list-group select {
+    margin-top: 5px;
 }
