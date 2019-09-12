@@ -538,4 +538,127 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
         
         return true;
     }
+    
+    public function sendFailedTaskOrdersMail()
+    {
+        if (empty($this->conveyor['id_shop'])) {
+            ProcessLoggerHandler::logError(
+                    $this->l('No ID Shop found.', 'ShoppingfeedOrderSyncActions'),
+                'Order'
+            );
+            return false;
+        }
+        $id_shop = $this->conveyor['id_shop'];
+        
+        if (empty($this->conveyor['failedTaskOrders'])) {
+            ProcessLoggerHandler::logError(
+                $this->l('No Task Orders found.', 'ShoppingfeedOrderSyncActions'),
+                'Order'
+            );
+            return false;
+        }
+        $failedTaskOrders = $this->conveyor['failedTaskOrders'];
+        
+        $id_lang = (int)Configuration::get('PS_LANG_DEFAULT', null, null, $id_shop);
+
+        // Get order data
+        $failedTaskOrdersMailData = array();
+        foreach ($failedTaskOrders as $taskOrder) {
+            $order = new Order($taskOrder->id_order);
+            $orderState = new OrderState($order->current_state);
+            $failedTaskOrdersMailData[] = array(
+                'reference' => $order->reference,
+                'status' => !empty($orderState->name[$id_lang]) ? $orderState->name[$id_lang] : reset($orderState->name)
+            );
+        }
+        
+        $listFailuresHtml = $this->getEmailTemplateContent(
+            'order-sync-errors-list.tpl',
+            $id_lang,
+            $id_shop,
+            array('failedTaskOrdersData' => $failedTaskOrdersMailData)
+        );
+        $listFailuresTxt = $this->getEmailTemplateContent(
+            'order-sync-errors-list.txt',
+            $id_lang,
+            $id_shop,
+            array('failedTaskOrdersData' => $failedTaskOrdersMailData)
+        );
+
+        return Mail::Send(
+            (int)$id_lang,
+            'order-sync-errors',
+            $this->l('Shopping Feed synchronization errors', 'ShoppingfeedOrderSyncActions'),
+            array(
+                '{list_order_sync_errors_html}' => $listFailuresHtml,
+                '{list_order_sync_errors_txt}' => $listFailuresTxt,
+                '{cron_task_url}' => Context::getContext()->link->getAdminLink('AdminShoppingfeedProcessMonitor'),
+                '{log_page_url}' => Context::getContext()->link->getAdminLink('AdminShoppingfeedProcessLogger'),
+            ),
+            Configuration::get('PS_SHOP_EMAIL', null, null, $id_shop),
+            null, null, null, null, null,
+            _PS_MODULE_DIR_ . 'shoppingfeed/mails/',
+            false,
+            $id_shop
+        );
+    }
+    
+    /**
+     * Finds a module mail template for the specified lang and shop
+     * 
+     * @param string $template_name template name with extension
+     * @param int $id_lang
+     * @param int $id_shop
+     * @param array $var will be assigned to the smarty template
+     *
+     * @return string the template's content, or an empty string if no template
+     * was found
+     */
+    protected function getEmailTemplateContent($template_name, $id_lang, $id_shop, $var)
+    {
+        $isoLang = Language::getIsoById($id_lang);
+        $shop = new Shop($id_shop);
+        if (isset($shop->theme)) {
+            // PS17
+            $themeName = $shop->theme->getName();
+        } else {
+            // PS16
+            $themeName = $shop->theme_name;
+        }
+        
+        $pathsToCheck = array(
+            _PS_ALL_THEMES_DIR_ . $themeName . '/shoppingfeed/mails/' . $isoLang . '/' . $template_name,
+            _PS_MODULE_DIR_ . 'shoppingfeed/mails/' . $isoLang . '/' . $template_name,
+            _PS_ALL_THEMES_DIR_ . $themeName . '/shoppingfeed/mails/en/' . $template_name,
+            _PS_MODULE_DIR_ . 'shoppingfeed/mails/en/' . $template_name,
+        );
+        
+        $templatePath = '';
+        foreach ($pathsToCheck as $path) {
+            if (Tools::file_exists_cache($path)) {
+                $templatePath = $path;
+                break;
+            }
+        }
+        
+        if (!$templatePath) {
+            return '';
+        }
+        
+        // Multi-shop / multi-theme might not work properly when using
+        // the basic "$context->smarty->createTemplate($tpl_name)" syntax, as
+        // the template's compile_id will be the same for every shop / theme
+        // See https://github.com/PrestaShop/PrestaShop/pull/13804
+        $context = Context::getContext();
+        $scope = $context->smarty->createData($context->smarty);
+        $scope->assign($var);
+
+        $templateContent = $context->smarty->createTemplate(
+            $templatePath,
+            $scope,
+            $themeName
+        )->fetch();
+        
+        return $templateContent;
+    }
 }

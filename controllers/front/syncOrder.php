@@ -127,7 +127,7 @@ class ShoppingfeedSyncOrderModuleFrontController extends CronController
                 );
 
                 if ($orderStatusHandler->process('ShoppingfeedOrderSync')) {
-                    $processData = $ticketsHandler->getConveyor();
+                    $processData = $orderStatusHandler->getConveyor();
                     $failedSyncStatusTaskOrders = $processData['failedTaskOrders'];
                     $successfulSyncTaskOrders = $processData['successfulTaskOrders'];
                 }
@@ -143,108 +143,49 @@ class ShoppingfeedSyncOrderModuleFrontController extends CronController
             }
 
             // Send mail
-            // TODO : move this somewhere else; actions class ?
             try {
-                $id_lang = (int)Configuration::get('PS_LANG_DEFAULT', null, null, $shop['id_shop']);
                 $failedTaskOrders = array_merge($failedSyncStatusTaskOrders, $failedTicketsStatusTaskOrders);
                 
-                $listFailuresHtml = $this->getEmailTemplateContent(
-                    'order-sync-errors-list.tpl',
-                    $id_lang,
-                    $shop['id_shop'],
-                    array('failedTaskOrders' => $failedTaskOrders)
+                $errorMailHandler = new ActionsHandler();
+                $errorMailHandler->setConveyor(array(
+                    'id_shop' => $shop['id_shop'],
+                    'failedTaskOrders' => $failedTaskOrders,
+                ));
+                $errorMailHandler->addActions(
+                    'sendFailedTaskOrdersMail'
                 );
-                $listFailuresTxt = $this->getEmailTemplateContent(
-                    'order-sync-errors-list.txt',
-                    $id_lang,
-                    $shop['id_shop'],
-                    array('failedTaskOrders' => $failedTaskOrders)
-                );
-                
-                Mail::Send(
-                    (int)$id_lang,
-                    'order-sync-errors',
-                    $this->module->l('Shopping Feed synchronization errors', 'syncOrder'),
-                    array(
-                        'list_order_sync_errors_html' => $listFailuresHtml,
-                        'list_order_sync_errors_txt' => $listFailuresTxt,
-                        'cron_task_url' => $this->context->link->getAdminLink('AdminShoppingfeedProcessMonitor'),
-                        'log_page_url' => $this->context->link->getAdminLink('AdminShoppingfeedProcessLogger'),
-                    ),
-                    Configuration::get('PS_SHOP_EMAIL', null, null, $shop['id_shop']),
-                    null, null, null, null, null,
-                    _PS_MODULE_DIR_ . $this->module->name . '/mails/',
-                    false,
-                    $shop['id_shop']
-                );
+
+                if (!$errorMailHandler->process('ShoppingfeedOrderSync')) {
+                    ProcessLoggerHandler::logError(
+                        $logPrefix . ' ' . 
+                            $this->module->l('Failed to send mail with errors.', 'syncOrder'),
+                        $this->processMonitor->getProcessObjectModelName(),
+                        $this->processMonitor->getProcessObjectModelId()
+                    );
+                }
             } catch (Exception $e) {
                 ProcessLoggerHandler::logError(
                     sprintf(
-                        $logPrefix . ' ' . $this->module->l('Failed to send mail with errors.', 'syncOrder'),
+                        $logPrefix . ' ' . $this->module->l('Failed to send mail with errors : %s', 'syncOrder'),
                         $e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine()
                     ),
                     $this->processMonitor->getProcessObjectModelName(),
                     $this->processMonitor->getProcessObjectModelId()
                 );
             }
+            
+            // Delete all processed task orders
+            $processedTaskOrders = array_merge(
+                $successfulTicketsTaskOrders,
+                $successfulSyncTaskOrders,
+                $failedTaskOrders
+            );
+            foreach($processedTaskOrders as $taskOrder) {
+                $taskOrder->delete();
+            }
+            
         }
 
         ProcessLoggerHandler::closeLogger();
-    }
-    
-    /**
-     * Finds a module mail template for the specified lang and shop
-     * 
-     * @param string $template_name template name with extension
-     * @param int $id_lang
-     * @param int $id_shop
-     * @param array $var will be assigned to the smarty template
-     *
-     * @return string the template's content, or an empty string if no template
-     * was found
-     */
-    protected function getEmailTemplateContent($template_name, $id_lang, $id_shop, $var)
-    {
-        $isoLang = Language::getIsoById($id_lang);
-        $shop = new Shop($id_shop);
-        if (isset($shop->theme)) {
-            // PS17
-            $themeName = $this->context->shop->theme->getName();
-        } else {
-            // PS16
-            $themeName = $shop->theme_name;
-        }
-        
-        $pathsToCheck = array(
-            _PS_ALL_THEMES_DIR_ . $themeName . '/' . $this->module->name . '/mails/' . $isoLang . '/' . $template_name,
-            _PS_MODULE_DIR_ . $this->module->name . '/mails/' . $isoLang . '/' . $template_name,
-            _PS_ALL_THEMES_DIR_ . $themeName . '/' . $this->module->name . '/mails/en/' . $template_name,
-            _PS_MODULE_DIR_ . $this->module->name . '/mails/en/' . $template_name,
-        );
-        
-        $templatePath = '';
-        foreach ($pathsToCheck as $path) {
-            if (Tools::file_exists_cache($path)) {
-                $templatePath = $path;
-                break;
-            }
-        }
-        
-        if (!$templatePath) {
-            return '';
-        }
-        
-        // Multi-shop / multi-theme might not work properly when using
-        // the basic "$context->smarty->createTemplate($tpl_name)" syntax, as
-        // the template's compile_id will be the same for every shop / theme
-        // See https://github.com/PrestaShop/PrestaShop/pull/13804
-        $scope = $this->context->smarty->createData($this->context->smarty);
-        $scope->assign($var);
-
-        return $this->context->smarty->createTemplate(
-            $templatePath,
-            $scope,
-            $themeName
-        )->fetch();
     }
 }
