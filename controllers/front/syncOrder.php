@@ -31,6 +31,7 @@ require_once(_PS_MODULE_DIR_ . 'shoppingfeed/classes/actions/ShoppingfeedOrderSy
 use ShoppingfeedClasslib\Actions\ActionsHandler;
 use ShoppingfeedClasslib\Extensions\ProcessMonitor\CronController;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
+use ShoppingfeedClasslib\Registry;
 
 class ShoppingfeedSyncOrderModuleFrontController extends CronController
 {
@@ -75,6 +76,8 @@ class ShoppingfeedSyncOrderModuleFrontController extends CronController
             $failedTicketsStatusTaskOrders = array();
             $successfulTicketsTaskOrders = array();
             try {
+                Registry::set('ticketsErrors', 0);
+            
                 /** @var ShoppingfeedHandler $ticketsHandler */
                 $ticketsHandler = new ActionsHandler();
                 $ticketsHandler->setConveyor(array(
@@ -90,13 +93,31 @@ class ShoppingfeedSyncOrderModuleFrontController extends CronController
 
                 if ($ticketsHandler->process('ShoppingfeedOrderSync')) {
                     $processData = $ticketsHandler->getConveyor();
-                    $failedTicketsStatusTaskOrders = $processData['failedTaskOrders'];
-                    $successfulTicketsTaskOrders = $processData['successfulTaskOrders'];
+                    $failedTicketsStatusTaskOrders = isset($processData['failedTaskOrders']) ? $processData['failedTaskOrders'] : array();
+                    $successfulTicketsTaskOrders = isset($processData['successfulTaskOrders']) ? $processData['successfulTaskOrders'] : array();
+                    
+                    ProcessLoggerHandler::logInfo(
+                        sprintf(
+                            $logPrefix . ' ' . $this->module->l('%d tickets with success; %d tickets with failure; %d errors', 'syncOrder'),
+                            count($successfulTicketsTaskOrders),
+                            count($failedTicketsStatusTaskOrders),
+                            Registry::get('ticketsErrors')
+                        ),
+                        $this->processMonitor->getProcessObjectModelName(),
+                        $this->processMonitor->getProcessObjectModelId()
+                    );
                 }
+
+                ProcessLoggerHandler::logInfo(
+                    $logPrefix . ' ' .
+                        $this->module->l('Process finished : check order status tickets', 'syncOrder'),
+                    $this->processMonitor->getProcessObjectModelName(),
+                    $this->processMonitor->getProcessObjectModelId()
+                );
             } catch (Exception $e) {
                 ProcessLoggerHandler::logError(
                     sprintf(
-                        $logPrefix . ' ' . $this->module->l('Fail : %s', 'syncOrder'),
+                        $logPrefix . ' ' . $this->module->l('Error : %s', 'syncOrder'),
                         $e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine()
                     ),
                     $this->processMonitor->getProcessObjectModelName(),
@@ -113,6 +134,8 @@ class ShoppingfeedSyncOrderModuleFrontController extends CronController
             $failedSyncStatusTaskOrders = array();
             $successfulSyncTaskOrders = array();
             try {
+                Registry::set('syncStatusErrors', 0);
+                
                 /** @var ShoppingfeedHandler $orderStatusHandler */
                 $orderStatusHandler = new ActionsHandler();
                 $orderStatusHandler->setConveyor(array(
@@ -123,18 +146,34 @@ class ShoppingfeedSyncOrderModuleFrontController extends CronController
                     'getTaskOrders',
                     'prepareTaskOrdersSyncStatus',
                     'sendTaskOrdersSyncStatus'
-                    // Create action to send error mail and delete success ?
                 );
 
                 if ($orderStatusHandler->process('ShoppingfeedOrderSync')) {
                     $processData = $orderStatusHandler->getConveyor();
-                    $failedSyncStatusTaskOrders = $processData['failedTaskOrders'];
-                    $successfulSyncTaskOrders = $processData['successfulTaskOrders'];
+                    $failedSyncStatusTaskOrders = isset($processData['failedTaskOrders']) ? $processData['failedTaskOrders'] : array();
+                    $successfulSyncTaskOrders = isset($processData['successfulTaskOrders']) ? $processData['successfulTaskOrders'] : array();
+                    
+                    ProcessLoggerHandler::logInfo(
+                        sprintf(
+                            $logPrefix . ' ' . $this->module->l('%d tickets created; %d tickets not created; %d errors', 'syncOrder'),
+                            count($successfulSyncTaskOrders),
+                            count($failedSyncStatusTaskOrders),
+                            Registry::get('syncStatusErrors')
+                        ),
+                        $this->processMonitor->getProcessObjectModelName(),
+                        $this->processMonitor->getProcessObjectModelId()
+                    );
                 }
+
+                ProcessLoggerHandler::logInfo(
+                    $logPrefix . ' ' . $this->module->l('Process finished : Order sync status', 'syncOrder'),
+                    $this->processMonitor->getProcessObjectModelName(),
+                    $this->processMonitor->getProcessObjectModelId()
+                );
             } catch (Exception $e) {
                 ProcessLoggerHandler::logError(
                     sprintf(
-                        $logPrefix . ' ' . $this->module->l('Fail : %s', 'syncOrder'),
+                        $logPrefix . ' ' . $this->module->l('Error : %s', 'syncOrder'),
                         $e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine()
                     ),
                     $this->processMonitor->getProcessObjectModelName(),
@@ -158,7 +197,7 @@ class ShoppingfeedSyncOrderModuleFrontController extends CronController
                 if (!$errorMailHandler->process('ShoppingfeedOrderSync')) {
                     ProcessLoggerHandler::logError(
                         $logPrefix . ' ' . 
-                            $this->module->l('Failed to send mail with errors.', 'syncOrder'),
+                            $this->module->l('Failed to send mail with Orders errors.', 'syncOrder'),
                         $this->processMonitor->getProcessObjectModelName(),
                         $this->processMonitor->getProcessObjectModelId()
                     );
@@ -166,7 +205,7 @@ class ShoppingfeedSyncOrderModuleFrontController extends CronController
             } catch (Exception $e) {
                 ProcessLoggerHandler::logError(
                     sprintf(
-                        $logPrefix . ' ' . $this->module->l('Failed to send mail with errors : %s', 'syncOrder'),
+                        $logPrefix . ' ' . $this->module->l('Failed to send mail with Orders errors : %s', 'syncOrder'),
                         $e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine()
                     ),
                     $this->processMonitor->getProcessObjectModelName(),

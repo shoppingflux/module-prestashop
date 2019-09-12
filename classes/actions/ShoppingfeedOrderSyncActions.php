@@ -14,8 +14,9 @@
  */
 
 use ShoppingfeedClasslib\Actions\DefaultActions;
-use ShoppingFeed\Sdk\Api\Session\SessionResource;
+use ShoppingfeedClasslib\Registry;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
+
 use ShoppingFeed\Sdk\Api\Order\OrderOperation;
 
 require_once(_PS_MODULE_DIR_ . 'shoppingfeed/classes/ShoppingfeedOrder.php');
@@ -251,6 +252,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
                     'Order',
                     $taskOrder->id_order
                 );
+                Registry::increment('syncStatusErrors');
                 continue;
             }
             
@@ -262,6 +264,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
                     'Order',
                     $taskOrder->id_order
                 );
+                Registry::increment('syncStatusErrors');
                 continue;
             }
             
@@ -272,6 +275,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
                     'Order',
                     $taskOrder->id_order
                 );
+                Registry::increment('syncStatusErrors');
                 continue;
             }
             
@@ -455,6 +459,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
                     'Order',
                     $taskOrder->id_order
                 );
+                Registry::increment('ticketsErrors');
                 continue;
             }
             
@@ -466,6 +471,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
                     'Order',
                     $taskOrder->id_order
                 );
+                Registry::increment('ticketsErrors');
                 continue;
             }
             
@@ -525,6 +531,15 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
                 case 'failed':
                 case 'canceled':
                     $this->conveyor['failedTaskOrders'][] = $taskOrder;
+                    ProcessLoggerHandler::logError(
+                        sprintf(
+                            static::getLogPrefix($taskOrder->id_order) . ' ' .
+                                $this->l('Ticket status : %s', 'ShoppingfeedOrderSyncActions'),
+                            $ticket->getStatus()
+                        ),
+                        'Order',
+                        $taskOrder->id_order
+                    );
                     break;
                 case 'scheduled':
                 case 'running':
@@ -532,6 +547,15 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
                     break;
                 case 'succeed':
                     $this->conveyor['successfulTaskOrders'][] = $taskOrder;
+                    ProcessLoggerHandler::logInfo(
+                        sprintf(
+                            static::getLogPrefix($taskOrder->id_order) . ' ' .
+                                $this->l('Ticket status : %s', 'ShoppingfeedOrderSyncActions'),
+                            $ticket->getStatus()
+                        ),
+                        'Order',
+                        $taskOrder->id_order
+                    );
                     break;
             }
         }
