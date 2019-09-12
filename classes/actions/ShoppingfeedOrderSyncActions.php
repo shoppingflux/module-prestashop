@@ -616,8 +616,6 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
             array(
                 '{list_order_sync_errors_html}' => $listFailuresHtml,
                 '{list_order_sync_errors_txt}' => $listFailuresTxt,
-                '{cron_task_url}' => Context::getContext()->link->getAdminLink('AdminShoppingfeedProcessMonitor'),
-                '{log_page_url}' => Context::getContext()->link->getAdminLink('AdminShoppingfeedProcessLogger'),
             ),
             Configuration::get('PS_SHOP_EMAIL', null, null, $id_shop),
             null, null, null, null, null,

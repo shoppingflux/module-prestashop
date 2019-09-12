@@ -185,22 +185,24 @@ class ShoppingfeedSyncOrderModuleFrontController extends CronController
             try {
                 $failedTaskOrders = array_merge($failedSyncStatusTaskOrders, $failedTicketsStatusTaskOrders);
                 
-                $errorMailHandler = new ActionsHandler();
-                $errorMailHandler->setConveyor(array(
-                    'id_shop' => $shop['id_shop'],
-                    'failedTaskOrders' => $failedTaskOrders,
-                ));
-                $errorMailHandler->addActions(
-                    'sendFailedTaskOrdersMail'
-                );
-
-                if (!$errorMailHandler->process('ShoppingfeedOrderSync')) {
-                    ProcessLoggerHandler::logError(
-                        $logPrefix . ' ' . 
-                            $this->module->l('Failed to send mail with Orders errors.', 'syncOrder'),
-                        $this->processMonitor->getProcessObjectModelName(),
-                        $this->processMonitor->getProcessObjectModelId()
+                if (!empty($failedTaskOrders)) {
+                    $errorMailHandler = new ActionsHandler();
+                    $errorMailHandler->setConveyor(array(
+                        'id_shop' => $shop['id_shop'],
+                        'failedTaskOrders' => $failedTaskOrders,
+                    ));
+                    $errorMailHandler->addActions(
+                        'sendFailedTaskOrdersMail'
                     );
+
+                    if (!$errorMailHandler->process('ShoppingfeedOrderSync')) {
+                        ProcessLoggerHandler::logError(
+                            $logPrefix . ' ' . 
+                                $this->module->l('Failed to send mail with Orders errors.', 'syncOrder'),
+                            $this->processMonitor->getProcessObjectModelName(),
+                            $this->processMonitor->getProcessObjectModelId()
+                        );
+                    }
                 }
             } catch (Exception $e) {
                 ProcessLoggerHandler::logError(
@@ -226,5 +228,7 @@ class ShoppingfeedSyncOrderModuleFrontController extends CronController
         }
 
         ProcessLoggerHandler::closeLogger();
+        
+        return $data;
     }
 }

@@ -5,8 +5,7 @@ via Shopping Feed. Please check the list of order with errors below :
 
 {list_order_sync_errors_txt}
 
-Please try to synchronize the orders again using your Cron Task URL :
-{cron_task_url}
-
-You can see more details via Logs page :
-{log_page_url}
+Please try to synchronize the orders again using your Cron Task URL (you can get
+it via your PrestaShop BackOffice, «15 Min Marketplace Updates – Shopping Feed»
+module settings, «Cron Tasks» page). You can see more details in the «Tasks
+Activity» page.
