@@ -261,7 +261,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         return \Module::uninstall();
     }
     
-    protected function setConfigurationDefault($key, $defaultValue, $id_shop) {
+    public function setConfigurationDefault($key, $defaultValue, $id_shop) {
         if (!Configuration::hasKey($key, null, null, $id_shop)) {
             Configuration::updateValue($key, $defaultValue, null, null, $id_shop);
         }

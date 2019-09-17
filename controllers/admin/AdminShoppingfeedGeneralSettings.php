@@ -392,7 +392,7 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
             Configuration::updateValue(Shoppingfeed::REAL_TIME_SYNCHRONIZATION, ($realtime_sync ? true : false), false, null, $shop['id_shop']);
 
             if (!is_numeric($stock_sync_max_products) || $stock_sync_max_products > 200 || $stock_sync_max_products <= 0) {
-                $this->errors[] = $this->module->l('You must specify a \"Max. product update per request\" number (between 1 and 200 included).', 'AdminShoppingfeedGeneralSettings');
+                $this->errors[] = $this->module->l('You must specify a \'Max. product update per request\' number (between 1 and 200 included).', 'AdminShoppingfeedGeneralSettings');
             } else {
                 Configuration::updateValue(Shoppingfeed::STOCK_SYNC_MAX_PRODUCTS, $stock_sync_max_products, false, null, $shop['id_shop']);
             }
@@ -426,9 +426,9 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
         $max_orders = Tools::getValue('max_order_update');
 
         if (!is_numeric($tracking_timeshift) || (int)$tracking_timeshift <= 0) {
-            $this->errors[] = $this->module->l('You must specify a valid \"Time shift\" number (superior to 0).', 'AdminShoppingfeedGeneralSettings');
+            $this->errors[] = $this->module->l('You must specify a valid \'Time shift\' number (greater than 0).', 'AdminShoppingfeedGeneralSettings');
         } elseif (!is_numeric($max_orders) || $max_orders > 200 || $max_orders <= 0) {
-            $this->errors[] = $this->module->l('You must specify a valid \"Max Order update\" number (between 1 and 200 included).', 'AdminShoppingfeedGeneralSettings');
+            $this->errors[] = $this->module->l('You must specify a valid \'Max Order update\' number (between 1 and 200 included).', 'AdminShoppingfeedGeneralSettings');
         } else {
             Configuration::updateValue(Shoppingfeed::SHIPPED_ORDERS, json_encode($orderStatusesShipped));
             Configuration::updateValue(Shoppingfeed::ORDER_STATUS_TIME_SHIFT, (int)$tracking_timeshift);

@@ -45,14 +45,14 @@ function upgrade_module_1_2_0($module)
     $shops = Shop::getShops();
     foreach ($shops as $shop) {
         // Set default values for configuration variables
-        Configuration::updateValue(ShoppingFeed::ORDER_SYNC_ENABLED, true, false, null, $shop['id_shop']);
-        Configuration::updateValue(ShoppingFeed::STOCK_SYNC_MAX_PRODUCTS, 100, false, null, $shop['id_shop']);
-        Configuration::updateValue(ShoppingFeed::REAL_TIME_SYNCHRONIZATION, false, false, null, $shop['id_shop']);
-        Configuration::updateValue(ShoppingFeed::ORDER_STATUS_TIME_SHIFT, 100, false, null, $shop['id_shop']);
-        Configuration::updateValue(ShoppingFeed::ORDER_STATUS_MAX_ORDERS, 100, false, null, $shop['id_shop']);
-        Configuration::updateValue(ShoppingFeed::SHIPPED_ORDERS, json_encode(array()), false, null, $shop['id_shop']);
-        Configuration::updateValue(ShoppingFeed::CANCELLED_ORDERS, json_encode(array()), false, null, $shop['id_shop']);
-        Configuration::updateValue(ShoppingFeed::REFUNDED_ORDERS, json_encode(array()), false, null, $shop['id_shop']);
+        $module->setConfigurationDefault(Shoppingfeed::ORDER_SYNC_ENABLED, true, $shop['id_shop']);
+        $module->setConfigurationDefault(Shoppingfeed::STOCK_SYNC_MAX_PRODUCTS, 100, $shop['id_shop']);
+        $module->setConfigurationDefault(Shoppingfeed::REAL_TIME_SYNCHRONIZATION, false, $shop['id_shop']);
+        $module->setConfigurationDefault(Shoppingfeed::ORDER_STATUS_TIME_SHIFT, 5, $shop['id_shop']);
+        $module->setConfigurationDefault(Shoppingfeed::ORDER_STATUS_MAX_ORDERS, 100, $shop['id_shop']);
+        $module->setConfigurationDefault(Shoppingfeed::SHIPPED_ORDERS, json_encode(array()), $shop['id_shop']);
+        $module->setConfigurationDefault(Shoppingfeed::CANCELLED_ORDERS, json_encode(array()), $shop['id_shop']);
+        $module->setConfigurationDefault(Shoppingfeed::REFUNDED_ORDERS, json_encode(array()), $shop['id_shop']);
     }
     return true;
 }
