@@ -84,13 +84,18 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
     public function renderOrderSyncForm()
     {
         $fields_form = array(
-            'legend' => array(
-                'title' => $this->module->l('Post-import orders synchronization settings (All shop)', 'AdminShoppingfeedGeneralSettings'),
+            'form' => array(
+                'form' => array(
+                    'id_form' => 'order-sync-form',
+                    'legend' => array(
+                        'title' => $this->module->l('Post-import orders synchronization settings (All shop)', 'AdminShoppingfeedGeneralSettings'),
+                    ),
+                    'submit' => array(
+                        'title' => $this->module->l('Save', 'AdminShoppingfeedGeneralSettings'),
+                        'name' => 'savePostImport'
+                    ),
+                ),
             ),
-            'submit' => array(
-                'title' => $this->module->l('Save', 'AdminShoppingfeedGeneralSettings'),
-                'name' => 'savePostImport'
-            )
         );
 
         $allState = OrderState::getOrderStates($this->context->language->id);
@@ -145,7 +150,7 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
         $helper->base_folder = $this->getTemplatePath() . $this->override_folder;
         $helper->base_tpl = 'order_status_syncro.tpl';
 
-        return $helper->generateForm(array(array('form' => $fields_form)));
+        return $helper->generateForm($fields_form);
     }
 
     public function welcomeForm()
