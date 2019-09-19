@@ -50,17 +50,17 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
 
         $this->content = $this->welcomeForm();
 
-        $order_sync = Configuration::get(Shoppingfeed::ORDER_SYNC_ENABLED);
-        $block_order_btn = false;
-        if (!ShoppingFeed::isOrderSyncAvailable()) {
-            $order_sync = false;
-            $block_order_btn = true;
+        $order_sync_available = ShoppingFeed::isOrderSyncAvailable();
+        if (!$order_sync_available) {
+            $order_sync_active = false;
+        } else {
+            $order_sync_active = Configuration::get(Shoppingfeed::ORDER_SYNC_ENABLED);
         }
 
         $id_shop = $this->context->shop->id;
         $token = Configuration::get(shoppingfeed::AUTH_TOKEN, null, null, $id_shop);
         if ($token) {
-            $this->content .= $this->renderGlobalConfigForm($block_order_btn);
+            $this->content .= $this->renderGlobalConfigForm($order_sync_available);
         }
 
         $price_sync = Configuration::get(Shoppingfeed::PRICE_SYNC_ENABLED);
@@ -69,7 +69,7 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
             $this->content .= $this->renderSynchroConfigForm();
         }
 
-        if ($order_sync) {
+        if ($order_sync_active) {
             $this->content .= $this->renderOrderSyncForm();
         }
 
@@ -174,7 +174,7 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
      * Renders the HTML for the global configuration form
      * @return string the rendered form's HTML
      */
-    public function renderGlobalConfigForm($block_order_btn)
+    public function renderGlobalConfigForm($order_sync_available)
     {
         $fields_form = array(
             'legend' => array(
@@ -213,7 +213,7 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
                 array(
                     'type' => 'switch',
                     'is_bool' => true,
-                    'disabled' => $block_order_btn,
+                    'disabled' => !$order_sync_available,
                     'hint' => "The order post-import synchronization allows you to manage the following order statuses : shipped, cancelled, refunded.",
                     'values' => array(
                         array(
@@ -233,11 +233,11 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
             )
         );
 
-        if ($block_order_btn) {
+        if (!$order_sync_available) {
             $fields_form['input'][] = array(
                 'type' => 'html',
-                'name' => 'for_real',
-                'html_content' => '<div id="for_real" class="alert alert-warning">
+                'name' => 'alert-order-sync',
+                'html_content' => '<div class="alert alert-warning">
                     '.$this->module->l('The Shopping Feed Official module (shoppingfluxexport) should be installed on your shop for enabling the post-import synchronization. The “Order shipment” & “Order cancellation” options must be disabled in the official module for enabling this type of synchronization in the new module. If you disable these options in the official module and you enable them again later the “Orders post-import synchronization” will be disabled automatically in the Shopping feed 15 min module.', 'AdminShoppingfeedGeneralSettings').'</div>',
             );
         }
