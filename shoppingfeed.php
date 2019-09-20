@@ -686,6 +686,20 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             return;
         }
         
+        $order = new Order($params['id_order']);
+        
+        // Check if the new status calls for an update with Shopping Feed
+        $newOrderStatus = $params['newOrderStatus'];
+        $shipped_status = json_decode(Configuration::get(Shoppingfeed::SHIPPED_ORDERS, null, null, $order->id_shop));
+        $cancelled_status = json_decode(Configuration::get(Shoppingfeed::CANCELLED_ORDERS, null, null, $order->id_shop));
+        $refunded_status = json_decode(Configuration::get(Shoppingfeed::REFUNDED_ORDERS, null, null, $order->id_shop));
+        if (!in_array($newOrderStatus->id, $shipped_status)
+            && !in_array($newOrderStatus->id, $cancelled_status)
+            && !in_array($newOrderStatus->id, $refunded_status)
+        ) {
+            return;
+        }
+        
         $logPrefix = ShoppingfeedOrderSyncActions::getLogPrefix($shoppingFeedOrder->id_order);
         try {
             \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logInfo(
