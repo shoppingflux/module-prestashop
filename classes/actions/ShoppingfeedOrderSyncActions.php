@@ -411,7 +411,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
                 $taskOrder->id_order
             );
             
-            $this->conveyor['successfulTaskOrders'] = $taskOrder;
+            $this->conveyor['successfulTaskOrders'][] = $taskOrder;
             unset($preparedTaskOrders[$ticketOrderReference]);
         }
         
@@ -428,7 +428,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
                 'Order',
                 $preparedTaskOrder['taskOrder']->id_order
             );
-            $this->conveyor['failedTaskOrders'] = $preparedTaskOrder['taskOrder'];
+            $this->conveyor['failedTaskOrders'][] = $preparedTaskOrder['taskOrder'];
         }
         
         return true;
