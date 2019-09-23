@@ -400,7 +400,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
             $taskOrder->action = ShoppingfeedTaskOrder::ACTION_CHECK_TICKET_SYNC_STATUS;
             $taskOrder->save();
             
-            ProcessLoggerHandler::logInfo(
+            ProcessLoggerHandler::logSuccess(
                 sprintf(
                     static::getLogPrefix($taskOrder->id_order) . ' ' .
                         $this->l('Ticket created for Order %s Status %s', 'ShoppingfeedOrderSyncActions'),
@@ -547,7 +547,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
                     break;
                 case 'succeed':
                     $this->conveyor['successfulTaskOrders'][] = $taskOrder;
-                    ProcessLoggerHandler::logInfo(
+                    ProcessLoggerHandler::logSuccess(
                         sprintf(
                             static::getLogPrefix($taskOrder->id_order) . ' ' .
                                 $this->l('Ticket status : %s', 'ShoppingfeedOrderSyncActions'),
