@@ -420,7 +420,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
         foreach ($preparedTaskOrders as $preparedTaskOrder) {
             ProcessLoggerHandler::logError(
                 sprintf(
-                    static::getLogPrefix($taskOrder->id_order) . ' ' .
+                    static::getLogPrefix($preparedTaskOrder->id_order) . ' ' .
                         $this->l('No ticket could be created for Order %s Status %s', 'ShoppingfeedOrderSyncActions'),
                     $preparedTaskOrder['reference_marketplace'],
                     $preparedTaskOrder['operation']
