@@ -20,7 +20,7 @@
                 </div>
 
                 <div class="col-lg-6 shoppingfeed_double-list-right-container">
-                    <span class="bold">{l s='Selected status'  mod='shoppingfeed'}</span>
+                    <span class="bold">{l s='Selected order status'  mod='shoppingfeed'}</span>
                     <select id="status_shipped_order_remove" class="input-large" name="status_shipped_order[]  " multiple>
                         {foreach from=$order_shipped.selected item='status'}
                             <option value="{$status.id_order_state|intval}">&nbsp;{$status.name|escape}</option>
@@ -67,7 +67,7 @@
                     <a id="status_cancelled_order_add_btn" class="btn btn-default btn-block clearfix" >{l s='Add' d='Admin.Actions'} <i class="icon-arrow-right"></i></a>
                 </div>
                 <div class="col-lg-6 shoppingfeed_double-list-right-container">
-                    <span class="bold">{l s='Selected status'  mod='shoppingfeed'}</span>
+                    <span class="bold">{l s='Selected order status'  mod='shoppingfeed'}</span>
                     <select id="status_cancelled_order_remove" class="input-large" name="status_cancelled_order[]" multiple>
                         {foreach from=$order_cancelled.selected item='status'}
                             <option value="{$status.id_order_state|intval}">&nbsp;{$status.name|escape}</option>
@@ -98,9 +98,7 @@
                         <a id="status_refunded_order_add_btn" class="btn btn-default btn-block clearfix" >{l s='Add' d='Admin.Actions'} <i class="icon-arrow-right"></i></a>
                 </div>
                 <div class="col-lg-6 shoppingfeed_double-list-right-container">
-                    <span class="bold">
-                        {l s='Selected status'  mod='shoppingfeed'}
-                    </span>
+                    <span class="bold">{l s='Selected order status'  mod='shoppingfeed'}</span>
                     <select id="status_refunded_order_remove" class="input-large" name="status_refunded_order[]" multiple>
                         {foreach from=$order_refunded.selected item='status'}
                             <option value="{$status.id_order_state|intval}">&nbsp;{$status.name|escape}</option>
