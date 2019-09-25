@@ -705,7 +705,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logInfo(
                 sprintf(
                     $logPrefix . ' ' . 
-                        $this->l('Start save SF Task Order %s ', 'ShoppingfeedOrderActions'),
+                        $this->l('Process started Order %s ', 'ShoppingfeedOrderActions'),
                     $shoppingFeedOrder->id_order
                 ),
                 'Order',
