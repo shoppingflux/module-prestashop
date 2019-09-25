@@ -178,7 +178,7 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
     {
         $fields_form = array(
             'legend' => array(
-                'title' => $this->module->l('Configuration (all shops)', 'AdminShoppingfeedGeneralSettings'),
+                'title' => $this->module->l('General configuration (all shops)', 'AdminShoppingfeedGeneralSettings'),
                 'icon' => 'icon-cog'
             ),
             'input' => array(
@@ -193,7 +193,7 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
                             'value' => 0,
                         )
                     ),
-                    'label' => $this->module->l('Stock synchronization', 'AdminShoppingfeedGeneralSettings'),
+                    'label' => $this->module->l('Products Stock synchronization', 'AdminShoppingfeedGeneralSettings'),
                     'name' => Shoppingfeed::STOCK_SYNC_ENABLED,
                 ),
                 array(
@@ -207,7 +207,7 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
                             'value' => 0,
                         )
                     ),
-                    'label' => $this->module->l('Price synchronization', 'AdminShoppingfeedGeneralSettings'),
+                    'label' => $this->module->l('Products Price synchronization', 'AdminShoppingfeedGeneralSettings'),
                     'name' => Shoppingfeed::PRICE_SYNC_ENABLED,
                 ),
                 array(
