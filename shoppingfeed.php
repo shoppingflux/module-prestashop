@@ -261,6 +261,33 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         return \Module::uninstall();
     }
     
+    public function disable($force_all = false)
+    {
+        if (!parent::disable($force_all) && version_compare(_PS_VERSION_, '1.7', '>=')) {
+            // On pS1.6, Module::disable() always returns false
+            return false;
+        }
+        
+        $tab = Tab::getInstanceFromClassName('shoppingfeed');
+        $tab->active = 0;
+        $tab->save();
+        
+        return true;
+    }
+    
+    public function enable($force_all = false)
+    {
+        if (!parent::enable($force_all)) {
+            return false;
+        }
+        
+        $tab = Tab::getInstanceFromClassName('shoppingfeed');
+        $tab->active = 1;
+        $tab->save();
+        
+        return true;
+    }
+    
     public function setConfigurationDefault($key, $defaultValue, $id_shop) {
         if (!Configuration::hasKey($key, null, null, $id_shop)) {
             Configuration::updateValue($key, $defaultValue, null, null, $id_shop);
