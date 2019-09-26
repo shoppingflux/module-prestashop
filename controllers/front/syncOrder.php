@@ -74,7 +74,7 @@ class ShoppingfeedSyncOrderModuleFrontController extends CronController
             );
 
             $failedTicketsStatusTaskOrders = array();
-            $successfulTicketsTaskOrders = array();
+            $successfulTicketsStatusTaskOrders = array();
             try {
                 Registry::set('ticketsErrors', 0);
             
@@ -94,12 +94,12 @@ class ShoppingfeedSyncOrderModuleFrontController extends CronController
                 if ($ticketsHandler->process('ShoppingfeedOrderSync')) {
                     $processData = $ticketsHandler->getConveyor();
                     $failedTicketsStatusTaskOrders = isset($processData['failedTaskOrders']) ? $processData['failedTaskOrders'] : array();
-                    $successfulTicketsTaskOrders = isset($processData['successfulTaskOrders']) ? $processData['successfulTaskOrders'] : array();
+                    $successfulTicketsStatusTaskOrders = isset($processData['successfulTaskOrders']) ? $processData['successfulTaskOrders'] : array();
                     
                     ProcessLoggerHandler::logInfo(
                         sprintf(
                             $logPrefix . ' ' . $this->module->l('%d tickets with success; %d tickets with failure; %d errors', 'syncOrder'),
-                            count($successfulTicketsTaskOrders),
+                            count($successfulTicketsStatusTaskOrders),
                             count($failedTicketsStatusTaskOrders),
                             Registry::get('ticketsErrors')
                         ),
@@ -217,7 +217,7 @@ class ShoppingfeedSyncOrderModuleFrontController extends CronController
             
             // Delete all processed task orders
             $processedTaskOrders = array_merge(
-                $successfulTicketsTaskOrders,
+                $successfulTicketsStatusTaskOrders,
                 $failedTaskOrders
             );
             foreach($processedTaskOrders as $taskOrder) {
