@@ -1,8 +1,8 @@
 ---
-category: 'Features : Orders (specifications)'
+category: 'Features : Orders'
 name: 2. Mapping to Shopping Feed's catalog
 ---
 
-Orders will use a mapping system similar to [the products](#2-mapping-to-shopping-feeds-catalog).
-It may not often be required to change a mapping, but we may need to skip some
-orders under some conditions.
+Orders are mapped using the `name_marketplace` and `id_order_marketplace`
+fields. It should be noted that an `id_order_marketplace` is unique only on the
+associated `name_marketplace`, so we need both values to identify an order.

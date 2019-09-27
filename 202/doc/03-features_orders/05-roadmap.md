@@ -1,31 +1,24 @@
 ---
-category: 'Features : Orders (specifications)'
-name: '5. Roadmap'
+category: 'Features : Orders'
+name: '5. Testing'
 ---
 
-Ne pas oublier de mettre des logs un peu partout; notamment dans tout les appels
-à l'API.
+Testing this feature is a bit tricky. There are 2 ways to create an order on
+Shopping Feed's platform :
+* Through the platform itself : https://app.shopping-feed.com/v3/fr/orders
+* Through the testing API : https://developer.shopping-feed.com/order-api/order/v1store-orderpost
+  * The `Authorization` field should be filled with : `Bearer [your_shop_token]`
+  * The token and the `storeId` can be found here : https://app.shopping-feed.com/v3/fr/api 
 
-1. Création des tables OK
+Tests have determined that :
+* Orders created using the platform could successfully be imported by the
+shoppingfluxexport module, but could not be updated using the new module.  
+* Orders created through the API could not be imported by the shoppingfluxexport
+module, but could successfully be updated using the new module.
 
+This means that the "hook on import" part of the process cannot be tested using
+the same orders as the "update order status" part.
 
-2. Création des AdminTabs, répartition dans les différents onglets
-
-
-3. Ajout de la configuration pour les commandes. Attention aux conditions pour :
-  - Activer la synchro des commandes (l'ancien module doit être installé)
-  - Activer la configuration des statuts (l'ancien module doit être installé, et
-la synchronisation des commandes désactivées)
-
-
-4. Ajout du hook pour "validateOrder" copier les données de l'ancien module lors de l'import des commandes
-  - Condition pour savoir si la commande vient bien de Shopping Feed : $order->module == 'sfpayment'
-
-
-5. Ajout du hook pour détecter les changements de statut
-  - Il faudra ajouter dans la pile de données à envoyer (ShoppingfeedTaskOrder)
-
-
-6. Création du CRON avec Classlib; très similaire à celui des produits
-  - 1er process : envoi des mise à jour de statut de commande, et récupération des numéros de ticket
-  - 2ème process : vérification des tickets créés; alert marchand si erreur
+To test the "update order status" process, one must manually add order data in
+the `shoppingfeed_task_order` table to map orders from PrestaShop with orders
+from Shopping Feed.
