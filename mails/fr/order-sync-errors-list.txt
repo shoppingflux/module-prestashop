@@ -1,0 +1,3 @@
+{foreach from=$failedTaskOrdersData item="taskOrderData"}
+- Commande {$taskOrderData.reference} : Statut {$taskOrderData.status}
+{/foreach}

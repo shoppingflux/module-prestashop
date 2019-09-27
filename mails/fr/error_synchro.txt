@@ -1,6 +1,0 @@
-Bonjour,
-
-Il y a eu des erreurs pendant la synchronisation de vos commandes avec les marketplaces via Shopping Feed. S'il vous plait, vérifier la liste des commandes suivante en erreurs:
-{order_error}
-
-S'il vous plait, synchroniser les commandes en utilisant le Cron Task URL. Vous pouvez obtenir plus d'informations via la page de logs.
