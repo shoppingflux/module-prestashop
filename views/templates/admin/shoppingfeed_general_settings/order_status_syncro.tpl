@@ -34,7 +34,7 @@
 
     <div class="form-group">
         <label class='control-label col-lg-3'>
-            <span class="label-tooltip" data-toggle="tooltip" data-html="true" title="" data-original-title="{l s='In some cases, the tracking number can be sent to your shop after the order status update. For being sure and always sending the tracking numbers to the marketplaces you can set a shift time (in minutes). By default, the sending of the tracking number will be delayed by 5 minutes.' mod='shoppingfeed'}">
+            <span class="label-tooltip" data-toggle="tooltip" data-html="true" title="" data-original-title="{l s='In some cases, the tracking number can be sent to your shop after the order status update. For being sure and always sending the tracking numbers to the marketplaces you can set a shift time (in minutes). By default, the sending of the tracking number will be delayed by 5 minutes. Please note that the synchronization will be done after x minutes of the Time shift by the next Cron task.' mod='shoppingfeed'}">
                 {l s='Time shift for tracking numbers synchronization' mod='shoppingfeed'}
             </span>
         </label>
