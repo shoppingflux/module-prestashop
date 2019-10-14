@@ -255,39 +255,51 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
 
         return $res;
     }
-    
+
     public function uninstall()
     {
         return \Module::uninstall();
     }
-    
+
+    /**
+     * Desactivate current module. Hide module admin Tab.
+     *
+     * @param bool $force_all If true, disable module for all shop
+     */
     public function disable($force_all = false)
     {
-        if (!parent::disable($force_all) && version_compare(_PS_VERSION_, '1.7', '>=')) {
+        if (parent::disable($force_all) === false && version_compare(_PS_VERSION_, '1.7', '>=')) {
             // On pS1.6, Module::disable() always returns false
             return false;
         }
         
         $tab = Tab::getInstanceFromClassName('shoppingfeed');
+        if ($tab->id == null) {
+            return true;
+        }
         $tab->active = 0;
-        $tab->save();
-        
-        return true;
+        return $tab->save();
     }
-    
+
+    /**
+     * Activate current module. Active module admin Tab.
+     *
+     * @param bool $force_all If true, enable module for all shop
+     */
     public function enable($force_all = false)
     {
-        if (!parent::enable($force_all)) {
+        if (parent::enable($force_all) === false) {
             return false;
         }
         
         $tab = Tab::getInstanceFromClassName('shoppingfeed');
+        if ($tab->id == null) {
+            return true;
+        }
         $tab->active = 1;
-        $tab->save();
-        
-        return true;
+        return $tab->save();
     }
-    
+
     public function setConfigurationDefault($key, $defaultValue, $id_shop) {
         if (!Configuration::hasKey($key, null, null, $id_shop)) {
             Configuration::updateValue($key, $defaultValue, null, null, $id_shop);
