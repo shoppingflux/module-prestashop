@@ -239,7 +239,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             if ($token) {
                 Configuration::updateValue(self::AUTH_TOKEN, $token, false, null, $shop['id_shop']);
             }
-            
+
             // Set default values for configuration variables
             $this->setConfigurationDefault(self::STOCK_SYNC_ENABLED, true, $shop['id_shop']);
             $this->setConfigurationDefault(self::PRICE_SYNC_ENABLED, true, $shop['id_shop']);
@@ -278,7 +278,9 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             return true;
         }
         $tab->active = 0;
-        return $tab->save();
+        $tab->save();
+        
+        return true;
     }
 
     /**
@@ -297,7 +299,9 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             return true;
         }
         $tab->active = 1;
-        return $tab->save();
+        $tab->save();
+
+        return true;
     }
 
     public function setConfigurationDefault($key, $defaultValue, $id_shop) {
