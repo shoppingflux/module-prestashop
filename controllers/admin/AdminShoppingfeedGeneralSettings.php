@@ -60,7 +60,7 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
         $id_shop = $this->context->shop->id;
         $token = Configuration::get(shoppingfeed::AUTH_TOKEN, null, null, $id_shop);
         if ($token) {
-            $this->content .= $this->renderGlobalConfigForm($order_sync_available);
+            $this->content .= $this->renderGlobalConfigForm();
         }
 
         $price_sync = Configuration::get(Shoppingfeed::PRICE_SYNC_ENABLED);
@@ -69,8 +69,8 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
             $this->content .= $this->renderSynchroConfigForm();
         }
 
-        if ($order_sync_active) {
-            $this->content .= $this->renderOrderSyncForm();
+        if ($token && $order_sync_active) {
+            $this->content .= $this->renderOrderSyncForm($order_sync_available);
         }
 
         $this->module->setBreakingChangesNotices();
@@ -81,28 +81,16 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
     /**
      * @return string
      */
-    public function renderOrderSyncForm()
+    public function renderOrderSyncForm($order_sync_available)
     {
-        $fields_form = array(
-            'form' => array(
-                'form' => array(
-                    'id_form' => 'order-sync-form',
-                    'legend' => array(
-                        'title' => $this->module->l('Post-import orders synchronization settings (All shop)', 'AdminShoppingfeedGeneralSettings'),
-                    ),
-                    'submit' => array(
-                        'title' => $this->module->l('Save', 'AdminShoppingfeedGeneralSettings'),
-                        'name' => 'savePostImport'
-                    ),
-                ),
-            ),
-        );
+        $cronLink = $this->context->link->getAdminLink('AdminShoppingfeedProcessMonitor');
 
         $allState = OrderState::getOrderStates($this->context->language->id);
 
         $orderShippedState = array();
         $orderCancelledState = array();
         $orderRefundedState = array();
+        
         $ids_shipped_status_selected = json_decode(Configuration::get(ShoppingFeed::SHIPPED_ORDERS));
         $ids_cancelled_status_selected = json_decode(Configuration::get(ShoppingFeed::CANCELLED_ORDERS));
 
@@ -119,34 +107,185 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
         $orderRefundedState['unselected'] = array();
 
         foreach ($allState as $state) {
-            if (in_array($state['id_order_state'], $ids_shipped_status_selected)) {
-                $orderShippedState['selected'][] = $state;
-            } else {
-                $orderShippedState['unselected'][] = $state;
-            }
-
-            if (in_array($state['id_order_state'], $ids_cancelled_status_selected)) {
-                $orderCancelledState['selected'][] = $state;
-            } else {
-                $orderCancelledState['unselected'][] = $state;
-            }
-
-            if (in_array($state['id_order_state'], $ids_refunded_status_selected)) {
-                $orderRefundedState['selected'][] = $state;
-            } else {
-                $orderRefundedState['unselected'][] = $state;
-            }
+            $orderShippedState[in_array($state['id_order_state'], $ids_shipped_status_selected) ? 'selected' : 'unselected'][] = array(
+                'value' => $state['id_order_state'],
+                'label' => $state['name'],
+            );
+            
+            $orderCancelledState[in_array($state['id_order_state'], $ids_cancelled_status_selected) ? 'selected' : 'unselected'][] = array(
+                'value' => $state['id_order_state'],
+                'label' => $state['name'],
+            );
+            
+            $orderRefundedState[in_array($state['id_order_state'], $ids_refunded_status_selected) ? 'selected' : 'unselected'][] = array(
+                'value' => $state['id_order_state'],
+                'label' => $state['name'],
+            );
         }
-
-        $cronLink = $this->context->link->getAdminLink('AdminShoppingfeedProcessMonitor', false);
+        
+        $fields_form = array(
+            'form' => array(
+                'form' => array(
+                    'id_form' => 'order-sync-form',
+                    'legend' => array(
+                        'title' => $this->module->l('Orders import and synchronization settings (All shop)', 'AdminShoppingfeedGeneralSettings'),
+                    ),
+                    'warning' => $order_sync_available ? '' : $this->module->l('The Shopping Feed Official module (shoppingfluxexport) should be installed on your shop for enabling the post-import synchronization. The “Order shipment” & “Order cancellation” options must be disabled in the official module for enabling this type of synchronization in the new module. If you disable these options in the official module and you enable them again later the “Orders post-import synchronization” will be disabled automatically in the Shopping feed 15 min module.', 'AdminShoppingfeedGeneralSettings'),
+                    'input' => array(
+                        array(
+                            'type' => 'switch',
+                            'id' => 'shoppinfeed_order-import-switch',
+                            'is_bool' => true,
+                            //'disabled' => !$order_sync_available,
+                            'values' => array(
+                                array(
+                                    'value' => 1,
+                                ),
+                                array(
+                                    'value' => 0,
+                                )
+                            ),
+                            'label' => $this->module->l('New orders import', 'AdminShoppingfeedGeneralSettings'),
+                            'name' => Shoppingfeed::ORDER_IMPORT_ENABLED,
+                        ),
+                        array(
+                            'type' => 'open_section',
+                            'id' => 'shoppingfeed_carriers-matching',
+                            'title' => $this->module->l('Carriers matching', 'AdminShoppingfeedGeneralSettings'),
+                            'desc' => $this->module->l('Match carriers from marketplaces to your Prestashop\'s carriers', 'AdminShoppingfeedGeneralSettings'),
+                        ),
+                        array(
+                            'type' => 'close_section',
+                        ),
+                        array(
+                            'type' => 'switch',
+                            'is_bool' => true,
+                            'disabled' => !$order_sync_available,
+                            'hint' => "The order post-import synchronization allows you to manage the following order statuses : shipped, cancelled, refunded.",
+                            'values' => array(
+                                array(
+                                    'value' => 1,
+                                ),
+                                array(
+                                    'value' => 0,
+                                )
+                            ),
+                            'label' => $this->module->l('Orders post-import synchronization', 'AdminShoppingfeedGeneralSettings'),
+                            'name' => Shoppingfeed::ORDER_SYNC_ENABLED,
+                        ),
+                        array(
+                            'type' => 'alert',
+                            'severity' => 'info',
+                            'message' => sprintf(
+                                $this->module->l('You should set the frequency of synchronization via a %s Cron job %s for updating your orders status', 'AdminShoppingfeedGeneralSettings'),
+                                    '<a href="' . $cronLink . '">', '</a>'
+                            )
+                        ),
+                        array(
+                            'type' => 'shoppingfeed_double-list',
+                            'name' => 'status_shipped_order',
+                            'label' => $this->module->l('Shipped orders synchronization', 'AdminShoppingfeedGeneralSettings'),
+                            'unselected' => array(
+                                'id' => 'status_shipped_order_add',
+                                'label' => $this->module->l('Unselected order status', 'AdminShoppingfeedGeneralSettings'),
+                                'options' => $orderShippedState['unselected'],
+                                'btn' => array(
+                                    'id' => 'status_shipped_order_add_btn',
+                                    'label' => $this->module->l('Add', 'AdminShoppingfeedGeneralSettings'),
+                                ),
+                            ),
+                            'selected' => array(
+                                'id' => 'status_shipped_order_remove',
+                                'label' => $this->module->l('Selected order status', 'AdminShoppingfeedGeneralSettings'),
+                                'options' => $orderShippedState['selected'],
+                                'btn' => array(
+                                    'id' => 'status_shipped_order_remove_btn',
+                                    'label' => $this->module->l('Remove', 'AdminShoppingfeedGeneralSettings'),
+                                ),
+                            ),
+                        ),
+                        array(
+                            'type' => 'text',
+                            'label' => $this->module->l('Time shift for tracking numbers synchronization', 'AdminShoppingfeedGeneralSettings'),
+                            'name' => 'tracking_timeshift',
+                            'hint' => $this->module->l('In some cases, the tracking number can be sent to your shop after the order status update. For being sure and always sending the tracking numbers to the marketplaces you can set a shift time (in minutes). By default, the sending of the tracking number will be delayed by 5 minutes. Please note that the synchronization will be done after x minutes of the Time shift by the next Cron task.', 'AdminShoppingfeedGeneralSettings'),
+                            'suffix' => $this->module->l('minutes', 'AdminShoppingfeedGeneralSettings'),
+                            'class' => 'col-lg-6',
+                        ),
+                        array(
+                            'type' => 'shoppingfeed_double-list',
+                            'name' => 'status_cancelled_order',
+                            'label' => $this->module->l('Cancelled orders synchronization', 'AdminShoppingfeedGeneralSettings'),
+                            'unselected' => array(
+                                'id' => 'status_cancelled_order_add',
+                                'label' => $this->module->l('Unselected order status', 'AdminShoppingfeedGeneralSettings'),
+                                'options' => $orderCancelledState['unselected'],
+                                'btn' => array(
+                                    'id' => 'status_cancelled_order_add_btn',
+                                    'label' => $this->module->l('Add', 'AdminShoppingfeedGeneralSettings'),
+                                ),
+                            ),
+                            'selected' => array(
+                                'id' => 'status_cancelled_order_remove',
+                                'label' => $this->module->l('Selected order status', 'AdminShoppingfeedGeneralSettings'),
+                                'options' => $orderCancelledState['selected'],
+                                'btn' => array(
+                                    'id' => 'status_cancelled_order_remove_btn',
+                                    'label' => $this->module->l('Remove', 'AdminShoppingfeedGeneralSettings'),
+                                ),
+                            ),
+                        ),
+                        array(
+                            'type' => 'shoppingfeed_double-list',
+                            'name' => 'status_refunded_order',
+                            'label' => $this->module->l('Refunded orders synchronization', 'AdminShoppingfeedGeneralSettings'),
+                            'unselected' => array(
+                                'id' => 'status_refunded_order_add',
+                                'label' => $this->module->l('Unselected order status', 'AdminShoppingfeedGeneralSettings'),
+                                'options' => $orderRefundedState['unselected'],
+                                'btn' => array(
+                                    'id' => 'status_refunded_order_add_btn',
+                                    'label' => $this->module->l('Add', 'AdminShoppingfeedGeneralSettings'),
+                                ),
+                            ),
+                            'selected' => array(
+                                'id' => 'status_refunded_order_remove',
+                                'label' => $this->module->l('Selected order status', 'AdminShoppingfeedGeneralSettings'),
+                                'options' => $orderRefundedState['selected'],
+                                'btn' => array(
+                                    'id' => 'status_refunded_order_remove_btn',
+                                    'label' => $this->module->l('Remove', 'AdminShoppingfeedGeneralSettings'),
+                                ),
+                            ),
+                        ),
+                        array(
+                            'type' => 'alert',
+                            'severity' => 'warning',
+                            'message' => $this->module->l('The Max order update parameter is reserved for experts (100 by default). You can configure the number of orders to be processed each time the cron job is called. The more you increase this number, the greater the number of database queries. The value of this parameter is to be calibrated according to the capacities of your MySQL server and your stock rotation rate to process the queue in the time that suits you.', 'AdminShoppingfeedGeneralSettings')
+                        ),
+                        array(
+                            'type' => 'text',
+                            'label' => $this->module->l('Max. order update per request', 'AdminShoppingfeedGeneralSettings'),
+                            'name' => 'max_order_update',
+                            'class' => 'number_require',
+                        ),
+                    ),
+                    'submit' => array(
+                        'title' => $this->module->l('Save', 'AdminShoppingfeedGeneralSettings'),
+                        'name' => 'savePostImport'
+                    ),
+                ),
+            ),
+        );
 
         $helper = new HelperForm($this);
-        $helper->tpl_vars['order_shipped'] = $orderShippedState;
-        $helper->tpl_vars['order_cancelled'] = $orderCancelledState;
-        $helper->tpl_vars['order_refunded'] = $orderRefundedState;
-        $helper->tpl_vars['cron_link'] = $cronLink;
-        $helper->tpl_vars['time_shift'] = Configuration::get(Shoppingfeed::ORDER_STATUS_TIME_SHIFT);
-        $helper->tpl_vars['max_orders'] = Configuration::get(Shoppingfeed::ORDER_STATUS_MAX_ORDERS);
+        $helper->fields_value = array(
+            Shoppingfeed::ORDER_IMPORT_ENABLED => Configuration::get(Shoppingfeed::ORDER_IMPORT_ENABLED),
+            Shoppingfeed::ORDER_SYNC_ENABLED => Configuration::get(Shoppingfeed::ORDER_SYNC_ENABLED),
+            'tracking_timeshift' => Configuration::get(Shoppingfeed::ORDER_STATUS_TIME_SHIFT),
+            'max_order_update' => Configuration::get(Shoppingfeed::ORDER_STATUS_MAX_ORDERS),
+        );
+        
         $helper->base_folder = $this->getTemplatePath() . $this->override_folder;
         $helper->base_tpl = 'order_status_syncro.tpl';
 
@@ -174,7 +313,7 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
      * Renders the HTML for the global configuration form
      * @return string the rendered form's HTML
      */
-    public function renderGlobalConfigForm($order_sync_available)
+    public function renderGlobalConfigForm()
     {
         $fields_form = array(
             'legend' => array(
@@ -210,22 +349,6 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
                     'label' => $this->module->l('Products Price synchronization', 'AdminShoppingfeedGeneralSettings'),
                     'name' => Shoppingfeed::PRICE_SYNC_ENABLED,
                 ),
-                array(
-                    'type' => 'switch',
-                    'is_bool' => true,
-                    'disabled' => !$order_sync_available,
-                    'hint' => "The order post-import synchronization allows you to manage the following order statuses : shipped, cancelled, refunded.",
-                    'values' => array(
-                        array(
-                            'value' => 1,
-                        ),
-                        array(
-                            'value' => 0,
-                        )
-                    ),
-                    'label' => $this->module->l('Orders post-import synchronization', 'AdminShoppingfeedGeneralSettings'),
-                    'name' => Shoppingfeed::ORDER_SYNC_ENABLED,
-                ),
             ),
             'submit' => array(
                 'title' => $this->module->l('Save', 'AdminShoppingfeedGeneralSettings'),
@@ -233,19 +356,9 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
             )
         );
 
-        if (!$order_sync_available) {
-            $fields_form['input'][] = array(
-                'type' => 'html',
-                'name' => 'alert-order-sync',
-                'html_content' => '<div class="alert alert-warning">
-                    '.$this->module->l('The Shopping Feed Official module (shoppingfluxexport) should be installed on your shop for enabling the post-import synchronization. The “Order shipment” & “Order cancellation” options must be disabled in the official module for enabling this type of synchronization in the new module. If you disable these options in the official module and you enable them again later the “Orders post-import synchronization” will be disabled automatically in the Shopping feed 15 min module.', 'AdminShoppingfeedGeneralSettings').'</div>',
-            );
-        }
-
         $fields_value = array(
             Shoppingfeed::STOCK_SYNC_ENABLED => Configuration::get(Shoppingfeed::STOCK_SYNC_ENABLED),
             Shoppingfeed::PRICE_SYNC_ENABLED => Configuration::get(Shoppingfeed::PRICE_SYNC_ENABLED),
-            Shoppingfeed::ORDER_SYNC_ENABLED => Configuration::get(Shoppingfeed::ORDER_SYNC_ENABLED),
         );
 
         $helper = new HelperForm($this);
@@ -366,7 +479,6 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
     {
         $stock_sync_enabled = Tools::getValue(Shoppingfeed::STOCK_SYNC_ENABLED);
         $price_sync_enabled = Tools::getValue(Shoppingfeed::PRICE_SYNC_ENABLED);
-        $order_sync_enabled = Tools::getValue(Shoppingfeed::ORDER_SYNC_ENABLED);
 
         $shops = Shop::getShops();
         foreach ($shops as $shop) {
@@ -407,6 +519,13 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
      */
     public function savePostImport()
     {
+        $order_sync_enabled = Tools::getValue(Shoppingfeed::ORDER_SYNC_ENABLED);
+        
+        $shops = Shop::getShops();
+        foreach ($shops as $shop) {
+            Configuration::updateValue(Shoppingfeed::ORDER_SYNC_ENABLED, ($order_sync_enabled ? true : false), false, null, $shop['id_shop']);
+        }
+        
         $orderStatusesShipped = Tools::getValue('status_shipped_order');
         if (!$orderStatusesShipped) {
             $orderStatusesShipped = array();

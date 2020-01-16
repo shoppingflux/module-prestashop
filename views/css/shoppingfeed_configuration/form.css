@@ -126,6 +126,13 @@
     margin: 0 ;
 }
 
+.shoppingfeed_form-section h2 {
+    font-size: 20px;
+    border-bottom: 1px solid #eee;
+    line-height: 1.5;
+    font-family: Open Sans, Helvetica, Arial, sans-serif;
+}
+
 .shoppingfeed_double-list-left-container,
 .shoppingfeed_double-list-right-container {
     padding-top: 7px;

@@ -92,7 +92,8 @@ class ShoppingfeedApi
                     $e->getMessage()
                 )
             );
-            return false;
+            ProcessLoggerHandler::saveLogsInDb();
+            throw $e;
         }
     }
 

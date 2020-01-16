@@ -37,196 +37,43 @@ $(document).ready(function()
             $('#for_real').closest('.form-group').hide();
         }
     });
-
-    $('#status_shipped_order_add_btn').click(function()
-    {
-        var i = 0;
-        var ids_status = [];
-
-        $("#status_shipped_order_add option:selected").each(function() {
-            ids_status[i] = $(this).val();
-            i++;
-        });
-
-        i = 0;
-        var texts_to_transfert = [];
-
-        $("#status_shipped_order_add option:selected").each(function() {
-            texts_to_transfert[i] = $(this).html();
-            i++;
-        });
-
-        if (!ids_status.length || !texts_to_transfert.length) {
-            return null;
+    
+    $('[name="SHOPPINGFEED_ORDER_IMPORT_ENABLED"]').change(function() {
+        if ($("#SHOPPINGFEED_ORDER_IMPORT_ENABLED_on").prop('checked')) {
+            $("#shoppingfeed_carriers-matching").show();
+        } else {
+            $("#shoppingfeed_carriers-matching").hide();
         }
+    }).change();
 
-        $("#status_shipped_order_add option:selected").each(function() {
-            $(this).remove();
+    function shoppingfeed_doubleListUpdate(doubleList) {
+        var unselectedList = doubleList.find('.shoppingfeed_double-list-unselected');
+        var selectedList = doubleList.find('.shoppingfeed_double-list-selected');
+        var doubleListValues = doubleList.find('.shoppingfeed_double-list-values');
+        
+        selectedList.find('option').each(function() {
+            doubleListValues.find("[value='"+this.value+"']").attr('checked', true);
         });
-
-        $.each(ids_status, function(i, val) {
-            $("#status_shipped_order_remove").append("<option value='" + val + "'>" + texts_to_transfert[i] + "</option>");
+        unselectedList.find('option').each(function() {
+            doubleListValues.find("[value='"+this.value+"']").attr('checked', false);
         });
-    });
+    }
 
-    $('#status_shipped_order_remove_btn').click(function()
-    {
-        var i = 0;
-        var ids_status = [];
-
-        $("#status_shipped_order_remove option:selected").each(function() {
-            ids_status[i] = $(this).val();
-            i++;
+    $(".shoppingfeed_double-list-group").each(function() {
+        
+        var doubleList = $(this);
+        var unselectedList = doubleList.find('.shoppingfeed_double-list-unselected');
+        var selectedList = doubleList.find('.shoppingfeed_double-list-selected');
+        
+        doubleList.find('.shoppingfeed_double-list-btn-select').click(function() {
+            unselectedList.find('option:selected').appendTo(selectedList);
+            shoppingfeed_doubleListUpdate(doubleList);
         });
-
-        i = 0;
-        var texts_to_transfert = [];
-
-        $("#status_shipped_order_remove option:selected").each(function() {
-            texts_to_transfert[i] = $(this).html();
-            i++;
-        });
-
-        if (!ids_status.length || !texts_to_transfert.length) {
-            return null;
-        }
-
-        $("#status_shipped_order_remove option:selected").each(function() {
-            $(this).remove();
-        });
-
-        $.each(ids_status, function(i, val) {
-            $("#status_shipped_order_add").append("<option value='" + val + "'>" + texts_to_transfert[i] + "</option>");
+        
+        doubleList.find('.shoppingfeed_double-list-btn-unselect').click(function() {
+            selectedList.find('option:selected').appendTo(unselectedList);
+            shoppingfeed_doubleListUpdate(doubleList);
         });
     });
 
-    $('#status_cancelled_order_add_btn').click(function()
-    {
-        var i = 0;
-        var ids_status = [];
-
-        $("#status_cancelled_order_add option:selected").each(function() {
-            ids_status[i] = $(this).val();
-            i++;
-        });
-
-        i = 0;
-        var texts_to_transfert = [];
-
-        $("#status_cancelled_order_add option:selected").each(function() {
-            texts_to_transfert[i] = $(this).html();
-            i++;
-        });
-
-        if (!ids_status.length || !texts_to_transfert.length) {
-            return null;
-        }
-
-        $("#status_cancelled_order_add option:selected").each(function() {
-            $(this).remove();
-        });
-
-        $.each(ids_status, function(i, val) {
-            $("#status_cancelled_order_remove").append("<option value='" + val + "'>" + texts_to_transfert[i] + "</option>");
-        });
-    });
-
-    $('#status_cancelled_order_remove_btn').click(function()
-    {
-        var i = 0;
-        var ids_status = [];
-
-        $("#status_cancelled_order_remove option:selected").each(function() {
-            ids_status[i] = $(this).val();
-            i++;
-        });
-
-        i = 0;
-        var texts_to_transfert = [];
-
-        $("#status_cancelled_order_remove option:selected").each(function() {
-            texts_to_transfert[i] = $(this).html();
-            i++;
-        });
-
-        if (!ids_status.length || !texts_to_transfert.length) {
-            return null;
-        }
-
-        $("#status_cancelled_order_remove option:selected").each(function() {
-            $(this).remove();
-        });
-
-        $.each(ids_status, function(i, val) {
-            $("#status_cancelled_order_add").append("<option value='" + val + "'>" + texts_to_transfert[i] + "</option>");
-        });
-    });
-
-    $('#status_refunded_order_add_btn').click(function()
-    {
-        var i = 0;
-        var ids_status = [];
-
-        $("#status_refunded_order_add option:selected").each(function() {
-            ids_status[i] = $(this).val();
-            i++;
-        });
-
-        i = 0;
-        var texts_to_transfert = [];
-
-        $("#status_refunded_order_add option:selected").each(function() {
-            texts_to_transfert[i] = $(this).html();
-            i++;
-        });
-
-        if (!ids_status.length || !texts_to_transfert.length) {
-            return null;
-        }
-
-        $("#status_refunded_order_add option:selected").each(function() {
-            $(this).remove();
-        });
-
-        $.each(ids_status, function(i, val) {
-            $("#status_refunded_order_remove").append("<option value='" + val + "'>" + texts_to_transfert[i] + "</option>");
-        });
-    });
-
-    $('#status_refunded_order_remove_btn').click(function()
-    {
-        var i = 0;
-        var ids_status = [];
-
-        $("#status_refunded_order_remove option:selected").each(function() {
-            ids_status[i] = $(this).val();
-            i++;
-        });
-
-        i = 0;
-        var texts_to_transfert = [];
-
-        $("#status_refunded_order_remove option:selected").each(function() {
-            texts_to_transfert[i] = $(this).html();
-            i++;
-        });
-
-        if (!ids_status.length || !texts_to_transfert.length) {
-            return null;
-        }
-
-        $("#status_refunded_order_remove option:selected").each(function() {
-            $(this).remove();
-        });
-
-        $.each(ids_status, function(i, val) {
-            $("#status_refunded_order_add").append("<option value='" + val + "'>" + texts_to_transfert[i] + "</option>");
-        });
-    });
-
-    $('#order-sync-form').submit(function() {
-        $('#status_shipped_order_remove option').attr('selected', true);
-        $('#status_cancelled_order_remove option').attr('selected', true);
-        $('#status_refunded_order_remove option').attr('selected', true);
-    });
 });

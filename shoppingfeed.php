@@ -63,6 +63,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     const SHIPPED_ORDERS = "SHOPPINGFEED_SHIPPED_ORDERS";
     const CANCELLED_ORDERS = "SHOPPINGFEED_CANCELLED_ORDERS";
     const REFUNDED_ORDERS = "SHOPPINGFEED_REFUNDED_ORDERS";
+    const ORDER_IMPORT_ENABLED = "SHOPPINGFEED_ORDER_IMPORT_ENABLED";
 
     /**
      * List of objectModel used in this Module
@@ -251,6 +252,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             $this->setConfigurationDefault(self::SHIPPED_ORDERS, json_encode(array()), $shop['id_shop']);
             $this->setConfigurationDefault(self::CANCELLED_ORDERS, json_encode(array()), $shop['id_shop']);
             $this->setConfigurationDefault(self::REFUNDED_ORDERS, json_encode(array()), $shop['id_shop']);
+            $this->setConfigurationDefault(self::ORDER_IMPORT_ENABLED, true, $shop['id_shop']);
         }
 
         return $res;
@@ -333,11 +335,12 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     static public function isOrderSyncAvailable($id_shop = null)
     {
         // Is the old module installed ?
-        if (!Module::isInstalled('shoppingfluxexport')
-            // Is order "shipped" status sync disabled in the old module ?
-            || Configuration::get('SHOPPING_FLUX_STATUS_SHIPPED', null, null, $id_shop) != ''
-            // Is order "canceled" status sync disabled in the old module ?
-            || Configuration::get('SHOPPING_FLUX_STATUS_CANCELED', null, null, $id_shop) != ''
+        if (Module::isInstalled('shoppingfluxexport') && (
+                // Is order "shipped" status sync disabled in the old module ?
+                Configuration::get('SHOPPING_FLUX_STATUS_SHIPPED', null, null, $id_shop) != ''
+                // Is order "canceled" status sync disabled in the old module ?
+                || Configuration::get('SHOPPING_FLUX_STATUS_CANCELED', null, null, $id_shop) != ''
+            )
         ) {
              return false;
         }
@@ -661,6 +664,12 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     
     /****************************** Order status hooks ******************************/
 
+    /**
+     * This hook is used to "record" SF orders imported using the old module.
+     * 
+     * @param type array
+     * @return void
+     */
     public function hookActionValidateOrder($params)
     {
         if (!Configuration::get(Shoppingfeed::ORDER_SYNC_ENABLED) || !self::isOrderSyncAvailable()) {
