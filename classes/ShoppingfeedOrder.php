@@ -31,7 +31,10 @@ if (!defined('_PS_VERSION_')) {
  */
 class ShoppingfeedOrder extends ObjectModel
 {
-    /** @var int The order's id */
+    /** @var int The order's id in Shopping Feed's internal system */
+    public $id_internal_shoppingfeed;
+    
+    /** @var int The order's id on the original marketplace */
     public $id_order_marketplace;
 
     /** @var string name_marketplace */
@@ -50,6 +53,11 @@ class ShoppingfeedOrder extends ObjectModel
         'table' => 'shoppingfeed_order',
         'primary' => 'id_shoppingfeed_order',
         'fields' => array(
+            'id_internal_shoppingfeed' => array(
+                'type' => ObjectModel::TYPE_STRING,
+                'validate' => 'isString',
+                'allow_null' => true,
+            ),
             'id_order_marketplace' => array(
                 'type' => ObjectModel::TYPE_STRING,
                 'validate' => 'isString',
@@ -122,5 +130,31 @@ class ShoppingfeedOrder extends ObjectModel
         $this->id_order_marketplace = $id_order_marketplace;
         $this->save();
         return true;
+    }
+    
+    public static function existsInternalId($id_internal_shoppingfeed)
+    {
+        $query = new DbQuery();
+        $query->select('1')
+            ->from('shoppingfeed_order')
+            ->where("id_internal_shoppingfeed = " . (int)$id_internal_shoppingfeed);
+        $shoppingfeed_order_data = DB::getInstance()->getRow($query);
+
+        return $shoppingfeed_order_data ? true : false;
+    }
+    
+    /**
+     * Checks if a given marketplace manages quantities on its own
+     * 
+     * @param string $name_marketplace
+     * @return bool true if the marketplace manages the quantities
+     */
+    public static function isMarketplaceManagedQuantities($name_marketplace)
+    {
+        return in_array(Tools::strtolower($name_marketplace), array(
+            'amazon fba',
+            'epmm',
+            'clogistique'
+        ));
     }
 }

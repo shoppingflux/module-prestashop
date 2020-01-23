@@ -51,6 +51,20 @@ class ShoppingfeedSyncOrderModuleFrontController extends CronController
      */
     protected function processCron($data)
     {
+        if (Configuration::get(ShoppingFeed::ORDER_IMPORT_ENABLED)) {
+            $this->importOrders();
+        }
+        
+        if (Configuration::get(ShoppingFeed::ORDER_SYNC_ENABLED)) {
+            $this->syncOrderStatus();
+        }
+        
+        ProcessLoggerHandler::closeLogger();
+        return $data;
+    }
+    
+    public function syncOrderStatus()
+    {
         ProcessLoggerHandler::openLogger($this->processMonitor);
         $shops = Shop::getShops();
         foreach ($shops as $shop) {
@@ -225,9 +239,119 @@ class ShoppingfeedSyncOrderModuleFrontController extends CronController
             }
             
         }
-
-        ProcessLoggerHandler::closeLogger();
+    }
+    
+    public function importOrders()
+    {
+        ProcessLoggerHandler::openLogger($this->processMonitor);
+        $id_shop = Configuration::get('PS_SHOP_DEFAULT');
         
-        return $data;
+        // If order import is not available
+        if (!ShoppingFeed::isOrderImportAvailable($id_shop)) {
+            ProcessLoggerHandler::logInfo(
+                    $this->module->l('The Shopping Feed Official module (shoppingfluxexport) isinstalled on your shop for enabling the orders import synchronization. The “Order importation” option must be disabled in the official module for enabling this type of synchronization in the new module. If you disable this options in the official module and you enable them again later the "New orders import" will be disabled automatically in the Shopping feed 15 min module.', 'syncOrder'),
+                $this->processMonitor->getProcessObjectModelName(),
+                $this->processMonitor->getProcessObjectModelId()
+            );
+        }
+        
+        try {
+            $shoppingfeedApi = ShoppingfeedApi::getInstanceByToken($id_shop);
+            if ($shoppingfeedApi == false) {
+                ProcessLoggerHandler::logError(
+                    $this->l('Could not retrieve Shopping Feed API.', 'ShoppingfeedSyncOrderModuleFrontController'),
+                    $this->processMonitor->getProcessObjectModelName(),
+                    $this->processMonitor->getProcessObjectModelId()
+                );
+                return false;
+            }
+
+            $result = $shoppingfeedApi->getUnacknowledgedOrders();
+        } catch (Exception $e) {
+            ProcessLoggerHandler::logError(
+                sprintf(
+                    $this->module->l('Could not retrieve orders to import.', 'syncOrder'),
+                    $e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine()
+                ),
+                $this->processMonitor->getProcessObjectModelName(),
+                $this->processMonitor->getProcessObjectModelId()
+            );
+            return false;
+        }
+        
+        if (!count($result)) {
+            ProcessLoggerHandler::logInfo(
+                sprintf(
+                    $this->module->l('No orders to import.', 'syncOrder'),
+                    $e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine()
+                ),
+                $this->processMonitor->getProcessObjectModelName(),
+                $this->processMonitor->getProcessObjectModelId()
+            );
+            return true;
+        }
+        
+        Registry::set('errors', 0);
+        Registry::set('importedOrders', 0);
+        foreach ($result as $apiOrder) {
+            try {
+                /** @var ShoppingfeedHandler $handler */
+                $handler = new ActionsHandler();
+                $handler->addActions(
+                    'verifyOrder',
+                    'createOrderCart',
+                    'validateOrder',
+                    'acknowledgeOrder',
+                    'recalculateOrderPrices'
+                );
+                
+                $handler->setConveyor(array(
+                    'id_shop' => $id_shop,
+                    'apiOrder' => $apiOrder,
+                ));
+
+                $processResult = $handler->process('shoppingfeedOrderImport');
+                if (!$processResult) {
+                    ProcessLoggerHandler::logError(
+                        $this->module->l('Fail : An error occurred during process.', 'syncOrder'),
+                        $this->processMonitor->getProcessObjectModelName(),
+                        $this->processMonitor->getProcessObjectModelId()
+                    );
+                    Registry::increment('errors');
+                }
+                
+                $conveyor = $handler->getConveyor();
+                ProcessLoggerHandler::logSuccess(
+                    sprintf(
+                        $this->l('[Order: %s] import successful', 'ShoppingfeedOrderImportActions'),
+                        $conveyor['sfOrder']->id_internal_shoppingfeed
+                    ),
+                    $this->processMonitor->getProcessObjectModelName(),
+                    $this->processMonitor->getProcessObjectModelId()
+                );
+                Registry::increment('importedOrders');  
+            } catch (Exception $e) {
+                ProcessLoggerHandler::logError(
+                    sprintf(
+                        $this->module->l('Fail : %s', 'syncOrder'),
+                        $e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine()
+                    ),
+                    $this->processMonitor->getProcessObjectModelName(),
+                    $this->processMonitor->getProcessObjectModelId()
+                );
+                Registry::increment('errors');
+            }
+        }
+        
+        ProcessLoggerHandler::logInfo(
+            sprintf(
+                $this->l('%d orders to import; %d success; %d errors', 'ShoppingfeedOrderImportActions'),
+                count($result),
+                Registry::get('importedOrders'),
+                Registry::get('errors')
+            ),
+            $this->processMonitor->getProcessObjectModelName(),
+            $this->processMonitor->getProcessObjectModelId()
+        );
     }
 }

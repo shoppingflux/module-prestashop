@@ -1,11 +1,13 @@
 {extends file="helpers/form/form.tpl"}
 
 {block name='input_row'}
-    {if $input.type == 'alert'}
-        <div class="alert alert-{$input.severity}">
-            {$input.message}
-        </div>
-    {elseif $input.type == 'open_section'}
+    {if $input.type == 'shoppingfeed_alert'}
+        {if !isset($input.condition) || $input.condition}
+            <div class="alert alert-{$input.severity}">
+                {$input.message}
+            </div>
+        {/if}
+    {elseif $input.type == 'shoppingfeed_open-section'}
         <div id='{$input.id}' class='shoppingfeed_form-section'>
             {if isset($input.title)}
                 <h2>{$input.title}</h2>
@@ -14,7 +16,7 @@
             {if isset($input.desc)}
                 <p>{$input.desc}</p>
             {/if}
-    {elseif $input.type == 'close_section'}
+    {elseif $input.type == 'shoppingfeed_close-section'}
         </div>
     {else}
         {$smarty.block.parent}

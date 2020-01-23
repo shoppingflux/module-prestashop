@@ -64,6 +64,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     const CANCELLED_ORDERS = "SHOPPINGFEED_CANCELLED_ORDERS";
     const REFUNDED_ORDERS = "SHOPPINGFEED_REFUNDED_ORDERS";
     const ORDER_IMPORT_ENABLED = "SHOPPINGFEED_ORDER_IMPORT_ENABLED";
+    const ORDER_DEFAULT_CARRIER_REFERENCE = "SHOPPINGFEED_ORDER_DEFAULT_CARRIER_REFERENCE";
 
     /**
      * List of objectModel used in this Module
@@ -349,6 +350,24 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     }
 
     /**
+     * Checks if order import can be activated
+     * @return boolean
+     */
+    static public function isOrderImportAvailable($id_shop = null)
+    {
+        // Is the old module installed ?
+        if (Module::isInstalled('shoppingfluxexport') && (
+                // Is order import disabled in the old module ?
+                Configuration::get('SHOPPING_FLUX_ORDERS', null, null, $id_shop) != ''
+            )
+        ) {
+             return false;
+        }
+
+       return true;
+    }
+
+    /**
      * Redirects the user to our AdminController for configuration
      * @throws PrestaShopException
      */
@@ -380,6 +399,37 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         );
         
         return $reference;
+    }
+    
+    /**
+     * Returns the Prestashop product matching the Shopping Feed reference. The
+     * developer can skip specific products during order import by overriding
+     * this method and have it return false.
+     * @param string $sfProductReference The product's reference in Shopping Feed's system
+     * @param string $id_shop
+     * @param array $arguments Should you want to pass more arguments to this
+     * function, you can find them in this array
+     * @return array
+     */
+    public function mapPrestashopProduct($sfProductReference, $id_shop, ...$arguments)
+    {
+        $explodedReference = explode('_', $sfProductReference);
+        $id_product = isset($explodedReference[0]) ? $explodedReference[0] : null;
+        
+        $product = new Product($id_product, true, null, $id_shop);
+        if (isset($explodedReference[1])) {
+            $product->id_product_attribute = $explodedReference[1];
+        }
+        
+        Hook::exec(
+            'ShoppingfeedMapProduct', // hook_name
+            array(
+                'sfProductReference' => &$sfProductReference,
+                'product' => &$product,
+            ) // hook_args
+        );
+        
+        return $product;
     }
     
     /**
@@ -672,7 +722,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
      */
     public function hookActionValidateOrder($params)
     {
-        if (!Configuration::get(Shoppingfeed::ORDER_SYNC_ENABLED) || !self::isOrderSyncAvailable()) {
+        if (!Configuration::get(Shoppingfeed::ORDER_SYNC_ENABLED) || !self::isOrderSyncAvailable() || Configuration::get(self::ORDER_IMPORT_ENABLED)) {
             return;
         }
 

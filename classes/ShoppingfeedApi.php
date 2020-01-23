@@ -297,6 +297,60 @@ class ShoppingfeedApi
         return $tickets;
     }
     
+    public function getUnacknowledgedOrders()
+    {
+        // Criteria used to query order API
+        $criteria = [
+            'filters' => [
+                // Only retrieve unacknowleged (non-imported) orders
+                'acknowledgment' => 'unacknowledged',
+                // TODO : since / until filters ?
+            ]
+        ];
+
+        $orders = false;
+        try {
+            // Retrieve orders
+            $orderApi = $this->session->getMainStore()->getOrderApi();
+            $orders = $orderApi->getAll($criteria['filters']);
+        } catch (Exception $ex) {
+            ProcessLoggerHandler::logError(
+                sprintf(
+                    'API error (getOrdersApi): %s',
+                    $e->getMessage()
+                )
+            );
+            return false;
+        }
+        
+        return $orders;
+    }
+    
+    public function acknowledgeOrder($id_order_marketplace, $name_marketplace, $order_reference)
+    {
+        try {
+            $orderApi = $this->session->getMainStore()->getOrderApi();
+            $operation = new \ShoppingFeed\Sdk\Api\Order\OrderOperation();
+            $operation
+                ->acknowledge(
+                    $id_order_marketplace,
+                    $name_marketplace,
+                    $order_reference,
+                    'success'
+            );
+
+            return $orderApi->execute($operation);
+        } catch (Exception $e) {
+            ProcessLoggerHandler::logError(
+                sprintf(
+                    'API error (getOrderApi): %s',
+                    $e->getMessage()
+                )
+            );
+            return false;
+        }
+    }
+    
     /**
      * Pings the Shopping Feed API. Always creates a new client.
      */
