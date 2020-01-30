@@ -133,6 +133,10 @@
     font-family: Open Sans, Helvetica, Arial, sans-serif;
 }
 
+.shoppingfeed_form-section > p:first-of-type {
+    margin-bottom: 15px;
+}
+
 .shoppingfeed_double-list-left-container,
 .shoppingfeed_double-list-right-container {
     padding-top: 7px;

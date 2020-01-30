@@ -18,6 +18,7 @@ use ShoppingfeedClasslib\Registry;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 
 
+require_once(_PS_MODULE_DIR_ . 'shoppingfeed/classes/ShoppingfeedCarrier.php');
 require_once(_PS_MODULE_DIR_ . 'shoppingfeed/classes/ShoppingfeedOrder.php');
 require_once(_PS_MODULE_DIR_ . 'shoppingfeed/classes/ShoppingfeedPaymentModule.php');
 
@@ -119,9 +120,16 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         
         // Check carrier
         $apiOrderShipment = $apiOrder->getShipment();
-        // TODO : check carrier matching
         $carrier = false;
-        if (!empty(Configuration::get(Shoppingfeed::ORDER_DEFAULT_CARRIER_REFERENCE))) {
+        $sfCarrier = ShoppingfeedCarrier::getByMarketplaceAndName(
+            $apiOrder->getChannel()->getName(),
+            $apiOrderShipment['carrier']
+        );
+        if (Validate::isLoadedObject($sfCarrier)) {
+            $carrier = Carrier::getCarrierByReference($sfCarrier->id_carrier_reference);
+        }
+        
+        if (!Validate::isLoadedObject($carrier) && !empty(Configuration::get(Shoppingfeed::ORDER_DEFAULT_CARRIER_REFERENCE))) {
             $carrier = Carrier::getCarrierByReference(Configuration::get(Shoppingfeed::ORDER_DEFAULT_CARRIER_REFERENCE));
         }
         if (!Validate::isLoadedObject($carrier) && !empty(Configuration::get('PS_CARRIER_DEFAULT'))) {
@@ -136,6 +144,14 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         }
         $this->conveyor['carrier'] = $carrier;
         
+        if (!Validate::isLoadedObject($sfCarrier)) {
+            $sfCarrier = new ShoppingfeedCarrier();
+            $sfCarrier->name_marketplace = $apiOrder->getChannel()->getName();
+            $sfCarrier->name_carrier = $apiOrderShipment['carrier'];
+            $sfCarrier->id_carrier_reference = $carrier->id;
+            $sfCarrier->is_new = true;
+            $sfCarrier->save();
+        }
         
         return true;
     }
@@ -174,6 +190,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         $customer = Customer::getByEmail($customerEmail);
         // Create customer if it doesn't exist
         if (!$customer) {
+            $customer = new Customer();
             $customer->lastname = !empty($apiBillingAddress['lastName']) ? Tools::substr($apiBillingAddress['lastName'], 0, 32) : '-';
             $customer->firstname = !empty($apiBillingAddress['firstName']) ? Tools::substr($apiBillingAddress['firstName'], 0, 32) : '-';
             $customer->passwd = md5(pSQL(_COOKIE_KEY_.rand()));

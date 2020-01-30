@@ -76,4 +76,15 @@ $(document).ready(function()
         });
     });
 
+    $("#shoppingfeed_marketplace-filter").change(function() {
+        var marketplace = $(this).val();
+        $("#shoppingfeed_carriers-matching-table tbody tr").each(function() {
+            if (marketplace == '' || marketplace == $(this).data('shoppingfeed-marketplace')) {
+                $(this).show();
+            } else {
+                $(this).hide();
+            }
+        })
+    });
+
 });

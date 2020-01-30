@@ -76,6 +76,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         'ShoppingfeedProcessLogger',
         'ShoppingfeedProduct',
         'ShoppingfeedOrder',
+        'ShoppingfeedCarrier',
     );
 
     /**

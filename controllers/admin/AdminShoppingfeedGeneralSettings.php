@@ -27,6 +27,7 @@ if (!defined('_PS_VERSION_')) {
 }
 
 require_once(_PS_MODULE_DIR_ . 'shoppingfeed/shoppingfeed.php');
+require_once(_PS_MODULE_DIR_ . 'shoppingfeed/classes/ShoppingfeedCarrier.php');
 
 /**
  * This admin controller displays the module's general configuration forms
@@ -119,6 +120,8 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
             );
         }
         
+        $sfCarriers = ShoppingfeedCarrier::getAllCarriers();
+        
         $fields_form = array(
             'form' => array(
                 'form' => array(
@@ -156,14 +159,38 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
                             'desc' => $this->module->l('Match carriers from marketplaces to your Prestashop\'s carriers', 'AdminShoppingfeedGeneralSettings'),
                         ),
                         array(
-                            'type' => 'select',
-                            'label' => $this->module->l('Default carrier', 'AdminShoppingfeedGeneralSettings'),
-                            'name' => Shoppingfeed::ORDER_DEFAULT_CARRIER_REFERENCE,
-                            'options' => array(
-                                'id' => 'id_reference',
-                                'name' => 'name',
-                                'query' => Carrier::getCarriers(Context::getContext()->language->id, true),
+                            'type' => 'shoppingfeed_carrier-matching',
+                            'marketplace_filter_options' => array_map(
+                                function($m) {
+                                    return array(
+                                        'value' => $m,
+                                        'label' => $m,
+                                    );
+                                },
+                                ShoppingfeedCarrier::getAllMarketplaces()
                             ),
+                            'default_carrier_field_name' => ShoppingFeed::ORDER_DEFAULT_CARRIER_REFERENCE,
+                            'carriers_matching_field' => array(
+                                'name' => 'shoppingfeed_carrier_matching',
+                                'labels' => array_map(
+                                    function($c) {
+                                        return str_replace(' ', '_', $c->name_marketplace) .
+                                            '_' .
+                                            str_replace(' ', '_', $c->name_carrier);
+                                    },
+                                    $sfCarriers
+                                ),
+                            ),
+                            'carriers' => array_map(
+                                function($c) {
+                                    return array(
+                                        'value' => $c['id_reference'],
+                                        'label' => $c['name'],
+                                    );
+                                },
+                                Carrier::getCarriers(Context::getContext()->language->id, true)
+                            ),
+                            'shoppingfeed_carriers' => $sfCarriers,
                         ),
                         array(
                             'type' => 'shoppingfeed_close-section',
@@ -581,6 +608,19 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
             Configuration::updateValue(Shoppingfeed::REFUNDED_ORDERS, json_encode($orderStatusRefunded));
             Configuration::updateValue(Shoppingfeed::ORDER_STATUS_MAX_ORDERS, $max_orders);
             Configuration::updateValue(Shoppingfeed::ORDER_DEFAULT_CARRIER_REFERENCE, Tools::getValue(Shoppingfeed::ORDER_DEFAULT_CARRIER_REFERENCE));
+        }
+        
+        // Update carriers matching
+        $carriersMatching = Tools::getValue('shoppingfeed_carrier_matching');
+        if ($carriersMatching) {
+            foreach($carriersMatching as $id_shoppingfeed_carrier => $id_carrier_reference) {
+                $sfCarrier = new ShoppingfeedCarrier($id_shoppingfeed_carrier);
+                if (Validate::isLoadedObject($sfCarrier)) {
+                    $sfCarrier->id_carrier_reference = (int)$id_carrier_reference;
+                    $sfCarrier->is_new = 0;
+                    $sfCarrier->update();
+                }
+            }
         }
 
         return true;

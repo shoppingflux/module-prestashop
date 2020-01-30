@@ -318,6 +318,7 @@ class ShoppingfeedSyncOrderModuleFrontController extends CronController
                         $this->processMonitor->getProcessObjectModelId()
                     );
                     Registry::increment('errors');
+                    continue;
                 }
                 
                 $conveyor = $handler->getConveyor();
