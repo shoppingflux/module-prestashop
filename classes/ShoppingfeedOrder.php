@@ -42,6 +42,9 @@ class ShoppingfeedOrder extends ObjectModel
 
     /** @var int The order's id */
     public $id_order;
+    
+    /** @var string The payment method used on the marketplace */
+    public $payment_method;
 
     /** @var bool Status command send */
     public $shipped_sent;
@@ -73,6 +76,11 @@ class ShoppingfeedOrder extends ObjectModel
                 'validate' => 'isUnsignedInt',
                 'required' => true,
                 'unique' => true,
+            ),
+            'payment_method' => array(
+                'type' => ObjectModel::TYPE_STRING,
+                'validate' => 'isString',
+                'required' => true,
             ),
             'date_add' => array(
                 'type' => self::TYPE_DATE,

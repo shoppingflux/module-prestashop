@@ -444,7 +444,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         $sfOrder->name_marketplace = $apiOrder->getChannel()->getName();
         
         $paymentInformation = $apiOrder->getPaymentInformation();
-        $sfOrder->payment = $paymentInformation['method'];
+        $sfOrder->payment_method = $paymentInformation['method'];
         
         $sfOrder->save();
         $this->conveyor['sfOrder'] = $sfOrder;

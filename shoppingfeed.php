@@ -127,6 +127,15 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         ),
         array(
             'name' => array(
+                'en' => 'Marketplaces Summary',
+                'fr' => 'Récapitulatif Marketplaces'
+            ),
+            'class_name' => 'AdminShoppingfeedOrders',
+            'parent_class_name' => 'shoppingfeed',
+            'visible' => true,
+        ),
+        array(
+            'name' => array(
                 'en' => 'Account Settings',
                 'fr' => 'Paramètres du compte'
             ),
