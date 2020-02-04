@@ -90,6 +90,10 @@ class ShoppingfeedCarrier extends ObjectModel
             ->where('name_marketplace = "' . pSQL($marketplace) . '"')
             ->where('name_carrier = "' . pSQL($name) . '"');
         $result = Db::getInstance()->getRow($query);
+
+        if (!$result) {
+            return false;
+        }
         
         $sfCarrier = new ShoppingfeedCarrier();
         $sfCarrier->hydrate($result);
@@ -102,6 +106,10 @@ class ShoppingfeedCarrier extends ObjectModel
         $query->select('name_marketplace')
             ->from('shoppingfeed_carrier');
         $result = Db::getInstance()->executeS($query);
+
+        if (!$result) {
+            return array();
+        }
         
         return array_map(
             function($i) { return $i['name_marketplace']; },
@@ -119,6 +127,10 @@ class ShoppingfeedCarrier extends ObjectModel
             $query->where('name_marketplace = "' . pSQL($marketplace_filter) . '"');
         }
         $result = Db::getInstance()->executeS($query);
+
+        if (!$result) {
+            return array();
+        }
         
         return array_map(
             function($i) {
