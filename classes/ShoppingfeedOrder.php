@@ -82,13 +82,18 @@ class ShoppingfeedOrder extends ObjectModel
                 'validate' => 'isString',
                 'required' => true,
             ),
+            'date_marketplace_creation' => array(
+                'type' => self::TYPE_DATE,
+                'validate' => 'isDate',
+                'required' => true,
+            ),
             'date_add' => array(
                 'type' => self::TYPE_DATE,
-                'validate' => 'isDate'
+                'validate' => 'isDate',
             ),
             'date_upd' => array(
                 'type' => self::TYPE_DATE,
-                'validate' => 'isDate'
+                'validate' => 'isDate',
             ),
         ),
     );

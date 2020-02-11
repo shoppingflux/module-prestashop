@@ -382,11 +382,24 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         // Add products to cart
         foreach($apiOrder->getItems() as $apiProduct) {
             $psProduct = $this->conveyor['prestashopProducts'][$apiProduct->getReference()];
-            $addToCartResult = $cart->updateQty(
-                $apiProduct->getQuantity(),
-                $psProduct->id,
-                $psProduct->id_product_attribute
-            );
+            try {
+                $addToCartResult = $cart->updateQty(
+                    $apiProduct->getQuantity(),
+                    $psProduct->id,
+                    $psProduct->id_product_attribute
+                );
+            } catch (Exception $e) {
+                ProcessLoggerHandler::logError(
+                    sprintf(
+                        $logPrefix . ' ' .
+                            $this->l('Could not add product %s to cart : %s', 'ShoppingfeedOrderImportActions'),
+                        $apiProduct->getReference(),
+                        $e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine()
+                    ),
+                    'Order'
+                );
+                return false;
+            }
             
             if ($addToCartResult < 0 || $addToCartResult === false) {
                 ProcessLoggerHandler::logError(
@@ -490,6 +503,9 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         
         $paymentInformation = $apiOrder->getPaymentInformation();
         $sfOrder->payment_method = $paymentInformation['method'];
+        
+        $paymentInformation = $apiOrder->getPaymentInformation();
+        $sfOrder->date_marketplace_creation = $apiOrder->getCreatedAt()->format('Y-m-d H:i:s');
         
         $sfOrder->save();
         $this->conveyor['sfOrder'] = $sfOrder;

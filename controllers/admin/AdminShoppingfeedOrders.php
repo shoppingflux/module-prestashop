@@ -54,7 +54,7 @@ class AdminShoppingfeedOrdersController extends ModuleAdminController
         $this->_select = 'a.id_order, o.reference, ' .
                 'CONCAT(LEFT(c.firstname, 1), \'. \', c.lastname) AS customer_name, ' .
             'o.total_paid, a.payment_method, o.current_state, osl.name AS current_state_name, ' .
-            'os.color AS current_state_color, a.id_order_marketplace,  a.name_marketplace';
+            'os.color AS current_state_color, a.id_order_marketplace, a.name_marketplace, a.date_marketplace_creation';
         $this->_join = 'INNER JOIN ' . _DB_PREFIX_ . 'orders o ON o.id_order = a.id_order ' .
             'INNER JOIN ' . _DB_PREFIX_ . 'customer c ON c.id_customer = o.id_customer ' .
             'LEFT JOIN ' . _DB_PREFIX_ . 'order_state os ON (os.id_order_state = o.current_state) ' .
@@ -99,12 +99,17 @@ class AdminShoppingfeedOrdersController extends ModuleAdminController
             'name_marketplace' => array(
                 'title' => $this->module->l('Marketplace', 'AdminShoppingfeedOrders'),
             ),
+            'date_marketplace_creation' => array(
+                'title' => $this->module->l('Marketplace creation date', 'AdminShoppingfeedOrders'),
+            ),
         );
-        
         
         $this->actions = array(
             'view'
         );
+        
+        $this->_defaultOrderBy = 'date_marketplace_creation';
+        $this->_defaultOrderWay = 'DESC';
     }
     
     /**
@@ -146,25 +151,19 @@ class AdminShoppingfeedOrdersController extends ModuleAdminController
     }
     
     /**
-     * From HelperList::displayViewLink
-     * We're querying another controller to view an order, so we need to
-     * implement this.
-     * 
-     * @param type $token
-     * @param type $id
-     * @param type $name
-     * @return type
+     * OVERRIDE
+     * On PS 1.7.6.2, we can't change the list's row link to whatever we want, so
+     * we'll redirect when trying to view a shoppingfeed_order
      */
-    public function displayViewLink($token, $id, $name = null)
+    public function initProcess()
     {
-        $tpl = $this->createTemplate('helpers/list/list_action_view.tpl');
-
-        $tpl->assign(array(
-            'href' => $this->context->link->getAdminLink('AdminOrders') . '&' .
-                implode('&', array('id_order=' . (int)$this->cache_sfIdToPsId[$id], 'vieworder')),
-            'action' => $this->module->l('View', 'AdminShoppingfeedOrders'),
-        ));
-
-        return $tpl->fetch();
+        parent::initProcess();
+        if ($this->action == 'view') {
+            $sfOrder = new ShoppingfeedOrder(Tools::getValue('id_shoppingfeed_order'));
+            Tools::redirect(
+                $this->context->link->getAdminLink('AdminOrders') . '&' .
+                implode('&', array('id_order=' . (int)$sfOrder->id_order, 'vieworder'))
+            );
+        }
     }
 }
