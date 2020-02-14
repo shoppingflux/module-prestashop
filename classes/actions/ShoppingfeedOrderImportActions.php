@@ -24,6 +24,9 @@ require_once(_PS_MODULE_DIR_ . 'shoppingfeed/classes/ShoppingfeedPaymentModule.p
 
 class ShoppingfeedOrderImportActions extends DefaultActions
 {
+    /** @var ShoppingfeedOrderImportSpecificRulesManager $specificRulesManager */
+    protected $specificRulesManager;
+    
     public static function getLogPrefix($id_internal_shoppingfeed = '')
     {
         return sprintf(
@@ -36,9 +39,31 @@ class ShoppingfeedOrderImportActions extends DefaultActions
     // We may want to call some hooks during this process...
     // Should we delete what we created if the order creation fails ?
     
+    public function registerSpecificRules()
+    {
+        if (empty($this->conveyor['apiOrder'])) {
+            ProcessLoggerHandler::logError(
+                $this->l('No apiOrder found', 'ShoppingfeedOrderImportActions'),
+                'Order'
+            );
+            return false;
+        }
+        
+        /** @var ShoppingFeed\Sdk\Api\Order\OrderResource $apiOrder */
+        $apiOrder = $this->conveyor['apiOrder'];
+        $logPrefix = self::getLogPrefix($apiOrder->getId());
+        
+        ProcessLoggerHandler::logInfo(
+            $logPrefix . ' ' .
+                $this->l('Loading specific rules...', 'ShoppingfeedOrderImportActions'),
+            'Order'
+        );
+        
+        $this->specificRulesManager = new ShoppingfeedOrderImportSpecificRulesManager($apiOrder);
+    }
+    
     public function verifyOrder()
     {
-        
         if (empty($this->conveyor['apiOrder'])) {
             ProcessLoggerHandler::logError(
                 $this->l('No apiOrder found', 'ShoppingfeedOrderImportActions'),
@@ -120,21 +145,39 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         
         // Check carrier
         $apiOrderShipment = $apiOrder->getShipment();
-        $carrier = false;
+        $carrier = null;
+        $skipSfCarrierCreation = false;
+        
+        // Specific rules to get a carrier
+        $this->specificRulesManager->applyRules(
+            'onRetrieveCarrier',
+            array(
+                'apiOrder' => $this->conveyor['apiOrder'],
+                'apiOrderShipment' => &$apiOrderShipment,
+                // Note : if you choose to set a carrier directly, you may want
+                // to either set the $apiOrderShipment data accordingly, or skip
+                // the ShoppingfeedCarrier creation step
+                'carrier' => &$carrier,
+                'skipSfCarrierCreation' => &$skipSfCarrierCreation
+            )
+        );
+        
         $sfCarrier = ShoppingfeedCarrier::getByMarketplaceAndName(
             $apiOrder->getChannel()->getName(),
             $apiOrderShipment['carrier']
         );
-        if (Validate::isLoadedObject($sfCarrier)) {
+        if (Validate::isLoadedObject($sfCarrier) && !Validate::isLoadedObject($carrier)) {
             $carrier = Carrier::getCarrierByReference($sfCarrier->id_carrier_reference);
         }
         
         if (!Validate::isLoadedObject($carrier) && !empty(Configuration::get(Shoppingfeed::ORDER_DEFAULT_CARRIER_REFERENCE))) {
             $carrier = Carrier::getCarrierByReference(Configuration::get(Shoppingfeed::ORDER_DEFAULT_CARRIER_REFERENCE));
         }
+        
         if (!Validate::isLoadedObject($carrier) && !empty(Configuration::get('PS_CARRIER_DEFAULT'))) {
             $carrier = new Carrier(Configuration::get('PS_CARRIER_DEFAULT'));
         }
+        
         if (!Validate::isLoadedObject($carrier)) {
             ProcessLoggerHandler::logError(
                 $logPrefix . ' ' .
@@ -142,9 +185,10 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 'Order'
             );
         }
+        
         $this->conveyor['carrier'] = $carrier;
         
-        if (!Validate::isLoadedObject($sfCarrier)) {
+        if (!$skipSfCarrierCreation && !Validate::isLoadedObject($sfCarrier)) {
             $sfCarrier = new ShoppingfeedCarrier();
             $sfCarrier->name_marketplace = $apiOrder->getChannel()->getName();
             $sfCarrier->name_carrier = $apiOrderShipment['carrier'];
@@ -152,6 +196,14 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             $sfCarrier->is_new = true;
             $sfCarrier->save();
         }
+        
+        // Specific rules validation
+        $this->specificRulesManager->applyRules(
+            'onVerifyOrder',
+            array(
+                'apiOrder' => $this->conveyor['apiOrder']
+            )
+        );
         
         return true;
     }
@@ -203,12 +255,31 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             $customer->id_default_group = Configuration::get('PS_UNIDENTIFIED_GROUP');
             $customer->email = $customerEmail;
             $customer->newsletter = 0;
+        
+            // Specific rules
+            $this->specificRulesManager->applyRules(
+                'onCustomerCreation',
+                array(
+                    'apiOrder' => $apiOrder,
+                    'customer' => $customer
+                )
+            );
+        
             $customer->add();
         } else {
             ProcessLoggerHandler::logInfo(
                 $logPrefix . ' ' .
                     $this->l('Retrieved customer from billing address...', 'ShoppingfeedOrderImportActions'),
                 'Order'
+            );
+        
+            // Specific rules
+            $this->specificRulesManager->applyRules(
+                'onCustomerRetrieval',
+                array(
+                    'apiOrder' => $apiOrder,
+                    'customer' => $customer
+                )
             );
         }
         $this->conveyor['customer'] = $customer;
@@ -220,28 +291,65 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                     $this->l('Creating/updating billing address...', 'ShoppingfeedOrderImportActions'),
                 'Order'
             );
-            $id_billing_address = $this->getOrderAddressId(
+        
+            // Specific rules
+            $this->specificRulesManager->applyRules(
+                'beforeBillingAddressCreation',
+                array(
+                    'apiBillingAddress' => &$apiBillingAddress,
+                    'apiOrder' => $apiOrder,
+                )
+            );
+            
+            $billing_address = $this->getOrderAddress(
                 $apiBillingAddress,
                 $customer->id,
-                'Billing-'.$apiOrder->getId(),
-                $apiOrder->getChannel()->getName(),
-                $apiOrder->getShipment()
+                'Billing-'.$apiOrder->getId()
             );
-            $this->conveyor['id_billing_address'] = $id_billing_address;
+            
+            try {
+               $billing_address->save();
+            } catch (Exception $e) {
+                throw new Exception(sprintf(
+                    $this->l('Address %s could not be created : %s', 'ShoppingfeedOrderImportActions'),
+                    'Billing-'.$apiOrder->getId(),
+                    $e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine()
+                ));
+            }
+            $this->conveyor['id_billing_address'] = $billing_address->id;
             
             ProcessLoggerHandler::logInfo(
                 $logPrefix . ' ' .
                     $this->l('Creating/updating shipping address...', 'ShoppingfeedOrderImportActions'),
                 'Order'
             );
-            $id_shipping_address = $this->getOrderAddressId(
-                $apiBillingAddress,
-                $customer->id,
-                'Billing-'.$apiOrder->getId(),
-                $apiOrder->getChannel()->getName(),
-                $apiOrder->getShipment()
+            $apiShippingAddress = $apiOrder->getShippingAddress();
+        
+            // Specific rules
+            $this->specificRulesManager->applyRules(
+                'beforeShippingAddressCreation',
+                array(
+                    'apiShippingAddress' => &$apiShippingAddress,
+                    'apiOrder' => $apiOrder,
+                )
             );
-            $this->conveyor['id_shipping_address'] = $id_shipping_address;
+            
+            $shipping_address = $this->getOrderAddress(
+                $apiShippingAddress,
+                $customer->id,
+                'Shipping-'.$apiOrder->getId()
+            );
+            
+            try {
+               $shipping_address->save();
+            } catch (Exception $e) {
+                throw new Exception(sprintf(
+                    $this->l('Address %s could not be created : %s', 'ShoppingfeedOrderImportActions'),
+                    'Shipping-'.$apiOrder->getId(),
+                    $e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine()
+                ));
+            }
+            $this->conveyor['id_shipping_address'] = $shipping_address->id;
         } catch (Exception $ex) {
             ProcessLoggerHandler::logError(
                 $logPrefix . ' ' . $ex->getMessage(),
@@ -740,7 +848,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
      * @param string $marketPlace TODO unused for now; see old module _getAddress
      * @param string $shippingMethod TODO unused for now; see old module _getAddress
      */
-    protected function getOrderAddressId($apiAddress, $id_customer, $addressAlias, $marketPlace, $shippingMethod)
+    protected function getOrderAddress($apiAddress, $id_customer, $addressAlias)
     {
         $addressAlias = Tools::substr($addressAlias, 0, 32);
         
@@ -809,18 +917,8 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         if ($id_state) {
             $address->id_state = $id_state;
         }
-        
-        try {
-            $address->save();
-        } catch (Exception $e) {
-            throw new Exception(sprintf(
-                $this->l('Address %s could not be created : %s', 'ShoppingfeedOrderImportActions'),
-                $addressAlias,
-                $e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine()
-            ));
-        }
 
-        return $address->id;
+        return $address;
     }
     
     /**
