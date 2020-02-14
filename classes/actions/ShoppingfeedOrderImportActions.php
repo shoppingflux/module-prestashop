@@ -504,8 +504,9 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         $paymentInformation = $apiOrder->getPaymentInformation();
         $sfOrder->payment_method = $paymentInformation['method'];
         
-        $paymentInformation = $apiOrder->getPaymentInformation();
-        $sfOrder->date_marketplace_creation = $apiOrder->getCreatedAt()->format('Y-m-d H:i:s');
+        if ($apiOrder->getCreatedAt()->getTimestamp() != 0) {
+            $sfOrder->date_marketplace_creation = $apiOrder->getCreatedAt()->format('Y-m-d H:i:s');
+        }
         
         $sfOrder->save();
         $this->conveyor['sfOrder'] = $sfOrder;
