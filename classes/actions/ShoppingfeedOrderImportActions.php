@@ -753,10 +753,11 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         if ($id_address) {
             $address = new Address((int)$id_address);
         } else {
-            $address = new Address;
+            $address = new Address();
         }
         
         $address->alias = $addressAlias;
+        $address->id_customer = (int)$id_customer;
         $address->firstname = Tools::substr($apiAddress['firstName'], 0, 32);
         $address->lastname = Tools::substr($apiAddress['lastName'], 0, 32);
         $address->company = $apiAddress['company'] ? Tools::substr($apiAddress['company'], 0, 255) : null;
