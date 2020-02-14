@@ -26,7 +26,7 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-use ShoppingfeedClasslib\Extensions\ProcessMonitor\ProcessMonitorObjectModel;
+use ShoppingfeedClasslib\Extensions\ProcessMonitor\Classes\ProcessMonitorObjectModel;
 
 class ShoppingfeedProcessMonitor extends ProcessMonitorObjectModel
 {

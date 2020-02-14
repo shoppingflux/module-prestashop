@@ -20,27 +20,29 @@
  * @author    202-ecommerce <tech@202-ecommerce.com>
  * @copyright Copyright (c) 202-ecommerce
  * @license   Commercial license
- * @version   release/2.0.0
+ * @version   release/2.3.0
  */
 
-namespace ShoppingfeedClasslib\Extensions\ProcessMonitor;
+namespace ShoppingfeedClasslib\Extensions\ProcessMonitor\Controllers\Admin;
 
-use ShoppingfeedClasslib\Extensions\ProcessMonitor\ProcessMonitorObjectModel;
+use ShoppingfeedClasslib\Extensions\ProcessMonitor\Classes\ProcessMonitorObjectModel;
 use \HelperList;
 use \Validate;
 use \ObjectModel;
 use \Db;
+use \Media;
+use \Tools;
 
 class AdminProcessMonitorController extends \ModuleAdminController
 {
     /** @var bool $bootstrap Active bootstrap for Prestashop 1.6 */
     public $bootstrap = true;
 
-    /** @var Module Instance of your module automatically set by ModuleAdminController */
+    /** @var \Module Instance of your module automatically set by ModuleAdminController */
     public $module;
 
     /** @var string Associated object class name */
-    public $className = 'ShoppingfeedClasslib\Extensions\ProcessMonitor\ProcessMonitorObjectModel';
+    public $className = 'ShoppingfeedClasslib\Extensions\ProcessMonitor\Classes\ProcessMonitorObjectModel';
 
     /** @var string Associated table name */
     public $table = 'shoppingfeed_processmonitor';
@@ -103,6 +105,15 @@ class AdminProcessMonitorController extends \ModuleAdminController
         );
     }
 
+    public function setMedia($isNewTheme = false)
+    {
+        parent::setMedia($isNewTheme);
+        $this->addJS(_PS_MODULE_DIR_ . 'shoppingfeed/views/js/process_monitor/process_monitor.js');
+        $this->addCSS(_PS_MODULE_DIR_ . 'shoppingfeed/views/css/process_monitor/process_monitor.css');
+        Media::addJsDef(array('shoppingfeedProcessMonitorController' => $this->context->link->getAdminLink('AdminShoppingfeedProcessMonitor')));
+
+    }
+
     /**
      * @param $echo string Value of field
      * @param $tr array All data of the row
@@ -148,6 +159,8 @@ class AdminProcessMonitorController extends \ModuleAdminController
 
         $this->content .= $this->renderCronTasks();
 
+        $this->content .= $this->getProcessModal();
+
         $this->context->smarty->assign('content', $this->content);
     }
 
@@ -182,6 +195,7 @@ class AdminProcessMonitorController extends \ModuleAdminController
             'url'       => array(
                 'title' => $this->l('URL'),
                 'name'  => 'url',
+                'class' => 'cron-url'
             ),
         );
 
@@ -211,7 +225,7 @@ class AdminProcessMonitorController extends \ModuleAdminController
         $helper = new HelperList();
         $this->setHelperDisplay($helper);
         $helper->title = $this->module->l('Cron Tasks', 'AdminProcessMonitorController');
-        $helper->actions = array();
+        $helper->actions = array('runCron');
         $helper->bulk_actions = array();
         $helper->no_link = true;
         return $helper->generateList($list, $fieldsList);
@@ -243,5 +257,34 @@ class AdminProcessMonitorController extends \ModuleAdminController
         }
         
         return $object;
+    }
+
+    public function displayRunCronLink($token, $id, $name)
+    {
+        return $this->context->smarty->fetch(_PS_MODULE_DIR_ . 'shoppingfeed/views/templates/admin/process_monitor/runCronButton.tpl');
+    }
+
+    /**
+     * Process ajax cron launch
+     * @throws \PrestaShopException
+     */
+    public function ajaxProcessGetLastCronDuration()
+    {
+        $cronName = Tools::getValue('cronName');
+        if (!$cronName) {
+            throw new \PrestaShopException('Cron name not found');
+        }
+
+        $process = new ProcessMonitorObjectModel();
+        $process = $process->findOneByName($cronName);
+        die(json_encode(array('duration' => $process->duration)));
+    }
+
+    /**
+     * @throws \SmartyException
+     */
+    protected function getProcessModal()
+    {
+        return $this->context->smarty->fetch(_PS_MODULE_DIR_ . 'shoppingfeed/views/templates/admin/process_monitor/process_modal.tpl');
     }
 }

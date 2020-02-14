@@ -28,7 +28,7 @@ if (!defined('_PS_VERSION_')) {
 
 require_once _PS_MODULE_DIR_ . 'shoppingfeed/shoppingfeed.php';
 
-use ShoppingfeedClasslib\Extensions\ProcessLogger\AdminProcessLoggerController;
+use ShoppingfeedClasslib\Extensions\ProcessLogger\Controllers\Admin\AdminProcessLoggerController;
 
 /**
  * @inheritdoc

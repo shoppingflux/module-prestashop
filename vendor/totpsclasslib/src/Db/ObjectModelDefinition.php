@@ -20,7 +20,7 @@
  * @author    202-ecommerce <tech@202-ecommerce.com>
  * @copyright Copyright (c) 202-ecommerce
  * @license   Commercial license
- * @version   release/2.0.0
+ * @version   release/2.3.0
  */
 
 namespace ShoppingfeedClasslib\Db;
@@ -367,10 +367,16 @@ class ObjectModelDefinition
                     );
                     break;
                 case ObjectModel::TYPE_HTML:
+                /* Not compatible with PS 1.6; not very useful anyway...
                 case ObjectModel::TYPE_SQL:
+                 */
                     $length = isset($constraints['size']) ? $constraints['size'] : null;
                     $length = isset($length['max']) ? $length['max'] : $length;
-                    $description .= $length ? "TEXT($length)" : 'TEXT';
+                    if ($length >= 65535) {
+                        $description .= $length ? "TEXT($length)" : 'TEXT';
+                    } else {
+                        $description .= 'MEDIUMTEXT';
+                    }
                     break;
                 case ObjectModel::TYPE_INT:
                     $description .= 'INT(10)'.(

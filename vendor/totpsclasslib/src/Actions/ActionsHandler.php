@@ -20,11 +20,12 @@
  * @author    202-ecommerce <tech@202-ecommerce.com>
  * @copyright Copyright (c) 202-ecommerce
  * @license   Commercial license
- * @version   release/2.0.0
+ * @version   release/2.3.0
  */
 
 namespace ShoppingfeedClasslib\Actions;
 
+use \ObjectModel;
 use \Tools;
 
 /**
@@ -112,16 +113,19 @@ class ActionsHandler
             throw new \Exception($className .'" class name not valid "');
         }
         include_once _PS_MODULE_DIR_.'shoppingfeed/classes/actions/'.$className.'.php';
+        
         $overridePath = _PS_OVERRIDE_DIR_.'modules/shoppingfeed/classes/actions/'.$className.'.php';
         if (file_exists($overridePath)) {
             $className .= 'Override';
             include_once $overridePath;
         }
+        
         if (class_exists($className)) {
             /** @var ShoppingfeedDefaultActions $classAction */
             $classAction = new $className;
             $classAction->setModelObject($this->modelObject);
             $classAction->setConveyor($this->conveyor);
+            
             foreach ($this->actions as $action) {
                 if (!is_callable(array($classAction, $action), false, $callable_name)) {
                     continue;
@@ -131,6 +135,7 @@ class ActionsHandler
                     return false;
                 }
             }
+            
             $this->setConveyor($classAction->getConveyor());
         } else {
             throw new \Exception($className .'" class not defined "');

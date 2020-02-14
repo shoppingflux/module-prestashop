@@ -20,27 +20,28 @@
  * @author    202-ecommerce <tech@202-ecommerce.com>
  * @copyright Copyright (c) 202-ecommerce
  * @license   Commercial license
- * @version   release/2.0.0
+ * @version   release/2.3.0
  */
 
-namespace ShoppingfeedClasslib\Extensions\ProcessLogger;
+namespace ShoppingfeedClasslib\Extensions\ProcessLogger\Controllers\Admin;
 
-use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerObjectModel;
+use ShoppingfeedClasslib\Extensions\ProcessLogger\Classes\ProcessLoggerObjectModel;
 
 use \Db;
 use \Tools;
 use \Configuration;
+use \Shop;
 
 class AdminProcessLoggerController extends \ModuleAdminController
 {
     /** @var bool $bootstrap Active bootstrap for Prestashop 1.6 */
     public $bootstrap = true;
 
-    /** @var Module Instance of your module automatically set by ModuleAdminController */
+    /** @var \Module Instance of your module automatically set by ModuleAdminController */
     public $module;
 
     /** @var string Associated object class name */
-    public $className = 'ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerObjectModel';
+    public $className = 'ShoppingfeedClasslib\Extensions\ProcessLogger\Classes\ProcessLoggerObjectModel';
 
     /** @var string Associated table name */
     public $table = 'shoppingfeed_processlogger';
@@ -180,6 +181,9 @@ class AdminProcessLoggerController extends \ModuleAdminController
             case 'error':
                 $echo = '<span class="badge badge-danger">'.$echo.'</span>';
                 break;
+            case 'deprecated':
+                $echo = '<span class="badge badge-warning">'.$echo.'</span>';
+                break;
         }
         return $echo;
     }
@@ -238,7 +242,7 @@ class AdminProcessLoggerController extends \ModuleAdminController
 
     public function saveConfiguration()
     {
-        $shops = Shop::getShops();
+        $shops = \Shop::getShops();
         foreach ($shops as $shop) {
             $extlogs_erasing_daysmax = Tools::getValue('SHOPPINGFEED_EXTLOGS_ERASING_DAYSMAX');
             $extlogs_erasing_disabled = Tools::getValue('SHOPPINGFEED_EXTLOGS_ERASING_DISABLED');

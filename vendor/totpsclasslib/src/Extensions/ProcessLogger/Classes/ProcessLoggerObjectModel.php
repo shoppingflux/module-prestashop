@@ -20,10 +20,10 @@
  * @author    202-ecommerce <tech@202-ecommerce.com>
  * @copyright Copyright (c) 202-ecommerce
  * @license   Commercial license
- * @version   release/2.0.0
+ * @version   release/2.3.0
  */
 
-namespace ShoppingfeedClasslib\Extensions\ProcessLogger;
+namespace ShoppingfeedClasslib\Extensions\ProcessLogger\Classes;
 
 use \ObjectModel;
 
@@ -35,7 +35,7 @@ class ProcessLoggerObjectModel extends ObjectModel
     /** @var string Message to display */
     public $msg;
 
-    /** @var string level (success|failed|info) */
+    /** @var string level (success|error|info|deprecated) */
     public $level;
 
     /** @var string Name of ObjectModel associated if needed */
@@ -60,9 +60,8 @@ class ProcessLoggerObjectModel extends ObjectModel
                 'size'     => 100,
             ),
             'msg'     => array(
-                'type'     => ObjectModel::TYPE_STRING,
+                'type'     => ObjectModel::TYPE_HTML,
                 'validate' => 'isGenericName',
-                'size'     => 255,
             ),
             'level'     => array(
                 'type'     => ObjectModel::TYPE_STRING,

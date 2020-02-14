@@ -20,79 +20,248 @@
  * @author    202-ecommerce <tech@202-ecommerce.com>
  * @copyright Copyright (c) 202-ecommerce
  * @license   Commercial license
- * @version   release/2.0.0
+ * @version   develop
  */
 
 namespace ShoppingfeedClasslib;
 
-use ShoppingfeedClasslib\Install\Installer;
-
+use ShoppingfeedClasslib\Hook\AbstractHookDispatcher;
+use PrestaShop\PrestaShop\Core\Module\WidgetInterface;
+use \ReflectionClass;
 use \Tools;
+use ShoppingfeedClasslib\Install\ModuleInstaller;
+use ShoppingfeedClasslib\Extensions\AbstractModuleExtension;
 
 class Module extends \Module
 {
+    //region Fields
+
+    /**
+     * List of objectModel used in this Module
+     * @var array $objectModels
+     */
+    public $objectModels = array();
+
+    /**
+     * List of hooks used in this Module
+     * @var array $hooks
+     */
+    public $hooks = array();
+
+    public $extensions = array();
+
+    /**
+     * @var AbstractHookDispatcher
+     */
+    protected $hookDispatcher = null;
+
+    /**
+     * List of AdminControllers used in this Module
+     * @var array $moduleAdminControllers
+     */
+    public $moduleAdminControllers = array();
+
+    //endregion
+
+    /**
+     * Module constructor.
+     */
+    public function __construct()
+    {
+        parent::__construct();
+        foreach ($this->extensions as $extensionName) {
+            /** @var AbstractModuleExtension $extension */
+            $extension = new $extensionName();
+            $extension->setModule($this);
+            $extension->initExtension();
+        }
+    }
 
     /**
      * Install Module
      *
      * @return bool
+     * @throws \PrestaShopException
      */
     public function install()
     {
-        $installer = new Installer();
+        $installer = new ModuleInstaller($this);
 
         $isPhpVersionCompliant = false;
         try {
-            $isPhpVersionCompliant = $installer->checkPhpVersion($this);
+            $isPhpVersionCompliant = $installer->checkPhpVersion();
         } catch (\Exception $e) {
             $this->_errors[] = Tools::displayError($e->getMessage());
         }
 
-        return $isPhpVersionCompliant && parent::install() && $installer->install($this);
+        return $isPhpVersionCompliant && parent::install() && $installer->install();
     }
 
     /**
      * Uninstall Module
      *
      * @return bool
+     * @throws \PrestaShopDatabaseException
+     * @throws \PrestaShopException
      */
     public function uninstall()
     {
-        $installer = new Installer();
+        $installer = new ModuleInstaller($this);
 
-        return parent::uninstall() && $installer->uninstall($this);
+        return parent::uninstall() && $installer->uninstall();
     }
 
     /**
-     * Reset Module only if merchant choose to keep data on modal
+     * @TODO Reset Module only if merchant choose to keep data on modal
      *
      * @return bool
+     * @throws \PrestaShopDatabaseException
+     * @throws \PrestaShopException
      */
     public function reset()
     {
-        $installer = new Installer();
+        $installer = new ModuleInstaller($this);
 
         return $installer->reset($this);
     }
 
     /**
-     * Check if a module need to be upgraded.
-     * Upgrade object model and after default upgrade.
+     * Handle module extension hook call
      *
-     * @param $module
-     * @return bool
+     * @param $hookName
+     * @param $params
+     * @return array|bool|string
      */
-    public static function needUpgrade($module)
+    public function handleExtensionsHook($hookName, $params)
     {
-        self::$modules_cache[$module->name]['upgrade']['upgraded_from'] = $module->database_version;
-        if (Tools::version_compare($module->version, $module->database_version, '>')) {
-            $module = Module::getInstanceByName($module->name);
-            if ($module instanceof Module) {
-                $installer = new Installer();
-                $installer->upgrade($module);
+        $result = false;
+
+        // execute module hooks
+        if ($this->getHookDispatcher() != null) {
+            $moduleHookResult = $this->getHookDispatcher()->dispatch($hookName, $params);
+            if ($moduleHookResult != null) {
+                $result = $moduleHookResult;
             }
         }
 
-        return parent::needUpgrade($module);
+        //execute extension's hooks
+        if (!isset($this->extensions) || empty($this->extensions)) {
+            if (!$result) {
+                return false;
+            }
+        }
+
+        foreach ($this->extensions as $extension) {
+            /** @var AbstractModuleExtension $extension */
+            $extension = new $extension($this);
+            $hookResult = null;
+            if (is_callable(array($extension, $hookName))) {
+                $hookResult = $extension->{$hookName}($params);
+                //TODO
+            } else if (is_callable(array($extension, 'getHookDispatcher')) && $extension->getHookDispatcher() != null) {
+                $hookResult = $extension->getHookDispatcher()->dispatch($hookName, $params);
+            }
+            if ($hookResult != null) {
+                if ($result === false) {
+                    $result = $hookResult;
+                } elseif (is_array($hookResult) && $result !== false) {
+                    $result = array_merge($result, $hookResult);
+                } else {
+                    $result .= $hookResult;
+                }
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Handle module widget call
+     *
+     * @param $action
+     * @param $method
+     * @param $hookName
+     * @param $configuration
+     * @return bool
+     * @throws \ReflectionException
+     * @deprecated use render widget function
+     */
+    public function handleWidget($action, $method, $hookName, $configuration)
+    {
+        if (!isset($this->extensions) || empty($this->extensions)) {
+            return false;
+        }
+
+        foreach ($this->extensions as $extension) {
+            /** @var AbstractModuleExtension $extension */
+            $extension = new $extension();
+            if (!($extension instanceof WidgetInterface)) {
+                continue;
+            }
+            $extensionClass = (new ReflectionClass($extension))->getShortName();
+            if ($extensionClass != $action) {
+                continue;
+            }
+            $extension->setModule($this);
+            if (is_callable(array($extension, $method))) {
+                return $extension->{$method}($hookName, $configuration);
+            }
+        }
+
+        return false;
+
+    }
+
+    /**
+     * @param $hookName
+     * @param array $configuration
+     * @return bool
+     * @throws \ReflectionException
+     */
+    public function renderWidget($hookName, array $configuration)
+    {
+        // render module widgets
+        if ($this->getHookDispatcher() != null) {
+            $moduleWidgetResult = $this->getHookDispatcher()->dispatch($hookName, $configuration);
+            if ($moduleWidgetResult != null) {
+                return $moduleWidgetResult;
+            }
+        }
+
+        // render extensions widget if module widget isn't found
+        if (!isset($this->extensions) || empty($this->extensions)) {
+            return false;
+        }
+
+        foreach ($this->extensions as $extension) {
+            /** @var AbstractModuleExtension $extension */
+            $extension = new $extension($this);
+
+            if (is_callable(array($extension, 'getHookDispatcher')) && $extension->getHookDispatcher() != null) {
+                return $extension->getHookDispatcher()->dispatch($hookName, $configuration);
+            }
+        }
+
+        //if we want to use an old approach
+        return $this->handleWidget($configuration['action'], __FUNCTION__, $hookName, $configuration);
+    }
+
+    /**
+     * @param $hookName
+     * @param array $configuration
+     * @return array|bool
+     */
+    public function getWidgetVariables($hookName, array $configuration)
+    {
+        return array();
+    }
+
+    /**
+     * Get the current module hook/widget dispatcher
+     * @return null
+     */
+    public function getHookDispatcher()
+    {
+        return $this->hookDispatcher;
     }
 }

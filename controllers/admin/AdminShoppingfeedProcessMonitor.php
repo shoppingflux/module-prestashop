@@ -29,7 +29,7 @@ if (!defined('_PS_VERSION_')) {
 require_once(_PS_MODULE_DIR_ . 'shoppingfeed/shoppingfeed.php');
 require_once(_PS_MODULE_DIR_ . 'shoppingfeed/classes/ShoppingfeedProduct.php');
 
-use ShoppingfeedClasslib\Extensions\ProcessMonitor\AdminProcessMonitorController;
+use ShoppingfeedClasslib\Extensions\ProcessMonitor\Controllers\Admin\AdminProcessMonitorController;
 
 /**
  * @inheritdoc

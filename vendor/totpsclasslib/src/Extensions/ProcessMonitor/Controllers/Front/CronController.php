@@ -20,10 +20,10 @@
  * @author    202-ecommerce <tech@202-ecommerce.com>
  * @copyright Copyright (c) 202-ecommerce
  * @license   Commercial license
- * @version   release/2.0.0
+ * @version   release/2.3.0
  */
 
-namespace ShoppingfeedClasslib\Extensions\ProcessMonitor;
+namespace ShoppingfeedClasslib\Extensions\ProcessMonitor\Controllers\Front;
 
 use ShoppingfeedClasslib\Extensions\ProcessMonitor\ProcessMonitorHandler;
 
@@ -32,7 +32,7 @@ use \Hook;
 
 abstract class CronController extends \ModuleFrontController
 {
-    /** @var Shoppingfeed Instance of your Module, set automatically by ModuleFrontController */
+    /** @var \Shoppingfeed Instance of your Module, set automatically by ModuleFrontController */
     public $module;
 
     /** @var bool If set to true, will redirected user to login page during init function. */

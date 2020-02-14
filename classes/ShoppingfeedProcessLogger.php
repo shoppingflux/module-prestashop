@@ -26,7 +26,7 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerObjectModel;
+use ShoppingfeedClasslib\Extensions\ProcessLogger\Classes\ProcessLoggerObjectModel;
 
 class ShoppingfeedProcessLogger extends ProcessLoggerObjectModel
 {

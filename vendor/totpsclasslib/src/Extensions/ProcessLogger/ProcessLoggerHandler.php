@@ -20,7 +20,7 @@
  * @author    202-ecommerce <tech@202-ecommerce.com>
  * @copyright Copyright (c) 202-ecommerce
  * @license   Commercial license
- * @version   release/2.0.0
+ * @version   release/2.3.0
  */
 
 namespace ShoppingfeedClasslib\Extensions\ProcessLogger;
@@ -127,6 +127,20 @@ class ProcessLoggerHandler
             $name = self::$process->getProcessName();
         }
         self::addLog($msg, $objectModel, $objectId, $name, 'info');
+    }
+
+    /**
+     * @param string $msg
+     * @param string|null $objectModel
+     * @param int|null $objectId
+     * @param string $name
+     */
+    public static function logDeprecated($msg, $objectModel = null, $objectId = null, $name = 'default')
+    {
+        if (self::$process != null) {
+            $name = self::$process->getProcessName();
+        }
+        self::addLog($msg, $objectModel, $objectId, $name, 'deprecated');
     }
 
     /**
