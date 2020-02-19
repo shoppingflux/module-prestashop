@@ -22,9 +22,14 @@
  * @license   Commercial license
  */
 
+namespace ShoppingfeedAddon\OrderImport;
+
 if (!defined('_PS_VERSION_')) {
     exit;
 }
+
+use Tools;
+use Hook;
 
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
 
@@ -32,7 +37,7 @@ use ShoppingFeed\Sdk\Api\Order\OrderResource;
  * This class will manage a list of specific rules, and the execution of hooks
  * during the process
  */
-class ShoppingfeedOrderImportSpecificRulesManager {
+class RulesManager {
     
     /** @var ShoppingFeed\Sdk\Api\Order\OrderResource $apiOrder */
     protected $apiOrder;
@@ -44,7 +49,7 @@ class ShoppingfeedOrderImportSpecificRulesManager {
     {
         $this->apiOrder = $apiOrder;
         
-        $rulesClassNames = array();
+        $rulesClassNames = $this->getDefaultRulesClasses();
         
         Hook::exec(
             'actionShoppingfeedOrderImportRegisterSpecificRules',
@@ -58,13 +63,33 @@ class ShoppingfeedOrderImportSpecificRulesManager {
         }
     }
     
-    public function addRule(ShoppingfeedOrderImportSpecificRuleInterface $ruleObject)
+    public function addRule(RuleInterface $ruleObject)
     {
         if ($ruleObject->isApplicable($this->apiOrder)) {
             $this->rules[get_class($ruleObject)] = $ruleObject;
             return true;
         }
         return false;
+    }
+    
+    protected function getDefaultRulesClasses()
+    {
+        $defaultRulesPath = _PS_MODULE_DIR_ . 'shoppingfeed/src/OrderImport/Rules';
+        $files = scandir($defaultRulesPath);
+        $classNames = array();
+        
+        foreach($files as $filename) {
+            if (Tools::strpos($filename, '.') === 0) {
+                continue;
+            }
+            
+            $className = "ShoppingfeedAddon\OrderImport\Rules\\" . substr($filename, 0, strrpos($filename, "."));
+            if (class_exists($className)) {
+                $classNames[] = $className;
+            }
+        }
+        
+        return $classNames;
     }
     
     /**

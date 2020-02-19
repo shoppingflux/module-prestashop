@@ -298,6 +298,7 @@ class ShoppingfeedSyncOrderModuleFrontController extends CronController
                 /** @var ShoppingfeedHandler $handler */
                 $handler = new ActionsHandler();
                 $handler->addActions(
+                    'registerSpecificRules',
                     'verifyOrder',
                     'createOrderCart',
                     'validateOrder',

@@ -22,19 +22,21 @@
  * @license   Commercial license
  */
 
+namespace ShoppingfeedAddon\OrderImport\Rules;
+
 if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-/**
- * This interface represents a specific rule to be applied during an SF order
- * import
- */
-interface ShoppingfeedOrderImportSpecificRuleInterface {
+use Tools;
+
+use ShoppingFeed\Sdk\Api\Order\OrderResource;
+
+class Cdiscount implements \ShoppingfeedAddon\OrderImport\RuleInterface {
+   
+    public function isApplicable(OrderResource $apiOrder) {
+        return preg_match('#^cdiscount$#', Tools::strtolower($apiOrder->getChannel()->getName()));
+    }
     
-    /**
-     * Returns true if a rule is applicable to an SF order
-     * @return bool
-     */
-    abstract function isApplicable(ShoppingFeed\Sdk\Api\Order\OrderResource $apiOrder);
+    // TODO : Where is TotalFees on the new API ?
 }

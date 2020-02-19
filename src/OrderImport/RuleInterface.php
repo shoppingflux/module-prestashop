@@ -22,13 +22,21 @@
  * @license   Commercial license
  */
 
+namespace ShoppingfeedAddon\OrderImport;
+
 if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-class ShoppingfeedOrderImportCdiscount implements ShoppingfeedOrderImportSpecificRuleInterface {
-   
-    function isApplicable(ShoppingFeed\Sdk\Api\Order\OrderResource $apiOrder) {
-        return preg_match('#^cdiscount$#', Tools::strtolower($apiOrder->getChannel()->getName()));
-    }
+/**
+ * This interface represents a specific rule to be applied during an SF order
+ * import
+ */
+interface RuleInterface {
+    
+    /**
+     * Returns true if a rule is applicable to an SF order
+     * @return bool
+     */
+    function isApplicable(\ShoppingFeed\Sdk\Api\Order\OrderResource $apiOrder);
 }

@@ -22,9 +22,15 @@
  * @license   Commercial license
  */
 
+namespace ShoppingfeedAddon\OrderImport\Rules;
+
 if (!defined('_PS_VERSION_')) {
     exit;
 }
+
+use Tools;
+
+use ShoppingFeed\Sdk\Api\Order\OrderResource;
 
 /**
  * RDC is using RelayID from the delivery adresse and Other for the order number
@@ -33,9 +39,9 @@ if (!defined('_PS_VERSION_')) {
  * Therefore we need to extract the relay ID from the ShippingMethod and then
  * rebuild the ShippingMethod without the relay ID
  */
-class ShoppingfeedOrderImportRdcMr implements ShoppingfeedOrderImportSpecificRuleInterface {
+class RueducommerceMondialrelay implements \ShoppingfeedAddon\OrderImport\RuleInterface {
    
-    public function isApplicable(ShoppingFeed\Sdk\Api\Order\OrderResource $apiOrder)
+    public function isApplicable(OrderResource $apiOrder)
     {
         $apiOrderShipment = $apiOrder->getShipment();
         return preg_match('#^rdc|rueducommerce$#', Tools::strtolower($apiOrder->getChannel()->getName()))
@@ -47,7 +53,7 @@ class ShoppingfeedOrderImportRdcMr implements ShoppingfeedOrderImportSpecificRul
      * 
      * @param type $params
      */
-    public function onRetrieveCarrier($params)
+    public function onCarrierRetrieval($params)
     {
         // Split the carrier name
         $explodedCarrier = explode(' ', $params['apiOrderShipment']['carrier']);

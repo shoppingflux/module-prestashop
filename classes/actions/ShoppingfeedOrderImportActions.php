@@ -59,7 +59,10 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             'Order'
         );
         
-        $this->specificRulesManager = new ShoppingfeedOrderImportSpecificRulesManager($apiOrder);
+        $this->specificRulesManager = new ShoppingfeedAddon\OrderImport\RulesManager($apiOrder);
+        
+        // DEBUG
+        return false;
     }
     
     public function verifyOrder()
@@ -150,7 +153,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         
         // Specific rules to get a carrier
         $this->specificRulesManager->applyRules(
-            'onRetrieveCarrier',
+            'onCarrierRetrieval',
             array(
                 'apiOrder' => $this->conveyor['apiOrder'],
                 'apiOrderShipment' => &$apiOrderShipment,
@@ -470,8 +473,8 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         // Create cart
         $cart = new Cart();
         $cart->id_customer = $customer->id;
-        $cart->id_address_invoice = $id_billing_address;
-        $cart->id_address_delivery = $id_shipping_address;
+        $cart->id_address_invoice = $billing_address->id;
+        $cart->id_address_delivery = $shipping_address->id;
         $cart->id_currency = Currency::getIdByIsoCode((string)$currency == '' ? 'EUR' : (string)$currency);
         $cart->id_lang = Configuration::get('PS_LANG_DEFAULT');
         
@@ -521,9 +524,25 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 return false;
             }
         }
+        
+        $this->specificRulesManager->applyRules(
+            'onCartCreation',
+            array(
+                'apiOrder' => $apiOrder,
+                'cart' => &$cart,
+            )
+        );
 
         $cart->update();
         $this->conveyor['cart'] = $cart;
+        
+        $this->specificRulesManager->applyRules(
+            'afterCartCreation',
+            array(
+                'apiOrder' => $apiOrder,
+                'cart' => &$cart,
+            )
+        );
         
         return true;
     }
@@ -618,6 +637,16 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         
         $sfOrder->save();
         $this->conveyor['sfOrder'] = $sfOrder;
+        
+        // Specific rules
+        $this->specificRulesManager->applyRules(
+            'afterOrderCreation',
+            array(
+                'apiOrder' => $apiOrder,
+                'id_order' => $this->conveyor['id_order'],
+                'order_reference' => $this->conveyor['order_reference']
+            )
+        );
         
         return true;
    }
