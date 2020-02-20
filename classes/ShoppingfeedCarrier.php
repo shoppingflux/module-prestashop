@@ -104,7 +104,8 @@ class ShoppingfeedCarrier extends ObjectModel
     {
         $query = new DbQuery();
         $query->select('name_marketplace')
-            ->from('shoppingfeed_carrier');
+            ->from('shoppingfeed_carrier')
+            ->groupBy('name_marketplace');
         $result = Db::getInstance()->executeS($query);
 
         if (!$result) {
