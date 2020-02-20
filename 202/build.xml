@@ -7,7 +7,7 @@
     <property name="TARGETBRANCH" value="${env.GIT_BRANCH}" />
     <property name="TARGETVERSION" value="1.3.0" />
 
-    <target name="build" depends="build-common,package-zip,psvalidator" />
+    <target name="build" depends="build-common,package-zip,psvalidator,tot-testing" />
 
     <target name="build-common" depends="lint,prepare,npm,doc" />
 
@@ -53,6 +53,17 @@
         <echo>Making the build artifact folders</echo>
         <mkdir dir="${build-dir}/packages" />
         <mkdir dir="${build-dir}/logs" />
+    </target>
+
+    <target name="tot-testing" description="Create prestashop environment and execute unit tests">
+        <exec executable="${env.TOTBUILDER_PATH}tot-testing.sh" failonerror="true">
+            <arg value="${env.WORKSPACE}/202/build/packages/v${TARGETVERSION}-prod-${TARGETNAME}.zip" />
+            <arg value="${TARGETNAME}" />
+            <arg value="${env.WORKSPACE}/" />
+            <arg value="${PHPVERSION}" />
+            <arg value="${PSVERSION}" />
+            <arg value="${env.TOTBUILDER_PATH}" />
+        </exec>
     </target>
 
     <!-- start composer -->
