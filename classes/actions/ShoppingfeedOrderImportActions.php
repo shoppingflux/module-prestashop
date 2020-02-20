@@ -334,11 +334,20 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             
             $billingAddress = $this->getOrderAddress(
                 $apiBillingAddress,
-                $customer->id,
+                $customer,
                 'Billing-'.$apiOrder->getId()
             );
             
             try {
+                // Specific rules
+                $this->specificRulesManager->applyRules(
+                    'beforeBillingAddressSave',
+                    array(
+                        'apiBillingAddress' => &$apiBillingAddress,
+                        'billingAddress' => $billingAddress,
+                        'apiOrder' => $apiOrder,
+                    )
+                );
                $billingAddress->save();
             } catch (Exception $e) {
                 throw new Exception(sprintf(
@@ -365,14 +374,23 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 )
             );
             
-            $shipping_address = $this->getOrderAddress(
+            $shippingAddress = $this->getOrderAddress(
                 $apiShippingAddress,
-                $customer->id,
+                $customer,
                 'Shipping-'.$apiOrder->getId()
             );
             
             try {
-               $shipping_address->save();
+                // Specific rules
+                $this->specificRulesManager->applyRules(
+                    'beforeShippingAddressSave',
+                    array(
+                        'apiShippingAddress' => &$apiShippingAddress,
+                        'shippingAddress' => $shippingAddress,
+                        'apiOrder' => $apiOrder,
+                    )
+                );
+               $shippingAddress->save();
             } catch (Exception $e) {
                 throw new Exception(sprintf(
                     $this->l('Address %s could not be created : %s', 'ShoppingfeedOrderImportActions'),
@@ -380,7 +398,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                     $e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine()
                 ));
             }
-            $this->conveyor['id_shipping_address'] = $shipping_address->id;
+            $this->conveyor['id_shipping_address'] = $shippingAddress->id;
         } catch (Exception $ex) {
             ProcessLoggerHandler::logError(
                 $this->logPrefix . $ex->getMessage(),
@@ -503,7 +521,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         $cart = new Cart();
         $cart->id_customer = $customer->id;
         $cart->id_address_invoice = $billingAddress->id;
-        $cart->id_address_delivery = $shipping_address->id;
+        $cart->id_address_delivery = $shippingAddress->id;
         $cart->id_currency = Currency::getIdByIsoCode(
             (string)$paymentInformation['currency'] == '' ?
                 'EUR' : (string)$paymentInformation['currency']
@@ -907,19 +925,19 @@ class ShoppingfeedOrderImportActions extends DefaultActions
      * Retrieves an address using it's alias, and creates or rewrites it
      * 
      * @param array $apiAddress
-     * @param int $id_customer
+     * @param \Customer $customer
      * @param string $addressAlias
      * @param string $marketPlace TODO unused for now; see old module _getAddress
      * @param string $shippingMethod TODO unused for now; see old module _getAddress
      */
-    protected function getOrderAddress($apiAddress, $id_customer, $addressAlias)
+    protected function getOrderAddress($apiAddress, $customer, $addressAlias)
     {
         $addressAlias = Tools::substr($addressAlias, 0, 32);
         
         $addressQuery = new DbQuery();
         $addressQuery->select('id_address')
             ->from('address')
-            ->where('id_customer = ' . (int)$id_customer)
+            ->where('id_customer = ' . (int)$customer->id)
             ->where("alias = '" . pSQL($addressAlias) . "'");
         $id_address = Db::getInstance()->getValue($addressQuery);
         
@@ -930,10 +948,18 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         }
         
         $address->alias = $addressAlias;
-        $address->id_customer = (int)$id_customer;
-        $address->firstname = Tools::substr($apiAddress['firstName'], 0, 32);
-        $address->lastname = Tools::substr($apiAddress['lastName'], 0, 32);
-        $address->company = $apiAddress['company'] ? Tools::substr($apiAddress['company'], 0, 255) : null;
+        $address->id_customer = (int)$customer->id;
+        $address->firstname = Tools::substr(
+            !empty($apiAddress['firstName']) ? $apiAddress['firstName'] : $customer->firstname,
+            0,
+            32
+        );
+        $address->lastname = Tools::substr(
+            !empty($apiAddress['lastName']) ? $apiAddress['lastName'] : $customer->lastname,
+            0,
+            32
+        );
+        $address->company = !empty($apiAddress['company']) ? Tools::substr($apiAddress['company'], 0, 255) : null;
         $address->address1 = Tools::substr($apiAddress['street'], 0, 128);
         $address->address2 = Tools::substr($apiAddress['street2'], 0, 128);
         $address->other = $apiAddress['other'];

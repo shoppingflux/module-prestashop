@@ -71,15 +71,8 @@ class RueducommerceMondialrelay implements \ShoppingfeedAddon\OrderImport\RuleIn
         // Rebuild the carrier name; it should be found properly
         $params['apiOrderShipment']['carrier'] = implode($explodedCarrier, " ");
         
-        // Save the relay ID
-        Registry::set(self::class . '_mondialRelayId', $mondialRelayID);
-    }
-    
-    public function onPostProcess($params)
-    {
-        // Retrieve the relay ID from the registry
-        $mondialRelayID = Registry::get(self::class . '_mondialRelayId');
-        
-        // TODO fill the module table
+        // Save the relay ID in the "Other" field so it can be used by the main
+        // Mondial Relay rule
+        // TODO : where is the "$order->Other" field in the new API ?
     }
 }
