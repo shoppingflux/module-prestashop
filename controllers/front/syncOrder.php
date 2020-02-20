@@ -294,7 +294,14 @@ class ShoppingfeedSyncOrderModuleFrontController extends CronController
         Registry::set('errors', 0);
         Registry::set('importedOrders', 0);
         foreach ($result as $apiOrder) {
+            $logPrefix = sprintf(
+                Translate::getModuleTranslation('shoppingfeed', '[Order: %s]', 'syncOrder'),
+                $apiOrder->getId()
+            );
+            $logPrefix .= '[' . $apiOrder->getReference() . '] ';
+                
             try {
+                
                 /** @var ShoppingfeedHandler $handler */
                 $handler = new ActionsHandler();
                 $handler->addActions(
@@ -314,7 +321,8 @@ class ShoppingfeedSyncOrderModuleFrontController extends CronController
                 $processResult = $handler->process('shoppingfeedOrderImport');
                 if (!$processResult) {
                     ProcessLoggerHandler::logError(
-                        $this->module->l('Fail : An error occurred during process.', 'syncOrder'),
+                        $logPrefix .
+                            $this->module->l('Fail : An error occurred during process.', 'syncOrder'),
                         $this->processMonitor->getProcessObjectModelName(),
                         $this->processMonitor->getProcessObjectModelId()
                     );
@@ -324,20 +332,19 @@ class ShoppingfeedSyncOrderModuleFrontController extends CronController
                 
                 $conveyor = $handler->getConveyor();
                 ProcessLoggerHandler::logSuccess(
-                    sprintf(
-                        $this->l('[Order: %s] import successful', 'ShoppingfeedOrderImportActions'),
-                        $conveyor['sfOrder']->id_internal_shoppingfeed
-                    ),
+                    $logPrefix .
+                        $this->module->l('Import successful', 'ShoppingfeedOrderImportActions'),
                     $this->processMonitor->getProcessObjectModelName(),
                     $this->processMonitor->getProcessObjectModelId()
                 );
                 Registry::increment('importedOrders');  
             } catch (Exception $e) {
                 ProcessLoggerHandler::logError(
-                    sprintf(
-                        $this->module->l('Fail : %s', 'syncOrder'),
-                        $e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine()
-                    ),
+                    $logPrefix .
+                        sprintf(
+                            $this->module->l('Fail : %s', 'syncOrder'),
+                            $e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine()
+                        ),
                     $this->processMonitor->getProcessObjectModelName(),
                     $this->processMonitor->getProcessObjectModelId()
                 );

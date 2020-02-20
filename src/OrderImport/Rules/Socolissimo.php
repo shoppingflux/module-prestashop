@@ -46,6 +46,7 @@ class Socolissimo implements \ShoppingfeedAddon\OrderImport\RuleInterface {
         // do it here either
         $module_soliberte = Module::getInstanceByName('soliberte');
         if ($module_soliberte && $module_soliberte->active) {
+            Registry::set(self::class . '_id_shipping_address', null);
             return true;
         }
         
@@ -56,6 +57,7 @@ class Socolissimo implements \ShoppingfeedAddon\OrderImport\RuleInterface {
                 || class_exists('SoColissimoFlexibiliteDelivery')
             )
         ) {
+            Registry::set(self::class . '_id_shipping_address', null);
             return true;
         }
     }

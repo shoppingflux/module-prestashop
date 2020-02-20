@@ -30,6 +30,8 @@ if (!defined('_PS_VERSION_')) {
 
 use Tools;
 
+use ShoppingfeedClasslib\Registry;
+
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
 
 /**
@@ -44,8 +46,15 @@ class RueducommerceMondialrelay implements \ShoppingfeedAddon\OrderImport\RuleIn
     public function isApplicable(OrderResource $apiOrder)
     {
         $apiOrderShipment = $apiOrder->getShipment();
-        return preg_match('#^rdc|rueducommerce$#', Tools::strtolower($apiOrder->getChannel()->getName()))
-            && preg_match('#mondial relay .+#', Tools::strtolower($apiOrderShipment['carrier']));
+        
+        if (preg_match('#^rdc|rueducommerce$#', Tools::strtolower($apiOrder->getChannel()->getName()))
+            && preg_match('#mondial relay .+#', Tools::strtolower($apiOrderShipment['carrier']))
+        ) {
+            // If the rule is applicable, we'll make sure this is empty, just in case...
+            Registry::set(self::class . '_mondialRelayId', null);
+            return true;
+        }
+        return false;
     }
     
     /**
@@ -61,16 +70,15 @@ class RueducommerceMondialrelay implements \ShoppingfeedAddon\OrderImport\RuleIn
         $mondialRelayID = array_pop($explodedCarrier);
         // Rebuild the carrier name; it should be found properly
         $params['apiOrderShipment']['carrier'] = implode($explodedCarrier, " ");
+        
+        // Save the relay ID
+        Registry::set(self::class . '_mondialRelayId', $mondialRelayID);
     }
     
     public function onPostProcess($params)
     {
-        // Retrieve the relay ID from the order
-        $apiOrderShipment = $params['apiOrder']->getShipment();
-        // Split the carrier name
-        $explodedCarrier = explode(' ', $apiOrderShipment['carrier']);
-        // Remove the relay ID
-        $mondialRelayID = array_pop($explodedCarrier);
+        // Retrieve the relay ID from the registry
+        $mondialRelayID = Registry::get(self::class . '_mondialRelayId');
         
         // TODO fill the module table
     }
