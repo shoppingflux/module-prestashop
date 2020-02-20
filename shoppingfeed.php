@@ -42,6 +42,8 @@ require_once(_PS_MODULE_DIR_ . 'shoppingfeed/classes/actions/ShoppingfeedOrderSy
 // use ShoppingfeedClasslib\Actions\ActionsHandler;
 // use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 // use ShoppingfeedClasslib\Registry;
+// use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerExtension;
+// use ShoppingfeedClasslib\Extensions\ProcessMonitor\ProcessMonitorExtension;
 
 /**
  * The base module class
@@ -70,8 +72,8 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     const ORDER_DEFAULT_CARRIER_REFERENCE = "SHOPPINGFEED_ORDER_DEFAULT_CARRIER_REFERENCE";
 
     public $extensions = array(
-        ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerExtension::class,
-        ShoppingfeedClasslib\Extensions\ProcessMonitor\ProcessMonitorExtension::class
+        \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerExtension::class,
+        \ShoppingfeedClasslib\Extensions\ProcessMonitor\ProcessMonitorExtension::class
     );
 
     /**
