@@ -28,6 +28,9 @@ if (!defined('_PS_VERSION_')) {
 
 require_once _PS_MODULE_DIR_ . "shoppingfeed/vendor/autoload.php";
 require_once _PS_MODULE_DIR_ . 'shoppingfeed/classes/ShoppingfeedProduct.php';
+require_once _PS_MODULE_DIR_ . 'shoppingfeed/classes/ShoppingfeedOrder.php';
+require_once _PS_MODULE_DIR_ . 'shoppingfeed/classes/ShoppingfeedCarrier.php';
+require_once _PS_MODULE_DIR_ . 'shoppingfeed/classes/ShoppingfeedTaskOrder.php';
 require_once(_PS_MODULE_DIR_ . 'shoppingfeed/classes/actions/ShoppingfeedProductSyncStockActions.php');
 require_once(_PS_MODULE_DIR_ . 'shoppingfeed/classes/actions/ShoppingfeedProductSyncPriceActions.php');
 require_once(_PS_MODULE_DIR_ . 'shoppingfeed/classes/actions/ShoppingfeedOrderSyncActions.php');
@@ -39,6 +42,8 @@ require_once(_PS_MODULE_DIR_ . 'shoppingfeed/classes/actions/ShoppingfeedOrderSy
 // use ShoppingfeedClasslib\Actions\ActionsHandler;
 // use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 // use ShoppingfeedClasslib\Registry;
+// use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerExtension;
+// use ShoppingfeedClasslib\Extensions\ProcessMonitor\ProcessMonitorExtension;
 
 /**
  * The base module class
@@ -66,17 +71,20 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     const ORDER_IMPORT_ENABLED = "SHOPPINGFEED_ORDER_IMPORT_ENABLED";
     const ORDER_DEFAULT_CARRIER_REFERENCE = "SHOPPINGFEED_ORDER_DEFAULT_CARRIER_REFERENCE";
 
+    public $extensions = array(
+        \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerExtension::class,
+        \ShoppingfeedClasslib\Extensions\ProcessMonitor\ProcessMonitorExtension::class
+    );
+
     /**
      * List of objectModel used in this Module
      * @var array
      */
     public $objectModels = array(
-        'ShoppingfeedTaskOrder',
-        'ShoppingfeedProcessMonitor',
-        'ShoppingfeedProcessLogger',
-        'ShoppingfeedProduct',
-        'ShoppingfeedOrder',
-        'ShoppingfeedCarrier',
+        ShoppingfeedTaskOrder::class,
+        ShoppingfeedProduct::class,
+        ShoppingfeedOrder::class,
+        ShoppingfeedCarrier::class,
     );
 
     /**
