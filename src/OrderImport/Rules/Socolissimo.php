@@ -34,6 +34,7 @@ use Address;
 use Country;
 use Customer;
 use Configuration;
+use Carrier;
 
 use ShoppingfeedClasslib\Registry;
 
@@ -90,7 +91,7 @@ class Socolissimo implements \ShoppingfeedAddon\OrderImport\RuleInterface {
             Registry::set(self::class . '_id_shipping_address', null);
             Db::getInstance()->update(
                 'orders',
-                array('id_address_delivery' => $id_shipping_address),
+                array('id_address_delivery' => (int)$id_shipping_address),
                 'id_order = ' . (int)$params['id_order']
             );
         }

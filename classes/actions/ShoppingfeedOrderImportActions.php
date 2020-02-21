@@ -916,7 +916,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         }
 
         $updatePayment = array('amount' => (float)$paymentInformation['totalAmount']);
-        Db::getInstance()->update('order_payment', $updatePayment, '`order_reference` = "'.$this->conveyor['order_reference'].'"');
+        Db::getInstance()->update('order_payment', $updatePayment, '`order_reference` = "'.pSQL($this->conveyor['order_reference']).'"');
         
         return true;
     }
