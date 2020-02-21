@@ -29,8 +29,11 @@ if (!defined('_PS_VERSION_')) {
 }
 
 use Tools;
+use Translate;
 
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
+
+use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 
 class CdiscountRelay implements \ShoppingfeedAddon\OrderImport\RuleInterface {
    
@@ -47,11 +50,35 @@ class CdiscountRelay implements \ShoppingfeedAddon\OrderImport\RuleInterface {
     
     public function beforeBillingAddressSave($params)
     {
+        $logPrefix = sprintf(
+            Translate::getModuleTranslation('shoppingfeed', '[Order: %s]', 'Mondialrelay'),
+            $params['apiOrder']->getId()
+        );
+        $logPrefix .= '[' . $params['apiOrder']->getReference() . '] ' . self::class . ' | ';
+        
+        ProcessLoggerHandler::logInfo(
+                $logPrefix .
+                    Translate::getModuleTranslation('shoppingfeed', 'Updating CDiscount billing address to set relay ID...', 'CdiscountRelay'),
+            'Order'
+        );
+        
         $this->updateAddress($params['apiBillingAddress'], $params['billingAddress']);
     }
     
     public function beforeShippingAddressSave($params)
     {
+        $logPrefix = sprintf(
+            Translate::getModuleTranslation('shoppingfeed', '[Order: %s]', 'Mondialrelay'),
+            $params['apiOrder']->getId()
+        );
+        $logPrefix .= '[' . $params['apiOrder']->getReference() . '] ' . self::class . ' | ';
+        
+        ProcessLoggerHandler::logInfo(
+                $logPrefix .
+                    Translate::getModuleTranslation('shoppingfeed', 'Updating CDiscount shipping address to set relay ID...', 'CdiscountRelay'),
+            'Order'
+        );
+        
         $this->updateAddress($params['apiShippingAddress'], $params['shippingAddress']);
     }
     

@@ -326,19 +326,19 @@ class ShoppingfeedApi
         return $orders;
     }
     
-    public function acknowledgeOrder($id_order_marketplace, $name_marketplace, $order_reference)
+    public function acknowledgeOrder($id_order_marketplace, $name_marketplace, $id_order_prestashop)
     {
         try {
             $orderApi = $this->session->getMainStore()->getOrderApi();
             $operation = new \ShoppingFeed\Sdk\Api\Order\OrderOperation();
             $operation
                 ->acknowledge(
-                    $id_order_marketplace,
-                    $name_marketplace,
-                    $order_reference,
+                    (string)$id_order_marketplace,
+                    (string)$name_marketplace,
+                    (string)$id_order_prestashop,
                     'success'
             );
-
+            
             return $orderApi->execute($operation);
         } catch (Exception $e) {
             ProcessLoggerHandler::logError(

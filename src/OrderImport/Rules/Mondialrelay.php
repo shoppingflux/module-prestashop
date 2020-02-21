@@ -41,7 +41,7 @@ use ShoppingFeed\Sdk\Api\Order\OrderResource;
 
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 
-class Mondialrelay implements \ShoppingfeedAddon\OrderImport\RuleAbstract {
+class Mondialrelay implements \ShoppingfeedAddon\OrderImport\RuleInterface {
    
     public function isApplicable(OrderResource $apiOrder)
     {
@@ -68,12 +68,12 @@ class Mondialrelay implements \ShoppingfeedAddon\OrderImport\RuleAbstract {
             Translate::getModuleTranslation('shoppingfeed', '[Order: %s]', 'Mondialrelay'),
             $apiOrder->getId()
         );
-        $logPrefix .= '[' . $apiOrder->getReference() . '] ';
+        $logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
         
         ProcessLoggerHandler::logInfo(
             sprintf(
                 $logPrefix .
-                    Translate::getModuleTranslation('shoppingfeed', 'MondialRelay - Id Relay : %s,  Id Order : %s', 'Mondialrelay'),
+                    Translate::getModuleTranslation('shoppingfeed', 'Id Relay : %s,  Id Order : %s', 'Mondialrelay'),
                 $relayId,
                 $order->id
             ),
@@ -85,7 +85,7 @@ class Mondialrelay implements \ShoppingfeedAddon\OrderImport\RuleAbstract {
         ProcessLoggerHandler::logInfo(
             sprintf(
                 $logPrefix .
-                    Translate::getModuleTranslation('shoppingfeed', 'MondialRelay - id_address_delivery : %s', 'Mondialrelay'),
+                    Translate::getModuleTranslation('shoppingfeed', 'id_address_delivery : %s', 'Mondialrelay'),
                 $order->id_address_delivery
             ),
             'Order'
@@ -97,7 +97,7 @@ class Mondialrelay implements \ShoppingfeedAddon\OrderImport\RuleAbstract {
         ProcessLoggerHandler::logInfo(
             sprintf(
                 $logPrefix .
-                    Translate::getModuleTranslation('shoppingfeed', 'MondialRelay - isoCountry : %s', 'Mondialrelay'),
+                    Translate::getModuleTranslation('shoppingfeed', 'isoCountry : %s', 'Mondialrelay'),
                 $countryIso
             ),
             'Order'
@@ -108,7 +108,7 @@ class Mondialrelay implements \ShoppingfeedAddon\OrderImport\RuleAbstract {
         if (!$relayData) {
             ProcessLoggerHandler::logError(
                 $logPrefix .
-                    Translate::getModuleTranslation('shoppingfeed', 'MondialRelay - Failed to get relay data', 'Mondialrelay'),
+                    Translate::getModuleTranslation('shoppingfeed', 'Failed to get relay data', 'Mondialrelay'),
                 'Order'
             );
             return false;
@@ -117,7 +117,7 @@ class Mondialrelay implements \ShoppingfeedAddon\OrderImport\RuleAbstract {
         ProcessLoggerHandler::logInfo(
             sprintf(
                 $logPrefix .
-                    Translate::getModuleTranslation('shoppingfeed', 'MondialRelay - Id Carrier : %s', 'Mondialrelay'),
+                    Translate::getModuleTranslation('shoppingfeed', 'Id Carrier : %s', 'Mondialrelay'),
                 $carrier->id
             ),
             'Order'
@@ -135,7 +135,7 @@ class Mondialrelay implements \ShoppingfeedAddon\OrderImport\RuleAbstract {
             ProcessLoggerHandler::logError(
                 sprintf(
                     $logPrefix .
-                        Translate::getModuleTranslation('shoppingfeed', 'MondialRelay - Could not find mondial relay method for carrier ID %s', 'Mondialrelay'),
+                        Translate::getModuleTranslation('shoppingfeed', 'Could not find mondial relay method for carrier ID %s', 'Mondialrelay'),
                     $carrier->id
                 ),
                 'Order'
@@ -168,7 +168,7 @@ class Mondialrelay implements \ShoppingfeedAddon\OrderImport\RuleAbstract {
         if ($insertResult) {
             ProcessLoggerHandler::logSuccess(
                 $logPrefix .
-                    Translate::getModuleTranslation('shoppingfeed', 'MondialRelay - Successfully added relay information', 'Mondialrelay'),
+                    Translate::getModuleTranslation('shoppingfeed', 'Successfully added relay information', 'Mondialrelay'),
                 'Order'
             );
             return;
@@ -176,7 +176,7 @@ class Mondialrelay implements \ShoppingfeedAddon\OrderImport\RuleAbstract {
         
         ProcessLoggerHandler::logError(
             $logPrefix .
-                Translate::getModuleTranslation('shoppingfeed', 'MondialRelay - Could not add relay information', 'Mondialrelay'),
+                Translate::getModuleTranslation('shoppingfeed', 'Could not add relay information', 'Mondialrelay'),
             'Order'
         );
     }
@@ -195,7 +195,7 @@ class Mondialrelay implements \ShoppingfeedAddon\OrderImport\RuleAbstract {
             Translate::getModuleTranslation('shoppingfeed', '[Order: %s]', 'Mondialrelay'),
             $apiOrder->getId()
         );
-        $logPrefix .= '[' . $apiOrder->getReference() . '] ';
+        $logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';;
         
         $mondialRelayConfig = $this->getMondialRelayConfig();
         // Mondial relay module not configured
@@ -209,7 +209,7 @@ class Mondialrelay implements \ShoppingfeedAddon\OrderImport\RuleAbstract {
             ProcessLoggerHandler::logError(
                 sprintf(
                     $logPrefix .
-                        Translate::getModuleTranslation('shoppingfeed', 'MondialRelay - Could not create SOAP client for URL %s', 'Mondialrelay'),
+                        Translate::getModuleTranslation('shoppingfeed', 'Could not create SOAP client for URL %s', 'Mondialrelay'),
                     $urlWebService
                 ),
                 'Order'
@@ -236,7 +236,7 @@ class Mondialrelay implements \ShoppingfeedAddon\OrderImport\RuleAbstract {
             ProcessLoggerHandler::logError(
                 sprintf(
                     $logPrefix .
-                        Translate::getModuleTranslation('shoppingfeed', 'MondialRelay - Error getting relay %s data : code %s', 'Mondialrelay'),
+                        Translate::getModuleTranslation('shoppingfeed', 'Error getting relay %s data : code %s', 'Mondialrelay'),
                     $result->WSI2_AdressePointRelaisResult->STAT
                 ),
                 'Order'

@@ -72,6 +72,9 @@ class OrderData {
     
     /** @var array $items An array of \ShoppingfeedAddon\OrderImport\OrderItemData */
     public $items = array();
+    
+    /** @var array $additionalFields */
+    public $additionalFields;
 
     public function __construct(\ShoppingFeed\Sdk\Api\Order\OrderResource $apiOrder)
     {
@@ -84,6 +87,10 @@ class OrderData {
         $this->billingAddress = $apiOrder->getBillingAddress();
         $this->payment = $apiOrder->getPaymentInformation();
         $this->shipment = $apiOrder->getShipment();
+        
+        // TODO : OrderResource should likely have a "getAdditionalFields" method
+        $apiOrderData = $apiOrder->toArray();
+        $this->additionalFields = is_array($apiOrderData['additionalFields']) ? $apiOrderData['additionalFields'] : array();
         
         /** @var \ShoppingFeed\Sdk\Api\Order\OrderItem $apiOrderItem */
         foreach($apiOrder->getItems() as $apiOrderItem) {

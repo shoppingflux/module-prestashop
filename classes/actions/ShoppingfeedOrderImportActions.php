@@ -87,6 +87,15 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         );
         
         $this->specificRulesManager = new ShoppingfeedAddon\OrderImport\RulesManager($apiOrder);
+            
+        // Specific rule : give a chance to tweak general data before using them
+        $this->specificRulesManager->applyRules(
+            'onPreProcess',
+            array(
+                'apiOrder' => $this->conveyor['apiOrder'],
+                'orderData' => $this->conveyor['orderData'],
+            )
+        );
         
         return true;
     }
@@ -215,6 +224,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                     $this->l('Could not find a valid carrier for order.', 'ShoppingfeedOrderImportActions'),
                 'Order'
             );
+            return false;
         }
         
         $this->conveyor['carrier'] = $carrier;
@@ -702,13 +712,30 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         );
         
         return true;
-   }
+    }
     
+    /**
+     * We'll assume that this action should not prevent the following actions
+     * from executing
+     */
     public function acknowledgeOrder()
     {
         /** @var ShoppingFeed\Sdk\Api\Order\OrderResource $apiOrder */
         $apiOrder = $this->conveyor['apiOrder'];
         $this->initProcess($apiOrder);
+        
+        if (empty($this->conveyor['sfOrder'])) {
+            $this->conveyor['sfOrder'] = ShoppingfeedOrder::getByShoppingfeedInternalId($apiOrder->getId());
+        }
+        
+        if (empty($this->conveyor['sfOrder'])) {
+            ProcessLoggerHandler::logError(
+                $this->logPrefix .
+                    $this->l('Could not retrieve associated sfOrder', 'ShoppingfeedOrderSyncActions'),
+                'Order'
+            );
+            return true;
+        }
         
         ProcessLoggerHandler::logInfo(
             $this->logPrefix .
@@ -723,7 +750,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                     $this->l('Could not retrieve Shopping Feed API.', 'ShoppingfeedOrderSyncActions'),
                 'Order'
             );
-            return false;
+            return true;
         }
         
         $result = $shoppingfeedApi->acknowledgeOrder(
@@ -731,14 +758,15 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             $this->conveyor['sfOrder']->name_marketplace,
             $this->conveyor['sfOrder']->id_order
         );
-        if (!$result) {
+        if (!$result || !iterator_count($result->getTickets())) {
             ProcessLoggerHandler::logError(
                 $this->logPrefix .
                     $this->l('Failed to acknowledge order on Shoppingfeed API.', 'ShoppingfeedOrderSyncActions'),
                 'Order'
             );
-            return false;
+            return true;
         }
+        
         
         return true;
     }

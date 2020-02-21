@@ -156,6 +156,23 @@ class ShoppingfeedOrder extends ObjectModel
         return $shoppingfeed_order_data ? true : false;
     }
     
+    public static function getByShoppingfeedInternalId($id_internal_shoppingfeed)
+    {
+        $query = new DbQuery();
+        $query->select('*')
+            ->from('shoppingfeed_order')
+            ->where("id_internal_shoppingfeed = " . (int)$id_internal_shoppingfeed);
+        $shoppingfeed_order_data = DB::getInstance()->getRow($query);
+
+        if ($shoppingfeed_order_data) {
+            $shoppingfeedOrder = new ShoppingfeedOrder();
+            $shoppingfeedOrder->hydrate($shoppingfeed_order_data);
+            return $shoppingfeedOrder;
+        }
+        
+        return false;
+    }
+    
     /**
      * Checks if a given marketplace manages quantities on its own
      * 
