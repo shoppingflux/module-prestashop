@@ -29,14 +29,53 @@ if (!defined('_PS_VERSION_')) {
 }
 
 /**
- * This interface represents a specific rule to be applied during an SF order
+ * This abstract class represents a specific rule to be applied during an SF order
  * import
  */
-interface RuleInterface {
+abstract class RuleAbstract {
+    
+    protected $configuration;
+    
+    public function __construct($configuration = array())
+    {
+        if (empty($configuration)) {
+            $configuration = $this->getDefaultConfiguration();
+        }
+        $this->configuration = $configuration;
+    }
     
     /**
      * Returns true if a rule is applicable to an SF order
      * @return bool
      */
-    function isApplicable(\ShoppingFeed\Sdk\Api\Order\OrderResource $apiOrder);
+    abstract public function isApplicable(\ShoppingFeed\Sdk\Api\Order\OrderResource $apiOrder);
+    
+    public function getConfiguration()
+    {
+        return $this->configuration;
+    }
+    
+    /**
+     * Gets default configuration for a rule
+     * 
+     * @return array
+     */
+    protected function getDefaultConfiguration()
+    {
+        return array();
+    }
+    
+    /**
+     * Gets the configuration subform for a rule.
+     * 
+     * @return array an array of arrays formatted as inputs for HelperForm.
+     */
+    public function getConfigurationSubform()
+    {
+        return array();
+    }
+    
+    abstract public function getDescription();
+    
+    abstract public function getConditions();
 }

@@ -29,14 +29,29 @@ if (!defined('_PS_VERSION_')) {
 }
 
 use Tools;
+use Translate;
 
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
 
-class Cdiscount implements \ShoppingfeedAddon\OrderImport\RuleInterface {
+class Cdiscount extends \ShoppingfeedAddon\OrderImport\RuleAbstract {
    
     public function isApplicable(OrderResource $apiOrder) {
         return preg_match('#^cdiscount$#', Tools::strtolower($apiOrder->getChannel()->getName()));
     }
     
     // TODO : Where is TotalFees on the new API ?
+    
+    /**
+     * @inheritdoc
+     */
+    public function getConditions() {
+        return Translate::getModuleTranslation('shoppingfeed', 'If the order is from CDiscount and has the \'TotalFees\' field set.', 'Cdiscount');
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getDescription() {
+        return Translate::getModuleTranslation('shoppingfeed', 'Adds an \'Operation Fee\' product to the order, so the amount will show in the invoice.', 'Cdiscount');
+    }
 }

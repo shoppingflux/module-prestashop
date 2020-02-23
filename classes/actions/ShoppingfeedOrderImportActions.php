@@ -86,7 +86,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             'Order'
         );
         
-        $this->specificRulesManager = new ShoppingfeedAddon\OrderImport\RulesManager($apiOrder);
+        $this->specificRulesManager = new ShoppingfeedAddon\OrderImport\RulesManager($this->conveyor['id_shop'], $apiOrder);
             
         // Specific rule : give a chance to tweak general data before using them
         $this->specificRulesManager->applyRules(

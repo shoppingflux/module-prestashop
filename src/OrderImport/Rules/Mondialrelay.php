@@ -41,7 +41,7 @@ use ShoppingFeed\Sdk\Api\Order\OrderResource;
 
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 
-class Mondialrelay implements \ShoppingfeedAddon\OrderImport\RuleInterface {
+class Mondialrelay extends \ShoppingfeedAddon\OrderImport\RuleAbstract {
    
     public function isApplicable(OrderResource $apiOrder)
     {
@@ -259,5 +259,19 @@ class Mondialrelay implements \ShoppingfeedAddon\OrderImport\RuleInterface {
             'enseigne' => $mondialRelayConfig['MR_ENSEIGNE_WEBSERVICE'],
             'apiKey' => $mondialRelayConfig['MR_KEY_WEBSERVICE'],
         );
+    }
+    
+    /**
+     * @inheritdoc
+     */
+    public function getConditions() {
+        return Translate::getModuleTranslation('shoppingfeed', 'If the order has \'Mondial Relay\' in its carrier name.', 'Mondialrelay');
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getDescription() {
+        return Translate::getModuleTranslation('shoppingfeed', 'Adds the order in the Mondial Relay module\'s table.', 'Mondialrelay');
     }
 }

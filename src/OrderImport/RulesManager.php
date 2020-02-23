@@ -30,12 +30,13 @@ if (!defined('_PS_VERSION_')) {
 
 use Tools;
 use Hook;
+use Configuration;
 
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
 
 /**
  * This class will manage a list of specific rules, and the execution of hooks
- * during the process
+ * during the order import process
  */
 class RulesManager {
     
@@ -45,9 +46,27 @@ class RulesManager {
     /** @var array $rules The rules to be applied */
     protected $rules = array();
     
-    public function __construct(OrderResource $apiOrder)
+    /** @var array $rulesConfiguration The rules configuration */
+    protected $rulesConfiguration = array();
+    
+    /**
+     * If no OrderResource is specified, the manager will retrieve all rules but
+     * never execute them.
+     * 
+     * @param OrderResource $apiOrder
+     */
+    public function __construct($id_shop, OrderResource $apiOrder = null)
     {
         $this->apiOrder = $apiOrder;
+        $this->rulesConfiguration = Tools::jsonDecode(
+            Configuration::get(
+                \ShoppingFeed::ORDER_IMPORT_SPECIFIC_RULES_CONFIGURATION,
+                null,
+                null,
+                $id_shop
+            ),
+            true
+        );
         
         $rulesClassNames = $this->getDefaultRulesClasses();
         
@@ -59,13 +78,22 @@ class RulesManager {
         );
         
         foreach($rulesClassNames as $ruleClassName) {
-            $this->addRule(new $ruleClassName());
+            $this->addRule(new $ruleClassName(
+                isset($this->rulesConfiguration[$ruleClassName]) ? $this->rulesConfiguration[$ruleClassName] : array())
+            );
         }
     }
     
-    public function addRule(RuleInterface $ruleObject)
+    /**
+     * Adds a rule to the manager. If an OrderResource was given, checks if the
+     * rule matches the order.
+     * 
+     * @param \ShoppingfeedAddon\OrderImport\RuleInterface $ruleObject
+     * @return boolean
+     */
+    protected function addRule(RuleAbstract $ruleObject)
     {
-        if ($ruleObject->isApplicable($this->apiOrder)) {
+        if (!$this->apiOrder || $ruleObject->isApplicable($this->apiOrder)) {
             $this->rules[get_class($ruleObject)] = $ruleObject;
             return true;
         }
@@ -94,13 +122,18 @@ class RulesManager {
     
     /**
      * Applies all rules for a given event. If a rule should stop the process,
-     * an exception should be thrown.
+     * an exception should be thrown. No rules will be applied if no
+     * OrderResource was given.
      * 
      * @param string $eventName
      * @param array $params
      */
     public function applyRules($eventName, $params)
     {
+        if (!$this->apiOrder) {
+            return;
+        }
+        
         foreach ($this->rules as $rule) {
             if (is_callable(array($rule, $eventName))) {
                 $rule->{$eventName}($params);
@@ -108,4 +141,19 @@ class RulesManager {
         }
     }
     
+    public function getRulesInformation()
+    {
+        $rulesInformation = array();
+        foreach($this->rules as $rule) {
+            $rulesInformation[] = array(
+                'className' => get_class($rule),
+                'conditions' => $rule->getConditions(),
+                'description' => $rule->getDescription(),
+                'configurationSubform' => $rule->getConfigurationSubform(),
+                'configuration' => $rule->getConfiguration(),
+            );
+        }
+        
+        return $rulesInformation;
+    }
 }

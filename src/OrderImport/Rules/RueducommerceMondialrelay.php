@@ -29,6 +29,7 @@ if (!defined('_PS_VERSION_')) {
 }
 
 use Tools;
+use Translate;
 
 use ShoppingfeedClasslib\Registry;
 
@@ -41,7 +42,7 @@ use ShoppingFeed\Sdk\Api\Order\OrderResource;
  * Therefore we need to extract the relay ID from the ShippingMethod and then
  * rebuild the ShippingMethod without the relay ID
  */
-class RueducommerceMondialrelay implements \ShoppingfeedAddon\OrderImport\RuleInterface {
+class RueducommerceMondialrelay extends \ShoppingfeedAddon\OrderImport\RuleAbstract {
    
     public function isApplicable(OrderResource $apiOrder)
     {
@@ -58,21 +59,39 @@ class RueducommerceMondialrelay implements \ShoppingfeedAddon\OrderImport\RuleIn
     }
     
     /**
-     * Updates the carrier name before it's used to get a carrier
+     * Updates the carrier name before it's used
      * 
-     * @param type $params
+     * @param array $params
      */
-    public function onCarrierRetrieval($params)
+    public function onPreProcess($params)
     {
+        /** @var \ShoppingfeedAddon\OrderImport\OrderData $orderData */
+        $orderData = $params['orderData'];
+        
         // Split the carrier name
-        $explodedCarrier = explode(' ', $params['apiOrderShipment']['carrier']);
+        $explodedCarrier = explode(' ', $orderData->shipment['carrier']);
         // Remove the relay ID
         $mondialRelayID = array_pop($explodedCarrier);
+        
         // Rebuild the carrier name; it should be found properly
-        $params['apiOrderShipment']['carrier'] = implode($explodedCarrier, " ");
+        $orderData->shipment['carrier'] = implode($explodedCarrier, " ");
         
         // Save the relay ID in the "Other" field so it can be used by the main
         // Mondial Relay rule
         // TODO : where is the "$order->Other" field in the new API ?
+    }
+    
+    /**
+     * @inheritdoc
+     */
+    public function getConditions() {
+        return Translate::getModuleTranslation('shoppingfeed', 'If the order is from Rue du Commerce and has \'Mondial Relay\' in its carrier name.', 'RueducommerceMondialrelay');
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getDescription() {
+        return Translate::getModuleTranslation('shoppingfeed', 'Removes the relay ID from the carrier name. Sets it in the proper field to be used by the main Mondial Relay rule.', 'RueducommerceMondialrelay');
     }
 }

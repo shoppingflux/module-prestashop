@@ -29,10 +29,11 @@ if (!defined('_PS_VERSION_')) {
 }
 
 use Tools;
+use Translate;
 
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
 
-class AmazonPrime implements \ShoppingfeedAddon\OrderImport\RuleInterface {
+class AmazonPrime extends \ShoppingfeedAddon\OrderImport\RuleAbstract {
    
     public function isApplicable(OrderResource $apiOrder) {
         // TODO : OrderResource should likely have a "getAdditionalFields" method
@@ -40,14 +41,28 @@ class AmazonPrime implements \ShoppingfeedAddon\OrderImport\RuleInterface {
         $apiOrderAdditionalFields = $apiOrderData['additionalFields'];
         
         return preg_match('#^amazon#', Tools::strtolower($apiOrder->getChannel()->getName()))
-            /*&& !empty($apiOrderAdditionalFields['is_prime'])*/;
+            && !empty($apiOrderAdditionalFields['is_prime']);
     }
     
-    // TODO : set payment method as "amazon prime"
     public function onPreProcess($params)
     {
         /** @var \ShoppingfeedAddon\OrderImport\OrderData $orderData */
         $orderData = $params['orderData'];
         $orderData->payment['method'] = 'amazon prime';
     }
+    
+    /**
+     * @inheritdoc
+     */
+    public function getConditions() {
+        return Translate::getModuleTranslation('shoppingfeed', 'If the order is from Amazon and has \'is_prime\' set in its additional fields.', 'AmazonPrime');
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getDescription() {
+        return Translate::getModuleTranslation('shoppingfeed', 'Sets the order\'s payment method as \'Amazon Prime\' in the module\'s \'Marketplaces Summary\'.', 'AmazonPrime');
+    }
+
 }

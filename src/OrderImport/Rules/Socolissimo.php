@@ -35,12 +35,13 @@ use Country;
 use Customer;
 use Configuration;
 use Carrier;
+use Translate;
 
 use ShoppingfeedClasslib\Registry;
 
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
 
-class Socolissimo implements \ShoppingfeedAddon\OrderImport\RuleInterface {
+class Socolissimo extends \ShoppingfeedAddon\OrderImport\RuleAbstract {
    
     public function isApplicable(OrderResource $apiOrder) {
         // There's no check on the carrier name in the old module, so we won't
@@ -194,5 +195,19 @@ class Socolissimo implements \ShoppingfeedAddon\OrderImport\RuleInterface {
         }
 
         return (bool)$so_delivery->saveDelivery();
+    }
+    
+    /**
+     * @inheritdoc
+     */
+    public function getConditions() {
+        return Translate::getModuleTranslation('shoppingfeed', 'If the \'soliberte\' or \'soflexibilite\' module is installed.', 'Socolissimo');
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getDescription() {
+        return Translate::getModuleTranslation('shoppingfeed', 'Adds the order in the corresponding module\'s table.', 'Socolissimo');
     }
 }
