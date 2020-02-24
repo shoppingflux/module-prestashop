@@ -69,10 +69,13 @@ class AmazonEbay extends \ShoppingfeedAddon\OrderImport\RuleAbstract {
     
     public function updateAddress(&$address)
     {
+        $address['firstName'] = trim($address['firstName']);
+        $address['lastName'] = trim($address['lastName']);
+        
         if (empty($address['firstName'])) {
-            $fullname = trim($address['lastName']);
+            $fullname = $address['lastName'];
         } else {
-            $fullname = trim($address['firstName']);
+            $fullname = $address['firstName'];
         }
         
         $explodedFullname = explode(" ", $fullname);
