@@ -17,7 +17,6 @@ use ShoppingfeedClasslib\Actions\DefaultActions;
 use ShoppingfeedAddon\OrderImport\OrderData;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 
-
 require_once(_PS_MODULE_DIR_ . 'shoppingfeed/classes/ShoppingfeedCarrier.php');
 require_once(_PS_MODULE_DIR_ . 'shoppingfeed/classes/ShoppingfeedOrder.php');
 require_once(_PS_MODULE_DIR_ . 'shoppingfeed/classes/ShoppingfeedPaymentModule.php');
@@ -47,8 +46,8 @@ class ShoppingfeedOrderImportActions extends DefaultActions
     }
     
     /**
-     * Sets generic variables in the action class 
-     * 
+     * Sets generic variables in the action class
+     *
      * @param ShoppingFeed\Sdk\Api\Order\OrderResource $apiOrder
      */
     protected function initProcess(ShoppingFeed\Sdk\Api\Order\OrderResource $apiOrder)
@@ -135,7 +134,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         $sfModule = Module::getInstanceByName('shoppingfeed');
         
         /** @var ShoppingfeedAddon\OrderImport\OrderItemData $apiProduct */
-        foreach($this->conveyor['orderData']->items as &$apiProduct) {
+        foreach ($this->conveyor['orderData']->items as &$apiProduct) {
             $psProduct = $sfModule->mapPrestashopProduct(
                 $apiProduct->reference,
                 $this->conveyor['id_shop']
@@ -358,7 +357,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                         'apiOrder' => $apiOrder,
                     )
                 );
-               $billingAddress->save();
+                $billingAddress->save();
             } catch (Exception $e) {
                 throw new Exception(sprintf(
                     $this->l('Address %s could not be created : %s', 'ShoppingfeedOrderImportActions'),
@@ -400,7 +399,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                         'apiOrder' => $apiOrder,
                     )
                 );
-               $shippingAddress->save();
+                $shippingAddress->save();
             } catch (Exception $e) {
                 throw new Exception(sprintf(
                     $this->l('Address %s could not be created : %s', 'ShoppingfeedOrderImportActions'),
@@ -418,7 +417,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         }
         
         /* Check products quantities
-         * 
+         *
          * Check if there is enough stock associated to the products before
          * creating the order. If the stock is not sufficient, it will be
          * increased just enough to avoid an error during the creation of the
@@ -438,7 +437,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         $isAdvancedStockEnabled = Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT') == 1 ? true : false;
         
         /** @var ShoppingfeedAddon\OrderImport\OrderItemData $apiProduct */
-        foreach($this->conveyor['orderData']->items as &$apiProduct) {
+        foreach ($this->conveyor['orderData']->items as &$apiProduct) {
             $psProduct = $this->conveyor['prestashopProducts'][$apiProduct->reference];
             $useAdvancedStock = $isAdvancedStockEnabled && $psProduct->advanced_stock_management;
             
@@ -552,7 +551,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
 
         // Add products to cart
         /** @var ShoppingfeedAddon\OrderImport\OrderItemData $apiProduct */
-        foreach($this->conveyor['orderData']->items as &$apiProduct) {
+        foreach ($this->conveyor['orderData']->items as &$apiProduct) {
             $psProduct = $this->conveyor['prestashopProducts'][$apiProduct->reference];
             try {
                 $addToCartResult = $cart->updateQty(
@@ -791,7 +790,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         
         // See old module _updatePrices()
         /** @var ShoppingfeedAddon\OrderImport\OrderItemData $apiProduct */
-        foreach($this->conveyor['orderData']->items as &$apiProduct) {
+        foreach ($this->conveyor['orderData']->items as &$apiProduct) {
             /** @var Product $psProduct */
             $psProduct = $this->conveyor['prestashopProducts'][$apiProduct->reference];
             
@@ -951,7 +950,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
     
     /**
      * Retrieves an address using it's alias, and creates or rewrites it
-     * 
+     *
      * @param array $apiAddress
      * @param \Customer $customer
      * @param string $addressAlias
@@ -1044,7 +1043,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
      * management.
      * We'll check if the total quantity is available in a single warehouse,
      * to avoid splitting the order.
-     * 
+     *
      * @param Product $product
      * @param int $quantityOrdered
      * @return boolean true if the order can be placed; false otherwise
@@ -1080,4 +1079,3 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         return false;
     }
 }
-

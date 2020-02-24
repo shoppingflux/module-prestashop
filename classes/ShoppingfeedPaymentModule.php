@@ -26,5 +26,6 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-class ShoppingfeedPaymentModule extends PaymentModule {
+class ShoppingfeedPaymentModule extends PaymentModule
+{
 }

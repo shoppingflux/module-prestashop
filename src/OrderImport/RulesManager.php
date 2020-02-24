@@ -38,7 +38,8 @@ use ShoppingFeed\Sdk\Api\Order\OrderResource;
  * This class will manage a list of specific rules, and the execution of hooks
  * during the order import process
  */
-class RulesManager {
+class RulesManager
+{
     
     /** @var ShoppingFeed\Sdk\Api\Order\OrderResource $apiOrder */
     protected $apiOrder;
@@ -52,7 +53,7 @@ class RulesManager {
     /**
      * If no OrderResource is specified, the manager will retrieve all rules but
      * never execute them.
-     * 
+     *
      * @param OrderResource $apiOrder
      */
     public function __construct($id_shop, OrderResource $apiOrder = null)
@@ -77,9 +78,11 @@ class RulesManager {
             )
         );
         
-        foreach($rulesClassNames as $ruleClassName) {
-            $this->addRule(new $ruleClassName(
-                isset($this->rulesConfiguration[$ruleClassName]) ? $this->rulesConfiguration[$ruleClassName] : array())
+        foreach ($rulesClassNames as $ruleClassName) {
+            $this->addRule(
+                new $ruleClassName(
+                isset($this->rulesConfiguration[$ruleClassName]) ? $this->rulesConfiguration[$ruleClassName] : array()
+            )
             );
         }
     }
@@ -87,7 +90,7 @@ class RulesManager {
     /**
      * Adds a rule to the manager. If an OrderResource was given, checks if the
      * rule matches the order.
-     * 
+     *
      * @param \ShoppingfeedAddon\OrderImport\RuleInterface $ruleObject
      * @return boolean
      */
@@ -106,12 +109,12 @@ class RulesManager {
         $files = scandir($defaultRulesPath);
         $classNames = array();
         
-        foreach($files as $filename) {
+        foreach ($files as $filename) {
             if (Tools::strpos($filename, '.') === 0) {
                 continue;
             }
             
-            $className = "ShoppingfeedAddon\OrderImport\Rules\\" . substr($filename, 0, strrpos($filename, "."));
+            $className = "ShoppingfeedAddon\OrderImport\Rules\\" . Tools::substr($filename, 0, strrpos($filename, "."));
             if (class_exists($className)) {
                 $classNames[] = $className;
             }
@@ -124,7 +127,7 @@ class RulesManager {
      * Applies all rules for a given event. If a rule should stop the process,
      * an exception should be thrown. No rules will be applied if no
      * OrderResource was given.
-     * 
+     *
      * @param string $eventName
      * @param array $params
      */
@@ -144,7 +147,7 @@ class RulesManager {
     public function getRulesInformation()
     {
         $rulesInformation = array();
-        foreach($this->rules as $rule) {
+        foreach ($this->rules as $rule) {
             $rulesInformation[] = array(
                 'className' => get_class($rule),
                 'conditions' => $rule->getConditions(),

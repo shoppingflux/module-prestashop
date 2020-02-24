@@ -35,13 +35,14 @@ use ShoppingFeed\Sdk\Api\Order\OrderResource;
 
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 
-class CdiscountRelay extends \ShoppingfeedAddon\OrderImport\RuleAbstract {
-   
-    public function isApplicable(OrderResource $apiOrder) {
+class CdiscountRelay extends \ShoppingfeedAddon\OrderImport\RuleAbstract
+{
+    public function isApplicable(OrderResource $apiOrder)
+    {
         $apiOrderShipment = $apiOrder->getShipment();
         return preg_match('#^cdiscount$#', Tools::strtolower($apiOrder->getChannel()->getName()))
             && (
-                $apiOrderShipment['carrier'] === "SO1" 
+                $apiOrderShipment['carrier'] === "SO1"
                 || $apiOrderShipment['carrier'] === "REL"
                 || $apiOrderShipment['carrier'] === "RCO"
             )
@@ -51,7 +52,7 @@ class CdiscountRelay extends \ShoppingfeedAddon\OrderImport\RuleAbstract {
     /**
      * We have to do this on preprocess, as the fields may be used in various
      * steps
-     * 
+     *
      * @param array $params
      */
     public function onPreProcess($params)
@@ -66,7 +67,7 @@ class CdiscountRelay extends \ShoppingfeedAddon\OrderImport\RuleAbstract {
         $logPrefix .= '[' . $params['apiOrder']->getReference() . '] ' . self::class . ' | ';
         
         ProcessLoggerHandler::logInfo(
-                $logPrefix .
+            $logPrefix .
                     Translate::getModuleTranslation('shoppingfeed', 'Updating CDiscount billing address to set relay ID...', 'CdiscountRelay'),
             'Order'
         );
@@ -74,7 +75,7 @@ class CdiscountRelay extends \ShoppingfeedAddon\OrderImport\RuleAbstract {
         $this->updateAddress($orderData->shippingAddress);
         
         ProcessLoggerHandler::logInfo(
-                $logPrefix .
+            $logPrefix .
                     Translate::getModuleTranslation('shoppingfeed', 'Updating CDiscount shipping address to set relay ID...', 'CdiscountRelay'),
             'Order'
         );
@@ -87,7 +88,7 @@ class CdiscountRelay extends \ShoppingfeedAddon\OrderImport\RuleAbstract {
      * The relay ID is in "lastname", and the actual lastname is appended to "firstname".
      * The relay ID should (apparently) be in "company".
      * The old function didn't alter the API address, so we won't do it either.
-     * 
+     *
      * @param array $address
      */
     public function updateAddress(&$address)
@@ -116,14 +117,16 @@ class CdiscountRelay extends \ShoppingfeedAddon\OrderImport\RuleAbstract {
     /**
      * @inheritdoc
      */
-    public function getConditions() {
+    public function getConditions()
+    {
         return Translate::getModuleTranslation('shoppingfeed', 'If the order is from CDiscount and the carrier is \'SO1\', \'REL\' or \'RCO\'.', 'CdiscountRelay');
     }
 
     /**
      * @inheritdoc
      */
-    public function getDescription() {
+    public function getDescription()
+    {
         return Translate::getModuleTranslation('shoppingfeed', 'Retrieves  the relay ID from the \'lastname\' field and puts it in \'company\'. If a company is already set, appends it to \'address (2)\'. Fills the \'lastname\' field with everything after the first space from \'firstname\'.', 'CdiscountRelay');
     }
 }

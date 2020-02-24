@@ -42,8 +42,8 @@ use ShoppingFeed\Sdk\Api\Order\OrderResource;
  * Therefore we need to extract the relay ID from the ShippingMethod and then
  * rebuild the ShippingMethod without the relay ID
  */
-class RueducommerceMondialrelay extends \ShoppingfeedAddon\OrderImport\RuleAbstract {
-   
+class RueducommerceMondialrelay extends \ShoppingfeedAddon\OrderImport\RuleAbstract
+{
     public function isApplicable(OrderResource $apiOrder)
     {
         $apiOrderShipment = $apiOrder->getShipment();
@@ -60,7 +60,7 @@ class RueducommerceMondialrelay extends \ShoppingfeedAddon\OrderImport\RuleAbstr
     
     /**
      * Updates the carrier name before it's used
-     * 
+     *
      * @param array $params
      */
     public function onPreProcess($params)
@@ -84,14 +84,16 @@ class RueducommerceMondialrelay extends \ShoppingfeedAddon\OrderImport\RuleAbstr
     /**
      * @inheritdoc
      */
-    public function getConditions() {
+    public function getConditions()
+    {
         return Translate::getModuleTranslation('shoppingfeed', 'If the order is from Rue du Commerce and has \'Mondial Relay\' in its carrier name.', 'RueducommerceMondialrelay');
     }
 
     /**
      * @inheritdoc
      */
-    public function getDescription() {
+    public function getDescription()
+    {
         return Translate::getModuleTranslation('shoppingfeed', 'Removes the relay ID from the carrier name. Sets it in the proper field to be used by the main Mondial Relay rule.', 'RueducommerceMondialrelay');
     }
 }

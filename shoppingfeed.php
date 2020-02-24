@@ -335,13 +335,15 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         return true;
     }
 
-    public function setConfigurationDefault($key, $defaultValue, $id_shop) {
+    public function setConfigurationDefault($key, $defaultValue, $id_shop)
+    {
         if (!Configuration::hasKey($key, null, null, $id_shop)) {
             Configuration::updateValue($key, $defaultValue, null, null, $id_shop);
         }
     }
     
-    public function setBreakingChangesNotices() {
+    public function setBreakingChangesNotices()
+    {
         if (version_compare($this->version, '1.2', '<')) {
             $this->context->controller->warnings[] = sprintf(
                 $this->l('If you are using a Cron task for synchronisation, please note that starting from the v1.1.0 of the module, you should change the URL of your Cron task. Please use the %s shoppingfeed:syncProduct %s Cron task instead of %s shoppingfeed:syncStock %s (you can still use the %s shoppingfeed:syncStock %s Cron task in the v1.1.0 of the module). To get the new Cron task URL please check the %s Scheduled tasks %s tab.'),
@@ -358,10 +360,10 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     }
 
     /**
-     * 
+     *
      * @return boolean
      */
-    static public function isOrderSyncAvailable($id_shop = null)
+    public static function isOrderSyncAvailable($id_shop = null)
     {
         // Is the old module installed ?
         if (Module::isInstalled('shoppingfluxexport') && (
@@ -369,30 +371,30 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
                 Configuration::get('SHOPPING_FLUX_STATUS_SHIPPED', null, null, $id_shop) != ''
                 // Is order "canceled" status sync disabled in the old module ?
                 || Configuration::get('SHOPPING_FLUX_STATUS_CANCELED', null, null, $id_shop) != ''
-            )
+        )
         ) {
-             return false;
+            return false;
         }
 
-       return true;
+        return true;
     }
 
     /**
      * Checks if order import can be activated
      * @return boolean
      */
-    static public function isOrderImportAvailable($id_shop = null)
+    public static function isOrderImportAvailable($id_shop = null)
     {
         // Is the old module installed ?
         if (Module::isInstalled('shoppingfluxexport') && (
                 // Is order import disabled in the old module ?
                 Configuration::get('SHOPPING_FLUX_ORDERS', null, null, $id_shop) != ''
-            )
+        )
         ) {
-             return false;
+            return false;
         }
 
-       return true;
+        return true;
     }
 
     /**
@@ -648,7 +650,8 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         // If all goes well, they should already be cached...
         $old_combination = new Combination($combination->id);
         if ((float)$old_combination->price == (float)$combination->price &&
-            (!\ShoppingfeedClasslib\Registry::isRegistered('updated_product_prices_ids') ||
+            (
+                !\ShoppingfeedClasslib\Registry::isRegistered('updated_product_prices_ids') ||
                 !in_array($combination->id_product, \ShoppingfeedClasslib\Registry::get('updated_product_prices_ids'))
             )) {
             return;
@@ -744,7 +747,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
 
     /**
      * This hook is used to "record" SF orders imported using the old module.
-     * 
+     *
      * @param type array
      * @return void
      */
@@ -764,7 +767,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         try {
             \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logInfo(
                 sprintf(
-                    ShoppingfeedOrderSyncActions::getLogPrefix($currentOrder->id) . ' ' . 
+                    ShoppingfeedOrderSyncActions::getLogPrefix($currentOrder->id) . ' ' .
                         $this->l('Start import Order %s ', 'ShoppingfeedOrderActions'),
                     $currentOrder->id
                 ),
@@ -801,7 +804,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     
     /**
      * Saves an order for status synchronization
-     * 
+     *
      * @param type $params
      * @return type
      */
@@ -834,7 +837,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         try {
             \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logInfo(
                 sprintf(
-                    $logPrefix . ' ' . 
+                    $logPrefix . ' ' .
                         $this->l('Process started Order %s ', 'ShoppingfeedOrderActions'),
                     $shoppingFeedOrder->id_order
                 ),
@@ -852,7 +855,8 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         } catch (Exception $e) {
             \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logInfo(
                 sprintf(
-                    $logPrefix . ' ' . $this->l('Order %s not registered for synchronization: %s', 'ShoppingfeedOrderActions'), $params['id_order'],
+                    $logPrefix . ' ' . $this->l('Order %s not registered for synchronization: %s', 'ShoppingfeedOrderActions'),
+                    $params['id_order'],
                     $e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine()
                 ),
                 'Order',
@@ -862,5 +866,4 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
 
         \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::closeLogger();
     }
-
 }

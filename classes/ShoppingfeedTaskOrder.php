@@ -117,9 +117,9 @@ class ShoppingfeedTaskOrder extends ObjectModel
      * false if none was found.
      * @param $id_order
      * @param $action
-     * 
+     *
      * @return bool|ShoppingfeedTaskOrder
-     * 
+     *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */

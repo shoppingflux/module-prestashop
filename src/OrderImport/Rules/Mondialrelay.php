@@ -31,6 +31,7 @@ if (!defined('_PS_VERSION_')) {
 use Tools;
 use Configuration;
 use DbQuery;
+use Db;
 use Translate;
 use Address;
 use Country;
@@ -41,8 +42,8 @@ use ShoppingFeed\Sdk\Api\Order\OrderResource;
 
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 
-class Mondialrelay extends \ShoppingfeedAddon\OrderImport\RuleAbstract {
-   
+class Mondialrelay extends \ShoppingfeedAddon\OrderImport\RuleAbstract
+{
     public function isApplicable(OrderResource $apiOrder)
     {
         $apiOrderShipment = $apiOrder->getShipment();
@@ -145,7 +146,7 @@ class Mondialrelay extends \ShoppingfeedAddon\OrderImport\RuleAbstract {
         
         // Depending of the marketplace, the length of the relay ID is not the same. (5 digits, 6 digits).
         // We force a 6 digits string required by Mondial Relay
-        $formattedRelayId = str_pad($relayId, 6, '0',  STR_PAD_LEFT);
+        $formattedRelayId = str_pad($relayId, 6, '0', STR_PAD_LEFT);
 
         $insertResult = Db::getInstance()->insert(
             'mr_selected',
@@ -183,7 +184,7 @@ class Mondialrelay extends \ShoppingfeedAddon\OrderImport\RuleAbstract {
     
     /**
      * Gets relay info from the Mondial Relay API
-     * 
+     *
      * @param ShoppingFeed\Sdk\Api\Order\OrderResource $apiOrder
      * @param string $relayId
      * @param string $countryIso
@@ -195,7 +196,8 @@ class Mondialrelay extends \ShoppingfeedAddon\OrderImport\RuleAbstract {
             Translate::getModuleTranslation('shoppingfeed', '[Order: %s]', 'Mondialrelay'),
             $apiOrder->getId()
         );
-        $logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';;
+        $logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
+        ;
         
         $mondialRelayConfig = $this->getMondialRelayConfig();
         // Mondial relay module not configured
@@ -219,7 +221,7 @@ class Mondialrelay extends \ShoppingfeedAddon\OrderImport\RuleAbstract {
         $client->soap_defencoding = 'UTF-8';
         $client->decode_utf8 = false;
 
-        $params = array (
+        $params = array(
             'Enseigne' => $mondialRelayConfig['enseigne'],
             'Num' => $relayId,
             'Pays' => $countryIso,
@@ -264,14 +266,16 @@ class Mondialrelay extends \ShoppingfeedAddon\OrderImport\RuleAbstract {
     /**
      * @inheritdoc
      */
-    public function getConditions() {
+    public function getConditions()
+    {
         return Translate::getModuleTranslation('shoppingfeed', 'If the order has \'Mondial Relay\' in its carrier name.', 'Mondialrelay');
     }
 
     /**
      * @inheritdoc
      */
-    public function getDescription() {
+    public function getDescription()
+    {
         return Translate::getModuleTranslation('shoppingfeed', 'Adds the order in the Mondial Relay module\'s table.', 'Mondialrelay');
     }
 }

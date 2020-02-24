@@ -33,9 +33,10 @@ use Translate;
 
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
 
-class AmazonEbay extends \ShoppingfeedAddon\OrderImport\RuleAbstract {
-   
-    public function isApplicable(OrderResource $apiOrder) {
+class AmazonEbay extends \ShoppingfeedAddon\OrderImport\RuleAbstract
+{
+    public function isApplicable(OrderResource $apiOrder)
+    {
         if (empty($this->configuration['enabled'])) {
             return false;
         }
@@ -45,7 +46,8 @@ class AmazonEbay extends \ShoppingfeedAddon\OrderImport\RuleAbstract {
         
         return !empty($this->configuration['enabled'])
             && preg_match('#^(cdiscount|ebay)$#', Tools::strtolower($apiOrder->getChannel()->getName()))
-            && (empty($shippingAddress['firstName'])
+            && (
+                empty($shippingAddress['firstName'])
                 || empty($shippingAddress['lastName'])
                 || empty($billingAddress['firstName'])
                 || empty($billingAddress['lastName'])
@@ -55,7 +57,7 @@ class AmazonEbay extends \ShoppingfeedAddon\OrderImport\RuleAbstract {
     /**
      * We have to do this on preprocess, as the fields may be used in various
      * steps
-     * 
+     *
      * @param array $params
      */
     public function onPreProcess($params)
@@ -88,21 +90,24 @@ class AmazonEbay extends \ShoppingfeedAddon\OrderImport\RuleAbstract {
     /**
      * @inheritdoc
      */
-    public function getConditions() {
+    public function getConditions()
+    {
         return Translate::getModuleTranslation('shoppingfeed', 'If the order is from Amazon or Ebay and has an empty \'firstname\' or \'lastname\' field in its addresses.', 'AmazonEbay');
     }
 
     /**
      * @inheritdoc
      */
-    public function getDescription() {
+    public function getDescription()
+    {
         return Translate::getModuleTranslation('shoppingfeed', 'Removes everything after the first space in the filled field and moves it to the empty field.', 'AmazonEbay');
     }
     
     /**
      * @inheritdoc
      */
-    public function getConfigurationSubform() {
+    public function getConfigurationSubform()
+    {
         return array(
             array(
                 'type' => 'switch',
@@ -124,7 +129,8 @@ class AmazonEbay extends \ShoppingfeedAddon\OrderImport\RuleAbstract {
     /**
      * @inheritdoc
      */
-    public function getDefaultConfiguration() {
+    public function getDefaultConfiguration()
+    {
         return array('enabled' => true);
     }
 }

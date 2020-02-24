@@ -75,17 +75,17 @@ class AdminShoppingfeedOrderImportRulesController extends ModuleAdminController
         }
         
         $fields_value = array();
-        foreach($rulesInformation as $ruleInformation) {
+        foreach ($rulesInformation as $ruleInformation) {
             if (empty($ruleInformation['configurationSubform'])) {
                 continue;
             }
             
             $ruleConfiguration = $ruleInformation['configuration'];
-            foreach($ruleInformation['configurationSubform'] as &$field) {
-                $fieldName = 'rulesConfiguration[' . 
-                    $ruleInformation['className'] . 
-                    '][' . 
-                    $field['name'] . 
+            foreach ($ruleInformation['configurationSubform'] as &$field) {
+                $fieldName = 'rulesConfiguration[' .
+                    $ruleInformation['className'] .
+                    '][' .
+                    $field['name'] .
                     ']';
                 
                 $fields_value[$fieldName] = $ruleConfiguration[$field['name']];
@@ -153,5 +153,4 @@ class AdminShoppingfeedOrderImportRulesController extends ModuleAdminController
             $this->context->shop->id
         );
     }
-    
 }

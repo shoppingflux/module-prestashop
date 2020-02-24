@@ -32,8 +32,8 @@ if (!defined('_PS_VERSION_')) {
  * This abstract class represents a specific rule to be applied during an SF order
  * import
  */
-abstract class RuleAbstract {
-    
+abstract class RuleAbstract
+{
     protected $configuration;
     
     public function __construct($configuration = array())
@@ -57,7 +57,7 @@ abstract class RuleAbstract {
     
     /**
      * Gets default configuration for a rule
-     * 
+     *
      * @return array
      */
     protected function getDefaultConfiguration()
@@ -67,7 +67,7 @@ abstract class RuleAbstract {
     
     /**
      * Gets the configuration subform for a rule.
-     * 
+     *
      * @return array an array of arrays formatted as inputs for HelperForm.
      */
     public function getConfigurationSubform()

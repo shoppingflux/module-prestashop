@@ -33,9 +33,10 @@ use Translate;
 
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
 
-class AmazonPrime extends \ShoppingfeedAddon\OrderImport\RuleAbstract {
-   
-    public function isApplicable(OrderResource $apiOrder) {
+class AmazonPrime extends \ShoppingfeedAddon\OrderImport\RuleAbstract
+{
+    public function isApplicable(OrderResource $apiOrder)
+    {
         // TODO : OrderResource should likely have a "getAdditionalFields" method
         $apiOrderData = $apiOrder->toArray();
         $apiOrderAdditionalFields = $apiOrderData['additionalFields'];
@@ -54,15 +55,16 @@ class AmazonPrime extends \ShoppingfeedAddon\OrderImport\RuleAbstract {
     /**
      * @inheritdoc
      */
-    public function getConditions() {
+    public function getConditions()
+    {
         return Translate::getModuleTranslation('shoppingfeed', 'If the order is from Amazon and has \'is_prime\' set in its additional fields.', 'AmazonPrime');
     }
 
     /**
      * @inheritdoc
      */
-    public function getDescription() {
+    public function getDescription()
+    {
         return Translate::getModuleTranslation('shoppingfeed', 'Sets the order\'s payment method as \'Amazon Prime\' in the module\'s \'Marketplaces Summary\'.', 'AmazonPrime');
     }
-
 }

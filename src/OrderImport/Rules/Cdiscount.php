@@ -33,9 +33,10 @@ use Translate;
 
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
 
-class Cdiscount extends \ShoppingfeedAddon\OrderImport\RuleAbstract {
-   
-    public function isApplicable(OrderResource $apiOrder) {
+class Cdiscount extends \ShoppingfeedAddon\OrderImport\RuleAbstract
+{
+    public function isApplicable(OrderResource $apiOrder)
+    {
         return preg_match('#^cdiscount$#', Tools::strtolower($apiOrder->getChannel()->getName()));
     }
     
@@ -44,14 +45,16 @@ class Cdiscount extends \ShoppingfeedAddon\OrderImport\RuleAbstract {
     /**
      * @inheritdoc
      */
-    public function getConditions() {
+    public function getConditions()
+    {
         return Translate::getModuleTranslation('shoppingfeed', 'If the order is from CDiscount and has the \'TotalFees\' field set.', 'Cdiscount');
     }
 
     /**
      * @inheritdoc
      */
-    public function getDescription() {
+    public function getDescription()
+    {
         return Translate::getModuleTranslation('shoppingfeed', 'Adds an \'Operation Fee\' product to the order, so the amount will show in the invoice.', 'Cdiscount');
     }
 }

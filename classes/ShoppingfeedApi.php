@@ -221,7 +221,7 @@ class ShoppingfeedApi
             $operation = new \ShoppingFeed\Sdk\Api\Order\OrderOperation();
 
             foreach ($taskOrders as $taskOrder) {
-                switch($taskOrder['operation']) {
+                switch ($taskOrder['operation']) {
                     case OrderOperation::TYPE_SHIP:
                         $operation->ship(
                             $taskOrder['reference_marketplace'],
@@ -317,7 +317,7 @@ class ShoppingfeedApi
             ProcessLoggerHandler::logError(
                 sprintf(
                     'API error (getOrdersApi): %s',
-                    $e->getMessage()
+                    $ex->getMessage()
                 )
             );
             return false;
@@ -337,7 +337,7 @@ class ShoppingfeedApi
                     (string)$name_marketplace,
                     (string)$id_order_prestashop,
                     'success'
-            );
+                );
             
             return $orderApi->execute($operation);
         } catch (Exception $e) {

@@ -161,7 +161,7 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
                         array(
                             'type' => 'shoppingfeed_carrier-matching',
                             'marketplace_filter_options' => array_map(
-                                function($m) {
+                                function ($m) {
                                     return array(
                                         'value' => $m,
                                         'label' => $m,
@@ -173,7 +173,7 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
                             'carriers_matching_field' => array(
                                 'name' => 'shoppingfeed_carrier_matching',
                                 'labels' => array_map(
-                                    function($c) {
+                                    function ($c) {
                                         return str_replace(' ', '_', $c->name_marketplace) .
                                             '_' .
                                             str_replace(' ', '_', $c->name_carrier);
@@ -182,7 +182,7 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
                                 ),
                             ),
                             'carriers' => array_map(
-                                function($c) {
+                                function ($c) {
                                     return array(
                                         'value' => $c['id_reference'],
                                         'label' => $c['name'],
@@ -222,7 +222,8 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
                             'severity' => 'info',
                             'message' => sprintf(
                                 $this->module->l('You should set the frequency of synchronization via a %s Cron job %s for updating your orders status', 'AdminShoppingfeedGeneralSettings'),
-                                    '<a href="' . $cronLink . '">', '</a>'
+                                '<a href="' . $cronLink . '">',
+                                '</a>'
                             )
                         ),
                         array(
@@ -450,10 +451,10 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
                     'name' => 'real_synch',
                     'html_content' => '<div id="real_synch_notice" class="alert alert-info">
                     '.sprintf(
-                            $this->module->l('You should select the type of synchronization (in real time or via a %s Cron job %s) for updating your product stocks and / or prices.', 'AdminShoppingfeedGeneralSettings'),
-                            '<a href="' . $this->context->link->getAdminLink('AdminShoppingfeedProcessMonitor') . '">',
-                            '</a>'
-                        ).'</div>',
+                        $this->module->l('You should select the type of synchronization (in real time or via a %s Cron job %s) for updating your product stocks and / or prices.', 'AdminShoppingfeedGeneralSettings'),
+                        '<a href="' . $this->context->link->getAdminLink('AdminShoppingfeedProcessMonitor') . '">',
+                        '</a>'
+                    ).'</div>',
                 ),
                 array(
                     'type' => 'html',
@@ -613,7 +614,7 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
         // Update carriers matching
         $carriersMatching = Tools::getValue('shoppingfeed_carrier_matching');
         if ($carriersMatching) {
-            foreach($carriersMatching as $id_shoppingfeed_carrier => $id_carrier_reference) {
+            foreach ($carriersMatching as $id_shoppingfeed_carrier => $id_carrier_reference) {
                 $sfCarrier = new ShoppingfeedCarrier($id_shoppingfeed_carrier);
                 if (Validate::isLoadedObject($sfCarrier)) {
                     $sfCarrier->id_carrier_reference = (int)$id_carrier_reference;

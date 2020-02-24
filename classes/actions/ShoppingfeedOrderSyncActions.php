@@ -171,7 +171,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
     {
         if (empty($this->conveyor['id_shop'])) {
             ProcessLoggerHandler::logError(
-                    $this->l('No ID Shop found.', 'ShoppingfeedOrderSyncActions'),
+                $this->l('No ID Shop found.', 'ShoppingfeedOrderSyncActions'),
                 'Order'
             );
             return false;
@@ -207,7 +207,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
         }
         
         $this->conveyor['taskOrders'] = array();
-        foreach($taskOrdersData as $taskOrderData) {
+        foreach ($taskOrdersData as $taskOrderData) {
             $taskOrder = new ShoppingfeedTaskOrder();
             $taskOrder->hydrate($taskOrderData);
             $this->conveyor['taskOrders'][] = $taskOrder;
@@ -220,7 +220,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
     {
         if (empty($this->conveyor['id_shop'])) {
             ProcessLoggerHandler::logError(
-                    $this->l('No ID Shop found.', 'ShoppingfeedOrderSyncActions'),
+                $this->l('No ID Shop found.', 'ShoppingfeedOrderSyncActions'),
                 'Order'
             );
             return false;
@@ -229,7 +229,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
         
         if (empty($this->conveyor['taskOrders'])) {
             ProcessLoggerHandler::logError(
-                    $this->l('No Task Orders to prepare.', 'ShoppingfeedOrderSyncActions'),
+                $this->l('No Task Orders to prepare.', 'ShoppingfeedOrderSyncActions'),
                 'Order'
             );
             return false;
@@ -319,10 +319,10 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
                 }
             } elseif (in_array($order->current_state, $cancelled_status)) {
                 $taskOrderOperation = OrderOperation::TYPE_CANCEL;
-                // The "reason" field is not supported (at least for now)
+            // The "reason" field is not supported (at least for now)
             } elseif (in_array($order->current_state, $refunded_status)) {
                 $taskOrderOperation = OrderOperation::TYPE_REFUND;
-                // No partial refund (at least for now), so no optional
+            // No partial refund (at least for now), so no optional
                 // parameters to set.
             } else {
                 ProcessLoggerHandler::logInfo(
@@ -353,7 +353,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
     {
         if (empty($this->conveyor['id_shop'])) {
             ProcessLoggerHandler::logError(
-                    $this->l('No ID Shop found.', 'ShoppingfeedOrderSyncActions'),
+                $this->l('No ID Shop found.', 'ShoppingfeedOrderSyncActions'),
                 'Order'
             );
             return false;
@@ -361,7 +361,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
         
         if (empty($this->conveyor['preparedTaskOrders'])) {
             ProcessLoggerHandler::logError(
-                    $this->l('No prepared Task Orders found.', 'ShoppingfeedOrderSyncActions'),
+                $this->l('No prepared Task Orders found.', 'ShoppingfeedOrderSyncActions'),
                 'Order'
             );
             return false;
@@ -370,7 +370,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
         $shoppingfeedApi = ShoppingfeedApi::getInstanceByToken($this->conveyor['id_shop']);
         if ($shoppingfeedApi == false) {
             ProcessLoggerHandler::logError(
-                    $this->l('Could not retrieve Shopping Feed API.', 'ShoppingfeedOrderSyncActions'),
+                $this->l('Could not retrieve Shopping Feed API.', 'ShoppingfeedOrderSyncActions'),
                 'Order'
             );
             return false;
@@ -391,7 +391,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
         
         // Check each ticket, and match it with its task order
         $this->conveyor['successfulTaskOrders'] = array();
-        foreach($result->getTickets() as $ticket) {
+        foreach ($result->getTickets() as $ticket) {
             $ticketOrderReference = $ticket->getPayloadProperty('reference');
             $taskOrder = $preparedTaskOrders[$ticketOrderReference]['taskOrder'];
             
@@ -438,7 +438,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
     {
         if (empty($this->conveyor['taskOrders'])) {
             ProcessLoggerHandler::logError(
-                    $this->l('No Task Orders to prepare.', 'ShoppingfeedOrderSyncActions'),
+                $this->l('No Task Orders to prepare.', 'ShoppingfeedOrderSyncActions'),
                 'Order'
             );
             return false;
@@ -489,7 +489,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
     {
         if (empty($this->conveyor['id_shop'])) {
             ProcessLoggerHandler::logError(
-                    $this->l('No ID Shop found.', 'ShoppingfeedOrderSyncActions'),
+                $this->l('No ID Shop found.', 'ShoppingfeedOrderSyncActions'),
                 'Order'
             );
             return false;
@@ -497,7 +497,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
         
         if (empty($this->conveyor['taskOrders'])) {
             ProcessLoggerHandler::logError(
-                    $this->l('No Task Orders found.', 'ShoppingfeedOrderSyncActions'),
+                $this->l('No Task Orders found.', 'ShoppingfeedOrderSyncActions'),
                 'Order'
             );
             return false;
@@ -520,7 +520,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
         // Don't delete task orders here, we may need them later !
         $this->conveyor['successfulTaskOrders'] = array();
         $this->conveyor['failedTaskOrders'] = array();
-        foreach($tickets as $ticket) {
+        foreach ($tickets as $ticket) {
             $ticketOrderReference = $ticket->getPayloadProperty('reference');
             $taskOrder = $preparedTaskOrders[$ticketOrderReference]['taskOrder'];
             
@@ -567,7 +567,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
     {
         if (empty($this->conveyor['id_shop'])) {
             ProcessLoggerHandler::logError(
-                    $this->l('No ID Shop found.', 'ShoppingfeedOrderSyncActions'),
+                $this->l('No ID Shop found.', 'ShoppingfeedOrderSyncActions'),
                 'Order'
             );
             return false;
@@ -618,7 +618,11 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
                 '{list_order_sync_errors_txt}' => $listFailuresTxt,
             ),
             Configuration::get('PS_SHOP_EMAIL', null, null, $id_shop),
-            null, null, null, null, null,
+            null,
+            null,
+            null,
+            null,
+            null,
             _PS_MODULE_DIR_ . 'shoppingfeed/mails/',
             false,
             $id_shop
@@ -627,7 +631,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
     
     /**
      * Finds a module mail template for the specified lang and shop
-     * 
+     *
      * @param string $template_name template name with extension
      * @param int $id_lang
      * @param int $id_shop

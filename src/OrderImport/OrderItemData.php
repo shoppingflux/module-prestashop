@@ -34,11 +34,12 @@ use ShoppingFeed\Sdk\Api\Order\OrderItem;
  * This class is a mutable copy of \ShoppingFeed\Sdk\Api\Order\OrderItem. Its
  * only purpose is holding the original object's data so they can be modified
  * during the process.
- * 
+ *
  * NO PROCESSING MUST BE DONE HERE. This class should NEVER hold responsibility
  * for modifying data.
  */
-class OrderItemData {
+class OrderItemData
+{
     
     /** @var string $reference */
     public $reference;

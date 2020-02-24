@@ -34,14 +34,15 @@ use ShoppingFeed\Sdk\Api\Order\OrderResource;
  * This class is a mutable copy of \ShoppingFeed\Sdk\Api\Order\OrderResource. Its
  * only purpose is holding the original object's data so they can be modified
  * during the process.
- * 
+ *
  * NO PROCESSING MUST BE DONE HERE. This class should NEVER hold responsibility
  * for modifying data.
- * 
+ *
  * Also note that the order's shopping feed ID, reference and channel are not
  * held here, as there should be no need to modify them.
  */
-class OrderData {
+class OrderData
+{
     
     /** @var null|string $storeReference */
     public $storeReference;
@@ -93,9 +94,8 @@ class OrderData {
         $this->additionalFields = is_array($apiOrderData['additionalFields']) ? $apiOrderData['additionalFields'] : array();
         
         /** @var \ShoppingFeed\Sdk\Api\Order\OrderItem $apiOrderItem */
-        foreach($apiOrder->getItems() as $apiOrderItem) {
+        foreach ($apiOrder->getItems() as $apiOrderItem) {
             $this->items[] = new OrderItemData($apiOrderItem);
         }
     }
-    
 }

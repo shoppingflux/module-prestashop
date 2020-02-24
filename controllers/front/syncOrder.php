@@ -211,7 +211,7 @@ class ShoppingfeedSyncOrderModuleFrontController extends CronController
 
                     if (!$errorMailHandler->process('ShoppingfeedOrderSync')) {
                         ProcessLoggerHandler::logError(
-                            $logPrefix . ' ' . 
+                            $logPrefix . ' ' .
                                 $this->module->l('Failed to send mail with Orders errors.', 'syncOrder'),
                             $this->processMonitor->getProcessObjectModelName(),
                             $this->processMonitor->getProcessObjectModelId()
@@ -234,10 +234,9 @@ class ShoppingfeedSyncOrderModuleFrontController extends CronController
                 $successfulTicketsStatusTaskOrders,
                 $failedTaskOrders
             );
-            foreach($processedTaskOrders as $taskOrder) {
+            foreach ($processedTaskOrders as $taskOrder) {
                 $taskOrder->delete();
             }
-            
         }
     }
     
@@ -249,7 +248,7 @@ class ShoppingfeedSyncOrderModuleFrontController extends CronController
         // If order import is not available
         if (!ShoppingFeed::isOrderImportAvailable($id_shop)) {
             ProcessLoggerHandler::logInfo(
-                    $this->module->l('The Shopping Feed Official module (shoppingfluxexport) isinstalled on your shop for enabling the orders import synchronization. The “Order importation” option must be disabled in the official module for enabling this type of synchronization in the new module. If you disable this options in the official module and you enable them again later the "New orders import" will be disabled automatically in the Shopping feed 15 min module.', 'syncOrder'),
+                $this->module->l('The Shopping Feed Official module (shoppingfluxexport) isinstalled on your shop for enabling the orders import synchronization. The “Order importation” option must be disabled in the official module for enabling this type of synchronization in the new module. If you disable this options in the official module and you enable them again later the "New orders import" will be disabled automatically in the Shopping feed 15 min module.', 'syncOrder'),
                 $this->processMonitor->getProcessObjectModelName(),
                 $this->processMonitor->getProcessObjectModelId()
             );
@@ -337,7 +336,7 @@ class ShoppingfeedSyncOrderModuleFrontController extends CronController
                     $this->processMonitor->getProcessObjectModelName(),
                     $this->processMonitor->getProcessObjectModelId()
                 );
-                Registry::increment('importedOrders');  
+                Registry::increment('importedOrders');
             } catch (Exception $e) {
                 ProcessLoggerHandler::logError(
                     $logPrefix .

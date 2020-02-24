@@ -144,7 +144,7 @@ class AdminShoppingfeedOrdersController extends ModuleAdminController
         );
         
         // See doc for $cache_sfIdToPsId
-        foreach($this->_list as $listItem) {
+        foreach ($this->_list as $listItem) {
             $this->cache_sfIdToPsId[$listItem['id_shoppingfeed_order']] = $listItem['id_order'];
         }
         

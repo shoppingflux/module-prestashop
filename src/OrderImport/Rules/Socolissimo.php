@@ -41,9 +41,10 @@ use ShoppingfeedClasslib\Registry;
 
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
 
-class Socolissimo extends \ShoppingfeedAddon\OrderImport\RuleAbstract {
-   
-    public function isApplicable(OrderResource $apiOrder) {
+class Socolissimo extends \ShoppingfeedAddon\OrderImport\RuleAbstract
+{
+    public function isApplicable(OrderResource $apiOrder)
+    {
         // There's no check on the carrier name in the old module, so we won't
         // do it here either
         $module_soliberte = Module::getInstanceByName('soliberte');
@@ -200,14 +201,16 @@ class Socolissimo extends \ShoppingfeedAddon\OrderImport\RuleAbstract {
     /**
      * @inheritdoc
      */
-    public function getConditions() {
+    public function getConditions()
+    {
         return Translate::getModuleTranslation('shoppingfeed', 'If the \'soliberte\' or \'soflexibilite\' module is installed.', 'Socolissimo');
     }
 
     /**
      * @inheritdoc
      */
-    public function getDescription() {
+    public function getDescription()
+    {
         return Translate::getModuleTranslation('shoppingfeed', 'Adds the order in the corresponding module\'s table.', 'Socolissimo');
     }
 }

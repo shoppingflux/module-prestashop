@@ -175,7 +175,7 @@ class ShoppingfeedOrder extends ObjectModel
     
     /**
      * Checks if a given marketplace manages quantities on its own
-     * 
+     *
      * @param string $name_marketplace
      * @return bool true if the marketplace manages the quantities
      */

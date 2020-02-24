@@ -113,7 +113,9 @@ class ShoppingfeedCarrier extends ObjectModel
         }
         
         return array_map(
-            function($i) { return $i['name_marketplace']; },
+            function ($i) {
+                return $i['name_marketplace'];
+            },
             $result
         );
     }
@@ -134,7 +136,7 @@ class ShoppingfeedCarrier extends ObjectModel
         }
         
         return array_map(
-            function($i) {
+            function ($i) {
                 $o = new ShoppingfeedCarrier();
                 $o->hydrate($i);
                 return $o;
