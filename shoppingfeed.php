@@ -69,6 +69,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     const CANCELLED_ORDERS = "SHOPPINGFEED_CANCELLED_ORDERS";
     const REFUNDED_ORDERS = "SHOPPINGFEED_REFUNDED_ORDERS";
     const ORDER_IMPORT_ENABLED = "SHOPPINGFEED_ORDER_IMPORT_ENABLED";
+    const ORDER_IMPORT_SPECIFIC_RULES_CONFIGURATION = "SHOPPINGFEED_ORDER_IMPORT_SPECIFIC_RULES_CONFIGURATION";
     const ORDER_DEFAULT_CARRIER_REFERENCE = "SHOPPINGFEED_ORDER_DEFAULT_CARRIER_REFERENCE";
 
     public $extensions = array(
@@ -175,6 +176,15 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
                 'fr' => 'Journal d\'activité'
             ),
             'class_name' => 'AdminShoppingfeedProcessLogger',
+            'parent_class_name' => 'shoppingfeed',
+            'visible' => true,
+        ),
+        array(
+            'name' => array(
+                'en' => 'Order Import Specific Rules',
+                'fr' => 'Règles spécifiques d\'import de commandes'
+            ),
+            'class_name' => 'AdminShoppingfeedOrderImportRules',
             'parent_class_name' => 'shoppingfeed',
             'visible' => true,
         ),

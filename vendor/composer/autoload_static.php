@@ -17,6 +17,7 @@ class ComposerStaticInit3fe85f86ff701f6bd7fd7d7a118b5533
         'S' => 
         array (
             'ShoppingfeedClasslib\\' => 21,
+            'ShoppingfeedAddon\\' => 18,
             'ShoppingFeed\\Sdk\\' => 17,
             'SfGuzzle\\GuzzleHttp\\Psr7\\' => 25,
             'SfGuzzle\\GuzzleHttp\\Promise\\' => 28,
@@ -32,6 +33,10 @@ class ComposerStaticInit3fe85f86ff701f6bd7fd7d7a118b5533
         'ShoppingfeedClasslib\\' => 
         array (
             0 => __DIR__ . '/..' . '/totpsclasslib/src',
+        ),
+        'ShoppingfeedAddon\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/src',
         ),
         'ShoppingFeed\\Sdk\\' => 
         array (
