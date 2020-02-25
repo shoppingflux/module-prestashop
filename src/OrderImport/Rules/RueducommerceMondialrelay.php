@@ -76,9 +76,10 @@ class RueducommerceMondialrelay extends \ShoppingfeedAddon\OrderImport\RuleAbstr
         // Rebuild the carrier name; it should be found properly
         $orderData->shipment['carrier'] = implode($explodedCarrier, " ");
         
-        // Save the relay ID in the "Other" field so it can be used by the main
-        // Mondial Relay rule
-        // TODO : where is the "$order->Other" field in the new API ?
+        // Save the relay ID in the shipping address "Other" field so it can be
+        // used by the main Mondial Relay rule
+        // See ShoppingfeedAddon\OrderImport\Rules\Mondialrelay
+        $orderData->shippingAddress['other'] = $mondialRelayID;
     }
     
     /**

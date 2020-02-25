@@ -28,6 +28,7 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
+use Module;
 use Tools;
 use Configuration;
 use DbQuery;
@@ -47,10 +48,11 @@ class Mondialrelay extends \ShoppingfeedAddon\OrderImport\RuleAbstract
     public function isApplicable(OrderResource $apiOrder)
     {
         $apiOrderShipment = $apiOrder->getShipment();
+        $module_mondialRelay = Module::getInstanceByName('mondialrelay');
         
         // Check only for name presence in the string; the relay ID could be appended
         // to the field (see ShoppingfeedAddon\OrderImport\Rules\RueducommerceMondialrelay)
-        if (preg_match('#mondial relay#', Tools::strtolower($apiOrderShipment['carrier']))) {
+        if ($module_mondialRelay && preg_match('#mondial relay#', Tools::strtolower($apiOrderShipment['carrier']))) {
             return true;
         }
         return false;
@@ -58,12 +60,10 @@ class Mondialrelay extends \ShoppingfeedAddon\OrderImport\RuleAbstract
     
     public function onPostProcess($params)
     {
-        // TODO : where is the "$order->Other" field in the new API ? It has the relay id...
         // TODO : This should work for older version of MR, but we need to support the new one too
-        return;
         $apiOrder = $params['apiOrder'];
         $order = new Order($params['sfOrder']->id_order);
-        $relayId = null;
+        $relayId = $params['orderData']->shippingAddress['other'];
         
         $logPrefix = sprintf(
             Translate::getModuleTranslation('shoppingfeed', '[Order: %s]', 'Mondialrelay'),
@@ -71,14 +71,25 @@ class Mondialrelay extends \ShoppingfeedAddon\OrderImport\RuleAbstract
         );
         $logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
         
+        if (empty($relayId)) {
+            ProcessLoggerHandler::logError(
+                $logPrefix .
+                    Translate::getModuleTranslation('shoppingfeed', 'No relay ID found in shipping address \'Other\' field', 'Mondialrelay'),
+                'Order',
+                $order->id
+            );
+            return false;
+        }
+        
         ProcessLoggerHandler::logInfo(
             sprintf(
                 $logPrefix .
-                    Translate::getModuleTranslation('shoppingfeed', 'Id Relay : %s,  Id Order : %s', 'Mondialrelay'),
+                    Translate::getModuleTranslation('shoppingfeed', 'Id Relay : %s', 'Mondialrelay'),
                 $relayId,
                 $order->id
             ),
-            'Order'
+            'Order',
+            $order->id
         );
         
         $carrier = new Carrier((int)$order->id_carrier);
@@ -89,7 +100,8 @@ class Mondialrelay extends \ShoppingfeedAddon\OrderImport\RuleAbstract
                     Translate::getModuleTranslation('shoppingfeed', 'id_address_delivery : %s', 'Mondialrelay'),
                 $order->id_address_delivery
             ),
-            'Order'
+            'Order',
+            $order->id
         );
         
         $address = new Address($order->id_address_delivery);
@@ -101,7 +113,8 @@ class Mondialrelay extends \ShoppingfeedAddon\OrderImport\RuleAbstract
                     Translate::getModuleTranslation('shoppingfeed', 'isoCountry : %s', 'Mondialrelay'),
                 $countryIso
             ),
-            'Order'
+            'Order',
+            $order->id
         );
         
         // Get relay data
@@ -110,7 +123,8 @@ class Mondialrelay extends \ShoppingfeedAddon\OrderImport\RuleAbstract
             ProcessLoggerHandler::logError(
                 $logPrefix .
                     Translate::getModuleTranslation('shoppingfeed', 'Failed to get relay data', 'Mondialrelay'),
-                'Order'
+                'Order',
+                $order->id
             );
             return false;
         }
@@ -121,7 +135,8 @@ class Mondialrelay extends \ShoppingfeedAddon\OrderImport\RuleAbstract
                     Translate::getModuleTranslation('shoppingfeed', 'Id Carrier : %s', 'Mondialrelay'),
                 $carrier->id
             ),
-            'Order'
+            'Order',
+            $order->id
         );
         
         // Get corresponding method
@@ -139,7 +154,8 @@ class Mondialrelay extends \ShoppingfeedAddon\OrderImport\RuleAbstract
                         Translate::getModuleTranslation('shoppingfeed', 'Could not find mondial relay method for carrier ID %s', 'Mondialrelay'),
                     $carrier->id
                 ),
-                'Order'
+                'Order',
+                $order->id
             );
             return false;
         }
@@ -170,7 +186,8 @@ class Mondialrelay extends \ShoppingfeedAddon\OrderImport\RuleAbstract
             ProcessLoggerHandler::logSuccess(
                 $logPrefix .
                     Translate::getModuleTranslation('shoppingfeed', 'Successfully added relay information', 'Mondialrelay'),
-                'Order'
+                'Order',
+                $order->id
             );
             return;
         }
@@ -178,7 +195,8 @@ class Mondialrelay extends \ShoppingfeedAddon\OrderImport\RuleAbstract
         ProcessLoggerHandler::logError(
             $logPrefix .
                 Translate::getModuleTranslation('shoppingfeed', 'Could not add relay information', 'Mondialrelay'),
-            'Order'
+            'Order',
+            $order->id
         );
     }
     
