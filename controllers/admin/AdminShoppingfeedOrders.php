@@ -52,10 +52,13 @@ class AdminShoppingfeedOrdersController extends ModuleAdminController
         parent::__construct();
         
         $this->_select = 'a.id_order, o.reference, ' .
-                'CONCAT(LEFT(c.firstname, 1), \'. \', c.lastname) AS customer_name, ' .
-            'o.total_paid, a.payment_method, o.current_state, osl.name AS current_state_name, ' .
-            'os.color AS current_state_color, a.id_order_marketplace, a.name_marketplace, ' .
-            'IF(UNIX_TIMESTAMP(IFNULL(a.date_marketplace_creation, 0)) = 0, a.date_add, a.date_marketplace_creation) AS date_marketplace_creation';
+            'CONCAT(LEFT(c.firstname, 1), \'. \', c.lastname) AS customer_name, ' .
+            'o.total_paid, o.id_currency, a.payment_method, o.current_state, ' .
+            'osl.name AS current_state_name, os.color AS current_state_color, ' .
+            'a.id_order_marketplace, a.name_marketplace, ' .
+            'IF(UNIX_TIMESTAMP(IFNULL(a.date_marketplace_creation, 0)) = 0, ' .
+            'a.date_add, a.date_marketplace_creation) AS date_marketplace_creation';
+        
         $this->_join = 'INNER JOIN ' . _DB_PREFIX_ . 'orders o ON o.id_order = a.id_order ' .
             'INNER JOIN ' . _DB_PREFIX_ . 'customer c ON c.id_customer = o.id_customer ' .
             'LEFT JOIN ' . _DB_PREFIX_ . 'order_state os ON (os.id_order_state = o.current_state) ' .
@@ -81,6 +84,7 @@ class AdminShoppingfeedOrdersController extends ModuleAdminController
             'total_paid' => array(
                 'title' => $this->module->l('Amount', 'AdminShoppingfeedOrders'),
                 'align' => 'text-right',
+                'callback' => 'setOrderCurrency',
             ),
             'current_state_name' => array(
                 'title' => $this->module->l('Status', 'AdminShoppingfeedOrders'),
@@ -149,6 +153,18 @@ class AdminShoppingfeedOrdersController extends ModuleAdminController
         }
         
         return $result;
+    }
+    
+    /**
+     * From \AdminOrdersController
+     * 
+     * @param arry $echo
+     * @param arry $tr
+     * @return type
+     */
+    public static function setOrderCurrency($echo, $tr)
+    {
+        return Tools::displayPrice($echo, (int)$tr['id_currency']);
     }
     
     /**
