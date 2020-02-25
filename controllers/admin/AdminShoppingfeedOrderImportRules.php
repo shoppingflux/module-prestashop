@@ -65,7 +65,9 @@ class AdminShoppingfeedOrderImportRulesController extends ModuleAdminController
             'input' => array(),
             'submit' => array(
                 'title' => $this->l('Save', 'AdminShoppingfeedOrderImportRules'),
-                'name' => 'saveRulesConfiguration'
+                'name' => 'saveRulesConfiguration',
+                // PS hides the button if this is not set
+                'id' => 'shoppingfeed_saveRulesConfiguration-submit'
             )
         );
         
