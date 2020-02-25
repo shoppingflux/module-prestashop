@@ -106,7 +106,7 @@ class AdminShoppingfeedOrderImportRulesController extends ModuleAdminController
             return '';
         }
 
-        $helper = new HelperFormCore($this);
+        $helper = new HelperForm($this);
         $this->setHelperDisplay($helper);
         $helper->submit_action = 'saveRulesConfiguration';
         $helper->fields_value = $fields_value;
@@ -135,6 +135,7 @@ class AdminShoppingfeedOrderImportRulesController extends ModuleAdminController
         
         $helper = new HelperList();
         $this->setHelperDisplay($helper);
+        $helper->listTotal = count($rulesInformation);
 
         return $helper->generateList($rulesInformation, $fieldsList);
     }

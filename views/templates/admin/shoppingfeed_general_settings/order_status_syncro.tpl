@@ -27,7 +27,7 @@
     {if $input.type == 'shoppingfeed_alert'}
         {if !isset($input.condition) || $input.condition}
             <div class="alert alert-{$input.severity|escape:'htmlall':'UTF-8'}">
-                {$input.message|escape:'htmlall':'UTF-8'}
+                {$input.message nofilter}
             </div>
         {/if}
     {elseif $input.type == 'shoppingfeed_open-section'}
