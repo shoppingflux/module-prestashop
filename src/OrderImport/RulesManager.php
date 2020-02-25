@@ -69,7 +69,7 @@ class RulesManager
             true
         );
         
-        $rulesClassNames = $this->getDefaultRulesClasses();
+        $rulesClassNames = array();
         
         Hook::exec(
             'actionShoppingfeedOrderImportRegisterSpecificRules',
@@ -101,26 +101,6 @@ class RulesManager
             return true;
         }
         return false;
-    }
-    
-    protected function getDefaultRulesClasses()
-    {
-        $defaultRulesPath = _PS_MODULE_DIR_ . 'shoppingfeed/src/OrderImport/Rules';
-        $files = scandir($defaultRulesPath);
-        $classNames = array();
-        
-        foreach ($files as $filename) {
-            if (Tools::strpos($filename, '.') === 0) {
-                continue;
-            }
-            
-            $className = "ShoppingfeedAddon\OrderImport\Rules\\" . Tools::substr($filename, 0, strrpos($filename, "."));
-            if (class_exists($className)) {
-                $classNames[] = $className;
-            }
-        }
-        
-        return $classNames;
     }
     
     /**

@@ -29,13 +29,16 @@ if (!defined('_PS_VERSION_')) {
 }
 
 /**
- * This abstract class represents a specific rule to be applied during an SF order
+ * This abstract class represents a default specific rule to be applied during an SF order
  * import
  */
-abstract class RuleAbstract
+abstract class RuleAbstract implements RuleInterface
 {
     protected $configuration;
     
+    /**
+     * @inheritdoc
+     */
     public function __construct($configuration = array())
     {
         if (empty($configuration)) {
@@ -45,20 +48,20 @@ abstract class RuleAbstract
     }
     
     /**
-     * Returns true if a rule is applicable to an SF order
-     * @return bool
+     * @inheritdoc
      */
     abstract public function isApplicable(\ShoppingFeed\Sdk\Api\Order\OrderResource $apiOrder);
     
+    /**
+     * @inheritdoc
+     */
     public function getConfiguration()
     {
         return $this->configuration;
     }
     
     /**
-     * Gets default configuration for a rule
-     *
-     * @return array
+     * @inheritdoc
      */
     protected function getDefaultConfiguration()
     {
@@ -66,16 +69,20 @@ abstract class RuleAbstract
     }
     
     /**
-     * Gets the configuration subform for a rule.
-     *
-     * @return array an array of arrays formatted as inputs for HelperForm.
+     * @inheritdoc
      */
     public function getConfigurationSubform()
     {
         return array();
     }
     
+    /**
+     * @inheritdoc
+     */
     abstract public function getDescription();
     
+    /**
+     * @inheritdoc
+     */
     abstract public function getConditions();
 }

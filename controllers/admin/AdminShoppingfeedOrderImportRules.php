@@ -88,7 +88,12 @@ class AdminShoppingfeedOrderImportRulesController extends ModuleAdminController
                     $field['name'] .
                     ']';
                 
-                $fields_value[$fieldName] = $ruleConfiguration[$field['name']];
+                if (is_array($ruleConfiguration) && isset($ruleConfiguration[$field['name']])) {
+                    $fields_value[$fieldName] = $ruleConfiguration[$field['name']];
+                } else {
+                    $fields_value[$fieldName] = null;
+                }
+                
                 $field['name'] = $fieldName;
             }
             

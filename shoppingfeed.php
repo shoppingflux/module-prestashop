@@ -221,6 +221,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         'actionObjectCombinationUpdateAfter',
         'actionValidateOrder',
         'actionOrderStatusPostUpdate',
+        'actionShoppingfeedOrderImportRegisterSpecificRules',
     );
 
     /**
@@ -865,5 +866,29 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         }
 
         \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::closeLogger();
+    }
+    
+    /**
+     * Adds the order import specific rules to the manager.
+     * Add, remove or extend an order import rule ! Use this hook to declare
+     * your own behaviour.
+     * 
+     * @param array $params
+     */
+    public function hookActionShoppingfeedOrderImportRegisterSpecificRules($params)
+    {
+        $defaultRulesClassNames = array(
+            ShoppingfeedAddon\OrderImport\Rules\AmazonEbay::class,
+            ShoppingfeedAddon\OrderImport\Rules\AmazonPrime::class,
+            ShoppingfeedAddon\OrderImport\Rules\Cdiscount::class,
+            ShoppingfeedAddon\OrderImport\Rules\CdiscountRelay::class,
+            ShoppingfeedAddon\OrderImport\Rules\Mondialrelay::class,
+            ShoppingfeedAddon\OrderImport\Rules\RueducommerceMondialrelay::class,
+            ShoppingfeedAddon\OrderImport\Rules\Socolissimo::class,
+        );
+        
+        foreach($defaultRulesClassNames as $ruleClassName) {
+            $params['specificRulesClassNames'][] = $ruleClassName;
+        }
     }
 }
