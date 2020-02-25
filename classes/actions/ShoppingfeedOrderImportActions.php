@@ -33,7 +33,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         $this->logPrefix = '';
         if ($id_internal_shoppingfeed) {
             $this->logPrefix .= sprintf(
-                Translate::getModuleTranslation('shoppingfeed', '[Order: %s]', 'ShoppingfeedOrderImportActions'),
+                $this->l('[Order: %s]', 'ShoppingfeedOrderImportActions'),
                 $id_internal_shoppingfeed
             );
         }
@@ -279,9 +279,11 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         }
         
         // see old module _getCustomer()
-        $customer = Customer::getByEmail($customerEmail);
+        $customer = new Customer();
+        $customer->getByEmail($customerEmail);
+        
         // Create customer if it doesn't exist
-        if (!$customer) {
+        if (!Validate::isLoadedObject($customer)) {
             ProcessLoggerHandler::logInfo(
                 $this->logPrefix .
                     $this->l('Creating customer...', 'ShoppingfeedOrderImportActions'),
