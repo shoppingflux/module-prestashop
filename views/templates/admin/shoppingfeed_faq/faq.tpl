@@ -111,7 +111,7 @@
                         <p>{l s='Only one cron task call is mendatory for all shops.' mod='shoppingfeed'}</p>
                         <p>{l s='Please contact your system admin or your webhost to configure this line.' mod='shoppingfeed'}</p>
                         <pre>
-*/5 * * * *     curl -s {$syncStockUrl|escape:'htmlall':'UTF-8'}  >/dev/null
+*/5 * * * *     curl -s {$syncProductUrl|escape:'htmlall':'UTF-8'}  >/dev/null
 </pre>
                     </div>
                 </div>
@@ -143,7 +143,7 @@ URL: {$shop_url|escape:'htmlall':'UTF-8'}
                             Token : {$token|escape:'htmlall':'UTF-8'}
                             Real time active: {$REAL_TIME_SYNCHRONIZATION|escape:'htmlall':'UTF-8'}
                             Real time count products: {$STOCK_SYNC_MAX_PRODUCTS|escape:'htmlall':'UTF-8'}
-                            Cron url: {$syncStockUrl|escape:'htmlall':'UTF-8'}
+                            Cron url: {$syncProductUrl|escape:'htmlall':'UTF-8'}
                             Last sync: {$LAST_CRON_TIME_SYNCHRONIZATION|escape:'htmlall':'UTF-8'}</textarea>
                     </div>
                 </div>

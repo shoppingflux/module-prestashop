@@ -96,14 +96,6 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
      * @var array
      */
     public $cronTasks = array(
-        'syncStock' => array(
-            'name' => 'shoppingfeed:syncStock',
-            'title' => array(
-                'en' => '[Deprecated] This task was renamed to shoppingfeed:syncProduct',
-                'fr' => '[Dépréciée] Cette tâche a été renommée en shoppingfeed:syncProduct'
-            ),
-            'frequency' => '5min',
-        ),
         'syncProduct' => array(
             'name' => 'shoppingfeed:syncProduct',
             'title' => array(
@@ -205,7 +197,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
      * @var array
      */
     public $controllers = array(
-        'syncStock',
+        'syncProduct',
         'syncOrder',
     );
 
@@ -343,6 +335,10 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         }
     }
     
+    /**
+     * Breaking changes (e.g. deprecation) notice should be set here; get the
+     * controller with $this->context->controller
+     */
     public function setBreakingChangesNotices()
     {
         if (version_compare($this->version, '1.2', '<')) {

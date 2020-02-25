@@ -82,9 +82,9 @@ class AdminShoppingfeedFaqController extends ModuleAdminController
             )
         );
 
-        $syncStockUrl = $this->context->link->getModuleLink(
+        $syncProductUrl = $this->context->link->getModuleLink(
             'shoppingfeed',
-            'syncStock',
+            'syncProduct',
             array('secure_key' => $this->module->secure_key)
         );
 
@@ -98,7 +98,7 @@ class AdminShoppingfeedFaqController extends ModuleAdminController
         $helper->tpl_vars['token'] = Configuration::get(Shoppingfeed::AUTH_TOKEN);
         $helper->tpl_vars['multishop'] = Configuration::get('PS_MULTISHOP_FEATURE_ACTIVE') ? 'true' : 'false';
         $helper->tpl_vars['combination'] = Configuration::get('PS_COMBINATION_FEATURE_ACTIVE');
-        $helper->tpl_vars['syncStockUrl'] = $syncStockUrl;
+        $helper->tpl_vars['syncProductUrl'] = $syncProductUrl;
         $helper->tpl_vars['STOCK_SYNC_MAX_PRODUCTS'] = Configuration::get(Shoppingfeed::STOCK_SYNC_MAX_PRODUCTS);
         $helper->tpl_vars['LAST_CRON_TIME_SYNCHRONIZATION'] = Configuration::get(Shoppingfeed::LAST_CRON_TIME_SYNCHRONIZATION);
         $helper->base_folder = $this->getTemplatePath() . $this->override_folder;
