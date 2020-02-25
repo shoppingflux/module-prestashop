@@ -959,6 +959,19 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         return true;
     }
     
+    public function postProcess()
+    {
+        // Specific rule : after the process is complete
+        $this->specificRulesManager->applyRules(
+            'onPostProcess',
+            array(
+                'apiOrder' => $this->conveyor['apiOrder'],
+                'orderData' => $this->conveyor['orderData'],
+                'sfOrder' => $this->conveyor['sfOrder']
+            )
+        );
+    }
+    
     /**
      * Retrieves an address using it's alias, and creates or rewrites it
      *

@@ -309,7 +309,8 @@ class ShoppingfeedSyncOrderModuleFrontController extends CronController
                     'createOrderCart',
                     'validateOrder',
                     'acknowledgeOrder',
-                    'recalculateOrderPrices'
+                    'recalculateOrderPrices',
+                    'postProcess'
                 );
                 
                 $handler->setConveyor(array(

@@ -62,7 +62,7 @@ class Mondialrelay extends \ShoppingfeedAddon\OrderImport\RuleAbstract
         // TODO : This should work for older version of MR, but we need to support the new one too
         return;
         $apiOrder = $params['apiOrder'];
-        $order = $params['order'];
+        $order = new Order($params['sfOrder']->id_order);
         $relayId = null;
         
         $logPrefix = sprintf(
@@ -221,7 +221,7 @@ class Mondialrelay extends \ShoppingfeedAddon\OrderImport\RuleAbstract
         $client->soap_defencoding = 'UTF-8';
         $client->decode_utf8 = false;
 
-        $params = array(
+        $reqParams = array(
             'Enseigne' => $mondialRelayConfig['enseigne'],
             'Num' => $relayId,
             'Pays' => $countryIso,
@@ -230,7 +230,7 @@ class Mondialrelay extends \ShoppingfeedAddon\OrderImport\RuleAbstract
             ))
         );
 
-        $result = $client->WSI2_AdressePointRelais($params);
+        $result = $client->WSI2_AdressePointRelais($reqParams);
 
         if (!isset($result->WSI2_AdressePointRelaisResult->STAT)
             || $result->WSI2_AdressePointRelaisResult->STAT != 0) {
