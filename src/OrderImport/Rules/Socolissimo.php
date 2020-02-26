@@ -37,9 +37,10 @@ use Configuration;
 use Carrier;
 use Translate;
 
-use ShoppingfeedClasslib\Registry;
-
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
+
+use ShoppingfeedClasslib\Registry;
+use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 
 class Socolissimo extends \ShoppingfeedAddon\OrderImport\RuleAbstract
 {

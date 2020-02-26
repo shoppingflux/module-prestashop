@@ -33,6 +33,8 @@ use Translate;
 
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
 
+use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
+
 class AmazonPrime extends \ShoppingfeedAddon\OrderImport\RuleAbstract
 {
     public function isApplicable(OrderResource $apiOrder)

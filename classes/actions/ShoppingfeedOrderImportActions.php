@@ -80,7 +80,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         $this->initProcess($apiOrder);
         
         $this->specificRulesManager = new ShoppingfeedAddon\OrderImport\RulesManager($this->conveyor['id_shop'], $apiOrder);
-            
+        
         // Specific rule : give a chance to tweak general data before using them
         $this->specificRulesManager->applyRules(
             'onPreProcess',
@@ -695,7 +695,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         $sfOrder->name_marketplace = $apiOrder->getChannel()->getName();
         
         $paymentInformation = $this->conveyor['orderData']->payment;
-        $sfOrder->payment_method = $paymentInformation['method'];
+        $sfOrder->payment_method = !empty($paymentInformation['method']) ? $paymentInformation['method'] : '-';
         
         if ($this->conveyor['orderData']->createdAt->getTimestamp() != 0) {
             $sfOrder->date_marketplace_creation = $this->conveyor['orderData']->createdAt->format('Y-m-d H:i:s');

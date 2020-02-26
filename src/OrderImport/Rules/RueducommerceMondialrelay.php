@@ -35,6 +35,8 @@ use ShoppingfeedClasslib\Registry;
 
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
 
+use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
+
 /**
  * RDC is using RelayID from the delivery adresse and Other for the order number
  * instead of the relay ID.

@@ -28,10 +28,13 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
+use Order;
 use Tools;
 use Translate;
 
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
+
+use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 
 class Cdiscount extends \ShoppingfeedAddon\OrderImport\RuleAbstract
 {
