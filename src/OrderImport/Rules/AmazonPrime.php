@@ -49,7 +49,27 @@ class AmazonPrime extends \ShoppingfeedAddon\OrderImport\RuleAbstract
     {
         /** @var \ShoppingfeedAddon\OrderImport\OrderData $orderData */
         $orderData = $params['orderData'];
+        $apiOrder = $params['apiOrder'];
+        
+        $logPrefix = sprintf(
+            Translate::getModuleTranslation('shoppingfeed', '[Order: %s]', 'AmazonPrime'),
+            $apiOrder->getId()
+        );
+        $logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
+        
+        ProcessLoggerHandler::logInfo(
+            $logPrefix .
+                Translate::getModuleTranslation('shoppingfeed', 'Rule triggered.', 'AmazonPrime'),
+            'Order'
+        );
+        
         $orderData->payment['method'] = 'amazon prime';
+        
+        ProcessLoggerHandler::logSuccess(
+            $logPrefix .
+                Translate::getModuleTranslation('shoppingfeed', 'Addresses updated.', 'AmazonPrime'),
+            'Order'
+        );
     }
     
     /**

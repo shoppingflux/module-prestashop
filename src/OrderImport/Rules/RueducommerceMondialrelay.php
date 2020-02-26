@@ -68,6 +68,18 @@ class RueducommerceMondialrelay extends \ShoppingfeedAddon\OrderImport\RuleAbstr
         /** @var \ShoppingfeedAddon\OrderImport\OrderData $orderData */
         $orderData = $params['orderData'];
         
+        $logPrefix = sprintf(
+            Translate::getModuleTranslation('shoppingfeed', '[Order: %s]', 'RueducommerceMondialrelay'),
+            $params['apiOrder']->getId()
+        );
+        $logPrefix .= '[' . $params['apiOrder']->getReference() . '] ' . self::class . ' | ';
+        
+        ProcessLoggerHandler::logInfo(
+            $logPrefix .
+                Translate::getModuleTranslation('shoppingfeed', 'Rule triggered.', 'RueducommerceMondialrelay'),
+            'Order'
+        );
+        
         // Split the carrier name
         $explodedCarrier = explode(' ', $orderData->shipment['carrier']);
         // Remove the relay ID
@@ -80,6 +92,12 @@ class RueducommerceMondialrelay extends \ShoppingfeedAddon\OrderImport\RuleAbstr
         // used by the main Mondial Relay rule
         // See ShoppingfeedAddon\OrderImport\Rules\Mondialrelay
         $orderData->shippingAddress['other'] = $mondialRelayID;
+        
+        ProcessLoggerHandler::logSuccess(
+            $logPrefix .
+                Translate::getModuleTranslation('shoppingfeed', 'Shipping address updated to set MR relay ID.', 'RueducommerceMondialrelay'),
+            'Order'
+        );
     }
     
     /**

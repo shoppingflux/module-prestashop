@@ -67,11 +67,39 @@ class Socolissimo extends \ShoppingfeedAddon\OrderImport\RuleAbstract
     
     public function afterCartCreation($params)
     {
+        $logPrefix = sprintf(
+            Translate::getModuleTranslation('shoppingfeed', '[Order: %s]', 'Socolissimo'),
+            $params['apiOrder']->getId()
+        );
+        $logPrefix .= '[' . $params['apiOrder']->getReference() . '] ' . self::class . ' | ';
+        
+        ProcessLoggerHandler::logInfo(
+            $logPrefix .
+                Translate::getModuleTranslation('shoppingfeed', 'Rule triggered.', 'Socolissimo'),
+            'Order'
+        );
+        
         Registry::set(self::class . '_id_shipping_address', (int)$params['cart']->id_address_delivery);
         
         $module_soliberte = Module::getInstanceByName('soliberte');
         if ($module_soliberte && $module_soliberte->active) {
-            return $this->insertSoLiberteData($params['cart']);
+            $result = $this->insertSoLiberteData($params['cart']);
+
+            if ($result) {
+                ProcessLoggerHandler::logSuccess(
+                    $logPrefix .
+                        Translate::getModuleTranslation('shoppingfeed', 'Data inserted in soliberte module.', 'Socolissimo'),
+                    'Order'
+                );
+            } else {
+                ProcessLoggerHandler::logError(
+                    $logPrefix .
+                        Translate::getModuleTranslation('shoppingfeed', 'Failed to insert data in soliberte module.', 'Socolissimo'),
+                    'Order'
+                );
+            }
+
+            return $result;
         }
         
         $module_soflexibilite = Module::getInstanceByName('soflexibilite');
@@ -81,7 +109,23 @@ class Socolissimo extends \ShoppingfeedAddon\OrderImport\RuleAbstract
                 || class_exists('SoColissimoFlexibiliteDelivery')
             )
         ) {
-            return $this->insertSoFlexibiliteData($params['cart']);
+            $result = $this->insertSoFlexibiliteData($params['cart']);
+
+            if ($result) {
+                ProcessLoggerHandler::logSuccess(
+                    $logPrefix .
+                        Translate::getModuleTranslation('shoppingfeed', 'Data inserted in soflexibilite module.', 'Socolissimo'),
+                    'Order'
+                );
+            } else {
+                ProcessLoggerHandler::logError(
+                    $logPrefix .
+                        Translate::getModuleTranslation('shoppingfeed', 'Failed to insert data in soflexibilite module.', 'Socolissimo'),
+                    'Order'
+                );
+            }
+
+            return $result;
         }
     }
     

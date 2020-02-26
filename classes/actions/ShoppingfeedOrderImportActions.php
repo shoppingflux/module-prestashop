@@ -287,7 +287,11 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             $customer->id_default_group = Configuration::get('PS_UNIDENTIFIED_GROUP');
             $customer->email = $customerEmail;
             $customer->newsletter = 0;
-        
+            
+            // Numbers are forbidden in firstname / lastname
+            $customer->lastname = preg_replace('/\-?\d+/', '', $customer->lastname);
+            $customer->firstname = preg_replace('/\-?\d+/', '', $customer->firstname);
+            
             // Specific rules
             $this->specificRulesManager->applyRules(
                 'onCustomerCreation',
@@ -970,6 +974,8 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 'sfOrder' => $this->conveyor['sfOrder']
             )
         );
+        
+        return true;
     }
     
     /**
@@ -1016,6 +1022,10 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         $address->other = $apiAddress['other'];
         $address->postcode = Tools::substr($apiAddress['postalCode'], 0, 12);
         $address->city = Tools::substr($apiAddress['city'], 0, 64);
+        
+        // Numbers are forbidden in firstname / lastname
+        $address->lastname = preg_replace('/\-?\d+/', '', $address->lastname);
+        $address->firstname = preg_replace('/\-?\d+/', '', $address->firstname);
         
         // We'll always fill both phone fields
         $address->phone = Tools::substr($apiAddress['phone'], 0, 32);

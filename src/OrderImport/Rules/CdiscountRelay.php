@@ -68,19 +68,17 @@ class CdiscountRelay extends \ShoppingfeedAddon\OrderImport\RuleAbstract
         
         ProcessLoggerHandler::logInfo(
             $logPrefix .
-                    Translate::getModuleTranslation('shoppingfeed', 'Updating CDiscount billing address to set relay ID...', 'CdiscountRelay'),
+                Translate::getModuleTranslation('shoppingfeed', 'Rule triggered.', 'CdiscountRelay'),
             'Order'
         );
         
         $this->updateAddress($orderData->shippingAddress);
         
-        ProcessLoggerHandler::logInfo(
+        ProcessLoggerHandler::logSuccess(
             $logPrefix .
-                    Translate::getModuleTranslation('shoppingfeed', 'Updating CDiscount shipping address to set relay ID...', 'CdiscountRelay'),
+                Translate::getModuleTranslation('shoppingfeed', 'Shipping address updated to set relay ID.', 'CdiscountRelay'),
             'Order'
         );
-        
-        $this->updateAddress($orderData->billingAddress);
     }
     
     /**

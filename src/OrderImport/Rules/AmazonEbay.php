@@ -64,9 +64,28 @@ class AmazonEbay extends \ShoppingfeedAddon\OrderImport\RuleAbstract
     {
         /** @var \ShoppingfeedAddon\OrderImport\OrderData $orderData */
         $orderData = $params['orderData'];
+        $apiOrder = $params['apiOrder'];
+        
+        $logPrefix = sprintf(
+            Translate::getModuleTranslation('shoppingfeed', '[Order: %s]', 'AmazonEbay'),
+            $apiOrder->getId()
+        );
+        $logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
+        
+        ProcessLoggerHandler::logInfo(
+            $logPrefix .
+                Translate::getModuleTranslation('shoppingfeed', 'Rule triggered.', 'AmazonEbay'),
+            'Order'
+        );
         
         $this->updateAddress($orderData->shippingAddress);
         $this->updateAddress($orderData->billingAddress);
+        
+        ProcessLoggerHandler::logSuccess(
+            $logPrefix .
+                Translate::getModuleTranslation('shoppingfeed', 'Addresses updated.', 'AmazonEbay'),
+            'Order'
+        );
     }
     
     public function updateAddress(&$address)

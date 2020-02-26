@@ -71,6 +71,14 @@ class Mondialrelay extends \ShoppingfeedAddon\OrderImport\RuleAbstract
         );
         $logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
         
+        
+        ProcessLoggerHandler::logInfo(
+            $logPrefix .
+                Translate::getModuleTranslation('shoppingfeed', 'Rule triggered.', 'Mondialrelay'),
+            'Order',
+            $order->id
+        );
+        
         if (empty($relayId)) {
             ProcessLoggerHandler::logError(
                 $logPrefix .
