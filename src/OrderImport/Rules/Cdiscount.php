@@ -41,7 +41,13 @@ class Cdiscount extends \ShoppingfeedAddon\OrderImport\RuleAbstract
     public function isApplicable(OrderResource $apiOrder)
     {
         // TODO : Where is TotalFees on the new API ?
-        return preg_match('#^cdiscount$#', Tools::strtolower($apiOrder->getChannel()->getName()));
+        // TODO : OrderResource should likely have a "getAdditionalFields" method
+        $apiOrderData = $apiOrder->toArray();
+        $apiOrderAdditionalFields = $apiOrderData['additionalFields'];
+        
+        return preg_match('#^cdiscount$#', Tools::strtolower($apiOrder->getChannel()->getName()))
+            && !empty($apiOrderAdditionalFields['TotalFees'])
+            && $apiOrderAdditionalFields['TotalFees'] > 0;
     }
     
     
@@ -51,6 +57,8 @@ class Cdiscount extends \ShoppingfeedAddon\OrderImport\RuleAbstract
         $orderData = $params['orderData'];
         $apiOrder = $params['apiOrder'];
         $psOrder = new Order($params['sfOrder']->id_order);
+        // TODO : Where is TotalFees on the new API ?
+        $processingFees = $orderData->additionalFields['TotalFees'];
         
         $logPrefix = sprintf(
             Translate::getModuleTranslation('shoppingfeed', '[Order: %s]', 'Cdiscount'),
@@ -64,9 +72,6 @@ class Cdiscount extends \ShoppingfeedAddon\OrderImport\RuleAbstract
             'Order'
         );
         
-        // TODO : Where is TotalFees on the new API ?
-        return;
-        $processingFees = null;
         
         // See old module _updatePrices
         // Retrieve the order invoice ID to associate it with the FDG.
