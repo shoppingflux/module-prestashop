@@ -53,6 +53,7 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
 
         $order_sync_available = ShoppingFeed::isOrderSyncAvailable();
         $order_import_available = ShoppingFeed::isOrderImportAvailable();
+        $order_import_test = Configuration::get(Shoppingfeed::ORDER_IMPORT_TEST);
 
         $id_shop = $this->context->shop->id;
         $token = Configuration::get(shoppingfeed::AUTH_TOKEN, null, null, $id_shop);
@@ -67,7 +68,7 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
         }
 
         if ($token) {
-            $this->content .= $this->renderOrderSyncForm($order_sync_available, $order_import_available);
+            $this->content .= $this->renderOrderSyncForm($order_sync_available, $order_import_available, $order_import_test);
         }
 
         $this->module->setBreakingChangesNotices();
@@ -78,7 +79,7 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
     /**
      * @return string
      */
-    public function renderOrderSyncForm($order_sync_available, $order_import_available)
+    public function renderOrderSyncForm($order_sync_available, $order_import_available, $order_import_test = false)
     {
         $cronLink = $this->context->link->getAdminLink('AdminShoppingfeedProcessMonitor');
 
@@ -87,7 +88,7 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
         $orderShippedState = array();
         $orderCancelledState = array();
         $orderRefundedState = array();
-        
+
         $ids_shipped_status_selected = json_decode(Configuration::get(ShoppingFeed::SHIPPED_ORDERS));
         $ids_cancelled_status_selected = json_decode(Configuration::get(ShoppingFeed::CANCELLED_ORDERS));
 
@@ -108,20 +109,20 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
                 'value' => $state['id_order_state'],
                 'label' => $state['name'],
             );
-            
+
             $orderCancelledState[in_array($state['id_order_state'], $ids_cancelled_status_selected) ? 'selected' : 'unselected'][] = array(
                 'value' => $state['id_order_state'],
                 'label' => $state['name'],
             );
-            
+
             $orderRefundedState[in_array($state['id_order_state'], $ids_refunded_status_selected) ? 'selected' : 'unselected'][] = array(
                 'value' => $state['id_order_state'],
                 'label' => $state['name'],
             );
         }
-        
+
         $sfCarriers = ShoppingfeedCarrier::getAllCarriers();
-        
+
         $fields_form = array(
             'form' => array(
                 'form' => array(
@@ -143,6 +144,22 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
                             'id' => 'shoppingfeed_order-import-switch',
                             'is_bool' => true,
                             'disabled' => !$order_import_available,
+                            'values' => array(
+                                array(
+                                    'value' => 1,
+                                ),
+                                array(
+                                    'value' => 0,
+                                )
+                            ),
+                        ),
+                        array(
+                            'type' => 'switch',
+                            'label' => $this->module->l('Allow import testing order', 'AdminShoppingfeedGeneralSettings'),
+                            'name' => Shoppingfeed::ORDER_IMPORT_TEST,
+                            'id' => 'shoppingfeed_order-import-switch',
+                            'is_bool' => true,
+                            'disabled' => !Configuration::get(Shoppingfeed::ORDER_IMPORT_ENABLED),
                             'values' => array(
                                 array(
                                     'value' => 1,
@@ -333,12 +350,13 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
         $helper = new HelperForm($this);
         $helper->fields_value = array(
             Shoppingfeed::ORDER_IMPORT_ENABLED => !$order_import_available ? false : Configuration::get(Shoppingfeed::ORDER_IMPORT_ENABLED),
+            Shoppingfeed::ORDER_IMPORT_TEST => !$order_import_test ? false : Configuration::get(Shoppingfeed::ORDER_IMPORT_TEST),
             Shoppingfeed::ORDER_SYNC_ENABLED => !$order_sync_available ? false : Configuration::get(Shoppingfeed::ORDER_SYNC_ENABLED),
             Shoppingfeed::ORDER_DEFAULT_CARRIER_REFERENCE => Configuration::get(Shoppingfeed::ORDER_DEFAULT_CARRIER_REFERENCE),
             'tracking_timeshift' => Configuration::get(Shoppingfeed::ORDER_STATUS_TIME_SHIFT),
             'max_order_update' => Configuration::get(Shoppingfeed::ORDER_STATUS_MAX_ORDERS),
         );
-        
+
         $helper->base_folder = $this->getTemplatePath() . $this->override_folder;
         $helper->base_tpl = 'order_status_syncro.tpl';
 
@@ -573,13 +591,15 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
     {
         $order_import_enabled = Tools::getValue(Shoppingfeed::ORDER_IMPORT_ENABLED);
         $order_sync_enabled = Tools::getValue(Shoppingfeed::ORDER_SYNC_ENABLED);
-        
+        $order_sync_test = Tools::getValue(Shoppingfeed::ORDER_IMPORT_TEST);
+
         $shops = Shop::getShops();
         foreach ($shops as $shop) {
             Configuration::updateValue(Shoppingfeed::ORDER_IMPORT_ENABLED, ($order_import_enabled ? true : false), false, null, $shop['id_shop']);
+            Configuration::updateValue(Shoppingfeed::ORDER_IMPORT_TEST, ($order_sync_test ? true : false), false, null, $shop['id_shop']);
             Configuration::updateValue(Shoppingfeed::ORDER_SYNC_ENABLED, ($order_sync_enabled ? true : false), false, null, $shop['id_shop']);
         }
-        
+
         $orderStatusesShipped = Tools::getValue('status_shipped_order');
         if (!$orderStatusesShipped) {
             $orderStatusesShipped = array();
@@ -610,7 +630,7 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
             Configuration::updateValue(Shoppingfeed::ORDER_STATUS_MAX_ORDERS, $max_orders);
             Configuration::updateValue(Shoppingfeed::ORDER_DEFAULT_CARRIER_REFERENCE, Tools::getValue(Shoppingfeed::ORDER_DEFAULT_CARRIER_REFERENCE));
         }
-        
+
         // Update carriers matching
         $carriersMatching = Tools::getValue('shoppingfeed_carrier_matching');
         if ($carriersMatching) {

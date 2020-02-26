@@ -37,12 +37,14 @@ $(document).ready(function()
             $('#for_real').closest('.form-group').hide();
         }
     });
-    
+
     $('[name="SHOPPINGFEED_ORDER_IMPORT_ENABLED"]').change(function() {
         if ($("#SHOPPINGFEED_ORDER_IMPORT_ENABLED_on").prop('checked')) {
             $("#shoppingfeed_carriers-matching").show();
+            $('[name="SHOPPINGFEED_ORDER_IMPORT_TEST"]').removeAttr('disabled');
         } else {
             $("#shoppingfeed_carriers-matching").hide();
+            $('[name="SHOPPINGFEED_ORDER_IMPORT_TEST"]').attr('disabled', true);
         }
     }).change();
 
@@ -50,7 +52,7 @@ $(document).ready(function()
         var unselectedList = doubleList.find('.shoppingfeed_double-list-unselected');
         var selectedList = doubleList.find('.shoppingfeed_double-list-selected');
         var doubleListValues = doubleList.find('.shoppingfeed_double-list-values');
-        
+
         selectedList.find('option').each(function() {
             doubleListValues.find("[value='"+this.value+"']").attr('checked', true);
         });
@@ -60,16 +62,16 @@ $(document).ready(function()
     }
 
     $(".shoppingfeed_double-list-group").each(function() {
-        
+
         var doubleList = $(this);
         var unselectedList = doubleList.find('.shoppingfeed_double-list-unselected');
         var selectedList = doubleList.find('.shoppingfeed_double-list-selected');
-        
+
         doubleList.find('.shoppingfeed_double-list-btn-select').click(function() {
             unselectedList.find('option:selected').appendTo(selectedList);
             shoppingfeed_doubleListUpdate(doubleList);
         });
-        
+
         doubleList.find('.shoppingfeed_double-list-btn-unselect').click(function() {
             selectedList.find('option:selected').appendTo(unselectedList);
             shoppingfeed_doubleListUpdate(doubleList);
