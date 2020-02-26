@@ -71,7 +71,6 @@ class Mondialrelay extends \ShoppingfeedAddon\OrderImport\RuleAbstract
         );
         $logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
         
-        
         ProcessLoggerHandler::logInfo(
             $logPrefix .
                 Translate::getModuleTranslation('shoppingfeed', 'Rule triggered.', 'Mondialrelay'),
@@ -147,6 +146,18 @@ class Mondialrelay extends \ShoppingfeedAddon\OrderImport\RuleAbstract
             $order->id
         );
         
+        // Insertion in the module is dependent on module version.
+        $module_mondialRelay = Module::getInstanceByName('mondialrelay');
+        if (version_compare($module_mondialRelay->version, '3', '<')) {
+            $this->addOrderBeforeV3($relayId, $countryIso, $relayData, $carrier, $order, $logPrefix);
+            return;
+        }
+        
+        $this->addOrderV3($relayId, $countryIso, $relayData, $carrier, $order, $logPrefix);
+    }
+    
+    protected function addOrderBeforeV3($relayId, $countryIso, $relayData, $carrier, $order, $logPrefix)
+    {
         // Get corresponding method
         $queryGetMondialRelayMethod = new DbQuery();
         $queryGetMondialRelayMethod->select('id_mr_method')
@@ -208,6 +219,69 @@ class Mondialrelay extends \ShoppingfeedAddon\OrderImport\RuleAbstract
         );
     }
     
+    protected function addOrderV3($relayId, $countryIso, $relayData, $carrier, $order, $logPrefix)
+    {
+        // Get corresponding method
+        $queryGetMondialRelayMethod = new DbQuery();
+        $queryGetMondialRelayMethod->select('id_mondialrelay_carrier_method')
+            ->from('mondialrelay_carrier_method')
+            ->where('id_carrier = ' . (int)$carrier->id)
+            ->orderBy('id_mondialrelay_carrier_method DESC');
+        $mondialRelayCarrierMethodId = Db::getInstance()->getValue($queryGetMondialRelayMethod);
+        
+        if (!$mondialRelayCarrierMethodId) {
+            ProcessLoggerHandler::logError(
+                sprintf(
+                    $logPrefix .
+                        Translate::getModuleTranslation('shoppingfeed', 'Could not find mondial relay method for carrier ID %s', 'Mondialrelay'),
+                    $carrier->id
+                ),
+                'Order',
+                $order->id
+            );
+            return false;
+        }
+        
+        // Depending of the marketplace, the length of the relay ID is not the same. (5 digits, 6 digits).
+        // We force a 6 digits string required by Mondial Relay
+        $formattedRelayId = str_pad($relayId, 6, '0', STR_PAD_LEFT);
+
+        $insertResult = Db::getInstance()->insert(
+            'mondialrelay_selected_relay',
+            array(
+                'id_customer' => (int)$order->id_customer,
+                'id_mondialrelay_carrier_method' => (int)$mondialRelayCarrierMethodId,
+                'id_cart' => (int)$order->id_cart,
+                'id_order' => (int)$order->id,
+                'selected_relay_num' => pSQL($formattedRelayId),
+                'selected_relay_adr1' => pSQL($relayData->LgAdr1),
+                'selected_relay_adr2' => pSQL($relayData->LgAdr2),
+                'selected_relay_adr3' => pSQL($relayData->LgAdr3),
+                'selected_relay_adr4' => pSQL($relayData->LgAdr4),
+                'selected_relay_postcode' => pSQL($relayData->CP),
+                'selected_relay_city' => pSQL($relayData->Ville),
+                'selected_relay_country_iso' => pSQL($countryIso),
+            )
+        );
+        
+        if ($insertResult) {
+            ProcessLoggerHandler::logSuccess(
+                $logPrefix .
+                    Translate::getModuleTranslation('shoppingfeed', 'Successfully added relay information', 'Mondialrelay'),
+                'Order',
+                $order->id
+            );
+            return;
+        }
+        
+        ProcessLoggerHandler::logError(
+            $logPrefix .
+                Translate::getModuleTranslation('shoppingfeed', 'Could not add relay information', 'Mondialrelay'),
+            'Order',
+            $order->id
+        );
+    }
+    
     /**
      * Gets relay info from the Mondial Relay API
      *
@@ -223,7 +297,6 @@ class Mondialrelay extends \ShoppingfeedAddon\OrderImport\RuleAbstract
             $apiOrder->getId()
         );
         $logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
-        ;
         
         $mondialRelayConfig = $this->getMondialRelayConfig();
         // Mondial relay module not configured
@@ -277,15 +350,32 @@ class Mondialrelay extends \ShoppingfeedAddon\OrderImport\RuleAbstract
     
     protected function getMondialRelayConfig()
     {
-        $mondialRelayConfig = Configuration::get('MR_ACCOUNT_DETAIL');
+        // Module configuration is dependent on version.
+        $module_mondialRelay = Module::getInstanceByName('mondialrelay');
+        if (version_compare($module_mondialRelay->version, '3', '<')) {
+            $mondialRelayConfig = Configuration::get('MR_ACCOUNT_DETAIL');
+            // Mondial relay module not configured
+            if (!$mondialRelayConfig) {
+                return false;
+            }
+            $mondialRelayConfig = unserialize($mondialRelayConfig);
+            return array(
+                'enseigne' => $mondialRelayConfig['MR_ENSEIGNE_WEBSERVICE'],
+                'apiKey' => $mondialRelayConfig['MR_KEY_WEBSERVICE'],
+            );
+        }
+        
+        $enseigne = Configuration::get('MONDIALRELAY_WEBSERVICE_ENSEIGNE');
+        $apiKey = Configuration::get('MONDIALRELAY_WEBSERVICE_KEY');
+        
         // Mondial relay module not configured
-        if (!$mondialRelayConfig) {
+        if (empty($enseigne) || empty($apiKey)) {
             return false;
         }
-        $mondialRelayConfig = unserialize($mondialRelayConfig);
+        
         return array(
-            'enseigne' => $mondialRelayConfig['MR_ENSEIGNE_WEBSERVICE'],
-            'apiKey' => $mondialRelayConfig['MR_KEY_WEBSERVICE'],
+            'enseigne' => $enseigne,
+            'apiKey' => $apiKey,
         );
     }
     
