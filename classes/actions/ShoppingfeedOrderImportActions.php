@@ -61,10 +61,6 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         );
     }
     
-    // TODO : we'll need to handle specific marketplaces / carriers too
-    // We may want to call some hooks during this process...
-    // Should we delete what we created if the order creation fails ?
-    
     public function registerSpecificRules()
     {
         if (empty($this->conveyor['apiOrder'])) {
@@ -263,7 +259,6 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         $apiOrder = $this->conveyor['apiOrder'];
         $this->initProcess($apiOrder);
         
-        // TODO : We might want to split this in functions
         // Try to retrieve customer using the billing address mail
         $apiBillingAddress = &$this->conveyor['orderData']->billingAddress;
         if (Validate::isEmail($apiBillingAddress['email'])) {
@@ -670,7 +665,11 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         }
         
         // Validate order with payment module
-        // TODO : we should change the customer mail before this, otherwise he'll get a confirmation mail
+        // Change the customer mail before this, otherwise he'll get a confirmation mail
+        $customerEmail = $this->conveyor['customer']->email;
+        $this->conveyor['customer']->email = 'do-not-send@alerts-shopping-flux.com';
+        $this->conveyor['customer']->update();
+        
         $amount_paid = (float)Tools::ps_round((float)$cart->getOrderTotal(true, Cart::BOTH), 2);
         $paymentModule->validateOrder(
             (int)$cart->id,
@@ -685,6 +684,10 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         );
         $this->conveyor['id_order'] = $paymentModule->currentOrder;
         $this->conveyor['order_reference'] = $paymentModule->currentOrderReference;
+        
+        // Reset customer mail
+        $this->conveyor['customer']->email = $customerEmail;
+        $this->conveyor['customer']->update();
 
         // Create the ShoppingfeedOrder here; we need to know if it's been created
         // after this point
@@ -816,7 +819,15 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             }
             $productOrderDetail = Db::getInstance()->getRow($query);
             
-            // TODO : check if we actually got a row ?
+            if (!$productOrderDetail) {
+                ProcessLoggerHandler::logError(
+                    $this->logPrefix .
+                        $this->l('Failed to get OrderDetail object.', 'ShoppingfeedOrderImportActions'),
+                    'Product',
+                    $psProduct->id
+                );
+                continue;
+            }
             
             // The tax may not be defined for the country (linked to the invoice address)
             // Eg: Switzerland invoice address received in french shop (will depends of PS configuration)
@@ -984,8 +995,6 @@ class ShoppingfeedOrderImportActions extends DefaultActions
      * @param array $apiAddress
      * @param \Customer $customer
      * @param string $addressAlias
-     * @param string $marketPlace TODO unused for now; see old module _getAddress
-     * @param string $shippingMethod TODO unused for now; see old module _getAddress
      */
     protected function getOrderAddress($apiAddress, $customer, $addressAlias)
     {

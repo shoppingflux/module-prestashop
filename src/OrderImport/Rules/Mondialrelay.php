@@ -60,7 +60,6 @@ class Mondialrelay extends \ShoppingfeedAddon\OrderImport\RuleAbstract
     
     public function onPostProcess($params)
     {
-        // TODO : This should work for older version of MR, but we need to support the new one too
         $apiOrder = $params['apiOrder'];
         $order = new Order($params['sfOrder']->id_order);
         $relayId = $params['orderData']->shippingAddress['other'];
