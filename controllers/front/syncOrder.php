@@ -269,7 +269,7 @@ class ShoppingfeedSyncOrderModuleFrontController extends CronController
         } catch (Exception $e) {
             ProcessLoggerHandler::logError(
                 sprintf(
-                    $this->module->l('Could not retrieve orders to import.', 'syncOrder'),
+                    $this->module->l('Could not retrieve orders to import : %s.', 'syncOrder'),
                     $e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine()
                 ),
                 $this->processMonitor->getProcessObjectModelName(),
@@ -280,10 +280,7 @@ class ShoppingfeedSyncOrderModuleFrontController extends CronController
         
         if (!count($result)) {
             ProcessLoggerHandler::logInfo(
-                sprintf(
-                    $this->module->l('No orders to import.', 'syncOrder'),
-                    $e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine()
-                ),
+                $this->module->l('No orders to import.', 'syncOrder'),
                 $this->processMonitor->getProcessObjectModelName(),
                 $this->processMonitor->getProcessObjectModelId()
             );
@@ -298,7 +295,7 @@ class ShoppingfeedSyncOrderModuleFrontController extends CronController
                 $apiOrder->getId()
             );
             $logPrefix .= '[' . $apiOrder->getReference() . '] ';
-                
+            
             try {
                 
                 /** @var ShoppingfeedHandler $handler */

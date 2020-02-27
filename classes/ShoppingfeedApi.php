@@ -323,7 +323,21 @@ class ShoppingfeedApi
             return false;
         }
         
-        return $orders;
+        // If importing test orders is allowed
+        if (Configuration::get(Shoppingfeed::ORDER_IMPORT_TEST)) {
+            // Avoid surprises, make sure we're always returning an array
+            return is_array($orders) ? $orders : iterator_to_array($orders);
+        }
+        
+        $filteredOrders = array();
+        foreach ($orders as $order) {
+            $orderRawData = $order->toArray();
+            if (!$orderRawData['isTest']) {
+                $filteredOrders[] = $order;
+            }
+        }
+            
+        return $filteredOrders;
     }
     
     public function acknowledgeOrder($id_order_marketplace, $name_marketplace, $id_order_prestashop)
