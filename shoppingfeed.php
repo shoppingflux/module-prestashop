@@ -26,14 +26,14 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-require_once _PS_MODULE_DIR_ . "shoppingfeed/vendor/autoload.php";
+require_once _PS_MODULE_DIR_ . 'shoppingfeed/vendor/autoload.php';
 require_once _PS_MODULE_DIR_ . 'shoppingfeed/classes/ShoppingfeedProduct.php';
 require_once _PS_MODULE_DIR_ . 'shoppingfeed/classes/ShoppingfeedOrder.php';
 require_once _PS_MODULE_DIR_ . 'shoppingfeed/classes/ShoppingfeedCarrier.php';
 require_once _PS_MODULE_DIR_ . 'shoppingfeed/classes/ShoppingfeedTaskOrder.php';
-require_once(_PS_MODULE_DIR_ . 'shoppingfeed/classes/actions/ShoppingfeedProductSyncStockActions.php');
-require_once(_PS_MODULE_DIR_ . 'shoppingfeed/classes/actions/ShoppingfeedProductSyncPriceActions.php');
-require_once(_PS_MODULE_DIR_ . 'shoppingfeed/classes/actions/ShoppingfeedOrderSyncActions.php');
+require_once _PS_MODULE_DIR_ . 'shoppingfeed/classes/actions/ShoppingfeedProductSyncStockActions.php';
+require_once _PS_MODULE_DIR_ . 'shoppingfeed/classes/actions/ShoppingfeedProductSyncPriceActions.php';
+require_once _PS_MODULE_DIR_ . 'shoppingfeed/classes/actions/ShoppingfeedOrderSyncActions.php';
 
 // Set this as comment so Classlib will import the files; but don't uncomment !
 // Installation will fail on PS 1.6 if "use" statements are in the main module file
@@ -69,6 +69,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     const CANCELLED_ORDERS = "SHOPPINGFEED_CANCELLED_ORDERS";
     const REFUNDED_ORDERS = "SHOPPINGFEED_REFUNDED_ORDERS";
     const ORDER_IMPORT_ENABLED = "SHOPPINGFEED_ORDER_IMPORT_ENABLED";
+    const ORDER_IMPORT_TEST = "SHOPPINGFEED_ORDER_IMPORT_TEST";
     const ORDER_IMPORT_SPECIFIC_RULES_CONFIGURATION = "SHOPPINGFEED_ORDER_IMPORT_SPECIFIC_RULES_CONFIGURATION";
     const ORDER_DEFAULT_CARRIER_REFERENCE = "SHOPPINGFEED_ORDER_DEFAULT_CARRIER_REFERENCE";
 
@@ -296,14 +297,14 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             // On pS1.6, Module::disable() always returns false
             return false;
         }
-        
+
         $tab = Tab::getInstanceFromClassName('shoppingfeed');
         if ($tab->id == null) {
             return true;
         }
         $tab->active = 0;
         $tab->save();
-        
+
         return true;
     }
 
@@ -317,7 +318,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         if (parent::enable($force_all) === false) {
             return false;
         }
-        
+
         $tab = Tab::getInstanceFromClassName('shoppingfeed');
         if ($tab->id == null) {
             return true;
@@ -334,7 +335,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             Configuration::updateValue($key, $defaultValue, null, null, $id_shop);
         }
     }
-    
+
     /**
      * Breaking changes (e.g. deprecation) notice should be set here; get the
      * controller with $this->context->controller and set the messages
@@ -391,7 +392,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             Context::getContext()->link->getAdminLink('AdminShoppingfeedAccountSettings')
         );
     }
-    
+
     /**
      * Returns the product's Shopping Feed reference. The developer can skip
      * products to sync by overriding this method and have it return false.
@@ -403,7 +404,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     public function mapReference(ShoppingfeedProduct $sfProduct, ...$arguments)
     {
         $reference = $sfProduct->id_product . ($sfProduct->id_product_attribute ? "_" . $sfProduct->id_product_attribute : "");
-        
+
         Hook::exec(
             'ShoppingfeedMapProductReference', // hook_name
             array(
@@ -411,10 +412,10 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
                 'reference' => &$reference
             ) // hook_args
         );
-        
+
         return $reference;
     }
-    
+
     /**
      * Returns the Prestashop product matching the Shopping Feed reference. The
      * developer can skip specific products during order import by overriding
@@ -429,12 +430,12 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     {
         $explodedReference = explode('_', $sfProductReference);
         $id_product = isset($explodedReference[0]) ? $explodedReference[0] : null;
-        
+
         $product = new Product($id_product, true, null, $id_shop);
         if (isset($explodedReference[1])) {
             $product->id_product_attribute = $explodedReference[1];
         }
-        
+
         Hook::exec(
             'ShoppingfeedMapProduct', // hook_name
             array(
@@ -442,10 +443,10 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
                 'product' => &$product,
             ) // hook_args
         );
-        
+
         return $product;
     }
-    
+
     /**
      * Returns the product's price sent to the Shopping Feed API. The developer
      * can skip products to sync by overriding this method and have it return
@@ -461,7 +462,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     {
         $cloneContext = Context::getContext()->cloneContext();
         $cloneContext->shop = new Shop($id_shop);
-        
+
         $specific_price_output = null;
         Product::flushPriceCache();
         $price = Product::getPriceStatic(
@@ -485,7 +486,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             true, // use_customer_price
             null // id_customization
         );
-        
+
         Hook::exec(
             'ShoppingfeedMapProductPrice', // hook_name
             array(
@@ -493,10 +494,10 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
                 'price' => &$price
             ) // hook_args
         );
-        
+
         return $price;
     }
-    
+
     /****************************** Stock hook *******************************/
 
     /**
@@ -539,9 +540,9 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
 
         \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::closeLogger();
     }
-    
+
     /****************************** Prices hooks ******************************/
-    
+
     /* We'll have to check for products updates and combinations updates.
      * For each object, we'll use the "UpdateBefore" hooks.
      * We won't check the "Add" and "Delete" hooks, since the export module
@@ -549,7 +550,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
      * If we're using realtime sync, the SF call will be done in the
      * "UpdateAfter" hooks, otherwise we'll send non-updated values.
      */
-    
+
     /**
      * Compares an updated product's price with its old price. If the new price
      * is different, saves the product for price synchronization.
@@ -560,19 +561,19 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         if (!Configuration::get(Shoppingfeed::PRICE_SYNC_ENABLED)) {
             return;
         }
-        
+
         $product = $params['object'];
         if (!Validate::isLoadedObject($product)) {
             return;
         }
-        
+
         // Retrieve previous values in DB
         // If all goes well, they should already be cached...
         $old_product = new Product($product->id);
         if ((float)$old_product->price == (float)$product->price) {
             return;
         }
-        
+
         try {
             $handler = new \ShoppingfeedClasslib\Actions\ActionsHandler();
             $handler
@@ -593,14 +594,14 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
                 $product->id
             );
         }
-        
+
         if (!\ShoppingfeedClasslib\Registry::isRegistered('updated_product_prices_ids')) {
             \ShoppingfeedClasslib\Registry::set('updated_product_prices_ids', array());
         }
         $updatedProductPricesIds = \ShoppingfeedClasslib\Registry::get('updated_product_prices_ids');
         $updatedProductPricesIds[] = $product->id;
         \ShoppingfeedClasslib\Registry::set('updated_product_prices_ids', $updatedProductPricesIds);
-        
+
         \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::closeLogger();
 
         // Combinations hook are not called when saving the product on 1.6
@@ -613,7 +614,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             }
         }
     }
-    
+
     /**
      * Compares an updated combinations's price with its old price. If the new
      * price is different, saves the combination for price synchronization.
@@ -624,12 +625,12 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         if (!Configuration::get(Shoppingfeed::PRICE_SYNC_ENABLED)) {
             return;
         }
-        
+
         $combination = $params['object'];
         if (!Validate::isLoadedObject($combination)) {
             return;
         }
-        
+
         // Retrieve previous values in DB
         // If all goes well, they should already be cached...
         $old_combination = new Combination($combination->id);
@@ -640,7 +641,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             )) {
             return;
         }
-        
+
         try {
             $handler = new \ShoppingfeedClasslib\Actions\ActionsHandler();
             $handler
@@ -665,7 +666,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
 
         \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::closeLogger();
     }
-    
+
     /**
      * Updates a product on SF if realtime sync is enabled.
      * On PS1.6, it should also update the product's combinations if needed.
@@ -675,7 +676,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     {
         $this->updateShoppingFeedPriceRealtime();
     }
-    
+
     /**
      * Updates a combination on SF if realtime sync is enabled.
      * @param array $params The hook parameters
@@ -684,7 +685,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     {
         $this->updateShoppingFeedPriceRealtime();
     }
-    
+
     /**
      * Processes saved price updates if realtime sync is enabled.
      */
@@ -702,7 +703,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
                 if (false == Configuration::get(Shoppingfeed::REAL_TIME_SYNCHRONIZATION, null, null, $shop['id_shop'])) {
                     continue;
                 }
-                
+
                 $handler->setConveyor(array(
                     'id_shop' => $shop['id_shop'],
                     'product_action' => ShoppingfeedProduct::ACTION_SYNC_PRICE,
@@ -723,10 +724,10 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
                 )
             );
         }
-        
+
         \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::closeLogger();
     }
-    
+
     /****************************** Order status hooks ******************************/
 
     /**
@@ -747,7 +748,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         if ($currentOrder->module != "sfpayment") {
             return;
         }
-        
+
         try {
             \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logInfo(
                 sprintf(
@@ -758,13 +759,13 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
                 'Order',
                 $currentOrder->id
             );
-            
+
             $handler = new \ShoppingfeedClasslib\Actions\ActionsHandler();
             $processResult = $handler
                 ->setConveyor(array('id_order' => $currentOrder->id))
                 ->addActions('saveOrder')
                 ->process('shoppingfeedOrderSync');
-            
+
             if (!$processResult) {
                 \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logError(
                     ShoppingfeedOrderSyncActions::getLogPrefix($currentOrder->id) . ' ' .
@@ -785,7 +786,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         }
         \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::closeLogger();
     }
-    
+
     /**
      * Saves an order for status synchronization
      *
@@ -802,9 +803,9 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         if (!Validate::isLoadedObject($shoppingFeedOrder)) {
             return;
         }
-        
+
         $order = new Order($params['id_order']);
-        
+
         // Check if the new status calls for an update with Shopping Feed
         $newOrderStatus = $params['newOrderStatus'];
         $shipped_status = json_decode(Configuration::get(Shoppingfeed::SHIPPED_ORDERS, null, null, $order->id_shop));
@@ -816,7 +817,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         ) {
             return;
         }
-        
+
         $logPrefix = ShoppingfeedOrderSyncActions::getLogPrefix($shoppingFeedOrder->id_order);
         try {
             \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logInfo(
@@ -850,12 +851,12 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
 
         \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::closeLogger();
     }
-    
+
     /**
      * Adds the order import specific rules to the manager.
      * Add, remove or extend an order import rule ! Use this hook to declare
      * your own behaviour.
-     * 
+     *
      * @param array $params
      */
     public function hookActionShoppingfeedOrderImportRegisterSpecificRules($params)
@@ -869,7 +870,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             ShoppingfeedAddon\OrderImport\Rules\RueducommerceMondialrelay::class,
             ShoppingfeedAddon\OrderImport\Rules\Socolissimo::class,
         );
-        
+
         foreach($defaultRulesClassNames as $ruleClassName) {
             $params['specificRulesClassNames'][] = $ruleClassName;
         }

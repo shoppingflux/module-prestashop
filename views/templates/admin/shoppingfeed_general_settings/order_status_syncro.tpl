@@ -31,47 +31,53 @@
             </div>
         {/if}
     {elseif $input.type == 'shoppingfeed_open-section'}
-        <div id='{$input.id|escape:'htmlall':'UTF-8'}' class='shoppingfeed_form-section'>
+        <div id="{$input.id|escape:'htmlall':'UTF-8'}" class="shoppingfeed_form-section">
             {if isset($input.title)}
-                <h2>{$input.title|escape:'htmlall':'UTF-8'}</h2>
+                <h2>{$input.title nofilter}</h2>
             {/if}
-            
+
             {if isset($input.desc)}
-                <p>{$input.desc|escape:'htmlall':'UTF-8'}</p>
+            <div class="alert alert-info">
+                {$input.desc|escape:'htmlall':'UTF-8'}
+            </div>
             {/if}
     {elseif $input.type == 'shoppingfeed_close-section'}
         </div>
     {elseif $input.type == 'shoppingfeed_carrier-matching'}
+    <div class="form-group">
+        <label class="control-label col-lg-3">
+            <span class="label-tooltip" data-toggle="tooltip" data-html="true" title="" data-original-title="{l s='Carrier used when an order is imported from a new marketplace.' mod='shoppingfeed'}">{l s='Default carrier' mod='shoppingfeed'}</span>
+        </label>
+        <div class="col-lg-9">
+            <select name="{$input.default_carrier_field_name|escape:'htmlall':'UTF-8'}" class="fixed-width-xl">
+                {foreach from=$input.carriers item='option'}
+                    <option value="{$option.value|escape:'htmlall':'UTF-8'}" {if $fields_value[$input.default_carrier_field_name] == $option.value}selected="selected"{/if}>&nbsp;{$option.label|escape:'htmlall':'UTF-8'}</option>
+                {/foreach}
+            </select>
+        </div>
+    </div>
         <div class="form-group">
-            <div class="col-lg-6">
-                <label class="control-label col-lg-2">
-                    {l s='Marketplace' mod='shoppingfeed'}
-                </label>
-                <div class="col-lg-3">
-                    <select class="fixed-width-xl" id="shoppingfeed_marketplace-filter">
-                            <option value="">&nbsp;{l s='All' mod='shoppingfeed'}</option>
-                        {foreach from=$input.marketplace_filter_options item='option'}
-                            <option value="{$option.value|escape:'htmlall':'UTF-8'}">&nbsp;{$option.label|escape:'htmlall':'UTF-8'}</option>
-                        {/foreach}
-                    </select>
-                </div>
-                <label class="control-label col-lg-2">
-                    {l s='Default carrier' mod='shoppingfeed'}
-                </label>
-                <div class="col-lg-3">
-                    <select name="{$input.default_carrier_field_name|escape:'htmlall':'UTF-8'}" class="fixed-width-xl">
-                        {foreach from=$input.carriers item='option'}
-                            <option value="{$option.value|escape:'htmlall':'UTF-8'}" {if $fields_value[$input.default_carrier_field_name] == $option.value}selected="selected"{/if}>&nbsp;{$option.label|escape:'htmlall':'UTF-8'}</option>
-                        {/foreach}
-                    </select>
-                </div>
-            </div>
-            <div class="col-xs-10">
+            <label class="control-label col-lg-3">
+                {l s='Carriers matching' mod='shoppingfeed'}
+            </label>
+            <div class="col-lg-9">
                 <table class="table" id="shoppingfeed_carriers-matching-table">
                     <thead>
                         <tr>
-                            <th>{l s='Shopping feed carrier' mod='shoppingfeed'}</th>
-                            <th>{l s='Prestashop carrier' mod='shoppingfeed'}</th>
+                            <th><span class="title_box active">{l s='Shopping feed carrier' mod='shoppingfeed'}</span></th>
+                            <th><span class="title_box active">{l s='Prestashop carrier' mod='shoppingfeed'}</span></th>
+                        </tr>
+                        <tr class="nodrag nodrop filter row_hover">
+                            <th class="text-center">
+
+                                <select class="fixed-width-xl" id="shoppingfeed_marketplace-filter">
+                                        <option value="">&nbsp;{l s='All' mod='shoppingfeed'}</option>
+                                    {foreach from=$input.marketplace_filter_options item='option'}
+                                        <option value="{$option.value|escape:'htmlall':'UTF-8'}">&nbsp;{$option.label|escape:'htmlall':'UTF-8'}</option>
+                                    {/foreach}
+                                </select>
+                            </th>
+                            <th class="text-center"></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -118,7 +124,7 @@
                 </select>
                 <a id="{$input.selected.btn.id|escape:'htmlall':'UTF-8'}" class="shoppingfeed_double-list-btn-unselect btn btn-default btn-block clearfix"><i class="icon-arrow-left"></i> {$input.selected.btn.label|escape:'htmlall':'UTF-8'}</a>
             </div>
-            
+
             <div class="shoppingfeed_double-list-values hidden">
                 {foreach from=$input.unselected.options item='option'}
                     <input type="checkbox" name="{$input.name|escape:'htmlall':'UTF-8'}[]" value="{$option.value|escape:'htmlall':'UTF-8'}"/>
