@@ -102,12 +102,12 @@ class CdiscountRelay extends \ShoppingfeedAddon\OrderImport\RuleAbstract
         
         $address['company'] = $relayId;
 
-        // And now we decompose the fullname (in the FirstName field) by first name + last name
-        // We consider that what's after the space is the last name
+        // And now we decompose the fullname (in the FirstName field) by last name + first name
+        // We consider that what's after the last space is the first name
         $fullname = trim($address['firstName']);
         $explodedFullname = explode(" ", $fullname);
         if (isset($explodedFullname[0])) {
-            $address['firstName'] = array_shift($explodedFullname);
+            $address['firstName'] = array_pop($explodedFullname);
             $address['lastName'] = implode(' ', $explodedFullname);
         }
     }
