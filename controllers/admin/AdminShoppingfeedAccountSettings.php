@@ -109,9 +109,9 @@ class AdminShoppingfeedAccountSettingsController extends ModuleAdminController
                         str_replace(
                             "%url%",
                             '<a href="https://app.shopping-feed.com/v3/en/login" class="alert-link" target="_blank">' .
-                            $this->module->l('My Access page', 'AdminShoppingfeedConfiguration') .
+                            $this->module->l('My Account', 'AdminShoppingfeedConfiguration') .
                             '</a>',
-                            $this->module->l('Your token can be found on the %url% of your merchant interface', 'AdminShoppingfeedAccountSettings')
+                            $this->module->l('Your token can be found on the page %url% of your merchant interface', 'AdminShoppingfeedAccountSettings')
                         ) .
                         '</div>',
                 ),
