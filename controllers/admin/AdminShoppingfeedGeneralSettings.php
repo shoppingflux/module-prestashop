@@ -135,7 +135,7 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
                             'type' => 'shoppingfeed_alert',
                             'severity' => 'warning',
                             'condition' => !$order_import_available,
-                            'message' => $this->module->l('The Shopping Feed Official module (shoppingfluxexport) isinstalled on your shop for enabling the orders import synchronization. The “Order importation” option must be disabled in the official module for enabling this type of synchronization in the new module. If you disable this options in the official module and you enable them again later the "New orders import" will be disabled automatically in the Shopping feed 15 min module.', 'AdminShoppingfeedGeneralSettings')
+                            'message' => $this->module->l('The Shopping Feed module (shoppingfluxexport) is installed on your shop for enabling the orders import synchronization. The “Order importation” option must be disabled in the module for enabling this type of synchronization in this module. If you disable the options in the shoppingfluxexport\'s module and you enable it again later the button "New orders import" will be disabled automatically in the Shopping feed 15 min module.', 'AdminShoppingfeedGeneralSettings')
                         ),
                         array(
                             'type' => 'switch',
