@@ -351,7 +351,9 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     public static function isOrderSyncAvailable($id_shop = null)
     {
         // Is the old module installed ?
-        if (Module::isInstalled('shoppingfluxexport') && (
+        if (Module::isInstalled('shoppingfluxexport')
+            && Module::isEnabled('shoppingfluxexport')
+            && (
                 // Is order "shipped" status sync disabled in the old module ?
                 Configuration::get('SHOPPING_FLUX_STATUS_SHIPPED', null, null, $id_shop) != ''
                 // Is order "canceled" status sync disabled in the old module ?
@@ -371,7 +373,9 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     public static function isOrderImportAvailable($id_shop = null)
     {
         // Is the old module installed ?
-        if (Module::isInstalled('shoppingfluxexport') && (
+        if (Module::isInstalled('shoppingfluxexport') 
+            && Module::isEnabled('shoppingfluxexport') 
+            && (
                 // Is order import disabled in the old module ?
                 Configuration::get('SHOPPING_FLUX_ORDERS', null, null, $id_shop) != ''
         )
