@@ -68,7 +68,7 @@ class ShoppingfeedProductSyncStockActions extends ShoppingfeedProductSyncActions
                 'reference' => $sfReference,
                 'quantity' => StockAvailable::getQuantityAvailableByProduct(
                     $sfProduct->id_product,
-                    $sfProduct->id_product_attribute ? $sfProduct->id_product_attribute : null,
+                    (empty($sfProduct->id_product_attribute) === true) ? $sfProduct->id_product_attribute : null,
                     $sfProduct->id_shop
                 ),
                 'sfProduct' => $sfProduct,
@@ -110,7 +110,7 @@ class ShoppingfeedProductSyncStockActions extends ShoppingfeedProductSyncActions
         foreach ($res as $inventoryResource) {
             $reference = $inventoryResource->getReference();
             $sfProduct = $preparedBatchShop[$reference]['sfProduct'];
-            
+
             ProcessLoggerHandler::logInfo(
                 sprintf(
                     static::getLogPrefix($this->conveyor['id_shop']) . ' ' .
@@ -151,7 +151,7 @@ class ShoppingfeedProductSyncStockActions extends ShoppingfeedProductSyncActions
 
         return true;
     }
-    
+
     public static function getLogPrefix($id_shop = '')
     {
         return sprintf(

@@ -373,12 +373,12 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     public static function isOrderImportAvailable($id_shop = null)
     {
         // Is the old module installed ?
-        if (Module::isInstalled('shoppingfluxexport') 
-            && Module::isEnabled('shoppingfluxexport') 
+        if (Module::isInstalled('shoppingfluxexport')
+            && Module::isEnabled('shoppingfluxexport')
             && (
                 // Is order import disabled in the old module ?
                 Configuration::get('SHOPPING_FLUX_ORDERS', null, null, $id_shop) != ''
-        )
+               )
         ) {
             return false;
         }
@@ -436,6 +436,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         $id_product = isset($explodedReference[0]) ? $explodedReference[0] : null;
 
         $product = new Product($id_product, true, null, $id_shop);
+        $product->id_product_attribute = null;
         if (isset($explodedReference[1])) {
             $product->id_product_attribute = $explodedReference[1];
         }
