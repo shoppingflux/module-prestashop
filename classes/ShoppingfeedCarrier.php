@@ -55,12 +55,14 @@ class ShoppingfeedCarrier extends ObjectModel
                 'validate' => 'isString',
                 'required' => true,
                 'unique' => true,
+                'size' => 50,
             ),
             'name_carrier' => array(
                 'type' => ObjectModel::TYPE_STRING,
                 'validate' => 'isString',
                 'required' => true,
                 'unique' => true,
+                'size' => 50,
             ),
             'id_carrier_reference' => array(
                 'type' => ObjectModel::TYPE_INT,
@@ -81,7 +83,7 @@ class ShoppingfeedCarrier extends ObjectModel
             ),
         ),
     );
-    
+
     public static function getByMarketplaceAndName($marketplace, $name)
     {
         $query = new DbQuery();
@@ -94,12 +96,12 @@ class ShoppingfeedCarrier extends ObjectModel
         if (!$result) {
             return false;
         }
-        
+
         $sfCarrier = new ShoppingfeedCarrier();
         $sfCarrier->hydrate($result);
         return $sfCarrier;
     }
-    
+
     public static function getAllMarketplaces()
     {
         $query = new DbQuery();
@@ -111,7 +113,7 @@ class ShoppingfeedCarrier extends ObjectModel
         if (!$result) {
             return array();
         }
-        
+
         return array_map(
             function ($i) {
                 return $i['name_marketplace'];
@@ -119,13 +121,13 @@ class ShoppingfeedCarrier extends ObjectModel
             $result
         );
     }
-    
+
     public static function getAllCarriers($marketplace_filter = '')
     {
         $query = new DbQuery();
         $query->select('*')
             ->from('shoppingfeed_carrier');
-        
+
         if ($marketplace_filter) {
             $query->where('name_marketplace = "' . pSQL($marketplace_filter) . '"');
         }
@@ -134,7 +136,7 @@ class ShoppingfeedCarrier extends ObjectModel
         if (!$result) {
             return array();
         }
-        
+
         return array_map(
             function ($i) {
                 $o = new ShoppingfeedCarrier();

@@ -33,7 +33,7 @@ class ShoppingfeedOrder extends ObjectModel
 {
     /** @var int The order's id in Shopping Feed's internal system */
     public $id_internal_shoppingfeed;
-    
+
     /** @var int The order's id on the original marketplace */
     public $id_order_marketplace;
 
@@ -42,7 +42,7 @@ class ShoppingfeedOrder extends ObjectModel
 
     /** @var int The order's id */
     public $id_order;
-    
+
     /** @var string The payment method used on the marketplace */
     public $payment_method;
 
@@ -60,6 +60,7 @@ class ShoppingfeedOrder extends ObjectModel
                 'type' => ObjectModel::TYPE_STRING,
                 'validate' => 'isString',
                 'allow_null' => true,
+                'size' => 50,
             ),
             'id_order_marketplace' => array(
                 'type' => ObjectModel::TYPE_STRING,
@@ -70,6 +71,7 @@ class ShoppingfeedOrder extends ObjectModel
                 'type' => ObjectModel::TYPE_STRING,
                 'validate' => 'isString',
                 'required' => true,
+                'size' => 50,
             ),
             'id_order' => array(
                 'type' => ObjectModel::TYPE_INT,
@@ -81,6 +83,7 @@ class ShoppingfeedOrder extends ObjectModel
                 'type' => ObjectModel::TYPE_STRING,
                 'validate' => 'isString',
                 'required' => true,
+                'size' => 50,
             ),
             'date_marketplace_creation' => array(
                 'type' => self::TYPE_DATE,
@@ -97,7 +100,7 @@ class ShoppingfeedOrder extends ObjectModel
             ),
         ),
     );
-    
+
     public static function getByIdOrder($id_order)
     {
         $query = new DbQuery();
@@ -111,21 +114,21 @@ class ShoppingfeedOrder extends ObjectModel
             $shoppingfeedOrder->hydrate($shoppingfeed_order_data);
             return $shoppingfeedOrder;
         }
-        
+
         return false;
     }
-    
+
     public function setReferenceFromOrder($force = false)
     {
         if ($this->id_order_marketplace && !$force) {
             return true;
         }
-        
+
         $messages = Message::getMessagesByOrderId($this->id_order, true);
         if (empty($messages)) {
             return false;
         }
-        
+
         // Check messages from first to last
         $id_order_marketplace = null;
         foreach (array_reverse($messages) as $message) {
@@ -139,12 +142,12 @@ class ShoppingfeedOrder extends ObjectModel
         if (!$id_order_marketplace) {
             return false;
         }
-        
+
         $this->id_order_marketplace = $id_order_marketplace;
         $this->save();
         return true;
     }
-    
+
     public static function existsInternalId($id_internal_shoppingfeed)
     {
         $query = new DbQuery();
@@ -155,7 +158,7 @@ class ShoppingfeedOrder extends ObjectModel
 
         return $shoppingfeed_order_data ? true : false;
     }
-    
+
     public static function getByShoppingfeedInternalId($id_internal_shoppingfeed)
     {
         $query = new DbQuery();
@@ -169,10 +172,10 @@ class ShoppingfeedOrder extends ObjectModel
             $shoppingfeedOrder->hydrate($shoppingfeed_order_data);
             return $shoppingfeedOrder;
         }
-        
+
         return false;
     }
-    
+
     /**
      * Checks if a given marketplace manages quantities on its own
      *
