@@ -37,7 +37,7 @@ use ShoppingfeedAddon\OrderImport\RulesManager;
 class AdminShoppingfeedOrderImportRulesController extends ModuleAdminController
 {
     public $bootstrap = true;
-    
+
     /** @var ShoppingfeedOrderImportSpecificRulesManager $specificRulesManager */
     protected $specificRulesManager;
 
@@ -49,12 +49,12 @@ class AdminShoppingfeedOrderImportRulesController extends ModuleAdminController
         $this->specificRulesManager = new RulesManager($this->context->shop->id);
         $this->content = $this->renderRulesConfigurationForm();
         $this->content .= $this->renderRulesList();
-        
+
         $this->module->setBreakingChangesNotices();
-        
+
         parent::initContent();
     }
-    
+
     public function renderRulesConfigurationForm()
     {
         $fields_form = array(
@@ -70,18 +70,18 @@ class AdminShoppingfeedOrderImportRulesController extends ModuleAdminController
                 'id' => 'shoppingfeed_saveRulesConfiguration-submit'
             )
         );
-        
+
         $rulesInformation = $this->specificRulesManager->getRulesInformation();
         if (empty($rulesInformation)) {
             return '';
         }
-        
+
         $fields_value = array();
         foreach ($rulesInformation as $ruleInformation) {
             if (empty($ruleInformation['configurationSubform'])) {
                 continue;
             }
-            
+
             $ruleConfiguration = $ruleInformation['configuration'];
             foreach ($ruleInformation['configurationSubform'] as &$field) {
                 $fieldName = 'rulesConfiguration[' .
@@ -89,19 +89,19 @@ class AdminShoppingfeedOrderImportRulesController extends ModuleAdminController
                     '][' .
                     $field['name'] .
                     ']';
-                
+
                 if (is_array($ruleConfiguration) && isset($ruleConfiguration[$field['name']])) {
                     $fields_value[$fieldName] = $ruleConfiguration[$field['name']];
                 } else {
                     $fields_value[$fieldName] = null;
                 }
-                
+
                 $field['name'] = $fieldName;
+
+                $fields_form['input'][] = $field;
             }
-            
-            $fields_form['input'] = array_merge($ruleInformation['configurationSubform']);
         }
-        
+
         if (empty($fields_form['input'])) {
             return '';
         }
@@ -113,14 +113,14 @@ class AdminShoppingfeedOrderImportRulesController extends ModuleAdminController
 
         return $helper->generateForm(array(array('form' => $fields_form)));
     }
-    
+
     public function renderRulesList()
     {
         $rulesInformation = $this->specificRulesManager->getRulesInformation();
         if (empty($rulesInformation)) {
             return '';
         }
-        
+
         $fieldsList = array(
             'className' => array(
                 'title' => $this->module->l('Class name', 'AdminShoppingfeedOrderImportRules'),
@@ -132,7 +132,7 @@ class AdminShoppingfeedOrderImportRulesController extends ModuleAdminController
                 'title' => $this->module->l('Description', 'AdminShoppingfeedOrderImportRules'),
             ),
         );
-        
+
         $helper = new HelperList();
         $this->setHelperDisplay($helper);
         $helper->listTotal = count($rulesInformation);
@@ -149,7 +149,7 @@ class AdminShoppingfeedOrderImportRulesController extends ModuleAdminController
             $this->saveRulesConfiguration();
         }
     }
-    
+
     public function saveRulesConfiguration()
     {
         $rulesConfiguration = Tools::getValue('rulesConfiguration');

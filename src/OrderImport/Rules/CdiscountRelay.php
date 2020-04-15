@@ -30,12 +30,13 @@ if (!defined('_PS_VERSION_')) {
 
 use Tools;
 use Translate;
-
+use ShoppingfeedAddon\OrderImport\RuleAbstract;
+use ShoppingfeedAddon\OrderImport\RuleInterface;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
 
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 
-class CdiscountRelay extends \ShoppingfeedAddon\OrderImport\RuleAbstract
+class CdiscountRelay extends RuleAbstract implements RuleInterface
 {
     public function isApplicable(OrderResource $apiOrder)
     {
@@ -48,7 +49,7 @@ class CdiscountRelay extends \ShoppingfeedAddon\OrderImport\RuleAbstract
             )
         ;
     }
-    
+
     /**
      * We have to do this on preprocess, as the fields may be used in various
      * steps
@@ -59,28 +60,28 @@ class CdiscountRelay extends \ShoppingfeedAddon\OrderImport\RuleAbstract
     {
         /** @var \ShoppingfeedAddon\OrderImport\OrderData $orderData */
         $orderData = $params['orderData'];
-        
+
         $logPrefix = sprintf(
             Translate::getModuleTranslation('shoppingfeed', '[Order: %s]', 'CdiscountRelay'),
             $params['apiOrder']->getId()
         );
         $logPrefix .= '[' . $params['apiOrder']->getReference() . '] ' . self::class . ' | ';
-        
+
         ProcessLoggerHandler::logInfo(
             $logPrefix .
                 Translate::getModuleTranslation('shoppingfeed', 'Rule triggered.', 'CdiscountRelay'),
             'Order'
         );
-        
+
         $this->updateAddress($orderData->shippingAddress);
-        
+
         ProcessLoggerHandler::logSuccess(
             $logPrefix .
                 Translate::getModuleTranslation('shoppingfeed', 'Shipping address updated to set relay ID.', 'CdiscountRelay'),
             'Order'
         );
     }
-    
+
     /**
      * See old module _getAddress
      * The relay ID is in "lastname", and the actual lastname is appended to "firstname".
@@ -93,13 +94,13 @@ class CdiscountRelay extends \ShoppingfeedAddon\OrderImport\RuleAbstract
     {
         // Workaround for CDiscount usage of last name as pickup-point name
         $relayId = $address['lastName'];
-        
+
         // Check if the company is already filled
         if (!empty($address['company'])) {
             // When the company is known, we are appending it to the second line of the adresse
             $address['street2'] .= ' ' . $address['company'];
         }
-        
+
         $address['company'] = $relayId;
 
         // And now we decompose the fullname (in the FirstName field) by last name + first name
@@ -111,7 +112,7 @@ class CdiscountRelay extends \ShoppingfeedAddon\OrderImport\RuleAbstract
             $address['lastName'] = implode(' ', $explodedFullname);
         }
     }
-    
+
     /**
      * @inheritdoc
      */

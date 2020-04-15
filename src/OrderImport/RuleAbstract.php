@@ -24,6 +24,8 @@
 
 namespace ShoppingfeedAddon\OrderImport;
 
+use ShoppingfeedAddon\OrderImport\RuleInterface;
+
 if (!defined('_PS_VERSION_')) {
     exit;
 }
@@ -35,7 +37,7 @@ if (!defined('_PS_VERSION_')) {
 abstract class RuleAbstract implements RuleInterface
 {
     protected $configuration;
-    
+
     /**
      * @inheritdoc
      */
@@ -46,12 +48,12 @@ abstract class RuleAbstract implements RuleInterface
         }
         $this->configuration = $configuration;
     }
-    
+
     /**
      * @inheritdoc
      */
     abstract public function isApplicable(\ShoppingFeed\Sdk\Api\Order\OrderResource $apiOrder);
-    
+
     /**
      * @inheritdoc
      */
@@ -59,7 +61,7 @@ abstract class RuleAbstract implements RuleInterface
     {
         return $this->configuration;
     }
-    
+
     /**
      * @inheritdoc
      */
@@ -67,7 +69,7 @@ abstract class RuleAbstract implements RuleInterface
     {
         return array();
     }
-    
+
     /**
      * @inheritdoc
      */
@@ -75,12 +77,12 @@ abstract class RuleAbstract implements RuleInterface
     {
         return array();
     }
-    
+
     /**
      * @inheritdoc
      */
     abstract public function getDescription();
-    
+
     /**
      * @inheritdoc
      */

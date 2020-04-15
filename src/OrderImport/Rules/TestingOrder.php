@@ -28,51 +28,61 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-use Tools;
+use Module;
+use Db;
+use Address;
+use Country;
+use Customer;
+use Configuration;
+use Carrier;
 use Translate;
+use Order;
+use OrderHistory;
 use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
 
+use ShoppingfeedClasslib\Registry;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 
-class AmazonPrime extends \ShoppingfeedAddon\OrderImport\RuleAbstract implements \ShoppingfeedAddon\OrderImport\RuleInterface
+class TestingOrder extends RuleAbstract implements RuleInterface
 {
     public function isApplicable(OrderResource $apiOrder)
     {
-        // TODO : OrderResource should likely have a "getAdditionalFields" method
-        $apiOrderData = $apiOrder->toArray();
-        $apiOrderAdditionalFields = $apiOrderData['additionalFields'];
-
-        return preg_match('#^amazon#', Tools::strtolower($apiOrder->getChannel()->getName()))
-            && !empty($apiOrderAdditionalFields['is_prime']);
+        // There's no check on the carrier name in the old module, so we won't
+        // do it here either
+        $orderRawData = $apiOrder->toArray();
+        if ($orderRawData['isTest']) {
+            return true;
+        }
     }
 
-    public function onPreProcess($params)
+    public function onPostProcess($params)
     {
         /** @var \ShoppingfeedAddon\OrderImport\OrderData $orderData */
         $orderData = $params['orderData'];
         $apiOrder = $params['apiOrder'];
 
         $logPrefix = sprintf(
-            Translate::getModuleTranslation('shoppingfeed', '[Order: %s]', 'AmazonPrime'),
+            Translate::getModuleTranslation('shoppingfeed', '[Order: %s]', 'TestingOrder'),
             $apiOrder->getId()
         );
         $logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
 
         ProcessLoggerHandler::logInfo(
             $logPrefix .
-                Translate::getModuleTranslation('shoppingfeed', 'Rule triggered.', 'AmazonPrime'),
-            'Order'
+                Translate::getModuleTranslation('shoppingfeed', 'Rule triggered. Set order #'.$params['sfOrder']->id_order.' to CANCELED', 'TestingOrder'),
+            'Order',
+            $params['sfOrder']->id_order
         );
-
-        $orderData->payment['method'] = 'amazon prime';
-
-        ProcessLoggerHandler::logSuccess(
-            $logPrefix .
-                Translate::getModuleTranslation('shoppingfeed', 'Addresses updated.', 'AmazonPrime'),
-            'Order'
-        );
+        $psOrder = new Order($params['sfOrder']->id_order);
+        // Set order to CANCELED
+        $history = new OrderHistory();
+        $history->id_order = $params['sfOrder']->id_order;
+        $use_existings_payment = true;
+        $history->changeIdOrderState((int) Configuration::get('PS_OS_CANCELED'), $psOrder, $use_existings_payment);
+        // Save all changes
+        $history->addWithemail();
     }
 
     /**
@@ -80,7 +90,7 @@ class AmazonPrime extends \ShoppingfeedAddon\OrderImport\RuleAbstract implements
      */
     public function getConditions()
     {
-        return Translate::getModuleTranslation('shoppingfeed', 'If the order is from Amazon and has \'is_prime\' set in its additional fields.', 'AmazonPrime');
+        return Translate::getModuleTranslation('shoppingfeed', 'If the order is a test.', 'TestingOrder');
     }
 
     /**
@@ -88,6 +98,6 @@ class AmazonPrime extends \ShoppingfeedAddon\OrderImport\RuleAbstract implements
      */
     public function getDescription()
     {
-        return Translate::getModuleTranslation('shoppingfeed', 'Sets the order\'s payment method as \'Amazon Prime\' in the module\'s \'Marketplaces Summary\'.', 'AmazonPrime');
+        return Translate::getModuleTranslation('shoppingfeed', 'Set order to CANCELED after the process.', 'TestingOrder');
     }
 }

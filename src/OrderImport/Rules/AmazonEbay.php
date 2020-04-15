@@ -30,22 +30,23 @@ if (!defined('_PS_VERSION_')) {
 
 use Tools;
 use Translate;
-
+use ShoppingfeedAddon\OrderImport\RuleAbstract;
+use ShoppingfeedAddon\OrderImport\RuleInterface;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
 
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 
-class AmazonEbay extends \ShoppingfeedAddon\OrderImport\RuleAbstract
+class AmazonEbay extends RuleAbstract implements RuleInterface
 {
     public function isApplicable(OrderResource $apiOrder)
     {
         if (empty($this->configuration['enabled'])) {
             return false;
         }
-        
+
         $shippingAddress = $apiOrder->getShippingAddress();
         $billingAddress = $apiOrder->getBillingAddress();
-        
+
         return !empty($this->configuration['enabled'])
             && preg_match('#^(cdiscount|ebay)$#', Tools::strtolower($apiOrder->getChannel()->getName()))
             && (
@@ -55,7 +56,7 @@ class AmazonEbay extends \ShoppingfeedAddon\OrderImport\RuleAbstract
                 || empty($billingAddress['lastName'])
             );
     }
-    
+
     /**
      * We have to do this on preprocess, as the fields may be used in various
      * steps
@@ -67,47 +68,47 @@ class AmazonEbay extends \ShoppingfeedAddon\OrderImport\RuleAbstract
         /** @var \ShoppingfeedAddon\OrderImport\OrderData $orderData */
         $orderData = $params['orderData'];
         $apiOrder = $params['apiOrder'];
-        
+
         $logPrefix = sprintf(
             Translate::getModuleTranslation('shoppingfeed', '[Order: %s]', 'AmazonEbay'),
             $apiOrder->getId()
         );
         $logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
-        
+
         ProcessLoggerHandler::logInfo(
             $logPrefix .
                 Translate::getModuleTranslation('shoppingfeed', 'Rule triggered.', 'AmazonEbay'),
             'Order'
         );
-        
+
         $this->updateAddress($orderData->shippingAddress);
         $this->updateAddress($orderData->billingAddress);
-        
+
         ProcessLoggerHandler::logSuccess(
             $logPrefix .
                 Translate::getModuleTranslation('shoppingfeed', 'Addresses updated.', 'AmazonEbay'),
             'Order'
         );
     }
-    
+
     public function updateAddress(&$address)
     {
         $address['firstName'] = trim($address['firstName']);
         $address['lastName'] = trim($address['lastName']);
-        
+
         if (empty($address['firstName'])) {
             $fullname = $address['lastName'];
         } else {
             $fullname = $address['firstName'];
         }
-        
+
         $explodedFullname = explode(" ", $fullname);
         if (isset($explodedFullname[0])) {
             $address['firstName'] = array_shift($explodedFullname);
             $address['lastName'] = implode(' ', $explodedFullname);
         }
     }
-    
+
     /**
      * @inheritdoc
      */
@@ -123,7 +124,7 @@ class AmazonEbay extends \ShoppingfeedAddon\OrderImport\RuleAbstract
     {
         return Translate::getModuleTranslation('shoppingfeed', 'Removes everything after the first space in the filled field and moves it to the empty field.', 'AmazonEbay');
     }
-    
+
     /**
      * @inheritdoc
      */
@@ -146,7 +147,7 @@ class AmazonEbay extends \ShoppingfeedAddon\OrderImport\RuleAbstract
             )
         );
     }
-    
+
     /**
      * @inheritdoc
      */

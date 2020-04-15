@@ -32,7 +32,8 @@ use Tools;
 use Translate;
 
 use ShoppingfeedClasslib\Registry;
-
+use ShoppingfeedAddon\OrderImport\RuleAbstract;
+use ShoppingfeedAddon\OrderImport\RuleInterface;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
 
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
@@ -44,12 +45,12 @@ use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
  * Therefore we need to extract the relay ID from the ShippingMethod and then
  * rebuild the ShippingMethod without the relay ID
  */
-class RueducommerceMondialrelay extends \ShoppingfeedAddon\OrderImport\RuleAbstract
+class RueducommerceMondialrelay extends RuleAbstract implements RuleInterface
 {
     public function isApplicable(OrderResource $apiOrder)
     {
         $apiOrderShipment = $apiOrder->getShipment();
-        
+
         if (preg_match('#^rdc|rueducommerce$#', Tools::strtolower($apiOrder->getChannel()->getName()))
             && preg_match('#mondial relay .+#', Tools::strtolower($apiOrderShipment['carrier']))
         ) {
@@ -59,7 +60,7 @@ class RueducommerceMondialrelay extends \ShoppingfeedAddon\OrderImport\RuleAbstr
         }
         return false;
     }
-    
+
     /**
      * Updates the carrier name before it's used
      *
@@ -69,39 +70,39 @@ class RueducommerceMondialrelay extends \ShoppingfeedAddon\OrderImport\RuleAbstr
     {
         /** @var \ShoppingfeedAddon\OrderImport\OrderData $orderData */
         $orderData = $params['orderData'];
-        
+
         $logPrefix = sprintf(
             Translate::getModuleTranslation('shoppingfeed', '[Order: %s]', 'RueducommerceMondialrelay'),
             $params['apiOrder']->getId()
         );
         $logPrefix .= '[' . $params['apiOrder']->getReference() . '] ' . self::class . ' | ';
-        
+
         ProcessLoggerHandler::logInfo(
             $logPrefix .
                 Translate::getModuleTranslation('shoppingfeed', 'Rule triggered.', 'RueducommerceMondialrelay'),
             'Order'
         );
-        
+
         // Split the carrier name
         $explodedCarrier = explode(' ', $orderData->shipment['carrier']);
         // Remove the relay ID
         $mondialRelayID = array_pop($explodedCarrier);
-        
+
         // Rebuild the carrier name; it should be found properly
         $orderData->shipment['carrier'] = implode($explodedCarrier, " ");
-        
+
         // Save the relay ID in the shipping address "Other" field so it can be
         // used by the main Mondial Relay rule
         // See ShoppingfeedAddon\OrderImport\Rules\Mondialrelay
         $orderData->shippingAddress['other'] = $mondialRelayID;
-        
+
         ProcessLoggerHandler::logSuccess(
             $logPrefix .
                 Translate::getModuleTranslation('shoppingfeed', 'Shipping address updated to set MR relay ID.', 'RueducommerceMondialrelay'),
             'Order'
         );
     }
-    
+
     /**
      * @inheritdoc
      */

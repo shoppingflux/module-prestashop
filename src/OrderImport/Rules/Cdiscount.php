@@ -29,14 +29,17 @@ if (!defined('_PS_VERSION_')) {
 }
 
 use Order;
+use OrderDetail;
 use Tools;
 use Translate;
-
+use DB;
+use ShoppingfeedAddon\OrderImport\RuleAbstract;
+use ShoppingfeedAddon\OrderImport\RuleInterface;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
 
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 
-class Cdiscount extends \ShoppingfeedAddon\OrderImport\RuleAbstract
+class Cdiscount extends RuleAbstract implements RuleInterface
 {
     public function isApplicable(OrderResource $apiOrder)
     {
@@ -44,13 +47,13 @@ class Cdiscount extends \ShoppingfeedAddon\OrderImport\RuleAbstract
         // TODO : OrderResource should likely have a "getAdditionalFields" method
         $apiOrderData = $apiOrder->toArray();
         $apiOrderAdditionalFields = $apiOrderData['additionalFields'];
-        
+
         return preg_match('#^cdiscount$#', Tools::strtolower($apiOrder->getChannel()->getName()))
-            && !empty($apiOrderAdditionalFields['TotalFees'])
-            && $apiOrderAdditionalFields['TotalFees'] > 0;
+            && !empty($apiOrderAdditionalFields['INTERETBCA'])
+            && $apiOrderAdditionalFields['INTERETBCA'] > 0;
     }
-    
-    
+
+
     public function onPostProcess($params)
     {
         /** @var \ShoppingfeedAddon\OrderImport\OrderData $orderData */
@@ -58,21 +61,21 @@ class Cdiscount extends \ShoppingfeedAddon\OrderImport\RuleAbstract
         $apiOrder = $params['apiOrder'];
         $psOrder = new Order($params['sfOrder']->id_order);
         // TODO : Where is TotalFees on the new API ?
-        $processingFees = $orderData->additionalFields['TotalFees'];
-        
+        $processingFees = $orderData->additionalFields['INTERETBCA'];
+
         $logPrefix = sprintf(
             Translate::getModuleTranslation('shoppingfeed', '[Order: %s]', 'Cdiscount'),
             $apiOrder->getId()
         );
         $logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
-        
+
         ProcessLoggerHandler::logInfo(
             $logPrefix .
                 Translate::getModuleTranslation('shoppingfeed', 'Rule triggered.', 'Cdiscount'),
             'Order'
         );
-        
-        
+
+
         // See old module _updatePrices
         // Retrieve the order invoice ID to associate it with the FDG.
         // This way, the FDG will appears in the invoice.
@@ -80,6 +83,8 @@ class Cdiscount extends \ShoppingfeedAddon\OrderImport\RuleAbstract
         SELECT `id_order_invoice`
         FROM `'._DB_PREFIX_.'order_invoice`
         WHERE `id_order` =  '.(int)$psOrder->id);
+
+        $processingFees = Tools::ps_round($processingFees, 2);
 
         $fdgInsertFields = array(
             'id_order' => (int) $psOrder->id,
@@ -94,7 +99,7 @@ class Cdiscount extends \ShoppingfeedAddon\OrderImport\RuleAbstract
             'product_quantity_refunded' => 0,
             'product_quantity_return' => 0,
             'product_quantity_reinjected' => 0,
-            'product_price' => (float) $processingFees,
+            'product_price' => $processingFees,
             'reduction_percent' => 0,
             'reduction_amount' => 0,
             'reduction_amount_tax_incl' => 0,
@@ -115,10 +120,10 @@ class Cdiscount extends \ShoppingfeedAddon\OrderImport\RuleAbstract
             'download_hash' => null,
             'download_nb' => 0,
             'download_deadline' => null,
-            'total_price_tax_incl' => (float) $processingFees,
-            'total_price_tax_excl' => (float) $processingFees,
-            'unit_price_tax_incl' => (float) $processingFees,
-            'unit_price_tax_excl' => (float) $processingFees,
+            'total_price_tax_incl' => $processingFees,
+            'total_price_tax_excl' => $processingFees,
+            'unit_price_tax_incl' => $processingFees,
+            'unit_price_tax_excl' => $processingFees,
             'total_shipping_price_tax_incl' => 0,
             'total_shipping_price_tax_excl' => 0,
             'purchase_supplier_price' => 0,
@@ -126,8 +131,11 @@ class Cdiscount extends \ShoppingfeedAddon\OrderImport\RuleAbstract
         );
 
         // Insert the FDG-ShoppingFlux in the order details
-        SfLogger::getInstance()->log(SF_LOG_ORDERS, 'Inserting Cdiscount fees, total fees = ' . $processingFees);
-        Db::getInstance()->insert('order_detail', $fdgInsertFields);
+        $orderDetail = new OrderDetail();
+        foreach ($fdgInsertFields as $key => $value) {
+            $orderDetail->{$key} = $value;
+        }
+        $orderDetail->add(true, true);
 
         // insert doesn't return the id, we therefore need to make another request to find out the id_order_detail_fdg
         $sql = 'SELECT od.id_order_detail FROM '._DB_PREFIX_.'order_detail od
@@ -135,7 +143,6 @@ class Cdiscount extends \ShoppingfeedAddon\OrderImport\RuleAbstract
         $id_order_detail_fdg = Db::getInstance()->getValue($sql);
 
         // Insert the FDG in the tax details
-        SfLogger::getInstance()->log(SF_LOG_ORDERS, 'Inserting Cdiscount fees in order_detail_tax, id_order_detail_fdg = '.$id_order_detail_fdg.', fdg_tax_amount = 0');
         $insertOrderDetailTaxFgd = array(
             'id_order_detail' => $id_order_detail_fdg,
             'id_tax' => 0,
@@ -143,7 +150,7 @@ class Cdiscount extends \ShoppingfeedAddon\OrderImport\RuleAbstract
             'total_amount' => 0,
         );
         Db::getInstance()->insert('order_detail_tax', $insertOrderDetailTaxFgd);
-        
+
         // Add fees to order
         $orderFieldsToIncrease = array(
             'total_paid' => '',
@@ -153,14 +160,12 @@ class Cdiscount extends \ShoppingfeedAddon\OrderImport\RuleAbstract
             'total_products' => '',
             'total_products_wt' => '',
         );
+        $psOrder = new Order($params['sfOrder']->id_order);
         foreach($orderFieldsToIncrease as $orderField => &$orderValue) {
-            $orderValue = array(
-                'type' => 'sql',
-                'value' => '`' . pSQL($orderField) . '` + ' . (float)$processingFees
-            );
+            $psOrder->{$orderField} = $psOrder->{$orderField} + $processingFees;
         }
-        Db::getInstance()->update('orders', $orderFieldsToIncrease, '`id_order` = '.(int)$psOrder->id);
-        
+        $psOrder->save();
+
         // Add fees to order invoice
         $orderInvoiceFieldsToIncrease = array(
             'total_paid_tax_incl' => '',
@@ -171,18 +176,18 @@ class Cdiscount extends \ShoppingfeedAddon\OrderImport\RuleAbstract
         foreach($orderInvoiceFieldsToIncrease as $orderInvoiceField => &$orderInvoiceValue) {
             $orderInvoiceValue = array(
                 'type' => 'sql',
-                'value' => '`' . pSQL($orderInvoiceField) . '` + ' . (float)$processingFees
+                'value' => '`' . pSQL($orderInvoiceField) . '` + ' . $processingFees
             );
         }
         Db::getInstance()->update('order_invoice', $orderInvoiceFieldsToIncrease, '`id_order` = '.(int)$psOrder->id);
-        
+
         ProcessLoggerHandler::logSuccess(
             $logPrefix .
                 Translate::getModuleTranslation('shoppingfeed', 'Fees added to order.', 'Cdiscount'),
             'Order'
         );
     }
-    
+
     /**
      * @inheritdoc
      */

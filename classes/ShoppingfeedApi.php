@@ -209,7 +209,7 @@ class ShoppingfeedApi
             return false;
         }
     }
-    
+
     /**
      * Makes the call to request updates of the SF orders statuses
      * @param array $taskOrders
@@ -257,7 +257,7 @@ class ShoppingfeedApi
             return false;
         }
     }
-    
+
     public function getTicketsByReference($taskOrders)
     {
         try {
@@ -287,7 +287,7 @@ class ShoppingfeedApi
                 );
                 return false;
             }
-            
+
             if (!$ticket || !$ticket->getId()) {
                 continue;
             }
@@ -296,7 +296,7 @@ class ShoppingfeedApi
 
         return $tickets;
     }
-    
+
     public function getUnacknowledgedOrders()
     {
         // Criteria used to query order API
@@ -322,13 +322,13 @@ class ShoppingfeedApi
             );
             return false;
         }
-        
+
         // If importing test orders is allowed
         if (Configuration::get(Shoppingfeed::ORDER_IMPORT_TEST)) {
             // Avoid surprises, make sure we're always returning an array
             return is_array($orders) ? $orders : iterator_to_array($orders);
         }
-        
+
         $filteredOrders = array();
         foreach ($orders as $order) {
             $orderRawData = $order->toArray();
@@ -336,10 +336,10 @@ class ShoppingfeedApi
                 $filteredOrders[] = $order;
             }
         }
-            
+
         return $filteredOrders;
     }
-    
+
     public function acknowledgeOrder($id_order_marketplace, $name_marketplace, $id_order_prestashop)
     {
         try {
@@ -352,7 +352,7 @@ class ShoppingfeedApi
                     (string)$id_order_prestashop,
                     'success'
                 );
-            
+
             return $orderApi->execute($operation);
         } catch (Exception $e) {
             ProcessLoggerHandler::logError(
@@ -364,7 +364,7 @@ class ShoppingfeedApi
             return false;
         }
     }
-    
+
     /**
      * Pings the Shopping Feed API. Always creates a new client.
      */
@@ -373,13 +373,13 @@ class ShoppingfeedApi
         if (!interface_exists(SfGuzzle\GuzzleHttp\ClientInterface::class)) {
             throw new Exception("Shoppingfeed : Guzzle does not seem to be installed.");
         }
-        
+
         if (version_compare(SfGuzzle\GuzzleHttp\ClientInterface::VERSION, '6', '<')
             || version_compare(SfGuzzle\GuzzleHttp\ClientInterface::VERSION, '7', '>=')
         ) {
             throw new Exception("Shoppingfeed : the module only supports Guzzle v6.");
         }
-        
+
         $clientOptions = new ClientOptions();
         $clientOptions->setHttpAdapter(new Guzzle6Adapter());
         $client = new Client($clientOptions);

@@ -38,11 +38,12 @@ use Carrier;
 use Translate;
 
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
-
+use ShoppingfeedAddon\OrderImport\RuleAbstract;
+use ShoppingfeedAddon\OrderImport\RuleInterface;
 use ShoppingfeedClasslib\Registry;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 
-class Socolissimo extends \ShoppingfeedAddon\OrderImport\RuleAbstract
+class Socolissimo extends RuleAbstract implements RuleInterface
 {
     public function isApplicable(OrderResource $apiOrder)
     {
@@ -53,7 +54,7 @@ class Socolissimo extends \ShoppingfeedAddon\OrderImport\RuleAbstract
             Registry::set(self::class . '_id_shipping_address', null);
             return true;
         }
-        
+
         $module_soflexibilite = Module::getInstanceByName('soflexibilite');
         if ($module_soflexibilite && $module_soflexibilite->active
             && (
@@ -65,7 +66,7 @@ class Socolissimo extends \ShoppingfeedAddon\OrderImport\RuleAbstract
             return true;
         }
     }
-    
+
     public function afterCartCreation($params)
     {
         $logPrefix = sprintf(
@@ -73,15 +74,15 @@ class Socolissimo extends \ShoppingfeedAddon\OrderImport\RuleAbstract
             $params['apiOrder']->getId()
         );
         $logPrefix .= '[' . $params['apiOrder']->getReference() . '] ' . self::class . ' | ';
-        
+
         ProcessLoggerHandler::logInfo(
             $logPrefix .
                 Translate::getModuleTranslation('shoppingfeed', 'Rule triggered.', 'Socolissimo'),
             'Order'
         );
-        
+
         Registry::set(self::class . '_id_shipping_address', (int)$params['cart']->id_address_delivery);
-        
+
         $module_soliberte = Module::getInstanceByName('soliberte');
         if ($module_soliberte && $module_soliberte->active) {
             $result = $this->insertSoLiberteData($params['cart']);
@@ -102,7 +103,7 @@ class Socolissimo extends \ShoppingfeedAddon\OrderImport\RuleAbstract
 
             return $result;
         }
-        
+
         $module_soflexibilite = Module::getInstanceByName('soflexibilite');
         if ($module_soflexibilite && $module_soflexibilite->active
             && (
@@ -129,7 +130,7 @@ class Socolissimo extends \ShoppingfeedAddon\OrderImport\RuleAbstract
             return $result;
         }
     }
-    
+
     public function afterOrderCreation($params)
     {
         // Avoid SoColissimo module to change the address by the one he created
@@ -143,15 +144,15 @@ class Socolissimo extends \ShoppingfeedAddon\OrderImport\RuleAbstract
             );
         }
     }
-    
+
     protected function insertSoLiberteData($cart)
     {
         $shippingAddress = new Address((int)$cart->id_address_delivery);
         $shippingCountry = new Country($shippingAddress->id_country);
         $customer = new Customer((int) $cart->id_customer);
-        
+
         $socotable_name = 'socolissimo_delivery_info';
-        
+
         $socovalues = array(
             'id_cart' => (int) $cart->id,
             'id_customer' => (int) $customer->id,
@@ -163,7 +164,7 @@ class Socolissimo extends \ShoppingfeedAddon\OrderImport\RuleAbstract
         );
         return Db::getInstance()->insert($socotable_name, $socovalues);
     }
-    
+
     protected function insertSoFlexibiliteData($cart)
     {
         $shippingAddress = new Address((int)$cart->id_address_delivery);
@@ -208,14 +209,14 @@ class Socolissimo extends \ShoppingfeedAddon\OrderImport\RuleAbstract
             'SOFLEXIBILITE_A2P_ID'
         );
         $conf = Configuration::getMultiple($soflexibilite_conf_key, null, null, null);
-        
+
         $carrier = new Carrier($cart->id_carrier);
         if (isset($carrier->id_reference)) {
             $id_reference = $carrier->id_reference;
         } else {
             $id_reference = $carrier->id;
         }
-        
+
         if ($id_reference == $conf['SOFLEXIBILITE_DOM_ID'] ||
             $carrier->id == $conf['SOFLEXIBILITE_DOM_ID']
         ) {
@@ -242,7 +243,7 @@ class Socolissimo extends \ShoppingfeedAddon\OrderImport\RuleAbstract
 
         return (bool)$so_delivery->saveDelivery();
     }
-    
+
     /**
      * @inheritdoc
      */

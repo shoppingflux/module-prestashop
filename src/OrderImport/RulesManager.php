@@ -40,16 +40,16 @@ use ShoppingFeed\Sdk\Api\Order\OrderResource;
  */
 class RulesManager
 {
-    
+
     /** @var ShoppingFeed\Sdk\Api\Order\OrderResource $apiOrder */
     protected $apiOrder;
-    
+
     /** @var array $rules The rules to be applied */
     protected $rules = array();
-    
+
     /** @var array $rulesConfiguration The rules configuration */
     protected $rulesConfiguration = array();
-    
+
     /**
      * If no OrderResource is specified, the manager will retrieve all rules but
      * never execute them.
@@ -68,16 +68,16 @@ class RulesManager
             ),
             true
         );
-        
+
         $rulesClassNames = array();
-        
+
         Hook::exec(
             'actionShoppingfeedOrderImportRegisterSpecificRules',
             array(
                 'specificRulesClassNames' => &$rulesClassNames
             )
         );
-        
+
         foreach ($rulesClassNames as $ruleClassName) {
             $this->addRule(
                 new $ruleClassName(
@@ -86,7 +86,7 @@ class RulesManager
             );
         }
     }
-    
+
     /**
      * Adds a rule to the manager. If an OrderResource was given, checks if the
      * rule matches the order.
@@ -102,7 +102,7 @@ class RulesManager
         }
         return false;
     }
-    
+
     /**
      * Applies all rules for a given event. If a rule should stop the process,
      * an exception should be thrown. No rules will be applied if no
@@ -116,14 +116,32 @@ class RulesManager
         if (!$this->apiOrder) {
             return;
         }
-        
+        $availableEvents = [
+            'onPreProcess',
+            'onCarrierRetrieval',
+            'onVerifyOrder',
+            'onCustomerCreation',
+            'onCustomerRetrieval',
+            'beforeBillingAddressCreation',
+            'beforeBillingAddressSave',
+            'beforeShippingAddressCreation',
+            'beforeShippingAddressSave',
+            'onCartCreation',
+            'afterCartCreation',
+            'afterOrderCreation',
+            'onPostProcess',
+        ];
+        if (in_array($eventName, $availableEvents) === false) {
+            return;
+        }
+
         foreach ($this->rules as $rule) {
             if (is_callable(array($rule, $eventName))) {
                 $rule->{$eventName}($params);
             }
         }
     }
-    
+
     public function getRulesInformation()
     {
         $rulesInformation = array();
@@ -136,7 +154,7 @@ class RulesManager
                 'configuration' => $rule->getConfiguration(),
             );
         }
-        
+
         return $rulesInformation;
     }
 }

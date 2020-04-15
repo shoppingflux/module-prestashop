@@ -54,22 +54,22 @@ class ShoppingfeedSyncOrderModuleFrontController extends CronController
         if (Configuration::get(ShoppingFeed::ORDER_IMPORT_ENABLED)) {
             $this->importOrders();
         }
-        
+
         if (Configuration::get(ShoppingFeed::ORDER_SYNC_ENABLED)) {
             $this->syncOrderStatus();
         }
-        
+
         ProcessLoggerHandler::closeLogger();
         return $data;
     }
-    
+
     public function syncOrderStatus()
     {
         ProcessLoggerHandler::openLogger($this->processMonitor);
         $shops = Shop::getShops();
         foreach ($shops as $shop) {
             $logPrefix = '[Shop ' . $shop['id_shop'] . ']';
-            
+
             if (!ShoppingFeed::isOrderSyncAvailable($shop['id_shop'])) {
                 ProcessLoggerHandler::logInfo(
                     $logPrefix . ' ' .
@@ -91,7 +91,7 @@ class ShoppingfeedSyncOrderModuleFrontController extends CronController
             $successfulTicketsStatusTaskOrders = array();
             try {
                 Registry::set('ticketsErrors', 0);
-            
+
                 /** @var ShoppingfeedHandler $ticketsHandler */
                 $ticketsHandler = new ActionsHandler();
                 $ticketsHandler->setConveyor(array(
@@ -109,7 +109,7 @@ class ShoppingfeedSyncOrderModuleFrontController extends CronController
                     $processData = $ticketsHandler->getConveyor();
                     $failedTicketsStatusTaskOrders = isset($processData['failedTaskOrders']) ? $processData['failedTaskOrders'] : array();
                     $successfulTicketsStatusTaskOrders = isset($processData['successfulTaskOrders']) ? $processData['successfulTaskOrders'] : array();
-                    
+
                     ProcessLoggerHandler::logInfo(
                         sprintf(
                             $logPrefix . ' ' . $this->module->l('%d tickets with success; %d tickets with failure; %d errors', 'syncOrder'),
@@ -149,7 +149,7 @@ class ShoppingfeedSyncOrderModuleFrontController extends CronController
             $successfulSyncTaskOrders = array();
             try {
                 Registry::set('syncStatusErrors', 0);
-                
+
                 /** @var ShoppingfeedHandler $orderStatusHandler */
                 $orderStatusHandler = new ActionsHandler();
                 $orderStatusHandler->setConveyor(array(
@@ -166,7 +166,7 @@ class ShoppingfeedSyncOrderModuleFrontController extends CronController
                     $processData = $orderStatusHandler->getConveyor();
                     $failedSyncStatusTaskOrders = isset($processData['failedTaskOrders']) ? $processData['failedTaskOrders'] : array();
                     $successfulSyncTaskOrders = isset($processData['successfulTaskOrders']) ? $processData['successfulTaskOrders'] : array();
-                    
+
                     ProcessLoggerHandler::logInfo(
                         sprintf(
                             $logPrefix . ' ' . $this->module->l('%d tickets created; %d tickets not created; %d errors', 'syncOrder'),
@@ -198,7 +198,7 @@ class ShoppingfeedSyncOrderModuleFrontController extends CronController
             // Send mail
             try {
                 $failedTaskOrders = array_merge($failedSyncStatusTaskOrders, $failedTicketsStatusTaskOrders);
-                
+
                 if (!empty($failedTaskOrders)) {
                     $errorMailHandler = new ActionsHandler();
                     $errorMailHandler->setConveyor(array(
@@ -228,7 +228,7 @@ class ShoppingfeedSyncOrderModuleFrontController extends CronController
                     $this->processMonitor->getProcessObjectModelId()
                 );
             }
-            
+
             // Delete all processed task orders
             $processedTaskOrders = array_merge(
                 $successfulTicketsStatusTaskOrders,
@@ -239,12 +239,12 @@ class ShoppingfeedSyncOrderModuleFrontController extends CronController
             }
         }
     }
-    
+
     public function importOrders()
     {
         ProcessLoggerHandler::openLogger($this->processMonitor);
         $id_shop = Configuration::get('PS_SHOP_DEFAULT');
-        
+
         // If order import is not available
         if (!ShoppingFeed::isOrderImportAvailable($id_shop)) {
             ProcessLoggerHandler::logInfo(
@@ -253,7 +253,7 @@ class ShoppingfeedSyncOrderModuleFrontController extends CronController
                 $this->processMonitor->getProcessObjectModelId()
             );
         }
-        
+
         try {
             $shoppingfeedApi = ShoppingfeedApi::getInstanceByToken($id_shop);
             if ($shoppingfeedApi == false) {
@@ -277,7 +277,7 @@ class ShoppingfeedSyncOrderModuleFrontController extends CronController
             );
             return false;
         }
-        
+
         if (!count($result)) {
             ProcessLoggerHandler::logInfo(
                 $this->module->l('No orders to import.', 'syncOrder'),
@@ -286,7 +286,7 @@ class ShoppingfeedSyncOrderModuleFrontController extends CronController
             );
             return true;
         }
-        
+
         Registry::set('errors', 0);
         Registry::set('importedOrders', 0);
         foreach ($result as $apiOrder) {
@@ -295,9 +295,9 @@ class ShoppingfeedSyncOrderModuleFrontController extends CronController
                 $apiOrder->getId()
             );
             $logPrefix .= '[' . $apiOrder->getReference() . '] ';
-            
+
             try {
-                
+
                 /** @var ShoppingfeedHandler $handler */
                 $handler = new ActionsHandler();
                 $handler->addActions(
@@ -309,7 +309,7 @@ class ShoppingfeedSyncOrderModuleFrontController extends CronController
                     'recalculateOrderPrices',
                     'postProcess'
                 );
-                
+
                 $handler->setConveyor(array(
                     'id_shop' => $id_shop,
                     'apiOrder' => $apiOrder,
@@ -326,7 +326,7 @@ class ShoppingfeedSyncOrderModuleFrontController extends CronController
                     Registry::increment('errors');
                     continue;
                 }
-                
+
                 $conveyor = $handler->getConveyor();
                 ProcessLoggerHandler::logSuccess(
                     $logPrefix .
@@ -348,7 +348,7 @@ class ShoppingfeedSyncOrderModuleFrontController extends CronController
                 Registry::increment('errors');
             }
         }
-        
+
         ProcessLoggerHandler::logInfo(
             sprintf(
                 $this->l('%d orders to import; %d success; %d errors', 'ShoppingfeedOrderImportActions'),
