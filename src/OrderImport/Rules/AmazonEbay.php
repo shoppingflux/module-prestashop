@@ -47,8 +47,7 @@ class AmazonEbay extends RuleAbstract implements RuleInterface
         $shippingAddress = $apiOrder->getShippingAddress();
         $billingAddress = $apiOrder->getBillingAddress();
 
-        return !empty($this->configuration['enabled'])
-            && preg_match('#^(cdiscount|ebay)$#', Tools::strtolower($apiOrder->getChannel()->getName()))
+        return preg_match('#^(amazon|ebay)$#', Tools::strtolower($apiOrder->getChannel()->getName()))
             && (
                 empty($shippingAddress['firstName'])
                 || empty($shippingAddress['lastName'])

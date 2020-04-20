@@ -82,7 +82,6 @@ class OrderData
 
     public function __construct(\ShoppingFeed\Sdk\Api\Order\OrderResource $apiOrder)
     {
-        var_dump($apiOrder);
         $this->storeReference = $apiOrder->getStoreReference();
         $this->status = $apiOrder->getStatus();
         $this->acknowledgedAt = $apiOrder->getAcknowledgedAt();
