@@ -62,7 +62,7 @@ class ShoppingfeedCarrier extends ObjectModel
                 'validate' => 'isString',
                 'required' => true,
                 'unique' => true,
-                'size' => 50,
+                'size' => 190,
             ),
             'id_carrier_reference' => array(
                 'type' => ObjectModel::TYPE_INT,
