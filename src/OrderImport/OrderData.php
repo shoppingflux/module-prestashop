@@ -43,42 +43,46 @@ use ShoppingFeed\Sdk\Api\Order\OrderResource;
  */
 class OrderData
 {
-    
+
     /** @var null|string $storeReference */
     public $storeReference;
-    
+
     /** @var string $status */
     public $status;
-    
+
     /** @var null|\DateTimeImmutable $acknowledgedAt */
     public $acknowledgedAt;
-    
+
     /** @var null|\DateTimeImmutable $updatedAt */
     public $updatedAt;
-    
+
     /** @var \DateTimeImmutable $createdAt */
     public $createdAt;
-    
+
     /** @var array $shippingAddress */
     public $shippingAddress;
-    
+
     /** @var array $billingAddress */
     public $billingAddress;
-    
+
     /** @var array $payment */
     public $payment;
-    
+
     /** @var array $shipment */
     public $shipment;
-    
+
     /** @var array $items An array of \ShoppingfeedAddon\OrderImport\OrderItemData */
-    public $items = array();
-    
+    public $items = [];
+
+    /** @var array $itemsReferencesAliases An array of \ShoppingfeedAddon\OrderImport\OrderItemData */
+    public $itemsReferencesAliases = [];
+
     /** @var array $additionalFields */
     public $additionalFields;
 
     public function __construct(\ShoppingFeed\Sdk\Api\Order\OrderResource $apiOrder)
     {
+        var_dump($apiOrder);
         $this->storeReference = $apiOrder->getStoreReference();
         $this->status = $apiOrder->getStatus();
         $this->acknowledgedAt = $apiOrder->getAcknowledgedAt();
@@ -88,11 +92,11 @@ class OrderData
         $this->billingAddress = $apiOrder->getBillingAddress();
         $this->payment = $apiOrder->getPaymentInformation();
         $this->shipment = $apiOrder->getShipment();
-        
+        $this->itemsReferencesAliases = $apiOrder->getItemsReferencesAliases();
         // TODO : OrderResource should likely have a "getAdditionalFields" method
         $apiOrderData = $apiOrder->toArray();
         $this->additionalFields = is_array($apiOrderData['additionalFields']) ? $apiOrderData['additionalFields'] : array();
-        
+
         /** @var \ShoppingFeed\Sdk\Api\Order\OrderItem $apiOrderItem */
         foreach ($apiOrder->getItems() as $apiOrderItem) {
             $this->items[] = new OrderItemData($apiOrderItem);

@@ -95,6 +95,14 @@ class OrderResource extends AbstractResource
     }
 
     /**
+     * @return array
+     */
+    public function getItemsReferencesAliases()
+    {
+        return $this->getProperty('itemsReferencesAliases');
+    }
+
+    /**
      * Fetch order items details
      * The resource has to be loaded to access to items collection
      *
