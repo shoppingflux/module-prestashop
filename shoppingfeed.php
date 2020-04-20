@@ -867,6 +867,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     public function hookActionShoppingfeedOrderImportRegisterSpecificRules($params)
     {
         $defaultRulesClassNames = array(
+            ShoppingfeedAddon\OrderImport\Rules\AmazonB2B::class,
             ShoppingfeedAddon\OrderImport\Rules\AmazonEbay::class,
             ShoppingfeedAddon\OrderImport\Rules\AmazonPrime::class,
             ShoppingfeedAddon\OrderImport\Rules\Cdiscount::class,
