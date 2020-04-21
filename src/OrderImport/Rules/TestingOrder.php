@@ -64,14 +64,14 @@ class TestingOrder extends RuleAbstract implements RuleInterface
         $apiOrder = $params['apiOrder'];
 
         $logPrefix = sprintf(
-            Translate::getModuleTranslation('shoppingfeed', '[Order: %s]', 'TestingOrder'),
+            $this->l('[Order: %s]', 'TestingOrder'),
             $apiOrder->getId()
         );
         $logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
 
         ProcessLoggerHandler::logInfo(
             $logPrefix .
-                Translate::getModuleTranslation('shoppingfeed', 'Rule triggered. Set order #'.$params['sfOrder']->id_order.' to CANCELED', 'TestingOrder'),
+                $this->l('Rule triggered. Set order #'.$params['sfOrder']->id_order.' to CANCELED', 'TestingOrder'),
             'Order',
             $params['sfOrder']->id_order
         );
@@ -90,7 +90,7 @@ class TestingOrder extends RuleAbstract implements RuleInterface
      */
     public function getConditions()
     {
-        return Translate::getModuleTranslation('shoppingfeed', 'If the order is a test.', 'TestingOrder');
+        return $this->l('If the order is a test.', 'TestingOrder');
     }
 
     /**
@@ -98,6 +98,6 @@ class TestingOrder extends RuleAbstract implements RuleInterface
      */
     public function getDescription()
     {
-        return Translate::getModuleTranslation('shoppingfeed', 'Set order to CANCELED after the process.', 'TestingOrder');
+        return $this->l('Set order to CANCELED after the process.', 'TestingOrder');
     }
 }

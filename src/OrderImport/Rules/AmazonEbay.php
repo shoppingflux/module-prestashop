@@ -29,7 +29,6 @@ if (!defined('_PS_VERSION_')) {
 }
 
 use Tools;
-use Translate;
 use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
@@ -69,23 +68,17 @@ class AmazonEbay extends RuleAbstract implements RuleInterface
         $apiOrder = $params['apiOrder'];
 
         $logPrefix = sprintf(
-            Translate::getModuleTranslation('shoppingfeed', '[Order: %s]', 'AmazonEbay'),
+            $this->l('[Order: %s]', 'AmazonEbay'),
             $apiOrder->getId()
         );
         $logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
-
-        ProcessLoggerHandler::logInfo(
-            $logPrefix .
-                Translate::getModuleTranslation('shoppingfeed', 'Rule triggered.', 'AmazonEbay'),
-            'Order'
-        );
 
         $this->updateAddress($orderData->shippingAddress);
         $this->updateAddress($orderData->billingAddress);
 
         ProcessLoggerHandler::logSuccess(
             $logPrefix .
-                Translate::getModuleTranslation('shoppingfeed', 'Addresses updated.', 'AmazonEbay'),
+                $this->l('Rule triggered. Addresses updated.', 'AmazonEbay'),
             'Order'
         );
     }
@@ -113,7 +106,7 @@ class AmazonEbay extends RuleAbstract implements RuleInterface
      */
     public function getConditions()
     {
-        return Translate::getModuleTranslation('shoppingfeed', 'If the order is from Amazon or Ebay and has an empty \'firstname\' or \'lastname\' field in its addresses.', 'AmazonEbay');
+        return $this->l('If the order is from Amazon or Ebay and has an empty "firstname" or "lastname" field in its addresses.', 'AmazonEbay');
     }
 
     /**
@@ -121,7 +114,7 @@ class AmazonEbay extends RuleAbstract implements RuleInterface
      */
     public function getDescription()
     {
-        return Translate::getModuleTranslation('shoppingfeed', 'Removes everything after the first space in the filled field and moves it to the empty field.', 'AmazonEbay');
+        return $this->l('Removes everything after the first space in the filled field and moves it to the empty field.', 'AmazonEbay');
     }
 
     /**
@@ -132,7 +125,8 @@ class AmazonEbay extends RuleAbstract implements RuleInterface
         return array(
             array(
                 'type' => 'switch',
-                'label' => Translate::getModuleTranslation('shoppingfeed', 'Parse firstname/lastname for Amazon and Ebay orders.', 'AmazonEbay'),
+                'label' =>
+                $this->l('Parse firstname/lastname for Amazon and Ebay orders.', 'AmazonEbay'),
                 'name' => 'enabled',
                 'is_bool' => true,
                 'values' => array(

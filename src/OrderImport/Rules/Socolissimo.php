@@ -70,14 +70,14 @@ class Socolissimo extends RuleAbstract implements RuleInterface
     public function afterCartCreation($params)
     {
         $logPrefix = sprintf(
-            Translate::getModuleTranslation('shoppingfeed', '[Order: %s]', 'Socolissimo'),
+            $this->l('[Order: %s]', 'Socolissimo'),
             $params['apiOrder']->getId()
         );
         $logPrefix .= '[' . $params['apiOrder']->getReference() . '] ' . self::class . ' | ';
 
         ProcessLoggerHandler::logInfo(
             $logPrefix .
-                Translate::getModuleTranslation('shoppingfeed', 'Rule triggered.', 'Socolissimo'),
+                $this->l('Rule triggered.', 'Socolissimo'),
             'Order'
         );
 
@@ -90,13 +90,13 @@ class Socolissimo extends RuleAbstract implements RuleInterface
             if ($result) {
                 ProcessLoggerHandler::logSuccess(
                     $logPrefix .
-                        Translate::getModuleTranslation('shoppingfeed', 'Data inserted in soliberte module.', 'Socolissimo'),
+                        $this->l('Data inserted in soliberte module.', 'Socolissimo'),
                     'Order'
                 );
             } else {
                 ProcessLoggerHandler::logError(
                     $logPrefix .
-                        Translate::getModuleTranslation('shoppingfeed', 'Failed to insert data in soliberte module.', 'Socolissimo'),
+                        $this->l('Failed to insert data in soliberte module.', 'Socolissimo'),
                     'Order'
                 );
             }
@@ -116,13 +116,13 @@ class Socolissimo extends RuleAbstract implements RuleInterface
             if ($result) {
                 ProcessLoggerHandler::logSuccess(
                     $logPrefix .
-                        Translate::getModuleTranslation('shoppingfeed', 'Data inserted in soflexibilite module.', 'Socolissimo'),
+                        $this->l('Data inserted in soflexibilite module.', 'Socolissimo'),
                     'Order'
                 );
             } else {
                 ProcessLoggerHandler::logError(
                     $logPrefix .
-                        Translate::getModuleTranslation('shoppingfeed', 'Failed to insert data in soflexibilite module.', 'Socolissimo'),
+                        $this->l('Failed to insert data in soflexibilite module.', 'Socolissimo'),
                     'Order'
                 );
             }
@@ -249,7 +249,7 @@ class Socolissimo extends RuleAbstract implements RuleInterface
      */
     public function getConditions()
     {
-        return Translate::getModuleTranslation('shoppingfeed', 'If the \'soliberte\' or \'soflexibilite\' module is installed.', 'Socolissimo');
+        return $this->l('If the \'soliberte\' or \'soflexibilite\' module is installed.', 'Socolissimo');
     }
 
     /**
@@ -257,6 +257,6 @@ class Socolissimo extends RuleAbstract implements RuleInterface
      */
     public function getDescription()
     {
-        return Translate::getModuleTranslation('shoppingfeed', 'Adds the order in the corresponding module\'s table.', 'Socolissimo');
+        return $this->l('Adds the order in the corresponding module\'s table.', 'Socolissimo');
     }
 }

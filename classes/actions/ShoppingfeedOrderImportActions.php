@@ -445,7 +445,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 ProcessLoggerHandler::logInfo(
                     sprintf(
                         $this->logPrefix .
-                            $this->l('Rereference alias replace %s by %s.', 'ShoppingfeedOrderImportActions'),
+                            $this->l('Reference alias replace %s by %s.', 'ShoppingfeedOrderImportActions'),
                         $apiProduct->reference,
                         $this->conveyor['orderData']->itemsReferencesAliases[$apiProduct->reference]
                     ),

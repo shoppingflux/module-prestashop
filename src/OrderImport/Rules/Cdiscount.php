@@ -31,7 +31,6 @@ if (!defined('_PS_VERSION_')) {
 use Order;
 use OrderDetail;
 use Tools;
-use Translate;
 use DB;
 use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
@@ -64,14 +63,14 @@ class Cdiscount extends RuleAbstract implements RuleInterface
         $processingFees = $orderData->additionalFields['INTERETBCA'];
 
         $logPrefix = sprintf(
-            Translate::getModuleTranslation('shoppingfeed', '[Order: %s]', 'Cdiscount'),
+            $this->l('[Order: %s]', 'Cdiscount'),
             $apiOrder->getId()
         );
         $logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
 
         ProcessLoggerHandler::logInfo(
             $logPrefix .
-                Translate::getModuleTranslation('shoppingfeed', 'Rule triggered.', 'Cdiscount'),
+               $this->l('Rule triggered.', 'Cdiscount'),
             'Order'
         );
 
@@ -183,7 +182,7 @@ class Cdiscount extends RuleAbstract implements RuleInterface
 
         ProcessLoggerHandler::logSuccess(
             $logPrefix .
-                Translate::getModuleTranslation('shoppingfeed', 'Fees added to order.', 'Cdiscount'),
+                $this->l('Fees added to order.', 'Cdiscount'),
             'Order'
         );
     }
@@ -193,7 +192,7 @@ class Cdiscount extends RuleAbstract implements RuleInterface
      */
     public function getConditions()
     {
-        return Translate::getModuleTranslation('shoppingfeed', 'If the order is from CDiscount and has the \'TotalFees\' field set.', 'Cdiscount');
+        return $this->l('If the order is from CDiscount and has the \'INTERETBCA\' field set.', 'Cdiscount');
     }
 
     /**
@@ -201,6 +200,6 @@ class Cdiscount extends RuleAbstract implements RuleInterface
      */
     public function getDescription()
     {
-        return Translate::getModuleTranslation('shoppingfeed', 'Adds an \'Operation Fee\' product to the order, so the amount will show in the invoice.', 'Cdiscount');
+        return $this->l('Adds an \'Operation Fee\' product to the order, so the amount will show in the invoice.', 'Cdiscount');
     }
 }

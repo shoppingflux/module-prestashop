@@ -29,7 +29,6 @@ if (!defined('_PS_VERSION_')) {
 }
 
 use Tools;
-use Translate;
 use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
@@ -55,14 +54,14 @@ class AmazonB2B extends RuleAbstract implements RuleInterface
         $apiOrder = $params['apiOrder'];
 
         $logPrefix = sprintf(
-            Translate::getModuleTranslation('shoppingfeed', '[Order: %s]', 'AmazonB2B'),
+            $this->l('[Order: %s]', 'AmazonB2B'),
             $apiOrder->getId()
         );
         $logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
 
         ProcessLoggerHandler::logInfo(
             $logPrefix .
-                Translate::getModuleTranslation('shoppingfeed', 'Rule triggered. Payment method change for "amazon b2b"', 'AmazonB2B'),
+                $this->l('Rule triggered. Payment method change for "amazon b2b"', 'AmazonB2B'),
             'Order'
         );
 
@@ -75,7 +74,7 @@ class AmazonB2B extends RuleAbstract implements RuleInterface
      */
     public function getConditions()
     {
-        return Translate::getModuleTranslation('shoppingfeed', 'If the order is from Amazon and has \'is_business_order\' set in its additional fields.', 'AmazonB2B');
+        return $this->l('If the order is from Amazon and has "is_business_order" set in its additional fields.', 'AmazonB2B');
     }
 
     /**
@@ -83,6 +82,6 @@ class AmazonB2B extends RuleAbstract implements RuleInterface
      */
     public function getDescription()
     {
-        return Translate::getModuleTranslation('shoppingfeed', 'Sets the order\'s payment method as \'Amazon B2B\' in the module\'s \'Marketplaces Summary\'.', 'AmazonB2B');
+        return $this->l('Sets the order\'s payment method as "Amazon B2B" in the module\'s "Marketplaces Summary".', 'AmazonB2B');
     }
 }

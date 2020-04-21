@@ -33,7 +33,6 @@ use Tools;
 use Configuration;
 use DbQuery;
 use Db;
-use Translate;
 use Address;
 use Country;
 use Carrier;
@@ -66,14 +65,14 @@ class Mondialrelay extends RuleAbstract implements RuleInterface
         $relayId = $params['orderData']->shippingAddress['other'];
 
         $logPrefix = sprintf(
-            Translate::getModuleTranslation('shoppingfeed', '[Order: %s]', 'Mondialrelay'),
+            $this->l('[Order: %s]', 'Mondialrelay'),
             $apiOrder->getId()
         );
         $logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
 
         ProcessLoggerHandler::logInfo(
             $logPrefix .
-                Translate::getModuleTranslation('shoppingfeed', 'Rule triggered.', 'Mondialrelay'),
+                $this->l('[Order: %s]', 'Mondialrelay'),
             'Order',
             $order->id
         );
@@ -81,43 +80,23 @@ class Mondialrelay extends RuleAbstract implements RuleInterface
         if (empty($relayId)) {
             ProcessLoggerHandler::logError(
                 $logPrefix .
-                    Translate::getModuleTranslation('shoppingfeed', 'No relay ID found in shipping address \'Other\' field', 'Mondialrelay'),
+                    $this->l('Rule triggered. No relay ID found in shipping address \'Other\' field', 'Mondialrelay'),
                 'Order',
                 $order->id
             );
             return false;
         }
 
-        ProcessLoggerHandler::logInfo(
-            sprintf(
-                $logPrefix .
-                    Translate::getModuleTranslation('shoppingfeed', 'Id Relay : %s', 'Mondialrelay'),
-                $relayId,
-                $order->id
-            ),
-            'Order',
-            $order->id
-        );
-
         $carrier = new Carrier((int)$order->id_carrier);
-
-        ProcessLoggerHandler::logInfo(
-            sprintf(
-                $logPrefix .
-                    Translate::getModuleTranslation('shoppingfeed', 'id_address_delivery : %s', 'Mondialrelay'),
-                $order->id_address_delivery
-            ),
-            'Order',
-            $order->id
-        );
-
         $address = new Address($order->id_address_delivery);
         $countryIso = Country::getIsoById($address->id_country);
 
         ProcessLoggerHandler::logInfo(
             sprintf(
                 $logPrefix .
-                    Translate::getModuleTranslation('shoppingfeed', 'isoCountry : %s', 'Mondialrelay'),
+                    $this->l('Rule triggered. Id Relay : %s / id_address_delivery : %s / isoCountry : %s', 'Mondialrelay'),
+                $relayId,
+                $order->id_address_delivery,
                 $countryIso
             ),
             'Order',
@@ -129,7 +108,7 @@ class Mondialrelay extends RuleAbstract implements RuleInterface
         if (!$relayData) {
             ProcessLoggerHandler::logError(
                 $logPrefix .
-                    Translate::getModuleTranslation('shoppingfeed', 'Failed to get relay data', 'Mondialrelay'),
+                    $this->l('Failed to get relay data', 'Mondialrelay'),
                 'Order',
                 $order->id
             );
@@ -139,7 +118,7 @@ class Mondialrelay extends RuleAbstract implements RuleInterface
         ProcessLoggerHandler::logInfo(
             sprintf(
                 $logPrefix .
-                    Translate::getModuleTranslation('shoppingfeed', 'Id Carrier : %s', 'Mondialrelay'),
+                    $this->l('Id Carrier : %s', 'Mondialrelay'),
                 $carrier->id
             ),
             'Order',
@@ -170,7 +149,7 @@ class Mondialrelay extends RuleAbstract implements RuleInterface
             ProcessLoggerHandler::logError(
                 sprintf(
                     $logPrefix .
-                        Translate::getModuleTranslation('shoppingfeed', 'Could not find mondial relay method for carrier ID %s', 'Mondialrelay'),
+                        $this->l('Could not find mondial relay method for carrier ID %s', 'Mondialrelay'),
                     $carrier->id
                 ),
                 'Order',
@@ -204,7 +183,7 @@ class Mondialrelay extends RuleAbstract implements RuleInterface
         if ($insertResult) {
             ProcessLoggerHandler::logSuccess(
                 $logPrefix .
-                    Translate::getModuleTranslation('shoppingfeed', 'Successfully added relay information', 'Mondialrelay'),
+                    $this->l('Successfully added relay information', 'Mondialrelay'),
                 'Order',
                 $order->id
             );
@@ -213,7 +192,7 @@ class Mondialrelay extends RuleAbstract implements RuleInterface
 
         ProcessLoggerHandler::logError(
             $logPrefix .
-                Translate::getModuleTranslation('shoppingfeed', 'Could not add relay information', 'Mondialrelay'),
+                $this->l('Could not add relay information', 'Mondialrelay'),
             'Order',
             $order->id
         );
@@ -233,7 +212,7 @@ class Mondialrelay extends RuleAbstract implements RuleInterface
             ProcessLoggerHandler::logError(
                 sprintf(
                     $logPrefix .
-                        Translate::getModuleTranslation('shoppingfeed', 'Could not find mondial relay method for carrier ID %s', 'Mondialrelay'),
+                        $this->l('Could not find mondial relay method for carrier ID %s', 'Mondialrelay'),
                     $carrier->id
                 ),
                 'Order',
@@ -267,7 +246,7 @@ class Mondialrelay extends RuleAbstract implements RuleInterface
         if ($insertResult) {
             ProcessLoggerHandler::logSuccess(
                 $logPrefix .
-                    Translate::getModuleTranslation('shoppingfeed', 'Successfully added relay information', 'Mondialrelay'),
+                    $this->l('Successfully added relay information', 'Mondialrelay'),
                 'Order',
                 $order->id
             );
@@ -276,7 +255,7 @@ class Mondialrelay extends RuleAbstract implements RuleInterface
 
         ProcessLoggerHandler::logError(
             $logPrefix .
-                Translate::getModuleTranslation('shoppingfeed', 'Could not add relay information', 'Mondialrelay'),
+                $this->l('Could not add relay information', 'Mondialrelay'),
             'Order',
             $order->id
         );
@@ -293,7 +272,7 @@ class Mondialrelay extends RuleAbstract implements RuleInterface
     {
         $urlWebService = 'http://www.mondialrelay.fr/webservice/Web_Services.asmx?WSDL';
         $logPrefix = sprintf(
-            Translate::getModuleTranslation('shoppingfeed', '[Order: %s]', 'Mondialrelay'),
+            $this->l('[Order: %s]', 'Mondialrelay'),
             $apiOrder->getId()
         );
         $logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
@@ -310,7 +289,7 @@ class Mondialrelay extends RuleAbstract implements RuleInterface
             ProcessLoggerHandler::logError(
                 sprintf(
                     $logPrefix .
-                        Translate::getModuleTranslation('shoppingfeed', 'Could not create SOAP client for URL %s', 'Mondialrelay'),
+                        $this->l('Could not create SOAP client for URL %s', 'Mondialrelay'),
                     $urlWebService
                 ),
                 'Order'
@@ -337,7 +316,7 @@ class Mondialrelay extends RuleAbstract implements RuleInterface
             ProcessLoggerHandler::logError(
                 sprintf(
                     $logPrefix .
-                        Translate::getModuleTranslation('shoppingfeed', 'Error getting relay %s data : code %s', 'Mondialrelay'),
+                        $this->l('Error getting relay %s data : code %s', 'Mondialrelay'),
                     $result->WSI2_AdressePointRelaisResult->STAT
                 ),
                 'Order'
@@ -384,7 +363,7 @@ class Mondialrelay extends RuleAbstract implements RuleInterface
      */
     public function getConditions()
     {
-        return Translate::getModuleTranslation('shoppingfeed', 'If the order has \'Mondial Relay\' in its carrier name.', 'Mondialrelay');
+        return $this->l('If the order has \'Mondial Relay\' in its carrier name.', 'Mondialrelay');
     }
 
     /**
@@ -392,6 +371,6 @@ class Mondialrelay extends RuleAbstract implements RuleInterface
      */
     public function getDescription()
     {
-        return Translate::getModuleTranslation('shoppingfeed', 'Adds the order in the Mondial Relay module\'s table.', 'Mondialrelay');
+        return $this->l('Adds the order in the Mondial Relay module\'s table.', 'Mondialrelay');
     }
 }

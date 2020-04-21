@@ -29,7 +29,6 @@ if (!defined('_PS_VERSION_')) {
 }
 
 use Tools;
-use Translate;
 use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
@@ -62,22 +61,16 @@ class CdiscountRelay extends RuleAbstract implements RuleInterface
         $orderData = $params['orderData'];
 
         $logPrefix = sprintf(
-            Translate::getModuleTranslation('shoppingfeed', '[Order: %s]', 'CdiscountRelay'),
+            $this->l('[Order: %s]', 'CdiscountRelay'),
             $params['apiOrder']->getId()
         );
         $logPrefix .= '[' . $params['apiOrder']->getReference() . '] ' . self::class . ' | ';
-
-        ProcessLoggerHandler::logInfo(
-            $logPrefix .
-                Translate::getModuleTranslation('shoppingfeed', 'Rule triggered.', 'CdiscountRelay'),
-            'Order'
-        );
 
         $this->updateAddress($orderData->shippingAddress);
 
         ProcessLoggerHandler::logSuccess(
             $logPrefix .
-                Translate::getModuleTranslation('shoppingfeed', 'Shipping address updated to set relay ID.', 'CdiscountRelay'),
+                $this->l('Rule triggered. Shipping address updated to set relay ID.', 'CdiscountRelay'),
             'Order'
         );
     }
@@ -118,7 +111,7 @@ class CdiscountRelay extends RuleAbstract implements RuleInterface
      */
     public function getConditions()
     {
-        return Translate::getModuleTranslation('shoppingfeed', 'If the order is from CDiscount and the carrier is \'SO1\', \'REL\' or \'RCO\'.', 'CdiscountRelay');
+        return $this->l('If the order is from CDiscount and the carrier is \'SO1\', \'REL\' or \'RCO\'.', 'CdiscountRelay');
     }
 
     /**
@@ -126,6 +119,6 @@ class CdiscountRelay extends RuleAbstract implements RuleInterface
      */
     public function getDescription()
     {
-        return Translate::getModuleTranslation('shoppingfeed', 'Retrieves  the relay ID from the \'lastname\' field and puts it in \'company\'. If a company is already set, appends it to \'address (2)\'. Fills the \'lastname\' field with everything after the first space from \'firstname\'.', 'CdiscountRelay');
+        return $this->l('Retrieves  the relay ID from the \'lastname\' field and puts it in \'company\'. If a company is already set, appends it to \'address (2)\'. Fills the \'lastname\' field with everything after the first space from \'firstname\'.', 'CdiscountRelay');
     }
 }

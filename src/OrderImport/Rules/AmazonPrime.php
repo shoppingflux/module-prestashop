@@ -29,7 +29,6 @@ if (!defined('_PS_VERSION_')) {
 }
 
 use Tools;
-use Translate;
 use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
@@ -55,14 +54,14 @@ class AmazonPrime extends RuleAbstract implements RuleInterface
         $apiOrder = $params['apiOrder'];
 
         $logPrefix = sprintf(
-            Translate::getModuleTranslation('shoppingfeed', '[Order: %s]', 'AmazonPrime'),
+            $this->l('[Order: %s]', 'AmazonPrime'),
             $apiOrder->getId()
         );
         $logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
 
         ProcessLoggerHandler::logInfo(
             $logPrefix .
-                Translate::getModuleTranslation('shoppingfeed', 'Rule triggered. Payment method change for "amazon prime"', 'AmazonB2B'),
+                $this->l('Rule triggered. Payment method change for "amazon prime"', 'AmazonPrime'),
             'Order'
         );
 
@@ -74,7 +73,7 @@ class AmazonPrime extends RuleAbstract implements RuleInterface
      */
     public function getConditions()
     {
-        return Translate::getModuleTranslation('shoppingfeed', 'If the order is from Amazon and has \'is_prime\' set in its additional fields.', 'AmazonPrime');
+        return $this->l('If the order is from Amazon and has \'is_prime\' set in its additional fields.', 'AmazonPrime');
     }
 
     /**
@@ -82,6 +81,6 @@ class AmazonPrime extends RuleAbstract implements RuleInterface
      */
     public function getDescription()
     {
-        return Translate::getModuleTranslation('shoppingfeed', 'Sets the order\'s payment method as \'Amazon Prime\' in the module\'s \'Marketplaces Summary\'.', 'AmazonPrime');
+        return $this->l('Sets the order\'s payment method as \'Amazon Prime\' in the module\'s \'Marketplaces Summary\'.', 'AmazonPrime');
     }
 }

@@ -81,6 +81,14 @@ abstract class RuleAbstract implements RuleInterface
     /**
      * @inheritdoc
      */
+    protected function l($msg, $domain)
+    {
+        return \Translate::getModuleTranslation('shoppingfeed', $msg, $domain);
+    }
+
+    /**
+     * @inheritdoc
+     */
     abstract public function getDescription();
 
     /**

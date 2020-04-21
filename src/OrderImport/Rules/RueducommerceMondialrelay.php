@@ -72,16 +72,10 @@ class RueducommerceMondialrelay extends RuleAbstract implements RuleInterface
         $orderData = $params['orderData'];
 
         $logPrefix = sprintf(
-            Translate::getModuleTranslation('shoppingfeed', '[Order: %s]', 'RueducommerceMondialrelay'),
+            $this->l('[Order: %s]', 'RueducommerceMondialrelay'),
             $params['apiOrder']->getId()
         );
         $logPrefix .= '[' . $params['apiOrder']->getReference() . '] ' . self::class . ' | ';
-
-        ProcessLoggerHandler::logInfo(
-            $logPrefix .
-                Translate::getModuleTranslation('shoppingfeed', 'Rule triggered.', 'RueducommerceMondialrelay'),
-            'Order'
-        );
 
         // Split the carrier name
         $explodedCarrier = explode(' ', $orderData->shipment['carrier']);
@@ -98,7 +92,7 @@ class RueducommerceMondialrelay extends RuleAbstract implements RuleInterface
 
         ProcessLoggerHandler::logSuccess(
             $logPrefix .
-                Translate::getModuleTranslation('shoppingfeed', 'Shipping address updated to set MR relay ID.', 'RueducommerceMondialrelay'),
+                $this->l('Rule triggered. Shipping address updated to set MR relay ID.', 'RueducommerceMondialrelay'),
             'Order'
         );
     }
@@ -108,7 +102,7 @@ class RueducommerceMondialrelay extends RuleAbstract implements RuleInterface
      */
     public function getConditions()
     {
-        return Translate::getModuleTranslation('shoppingfeed', 'If the order is from Rue du Commerce and has \'Mondial Relay\' in its carrier name.', 'RueducommerceMondialrelay');
+        return $this->l('If the order is from Rue du Commerce and has \'Mondial Relay\' in its carrier name.', 'RueducommerceMondialrelay');
     }
 
     /**
@@ -116,6 +110,6 @@ class RueducommerceMondialrelay extends RuleAbstract implements RuleInterface
      */
     public function getDescription()
     {
-        return Translate::getModuleTranslation('shoppingfeed', 'Removes the relay ID from the carrier name. Sets it in the proper field to be used by the main Mondial Relay rule.', 'RueducommerceMondialrelay');
+        return $this->l('Removes the relay ID from the carrier name. Sets it in the proper field to be used by the main Mondial Relay rule.', 'RueducommerceMondialrelay');
     }
 }
