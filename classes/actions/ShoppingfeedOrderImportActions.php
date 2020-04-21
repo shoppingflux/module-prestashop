@@ -1072,10 +1072,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             }
         }
         if (empty($address->phone) && empty($address->phone_mobile)) {
-            throw new Exception(sprintf(
-                $this->l('Address %s has no phone number.', 'ShoppingfeedOrderImportActions'),
-                $addressAlias
-            ));
+            $address->phone = '0102030405';
         } elseif (empty($address->phone)) {
             $address->phone = $address->phone_mobile;
         } elseif (empty($address->phone_mobile)) {
