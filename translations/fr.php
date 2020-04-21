@@ -16,6 +16,11 @@ $_MODULE['<{shoppingfeed}prestashop>rueducommercemondialrelay_0cc1e925b5703e8da5
 $_MODULE['<{shoppingfeed}prestashop>rueducommercemondialrelay_6cad06986510aaa03872c4fcd6854af6'] = 'Règle déclenchée. Adresse de livraison mise à jour avec l\'ID du point Mondial Relais.';
 $_MODULE['<{shoppingfeed}prestashop>rueducommercemondialrelay_6d07be6f2beaa75903c287a10f68978c'] = 'Si la commande provient de Rue du Commerce ET a pour transporteur ”Mondial Relay”.';
 $_MODULE['<{shoppingfeed}prestashop>rueducommercemondialrelay_caa2bffa194f3192acc2140d837d7727'] = 'Suppression de l\'ID relais présent dans le nom du transporteur. Ajout de l\'ID relais dans le champs prévu pour être traitée par la règle Mondial Relay.';
+$_MODULE['<{shoppingfeed}prestashop>shippedbymarketplace_0cc1e925b5703e8da52b7c3e91829499'] = '[Commande %s]';
+$_MODULE['<{shoppingfeed}prestashop>shippedbymarketplace_9e8b433ca751ff0b5ed976125108103a'] = 'Règle déclenchée. Commande expédiée par la marketplace %s, augmentation du stock pour le produit %s : stock précédent %d, ajouté %d.';
+$_MODULE['<{shoppingfeed}prestashop>shippedbymarketplace_bf6268797ddbc9e9333d906763b31069'] = 'Règle déclenchée. Configuration dela commande sur LIVRÉ.';
+$_MODULE['<{shoppingfeed}prestashop>shippedbymarketplace_6450eb7f955260dc6b622c2c987addd9'] = 'Si la commande est expédiée par la marketplace';
+$_MODULE['<{shoppingfeed}prestashop>shippedbymarketplace_da07501fbb475aa139aeff8b40c05b1b'] = 'Augmenter le stock des produits avant de passer la commande. Configurer en fin d\'import la commande sur LIVRÉ.';
 $_MODULE['<{shoppingfeed}prestashop>cdiscountrelay_0cc1e925b5703e8da52b7c3e91829499'] = '[Commande %s]';
 $_MODULE['<{shoppingfeed}prestashop>cdiscountrelay_1705267a14f0d6133019291dcf8b03ed'] = 'Règle déclenchée. Adresse de livraison mise à jour avec l\'ID du point relais.';
 $_MODULE['<{shoppingfeed}prestashop>cdiscountrelay_dec006e857c0ad54d3aadd8f00064519'] = 'Si la commande provient de CDiscount ET le transporteur est ”SO1”, ”REL” or ”RCO”.';
@@ -54,7 +59,7 @@ $_MODULE['<{shoppingfeed}prestashop>amazonprime_4a71f7c39b134c1934a4b4b3c7f1e966
 $_MODULE['<{shoppingfeed}prestashop>amazonprime_c2cdab4635332129d799aa23c83f1527'] = 'Si la commande provient d\'Amazon ET que le champs additionnel ”is_prime” est VRAI';
 $_MODULE['<{shoppingfeed}prestashop>amazonprime_f4a97adfdb617aafa47056d2f6958410'] = 'Appliquer la méthode de paiement ”amazon prime” afin de l\'afficher dans ”Récapitulatif Marketplaces”';
 $_MODULE['<{shoppingfeed}prestashop>testingorder_0cc1e925b5703e8da52b7c3e91829499'] = '[Commande %s]';
-$_MODULE['<{shoppingfeed}prestashop>testingorder_bb6271f302a85a17ac74ac334ffdd302'] = 'Règle déclenchée. ';
+$_MODULE['<{shoppingfeed}prestashop>testingorder_eba2574749f45707a84aa0c6264d7207'] = 'Règle déclenchée. Configuration du statut de commande sur ANNULÉ.';
 $_MODULE['<{shoppingfeed}prestashop>testingorder_7523b11cd5b28c4360a2dd5b108245ae'] = 'Si la commande est un test';
 $_MODULE['<{shoppingfeed}prestashop>testingorder_7c5a72dfd28d60e1195279cf5c443d31'] = 'Appliquer le statut ANNULÉ en fin de processus d\'import.';
 $_MODULE['<{shoppingfeed}prestashop>cdiscount_0cc1e925b5703e8da52b7c3e91829499'] = '[Commande %s]';
@@ -229,7 +234,6 @@ $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_fc57423d9c08e
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_5ef5e2a7a58c8ff17f8c586685459fbd'] = 'Étape 4/11 :  Adresse de facturation créée ou mise à jour';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_c6502f02f55e9c112097bea8034e53d9'] = 'Étape 5/11 :  Adresse de livraison créée ou mise à jour';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_d5f89b597bc30691ef3906dd5d18974d'] = 'Alias de la référence %s remplacé par le produit %s.';
-$_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_8633ed7f964fa0aa38d0ccd6ffd1c6be'] = 'La commande est gérée par la marketplace %s, augmentation du stock produit %s : quantité de départ %d,  ajouté %s.';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_8748f81fa32c4c0d218d9cbda3406878'] = 'Pas assez de stock pour le produit %s.';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_b172d203660770f769e5398bf2931825'] = 'Pas assez de stock pour le produit %s : quantité de départ %d, requis %d, ajouté %s.';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_81caed7a8943033a921a122eb571df45'] = 'Étape 6/11 : quantités de produit mis à jour / validé.';
@@ -246,7 +250,6 @@ $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_520287c7a5a62
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_edddef134d67a9a3b81190c2980996e3'] = 'Étape 10/11 : Commande acquittée sur l\'API Shopping feed';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_5281d369b978d1a255edcec43a380cc5'] = 'Échec lors de la récupération de l\'objet OrderDetail.';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_4d4d607d4b221036b26c6e0ecca1f7f4'] = 'Étape 11/11 : Montants et totaux de la commande mis à jour';
-$_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_790a58c67f1acc229207b9972cf4db5e'] = 'Adresse %s n\'a pas de numéro de téléphone.';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_b3e13f647adb3896fda3a91d92b7cb94'] = 'Le pays %s pour l\'adresse %s n\'a pas été trouvé.';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_dd7fb886a4bbf380914e143c2b3d67e5'] = 'Le pays %s pour l\'adresse %s n\'est pas actif.';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedproductsyncstockactions_4930df58c29fc86597530234bec3d755'] = 'Impossible de joindre l\'API Shopping Feed.';

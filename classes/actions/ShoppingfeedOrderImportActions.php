@@ -428,13 +428,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
          * creating the order. If the stock is not sufficient, it will be
          * increased just enough to avoid an error during the creation of the
          * order.
-         *
-         * For orders managed directly by a marketplace, the product quantity
-         * should not be impacted on Prestashop.
-         * Therefore, we'll increase the stock so that it won't be decreased
-         * after validating the order.
          */
-        $isMarketplaceManagedQuantities = ShoppingfeedOrder::isMarketplaceManagedQuantities($apiOrder->getChannel()->getName());
         $isAdvancedStockEnabled = Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT') == 1 ? true : false;
 
         /** @var ShoppingfeedAddon\OrderImport\OrderItemData $apiProduct */
@@ -460,34 +454,16 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             $psProduct = $this->conveyor['prestashopProducts'][$apiProduct->reference];
             $useAdvancedStock = $isAdvancedStockEnabled && $psProduct->advanced_stock_management;
 
-            // If the stock is managed by the marketplace
-            if ($isMarketplaceManagedQuantities) {
-                // We directly add the ordered quantity; it will be deduced when
-                // the order is validated
-                $currentStock = StockAvailable::getQuantityAvailableByProduct(
-                    $psProduct->id,
-                    $psProduct->id_product_attribute,
-                    $this->conveyor['id_shop']
-                );
-                ProcessLoggerHandler::logInfo(
-                    sprintf(
-                        $this->logPrefix .
-                            $this->l('Order is managed by marketplace %s, increase product %s stock : original %d, add %d.', 'ShoppingfeedOrderImportActions'),
-                        $apiOrder->getChannel()->getName(),
-                        $apiProduct->reference,
-                        (int)$currentStock,
-                        (int)$apiProduct->quantity
-                    ),
-                    'Order'
-                );
-                StockAvailable::updateQuantity(
-                    $psProduct->id,
-                    $psProduct->id_product_attribute,
-                    (int)$apiProduct->quantity,
-                    $this->conveyor['id_shop']
-                );
-                continue;
-            }
+            $this->specificRulesManager->applyRules(
+                'checkProductStock',
+                array(
+                    'is_shop' => $this->conveyor['id_shop'],
+                    'apiOrder' => $apiOrder,
+                    'orderData' => &$this->conveyor['orderData'],
+                    'psProduct' => $psProduct,
+                    'apiProduct' => &$apiProduct,
+                )
+            );
 
             // If the product uses advanced stock management
             if ($useAdvancedStock) {

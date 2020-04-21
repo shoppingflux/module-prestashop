@@ -37,6 +37,7 @@ use Configuration;
 use Carrier;
 use Order;
 use OrderHistory;
+use Tools;
 use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
@@ -44,23 +45,65 @@ use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use ShoppingfeedClasslib\Registry;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 
-class TestingOrder extends RuleAbstract implements RuleInterface
+/**
+* For orders managed directly by a marketplace, the product quantity
+* should not be impacted on Prestashop.
+* Therefore, we'll increase the stock so that it won't be decreased
+* after validating the order.
+*/
+class ShippedByMarketplace extends RuleAbstract implements RuleInterface
 {
     public function isApplicable(OrderResource $apiOrder)
     {
-        // There's no check on the carrier name in the old module, so we won't
-        // do it here either
+        $shippedByMarketplace = [
+            'amazon fba',
+            'epmm',
+            'clogistique'
+        ];
         $orderRawData = $apiOrder->toArray();
-        if ($orderRawData['isTest']) {
-            return true;
-        }
+        return in_array(Tools::strtolower($apiOrder->getChannel()->getName()), $shippedByMarketplace);
+    }
+
+    public function checkProductStock($params)
+    {
+        $psProduct = $params['psProduct'];
+        $apiOrder = $params['apiOrder'];
+        $apiProduct = $params['apiProduct'];
+
+        // We directly add the ordered quantity; it will be deduced when
+        // the order is validated
+        $currentStock = StockAvailable::getQuantityAvailableByProduct(
+            $psProduct->id,
+            $psProduct->id_product_attribute,
+            $params['id_shop']
+        );
+        $logPrefix = sprintf(
+            $this->l('[Order: %s]', 'ShippedByMarketplace'),
+            $apiOrder->getId()
+        );
+        $logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
+
+        ProcessLoggerHandler::logInfo(
+            $this->logPrefix .
+            sprintf(
+                $this->l('Rule triggered. Order is managed by marketplace %s, increase product %s stock : original %d, add %d.', 'ShippedByMarketplace'),
+                $apiOrder->getChannel()->getName(),
+                $apiProduct->reference,
+                (int) $currentStock,
+                (int) $apiProduct->quantity
+            ),
+            'Order'
+        );
+        StockAvailable::updateQuantity(
+            $psProduct->id,
+            $psProduct->id_product_attribute,
+            (int) $apiProduct->quantity,
+            $this->conveyor['id_shop']
+        );
     }
 
     public function onPostProcess($params)
     {
-        /** @var \ShoppingfeedAddon\OrderImport\OrderData $orderData */
-        $orderData = $params['orderData'];
-        $apiOrder = $params['apiOrder'];
 
         $logPrefix = sprintf(
             $this->l('[Order: %s]', 'TestingOrder'),
@@ -71,18 +114,19 @@ class TestingOrder extends RuleAbstract implements RuleInterface
         ProcessLoggerHandler::logInfo(
             $logPrefix .
             sprintf(
-                $this->l('Rule triggered. Set order %s to CANCELED', 'ShippedByMarketplace'),
+                $this->l('Rule triggered. Set order %s to DELIVERED', 'ShippedByMarketplace'),
                 $params['sfOrder']->id_order
             ),
             'Order',
             $params['sfOrder']->id_order
         );
+
         $psOrder = new Order($params['sfOrder']->id_order);
-        // Set order to CANCELED
+        // Set order to DELIVERED
         $history = new OrderHistory();
         $history->id_order = $params['sfOrder']->id_order;
         $use_existings_payment = true;
-        $history->changeIdOrderState((int) Configuration::get('PS_OS_CANCELED'), $psOrder, $use_existings_payment);
+        $history->changeIdOrderState((int) Configuration::get('PS_OS_DELIVERED'), $psOrder, $use_existings_payment);
         // Save all changes
         $history->addWithemail();
     }
@@ -92,7 +136,7 @@ class TestingOrder extends RuleAbstract implements RuleInterface
      */
     public function getConditions()
     {
-        return $this->l('If the order is a test.', 'TestingOrder');
+        return $this->l('If order is shipped by the marketplace.', 'ShippedByMarketplace');
     }
 
     /**
@@ -100,6 +144,6 @@ class TestingOrder extends RuleAbstract implements RuleInterface
      */
     public function getDescription()
     {
-        return $this->l('Set order to CANCELED after the process.', 'TestingOrder');
+        return $this->l('Increase stocks before order. Set order to DELIVERED after the process.', 'ShippedByMarketplace');
     }
 }

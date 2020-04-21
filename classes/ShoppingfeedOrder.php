@@ -176,18 +176,4 @@ class ShoppingfeedOrder extends ObjectModel
         return false;
     }
 
-    /**
-     * Checks if a given marketplace manages quantities on its own
-     *
-     * @param string $name_marketplace
-     * @return bool true if the marketplace manages the quantities
-     */
-    public static function isMarketplaceManagedQuantities($name_marketplace)
-    {
-        return in_array(Tools::strtolower($name_marketplace), array(
-            'amazon fba',
-            'epmm',
-            'clogistique'
-        ));
-    }
 }
