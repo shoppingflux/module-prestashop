@@ -1056,6 +1056,12 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         }
 
         // Check if country is valid and active
+        if (!Validate::isLanguageIsoCode($apiAddress['country'])) {
+            throw new Exception(sprintf(
+                $this->l('Country ISO %s is not valide.', 'ShoppingfeedOrderImportActions'),
+                $apiAddress['country']
+            ));
+        }
         $id_country = (int)Country::getByIso($apiAddress['country']);
         if (!$id_country) {
             throw new Exception(sprintf(
