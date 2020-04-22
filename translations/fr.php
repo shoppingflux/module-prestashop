@@ -250,6 +250,7 @@ $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_520287c7a5a62
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_edddef134d67a9a3b81190c2980996e3'] = 'Étape 10/11 : Commande acquittée sur l\'API Shopping feed';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_5281d369b978d1a255edcec43a380cc5'] = 'Échec lors de la récupération de l\'objet OrderDetail.';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_4d4d607d4b221036b26c6e0ecca1f7f4'] = 'Étape 11/11 : Montants et totaux de la commande mis à jour';
+$_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_1c05424164c33f09aaa97c03ae4d5a8f'] = 'Le code ISO du pays %s pour l\'adresse %s n\'est pas valide.';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_b3e13f647adb3896fda3a91d92b7cb94'] = 'Le pays %s pour l\'adresse %s n\'a pas été trouvé.';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_dd7fb886a4bbf380914e143c2b3d67e5'] = 'Le pays %s pour l\'adresse %s n\'est pas actif.';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedproductsyncstockactions_4930df58c29fc86597530234bec3d755'] = 'Impossible de joindre l\'API Shopping Feed.';
