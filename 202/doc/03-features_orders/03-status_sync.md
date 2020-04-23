@@ -1,6 +1,6 @@
 ---
 category: 'Features : Orders'
-name: 3. Status synchronization
+name: 3.2 Status synchronization
 ---
 
 The order's statuses synchronization feature is already implemented by the
@@ -16,7 +16,7 @@ order will be removed from the queue (i.e. the `shoppingfeed_task_order` table).
 **Important note :** order updates must be delayed when a Shipped status change
 is triggered, since the API requires a tracking number to register it, and it
 may not have been set by the merchant when the status changes
-(see [Detecting changes](#3-status-synchronization-detecting-changes)).  
+(see [Detecting changes](#3-status-synchronization-detecting-changes)).
 The exact delay can be configured from the back-office (default is 5 minutes).
 
 
@@ -25,7 +25,7 @@ The exact delay can be configured from the back-office (default is 5 minutes).
 When requesting a status change on an order, the update isn't processed
 immediately. Instead, a ticket number is returned by the SF API.
 This ticket number must be saved to monitor the update status; it will be set
-in the `shoppingfeed_task_order`, and the `action` will be updated accordingly.  
+in the `shoppingfeed_task_order`, and the `action` will be updated accordingly.
 
 
 # The order statuses

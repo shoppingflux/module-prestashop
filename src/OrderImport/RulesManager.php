@@ -126,6 +126,7 @@ class RulesManager
             'beforeBillingAddressSave',
             'beforeShippingAddressCreation',
             'beforeShippingAddressSave',
+            'checkProductStock',
             'onCartCreation',
             'afterCartCreation',
             'afterOrderCreation',

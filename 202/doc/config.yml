@@ -18,9 +18,10 @@ theme:
 examples:
   css:
   js:
-      
+
 order:
     - Overview
     - Installation
     - "Features : Products"
     - "Features : Orders"
+    - "Improve this addon"

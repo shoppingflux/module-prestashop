@@ -4,3 +4,4 @@
 /config*.xml
 /composer.json
 /.project
+/node_modules

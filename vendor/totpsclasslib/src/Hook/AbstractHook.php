@@ -5,9 +5,11 @@ namespace ShoppingfeedClasslib\Hook;
 
 use ShoppingfeedClasslib\Extensions\AbstractModuleExtension;
 use ShoppingfeedClasslib\Module;
+use ShoppingfeedClasslib\Utils\Translate\TranslateTrait;
 
 abstract class AbstractHook
 {
+    use TranslateTrait;
     const AVAILABLE_HOOKS = array();
 
     /**

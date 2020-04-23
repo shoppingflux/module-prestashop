@@ -78,9 +78,11 @@ abstract class AbstractHookDispatcher
     {
         $hookName = preg_replace('~^hook~', '', $hookName);
 
-        foreach ($this->hooks as $hook) {
-            if (is_callable(array($hook, $hookName))) {
-                return call_user_func(array($hook, $hookName), $params);
+        if (!empty($hookName)) {
+            foreach ($this->hooks as $hook) {
+                if (is_callable(array($hook, $hookName))) {
+                    return call_user_func(array($hook, $hookName), $params);
+                }
             }
         }
 
