@@ -52,7 +52,7 @@ class RueducommerceMondialrelay extends RuleAbstract implements RuleInterface
         $apiOrderShipment = $apiOrder->getShipment();
 
         if (preg_match('#^rdc|rueducommerce$#', Tools::strtolower($apiOrder->getChannel()->getName()))
-            && preg_match('#mondial relay .+#', Tools::strtolower($apiOrderShipment['carrier']))
+            && preg_match('#livraison en point de proximité avec .+#', Tools::strtolower($apiOrderShipment['carrier']))
         ) {
             // If the rule is applicable, we'll make sure this is empty, just in case...
             Registry::set(self::class . '_mondialRelayId', null);
@@ -76,6 +76,9 @@ class RueducommerceMondialrelay extends RuleAbstract implements RuleInterface
             $params['apiOrder']->getId()
         );
         $logPrefix .= '[' . $params['apiOrder']->getReference() . '] ' . self::class . ' | ';
+
+        $len = strlen('livraison en point de proximité avec ');
+        $orderData->shipment['carrier'] = substr($orderData->shipment['carrier'], $len);
 
         // Split the carrier name
         $explodedCarrier = explode(' ', $orderData->shipment['carrier']);
