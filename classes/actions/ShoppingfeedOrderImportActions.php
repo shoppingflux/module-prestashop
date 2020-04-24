@@ -120,6 +120,20 @@ class ShoppingfeedOrderImportActions extends DefaultActions
 
         /** @var ShoppingfeedAddon\OrderImport\OrderItemData $apiProduct */
         foreach ($this->conveyor['orderData']->items as &$apiProduct) {
+            if (isset($this->conveyor['orderData']->itemsReferencesAliases) === true
+                    && empty($this->conveyor['orderData']->itemsReferencesAliases[$apiProduct->reference]) === false) {
+
+                ProcessLoggerHandler::logInfo(
+                    sprintf(
+                        $this->logPrefix .
+                            $this->l('Reference alias replace %s by %s.', 'ShoppingfeedOrderImportActions'),
+                        $apiProduct->reference,
+                        $this->conveyor['orderData']->itemsReferencesAliases[$apiProduct->reference]
+                    ),
+                    'Order'
+                );
+                $apiProduct->reference = $this->conveyor['orderData']->itemsReferencesAliases[$apiProduct->reference];
+            }
             $psProduct = $sfModule->mapPrestashopProduct(
                 $apiProduct->reference,
                 $this->conveyor['id_shop']
@@ -433,24 +447,6 @@ class ShoppingfeedOrderImportActions extends DefaultActions
 
         /** @var ShoppingfeedAddon\OrderImport\OrderItemData $apiProduct */
         foreach ($this->conveyor['orderData']->items as &$apiProduct) {
-            if (isset($this->conveyor['orderData']->itemsReferencesAliases) === true
-                    && empty($this->conveyor['orderData']->itemsReferencesAliases[$apiProduct->reference]) === false) {
-
-                ProcessLoggerHandler::logInfo(
-                    sprintf(
-                        $this->logPrefix .
-                            $this->l('Reference alias replace %s by %s.', 'ShoppingfeedOrderImportActions'),
-                        $apiProduct->reference,
-                        $this->conveyor['orderData']->itemsReferencesAliases[$apiProduct->reference]
-                    ),
-                    'Order'
-                );
-                $newReference = $this->conveyor['orderData']->itemsReferencesAliases[$apiProduct->reference];
-
-                $this->conveyor['prestashopProducts'][$newReference] = $this->conveyor['prestashopProducts'][$apiProduct->reference];
-                unset($this->conveyor['prestashopProducts'][$apiProduct->reference]);
-                $apiProduct->reference = $newReference;
-            }
             $psProduct = $this->conveyor['prestashopProducts'][$apiProduct->reference];
             $useAdvancedStock = $isAdvancedStockEnabled && $psProduct->advanced_stock_management;
 
