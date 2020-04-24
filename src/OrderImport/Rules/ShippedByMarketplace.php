@@ -32,12 +32,12 @@ use Module;
 use Db;
 use Address;
 use Country;
-use Customer;
 use Configuration;
 use Carrier;
 use Order;
 use OrderHistory;
 use Tools;
+use StockAvailable;
 use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
@@ -104,6 +104,7 @@ class ShippedByMarketplace extends RuleAbstract implements RuleInterface
 
     public function onPostProcess($params)
     {
+        $apiOrder = $params['apiOrder'];
 
         $logPrefix = sprintf(
             $this->l('[Order: %s]', 'TestingOrder'),

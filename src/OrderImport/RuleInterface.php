@@ -37,46 +37,46 @@ interface RuleInterface
     /**
      * If the configuration is not stored using the module's architecture, it
      * would be wise to set it here.
-     * 
+     *
      * @param array $configuration
      */
-    function __construct($configuration = array());
-    
+    public function __construct($configuration = array());
+
     /**
      * Returns true if a rule is applicable to an SF order
-     * 
+     *
      * @return bool
      */
-    function isApplicable(\ShoppingFeed\Sdk\Api\Order\OrderResource $apiOrder);
-    
+    public function isApplicable(\ShoppingFeed\Sdk\Api\Order\OrderResource $apiOrder);
+
     /**
      * Returns an array with the rule's configuration
-     * 
+     *
      * @return array
      */
-    function getConfiguration();
-    
+    public function getConfiguration();
+
     /**
      * Gets the configuration subform for a rule. This subform will be included
      * in the module's specific rules page.
-     * 
+     *
      * @return array an array of arrays formatted as inputs for HelperForm.
      */
-    function getConfigurationSubform();
-    
+    public function getConfigurationSubform();
+
     /**
      * Returns a description of the rule. This description will be included
      * in the module's specific rules page.
-     * 
+     *
      * @return string
      */
-    function getDescription();
-    
+    public function getDescription();
+
     /**
      * Returns a description of the conditions in which the rule should apply.
      * This description will be included in the module's specific rules page.
-     * 
+     *
      * @return string
      */
-    function getConditions();
+    public function getConditions();
 }
