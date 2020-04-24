@@ -46,7 +46,7 @@ class AmazonEbay extends RuleAbstract implements RuleInterface
         $shippingAddress = $apiOrder->getShippingAddress();
         $billingAddress = $apiOrder->getBillingAddress();
 
-        return preg_match('#^(amazon|ebay)$#', Tools::strtolower($apiOrder->getChannel()->getName()))
+        return preg_match('#^(amazon|ebay|laredoute)$#', Tools::strtolower($apiOrder->getChannel()->getName()))
             && (
                 empty($shippingAddress['firstName'])
                 || empty($shippingAddress['lastName'])
@@ -106,7 +106,7 @@ class AmazonEbay extends RuleAbstract implements RuleInterface
      */
     public function getConditions()
     {
-        return $this->l('If the order is from Amazon or Ebay and has an empty "firstname" or "lastname" field in its addresses.', 'AmazonEbay');
+        return $this->l('If the order is from Amazon or Ebay or Laredoute and has an empty "firstname" or "lastname" field in its addresses.', 'AmazonEbay');
     }
 
     /**

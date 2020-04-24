@@ -31,7 +31,7 @@ $_MODULE['<{shoppingfeed}prestashop>amazonb2b_127e6425040a88b2d26f83cbd00f1e1f']
 $_MODULE['<{shoppingfeed}prestashop>amazonb2b_dc0cdac822400fd5475bc594741c6f2d'] = 'Appliquer la méthode de paiement ”amazon b2b” afin de l\'afficher dans ”Récapitulatif Marketplaces”';
 $_MODULE['<{shoppingfeed}prestashop>amazonebay_0cc1e925b5703e8da52b7c3e91829499'] = '[Commande: %s]';
 $_MODULE['<{shoppingfeed}prestashop>amazonebay_6efbd4474b0556a3e01989218a4c4745'] = 'Règle déclenchée. Adresses mises à jour.';
-$_MODULE['<{shoppingfeed}prestashop>amazonebay_aa1c735b6484d85f921090947db7f8e5'] = 'Si la commande provient d\'Amazon ou Ebay ET que le champs ”prénom” ou  ”nom” issu d\'une adresse est vide';
+$_MODULE['<{shoppingfeed}prestashop>amazonebay_e1b9234f8eb2fc5b1bc1c05bbac9fb2e'] = 'Si la commande provient d\'Amazon OU Ebay OU Laredoute et que le ”prénom” ou le ”nom” est vide dans l\'adresse';
 $_MODULE['<{shoppingfeed}prestashop>amazonebay_ac20d46d995d9bd9423cc822c68b728b'] = 'Effacer le contenu après le premier espace du champs rempli et le reporter dans champs vide';
 $_MODULE['<{shoppingfeed}prestashop>amazonebay_7f360bccbf500d253f8086b2c0c8503e'] = 'Découper prénom/nom pour les commandes Amazon et Ebay';
 $_MODULE['<{shoppingfeed}prestashop>socolissimo_0cc1e925b5703e8da52b7c3e91829499'] = '[Commande %s]';
@@ -222,6 +222,7 @@ $_MODULE['<{shoppingfeed}prestashop>runcronbutton_9506f0fd0f7f1b07960b15b4c9e68d
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_0cc1e925b5703e8da52b7c3e91829499'] = '[Commande: %s]';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_a11762ead4c38afafe9cd9fcc729e17f'] = 'Aucune donnée trouvée dans l\'apiOrder';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_0de7fd990e38ad9216de83e95f5446ce'] = 'Commande non importée; Déjà importée.';
+$_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_d5f89b597bc30691ef3906dd5d18974d'] = 'Alias de la référence %s remplacé par le produit %s.';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_cc0e748787a09c3020284971905a263d'] = 'La référence %s correspond pas à un produit.';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_7ad142231cc36dca7679523ce275ec1a'] = 'Le produit %s est désactivé.';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_f301cdb0c35e45b0f453caa948de6cce'] = 'Le produit %s n\'est pas disponible à la vente.';
@@ -233,7 +234,6 @@ $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_a831361f13002
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_fc57423d9c08efceb6e0b4803f9ae718'] = 'L\'adresse %s n\'a pas pu être créée : %s';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_5ef5e2a7a58c8ff17f8c586685459fbd'] = 'Étape 4/11 :  Adresse de facturation créée ou mise à jour';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_c6502f02f55e9c112097bea8034e53d9'] = 'Étape 5/11 :  Adresse de livraison créée ou mise à jour';
-$_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_d5f89b597bc30691ef3906dd5d18974d'] = 'Alias de la référence %s remplacé par le produit %s.';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_8748f81fa32c4c0d218d9cbda3406878'] = 'Pas assez de stock pour le produit %s.';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_b172d203660770f769e5398bf2931825'] = 'Pas assez de stock pour le produit %s : quantité de départ %d, requis %d, ajouté %s.';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_81caed7a8943033a921a122eb571df45'] = 'Étape 6/11 : quantités de produit mis à jour / validé.';
