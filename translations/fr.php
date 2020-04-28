@@ -182,6 +182,7 @@ $_MODULE['<{shoppingfeed}prestashop>syncorder_425ba278d4f2f2cb1502c8d7aef88357']
 $_MODULE['<{shoppingfeed}prestashop>syncorder_4930df58c29fc86597530234bec3d755'] = 'Impossible d\'accéder à l\'API Shopping Feed.';
 $_MODULE['<{shoppingfeed}prestashop>syncorder_f4636801e58ad3bf4def82b2d10e88f7'] = 'Impossible de récuperer des commandes à importer : %s';
 $_MODULE['<{shoppingfeed}prestashop>syncorder_b7c6a96154c79af2672579f7e073e383'] = 'Aucune commande à importer.';
+$_MODULE['<{shoppingfeed}prestashop>syncorder_0cc1e925b5703e8da52b7c3e91829499'] = '[Commande : %s]';
 $_MODULE['<{shoppingfeed}prestashop>syncorder_09e1e7ac3f48896d83ef2f619bc54b33'] = 'Échec : une erreur s\'est produite durant le processus.';
 $_MODULE['<{shoppingfeed}prestashop>syncorder_556843e4a406b780b0cf83c43366a8dd'] = 'Import terminé avec succès';
 $_MODULE['<{shoppingfeed}prestashop>syncorder_ca1adcba37d0d2a6b1a2dd7d730b94cb'] = 'Échec : %s';
@@ -222,6 +223,7 @@ $_MODULE['<{shoppingfeed}prestashop>runcronbutton_9506f0fd0f7f1b07960b15b4c9e68d
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_0cc1e925b5703e8da52b7c3e91829499'] = '[Commande: %s]';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_a11762ead4c38afafe9cd9fcc729e17f'] = 'Aucune donnée trouvée dans l\'apiOrder';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_0de7fd990e38ad9216de83e95f5446ce'] = 'Commande non importée; Déjà importée.';
+$_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_2d507cd78ac89b9255ac05fcbb8ed6df'] = 'Aucun items trouvés sur la commande provenant de Shopping feed.';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_d5f89b597bc30691ef3906dd5d18974d'] = 'Alias de la référence %s remplacé par le produit %s.';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_cc0e748787a09c3020284971905a263d'] = 'La référence %s correspond pas à un produit.';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_7ad142231cc36dca7679523ce275ec1a'] = 'Le produit %s est désactivé.';
@@ -243,7 +245,8 @@ $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_9949cc379b6f8
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_5fe7b0ae10b81ba49c3df7182c65b9db'] = 'Étape 8/11 : Produits ajoutés au panier.';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_8ab9c67bbe8e048cd41809e6c686c185'] = 'Le pays %d du contexte courrant est désactivé.';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_48d713671514081ea184aadd6df7f28d'] = 'Contexte pays réglé sur %d';
-$_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_ee6ee73bed6c5cc16f24191a6bfe61ec'] = 'Étape 9/11 : Commandes validé';
+$_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_2d7db575b6f9fe4ceb1fc96394e9e91a'] = 'Étape 9/11 : Commande non validée';
+$_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_ee6ee73bed6c5cc16f24191a6bfe61ec'] = 'Étape 9/11 : Commande validée';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_492d9a9ff3edb3ff62d128759cd7711b'] = 'Impossible de récupérer l\'objet sfOrder.';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_4930df58c29fc86597530234bec3d755'] = 'Impossible d\'accéder à l\'API Shopping feed.';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_520287c7a5a62cb7f57f700310fbda50'] = 'Échec lors de l\'acquittement de la commande sur l\'API Shopping feed';

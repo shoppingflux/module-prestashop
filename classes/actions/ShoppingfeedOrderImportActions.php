@@ -117,6 +117,16 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         // Check products
         $this->conveyor['prestashopProducts'] = array();
         $sfModule = Module::getInstanceByName('shoppingfeed');
+        if (count($this->conveyor['orderData']->items) === 0) {
+            ProcessLoggerHandler::logError(
+                sprintf(
+                    $this->logPrefix .
+                        $this->l('No items found on the Shopping feed order.', 'ShoppingfeedOrderImportActions')
+                ),
+                'Order'
+            );
+            return false;
+        }
 
         /** @var ShoppingfeedAddon\OrderImport\OrderItemData $apiProduct */
         foreach ($this->conveyor['orderData']->items as &$apiProduct) {
@@ -663,17 +673,29 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         $this->conveyor['customer']->update();
 
         $amount_paid = (float)Tools::ps_round((float)$cart->getOrderTotal(true, Cart::BOTH), 2);
-        $paymentModule->validateOrder(
-            (int)$cart->id,
-            2,
-            $amount_paid,
-            Tools::strtolower($apiOrder->getChannel()->getName()),
-            null,
-            array(),
-            $cart->id_currency,
-            false,
-            $cart->secure_key
-        );
+        try {
+            $paymentModule->validateOrder(
+                (int)$cart->id,
+                2,
+                $amount_paid,
+                Tools::strtolower($apiOrder->getChannel()->getName()),
+                null,
+                array(),
+                $cart->id_currency,
+                false,
+                $cart->secure_key
+            );
+        } catch (Exception $e) {
+
+            ProcessLoggerHandler::logError(
+                $this->logPrefix .
+                    $this->l('Step 9/11 : Order not validated.', 'ShoppingfeedOrderImportActions') . ' ' .$e->getMessage(),
+                'Order',
+                $this->conveyor['id_order']
+            );
+
+            return false;
+        }
         $this->conveyor['id_order'] = $paymentModule->currentOrder;
         $this->conveyor['order_reference'] = $paymentModule->currentOrderReference;
 

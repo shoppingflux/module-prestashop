@@ -291,7 +291,7 @@ class ShoppingfeedSyncOrderModuleFrontController extends CronController
         Registry::set('importedOrders', 0);
         foreach ($result as $apiOrder) {
             $logPrefix = sprintf(
-                Translate::getModuleTranslation('shoppingfeed', '[Order: %s]', 'syncOrder'),
+                $this->module->l('[Order: %s]', 'syncOrder'),
                 $apiOrder->getId()
             );
             $logPrefix .= '[' . $apiOrder->getReference() . '] ';
@@ -317,6 +317,7 @@ class ShoppingfeedSyncOrderModuleFrontController extends CronController
 
                 $processResult = $handler->process('shoppingfeedOrderImport');
                 if (!$processResult) {
+                    $conveyor = $handler->getConveyor();
                     ProcessLoggerHandler::logError(
                         $logPrefix .
                             $this->module->l('Fail : An error occurred during process.', 'syncOrder'),
