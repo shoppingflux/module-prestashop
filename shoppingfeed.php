@@ -72,6 +72,12 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     const ORDER_IMPORT_TEST = "SHOPPINGFEED_ORDER_IMPORT_TEST";
     const ORDER_IMPORT_SPECIFIC_RULES_CONFIGURATION = "SHOPPINGFEED_ORDER_IMPORT_SPECIFIC_RULES_CONFIGURATION";
     const ORDER_DEFAULT_CARRIER_REFERENCE = "SHOPPINGFEED_ORDER_DEFAULT_CARRIER_REFERENCE";
+    const PRODUCT_FEED_CARRIER_REFERENCE = "SHOPPINGFEED_PRODUCT_FEED_CARRIER_REFERENCE";
+    const PRODUCT_FEED_SYNC_PACK = "SHOPPINGFEED_PRODUCT_FEED_SYNC_PACK";
+    const PRODUCT_FEED_IMAGE_FORMAT = "SHOPPINGFEED_PRODUCT_FEED_IMAGE_FORMAT";
+    const PRODUCT_FEED_CATEGORY_DISPLAY = "SHOPPINGFEED_PRODUCT_FEED_CATEGORY_DISPLAY";
+    const PRODUCT_FEED_CUSTOM_FIELDS = "SHOPPINGFEED_PRODUCT_FEED_CUSTOM_FIELDS";
+
 
     public $extensions = array(
         \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerExtension::class,
@@ -124,13 +130,14 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
                 'fr' => 'Shopping Feed'
             ),
             'class_name' => 'shoppingfeed',
-            'parent_class_name' => 'ShopParameters',
+            'parent_class_name' => 'SELL',
+            'icon' => 'store_mall_directory',
             'visible' => true,
         ),
         array(
             'name' => array(
                 'en' => 'Marketplaces Summary',
-                'fr' => 'Récapitulatif Marketplaces'
+                'fr' => 'Commandes Marketplaces'
             ),
             'class_name' => 'AdminShoppingfeedOrders',
             'parent_class_name' => 'shoppingfeed',
@@ -138,20 +145,56 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         ),
         array(
             'name' => array(
-                'en' => 'Account Settings',
-                'fr' => 'Paramètres du compte'
+                'en' => 'Settings',
+                'fr' => 'Paramètres'
             ),
-            'class_name' => 'AdminShoppingfeedAccountSettings',
+            'class_name' => 'AdminShoppingfeedSettings',
             'parent_class_name' => 'shoppingfeed',
             'visible' => true,
         ),
         array(
             'name' => array(
-                'en' => 'General Settings',
-                'fr' => 'Paramètres généraux'
+                'en' => 'Account settings',
+                'fr' => 'Paramètres du compte'
+            ),
+            'class_name' => 'AdminShoppingfeedAccountSettings',
+            'parent_class_name' => 'AdminShoppingfeedSettings',
+            'visible' => true,
+        ),
+        array(
+            'name' => array(
+                'en' => 'Products feed',
+                'fr' => 'Flux des produits'
             ),
             'class_name' => 'AdminShoppingfeedGeneralSettings',
+            'parent_class_name' => 'AdminShoppingfeedSettings',
+            'visible' => true,
+        ),
+        array(
+            'name' => array(
+                'en' => 'Orders feeds',
+                'fr' => 'Flux des commandes'
+            ),
+            'class_name' => 'AdminShoppingfeedOrderImportRules',
+            'parent_class_name' => 'AdminShoppingfeedSettings',
+            'visible' => true,
+        ),
+        array(
+            'name' => array(
+                'en' => 'Logs & crons',
+                'fr' => 'Logs & crons',
+            ),
+            'class_name' => 'AdminShoppingfeedProcess',
             'parent_class_name' => 'shoppingfeed',
+            'visible' => true,
+        ),
+        array(
+            'name' => array(
+                'en' => 'Logs',
+                'fr' => 'Logs'
+            ),
+            'class_name' => 'AdminShoppingfeedProcessLogger',
+            'parent_class_name' => 'AdminShoppingfeedProcess',
             'visible' => true,
         ),
         array(
@@ -160,25 +203,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
                 'fr' => 'Tâches cron'
             ),
             'class_name' => 'AdminShoppingfeedProcessMonitor',
-            'parent_class_name' => 'shoppingfeed',
-            'visible' => true,
-        ),
-        array(
-            'name' => array(
-                'en' => 'Tasks activity',
-                'fr' => 'Journal d\'activité'
-            ),
-            'class_name' => 'AdminShoppingfeedProcessLogger',
-            'parent_class_name' => 'shoppingfeed',
-            'visible' => true,
-        ),
-        array(
-            'name' => array(
-                'en' => 'Order Import Specific Rules',
-                'fr' => 'Règles spécifiques d\'import de commandes'
-            ),
-            'class_name' => 'AdminShoppingfeedOrderImportRules',
-            'parent_class_name' => 'shoppingfeed',
+            'parent_class_name' => 'AdminShoppingfeedProcess',
             'visible' => true,
         ),
         array(
