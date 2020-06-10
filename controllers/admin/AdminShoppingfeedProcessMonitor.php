@@ -29,12 +29,17 @@ if (!defined('_PS_VERSION_')) {
 require_once(_PS_MODULE_DIR_ . 'shoppingfeed/shoppingfeed.php');
 require_once(_PS_MODULE_DIR_ . 'shoppingfeed/classes/ShoppingfeedProduct.php');
 
-TotLoader::import('shoppingfeed\classlib\extensions\ProcessMonitor\AdminProcessMonitorController');
+use ShoppingfeedClasslib\Extensions\ProcessMonitor\Controllers\Admin\AdminProcessMonitorController;
 
 /**
  * @inheritdoc
  */
-class AdminShoppingfeedProcessMonitorController extends ShoppingfeedAdminProcessMonitorController
+class AdminShoppingfeedProcessMonitorController extends AdminProcessMonitorController
 {
+    public function initContent()
+    {
+        $this->module->setBreakingChangesNotices();
 
+        return parent::initContent();
+    }
 }

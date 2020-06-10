@@ -4,6 +4,7 @@ namespace ShoppingFeed\Sdk\Test\Api\Order;
 use SfGuzzle\GuzzleHttp\Psr7;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\UriInterface;
 use ShoppingFeed\Sdk;
 
 class OrderOperationTest extends TestCase
@@ -118,16 +119,14 @@ class OrderOperationTest extends TestCase
             ->with(
                 'ref1',
                 'amazon',
-                Sdk\Api\Order\OrderOperation::TYPE_REFUSE,
-                ['refund' => ['item1', 'item2']]
+                Sdk\Api\Order\OrderOperation::TYPE_REFUSE
             );
 
         $this->assertInstanceOf(
             Sdk\Api\Order\OrderOperation::class,
             $instance->refuse(
                 'ref1',
-                'amazon',
-                ['item1', 'item2']
+                'amazon'
             )
         );
     }
@@ -176,8 +175,8 @@ class OrderOperationTest extends TestCase
         $data = [
             'ref1',
             'amazon',
-            'success',
             '123654abc',
+            'success',
             'Acknowledged',
         ];
 
@@ -195,10 +194,10 @@ class OrderOperationTest extends TestCase
                 Sdk\Api\Order\OrderOperation::TYPE_ACKNOWLEDGE,
                 new \PHPUnit_Framework_Constraint_Callback(
                     function ($param) use ($data) {
-                        return $param['status'] === $data[2]
-                               && $param['storeReference'] === $data[3]
-                               && $param['message'] === $data[4]
-                               && $param['acknowledgedAt'] instanceof \DateTimeImmutable;
+                        return $param['status'] === 'success'
+                               && $param['storeReference'] === '123654abc'
+                               && $param['message'] === 'Acknowledged'
+                               && !empty($param['acknowledgedAt']);
                     }
                 )
             );
@@ -214,11 +213,9 @@ class OrderOperationTest extends TestCase
      */
     public function testUnacknowledgeOperation()
     {
-        $data     = [
+        $data = [
             'ref2',
             'amazon2',
-            'success2',
-            '123654abcd',
             'Unacknowledged',
         ];
         $instance = $this
@@ -232,15 +229,7 @@ class OrderOperationTest extends TestCase
             ->with(
                 'ref2',
                 'amazon2',
-                Sdk\Api\Order\OrderOperation::TYPE_UNACKNOWLEDGE,
-                new \PHPUnit_Framework_Constraint_Callback(
-                    function ($param) use ($data) {
-                        return $param['status'] === $data[2]
-                               && $param['storeReference'] === $data[3]
-                               && $param['message'] === $data[4]
-                               && $param['acknowledgedAt'] instanceof \DateTimeImmutable;
-                    }
-                )
+                Sdk\Api\Order\OrderOperation::TYPE_UNACKNOWLEDGE
             );
 
         $this->assertInstanceOf(
@@ -256,7 +245,7 @@ class OrderOperationTest extends TestCase
     {
         $orderOperation = new Sdk\Api\Order\OrderOperation();
 
-        $this->expectException(Sdk\Order\Exception\UnexpectedTypeException::class);
+        $this->expectException(Sdk\Exception\InvalidArgumentException::class);
 
         $orderOperation->addOperation(
             'ref',
@@ -265,9 +254,6 @@ class OrderOperationTest extends TestCase
         );
     }
 
-    /**
-     * @throws \Exception
-     */
     public function testExecute()
     {
         $link = $this->createMock(Sdk\Hal\HalLink::class);
@@ -305,54 +291,50 @@ class OrderOperationTest extends TestCase
             );
 
         $this->assertInstanceOf(
-            Sdk\Api\Task\TicketCollection::class,
+            Sdk\Api\Order\OrderOperationResult::class,
             $instance->execute($link)
         );
     }
 
-    public function testAssociationBetweenRefandTicketId()
+    /**
+     * @throws \Exception
+     */
+    public function testRefundOperation()
     {
-        $expected = [
-            'accept' => [
-                'ticket123' => ["abc123", "abc456"],
-            ],
-        ];
+        $instance = $this
+            ->getMockBuilder(Sdk\Api\Order\OrderOperation::class)
+            ->setMethods(['addOperation'])
+            ->getMock();
 
-        $instance   = new Sdk\Api\Order\OrderOperation();
-        $reflection = new \ReflectionClass(get_class($instance));
-        $method     = $reflection->getMethod('associateTicketWithReference');
-        $method->setAccessible(true);
-
-        $uri = $this->createMock(Psr7\Uri::class);
-        /** @var Sdk\Hal\HalResource|\PHPUnit_Framework_MockObject_MockObject $resource */
-        $resource = $this->createMock(Sdk\Hal\HalResource::class);
-        /** @var Request|\PHPUnit_Framework_MockObject_MockObject $request */
-        $request    = $this->createMock(Psr7\Request::class);
-        $references = [];
-
-        $resource
+        $instance
             ->expects($this->once())
-            ->method('getProperty')
-            ->willReturn('id')
-            ->willReturn('ticket123');
+            ->method('addOperation')
+            ->with(
+                'ref1',
+                'amazon',
+                Sdk\Api\Order\OrderOperation::TYPE_REFUND,
+                [
+                    'refund' => [
+                        'shipping' => true,
+                        'products' => [
+                            ['reference' => 'item1', 'quantity' => 1],
+                            ['reference' => 'item2', 'quantity' => 2],
+                        ]
+                    ]
+                ]
+            );
 
-        $request
-            ->expects($this->once())
-            ->method('getBody')
-            ->willReturn('{"order":[{"reference": "abc123"}, {"reference": "abc456"}]}');
-
-        $uri
-            ->expects($this->once())
-            ->method('getPath')
-            ->willReturn('/fake/accept');
-
-        $request
-            ->expects($this->once())
-            ->method('getUri')
-            ->willReturn($uri);
-
-        $method->invokeArgs($instance, [$resource, $request, &$references]);
-
-        $this->assertEquals($expected, $references);
+        $this->assertInstanceOf(
+            Sdk\Api\Order\OrderOperation::class,
+            $instance->refund(
+                'ref1',
+                'amazon',
+                true,
+                [
+                    ['reference' => 'item1', 'quantity' => 1],
+                    ['reference' => 'item2', 'quantity' => 2],
+                ]
+            )
+        );
     }
 }

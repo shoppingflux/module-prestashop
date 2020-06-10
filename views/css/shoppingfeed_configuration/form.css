@@ -21,6 +21,10 @@
  * @license   Commercial license
  */
 
+.bold {
+    font-weight: bold;
+}
+
 #logo_sf {
     height: 5em;
 }
@@ -120,4 +124,26 @@
     -ms-flex-align: center;
     align-items: center;
     margin: 0 ;
+}
+
+.shoppingfeed_form-section h2 {
+    font-size: 20px;
+    border-bottom: 1px solid #eee;
+    line-height: 1.5;
+    font-family: Open Sans, Helvetica, Arial, sans-serif;
+}
+
+.shoppingfeed_form-section > p:first-of-type {
+    margin-bottom: 15px;
+}
+
+.shoppingfeed_double-list-left-container,
+.shoppingfeed_double-list-right-container {
+    padding-top: 7px;
+    font-size: 13px;
+    text-align: center;
+}
+
+.shoppingfeed_double-list-group select {
+    margin-top: 5px;
 }

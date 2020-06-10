@@ -1,10 +1,10 @@
 <?php
 namespace ShoppingFeed\Sdk\Hal;
 
-use GuzzleHttp\Exception\RequestException;
-use GuzzleHttp\UriTemplate;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use ShoppingFeed\Sdk\Http\UriTemplate;
+use ShoppingFeed\Sdk\Resource\Json;
 
 class HalLink
 {
@@ -108,6 +108,21 @@ class HalLink
     }
 
     /**
+     * @param $path
+     * @param $variables
+     *
+     * @return HalLink
+     */
+    public function withAddedHref($path, $variables = [])
+    {
+        $instance       = clone $this;
+        $instance->href = rtrim($instance->getUri($variables), '/') .
+                          '/' . ltrim($path, '/');
+
+        return $instance;
+    }
+
+    /**
      * @param array $variables
      *
      * @return null|string|string[]
@@ -130,7 +145,6 @@ class HalLink
      * @param array $options
      *
      * @return null|HalResource
-     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function get(array $variables = [], array $options = [])
     {
@@ -146,7 +160,6 @@ class HalLink
      * @param array $options
      *
      * @return null|HalResource
-     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function put($data, array $variables = [], array $options = [])
     {
@@ -162,7 +175,6 @@ class HalLink
      * @param array $options
      *
      * @return null|HalResource
-     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function patch($data, array $variables = [], array $options = [])
     {
@@ -178,7 +190,6 @@ class HalLink
      * @param array $options
      *
      * @return null|HalResource
-     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function post($data, array $variables = [], array $options = [])
     {
@@ -194,7 +205,6 @@ class HalLink
      * @param array $options
      *
      * @return null|HalResource
-     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function delete($data, array $variables = [], array $options = [])
     {
@@ -258,7 +268,7 @@ class HalLink
 
         if (! isset($headers['Content-Type']) && in_array($method, ['POST', 'PUT', 'PATCH'])) {
             $headers['Content-Type'] = 'application/json';
-            $body                    = \GuzzleHttp\json_encode($body);
+            $body                    = Json::encode($body);
         }
 
         return $this->client->createRequest($method, $uri, $headers, $body);
@@ -286,11 +296,8 @@ class HalLink
      */
     private function createExceptionCallback(callable $callback = null)
     {
-        return function (RequestException $exception) use ($callback) {
-            if ($exception->hasResponse() && $callback) {
-                $resource = $this->client->createResource($exception->getResponse());
-                call_user_func($callback, $resource);
-            }
+        return function (\Exception $exception) use ($callback) {
+            call_user_func($callback, $exception);
         };
     }
 }

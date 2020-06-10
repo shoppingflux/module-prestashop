@@ -28,12 +28,17 @@ if (!defined('_PS_VERSION_')) {
 
 require_once _PS_MODULE_DIR_ . 'shoppingfeed/shoppingfeed.php';
 
-TotLoader::import('shoppingfeed\classlib\extensions\ProcessLogger\AdminProcessLoggerController');
+use ShoppingfeedClasslib\Extensions\ProcessLogger\Controllers\Admin\AdminProcessLoggerController;
 
 /**
  * @inheritdoc
  */
-class AdminShoppingfeedProcessLoggerController extends ShoppingfeedAdminProcessLoggerController
+class AdminShoppingfeedProcessLoggerController extends AdminProcessLoggerController
 {
+    public function initContent()
+    {
+        $this->module->setBreakingChangesNotices();
 
+        return parent::initContent();
+    }
 }

@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "9c2582e96b73fe7fe59d8ec5951fa304",
-    "content-hash": "5169c79f40568492eee16514945d1905",
+    "hash": "5d6294557c1096dc4579968c2bae5352",
+    "content-hash": "8589b9eb5639c88cb17705ba89d33bea",
     "packages": [
         {
             "name": "guzzlehttp/guzzle",
@@ -125,32 +125,37 @@
         },
         {
             "name": "guzzlehttp/psr7",
-            "version": "1.4.2",
+            "version": "1.6.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/psr7.git",
-                "reference": "f5b8a8512e2b58b0071a7280e39f14f72e05d87c"
+                "reference": "239400de7a173fe9901b9ac7c06497751f00727a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/psr7/zipball/f5b8a8512e2b58b0071a7280e39f14f72e05d87c",
-                "reference": "f5b8a8512e2b58b0071a7280e39f14f72e05d87c",
+                "url": "https://api.github.com/repos/guzzle/psr7/zipball/239400de7a173fe9901b9ac7c06497751f00727a",
+                "reference": "239400de7a173fe9901b9ac7c06497751f00727a",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.4.0",
-                "psr/http-message": "~1.0"
+                "psr/http-message": "~1.0",
+                "ralouphie/getallheaders": "^2.0.5 || ^3.0.0"
             },
             "provide": {
                 "psr/http-message-implementation": "1.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "~4.0"
+                "ext-zlib": "*",
+                "phpunit/phpunit": "~4.8.36 || ^5.7.27 || ^6.5.8"
+            },
+            "suggest": {
+                "zendframework/zend-httphandlerrunner": "Emit PSR-7 responses"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.4-dev"
+                    "dev-master": "1.6-dev"
                 }
             },
             "autoload": {
@@ -180,13 +185,14 @@
             "keywords": [
                 "http",
                 "message",
+                "psr-7",
                 "request",
                 "response",
                 "stream",
                 "uri",
                 "url"
             ],
-            "time": "2017-03-20 17:10:46"
+            "time": "2019-07-01 23:21:34"
         },
         {
             "name": "psr/http-message",
@@ -239,70 +245,74 @@
             "time": "2016-08-06 14:39:51"
         },
         {
-            "name": "shoppingfeed/php-feed-generator",
-            "version": "1.0.0",
+            "name": "ralouphie/getallheaders",
+            "version": "3.0.3",
             "source": {
                 "type": "git",
-                "url": "https://github.com/shoppingflux/php-feed-generator.git",
-                "reference": "fcabf82472d32ebffcfccec9333484669988fb96"
+                "url": "https://github.com/ralouphie/getallheaders.git",
+                "reference": "120b605dfeb996808c31b6477290a714d356e822"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shoppingflux/php-feed-generator/zipball/fcabf82472d32ebffcfccec9333484669988fb96",
-                "reference": "fcabf82472d32ebffcfccec9333484669988fb96",
+                "url": "https://api.github.com/repos/ralouphie/getallheaders/zipball/120b605dfeb996808c31b6477290a714d356e822",
+                "reference": "120b605dfeb996808c31b6477290a714d356e822",
                 "shasum": ""
             },
             "require": {
-                "ext-xml": "*",
-                "php": ">=5.5"
+                "php": ">=5.6"
             },
             "require-dev": {
-                "fzaninotto/faker": "^1.7",
-                "psr/log": "^1.0",
-                "shoppingfeed/feed-xml": "1.*"
+                "php-coveralls/php-coveralls": "^2.1",
+                "phpunit/phpunit": "^5 || ^6.5"
             },
             "type": "library",
             "autoload": {
-                "psr-4": {
-                    "ShoppingFeed\\Feed\\": "src"
-                },
                 "files": [
-                    "src/functions.php"
+                    "src/getallheaders.php"
                 ]
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
-                "Apache-2.0"
+                "MIT"
             ],
-            "description": "ShoppingFeed Feed manager",
-            "time": "2018-06-06 13:37:45"
+            "authors": [
+                {
+                    "name": "Ralph Khattar",
+                    "email": "ralph.khattar@gmail.com"
+                }
+            ],
+            "description": "A polyfill for getallheaders.",
+            "time": "2019-03-08 08:55:37"
         },
         {
             "name": "shoppingfeed/php-sdk",
-            "version": "0.2.1-beta.1",
+            "version": "0.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shoppingflux/php-sdk.git",
-                "reference": "6735829afdd2e19f8ebd83be82dea64f42765a24"
+                "reference": "a8f42add1948e2c3b333538229cb1eb3f15ec15d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shoppingflux/php-sdk/zipball/6735829afdd2e19f8ebd83be82dea64f42765a24",
-                "reference": "6735829afdd2e19f8ebd83be82dea64f42765a24",
+                "url": "https://api.github.com/repos/shoppingflux/php-sdk/zipball/a8f42add1948e2c3b333538229cb1eb3f15ec15d",
+                "reference": "a8f42add1948e2c3b333538229cb1eb3f15ec15d",
                 "shasum": ""
             },
             "require": {
-                "guzzlehttp/guzzle": "^6.3",
-                "php": ">= 5.6",
-                "shoppingfeed/php-feed-generator": "1.0.0"
+                "ext-json": "*",
+                "php": ">= 5.6"
             },
             "require-dev": {
+                "guzzlehttp/guzzle": "^6.0",
                 "monolog/monolog": "^1.23",
+                "overtrue/phplint": "^1.1",
                 "phpunit/phpunit": "^5.0",
-                "squizlabs/php_codesniffer": "^2.8"
+                "shoppingfeed/coding-style-php": "^2.0"
             },
             "suggest": {
-                "psr/log": "trace HTTP requests performed by the SDK"
+                "guzzlehttp/guzzle": "Guzzle Http 6 is the default http adapter integrated in the SDK",
+                "psr/log": "trace HTTP requests performed by the SDK",
+                "shoppingfeed/php-feed-generator": "Generates compliant Shopping-Feed XML feed with ease"
             },
             "type": "library",
             "autoload": {
@@ -315,15 +325,14 @@
             "license": [
                 "Apache-2.0"
             ],
-            "time": "2018-06-28 14:55:36"
+            "description": "Shopping Feed SDK to ease integration of our API",
+            "time": "2019-09-04 09:02:04"
         }
     ],
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "shoppingfeed/php-sdk": 10
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],

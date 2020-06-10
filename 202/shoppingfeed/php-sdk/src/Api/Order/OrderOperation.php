@@ -1,11 +1,10 @@
 <?php
 namespace ShoppingFeed\Sdk\Api\Order;
 
-use GuzzleHttp\Psr7\Request;
 use ShoppingFeed\Sdk\Api;
 use ShoppingFeed\Sdk\Hal;
 use ShoppingFeed\Sdk\Operation;
-use ShoppingFeed\Sdk\Order;
+use ShoppingFeed\Sdk\Exception;
 
 class OrderOperation extends Operation\AbstractBulkOperation
 {
@@ -16,6 +15,7 @@ class OrderOperation extends Operation\AbstractBulkOperation
     const TYPE_CANCEL        = 'cancel';
     const TYPE_REFUSE        = 'refuse';
     const TYPE_SHIP          = 'ship';
+    const TYPE_REFUND        = 'refund';
     const TYPE_ACKNOWLEDGE   = 'acknowledge';
     const TYPE_UNACKNOWLEDGE = 'unacknowledge';
 
@@ -27,6 +27,7 @@ class OrderOperation extends Operation\AbstractBulkOperation
         self::TYPE_CANCEL,
         self::TYPE_REFUSE,
         self::TYPE_SHIP,
+        self::TYPE_REFUND,
         self::TYPE_ACKNOWLEDGE,
         self::TYPE_UNACKNOWLEDGE,
     ];
@@ -35,7 +36,6 @@ class OrderOperation extends Operation\AbstractBulkOperation
      * @var array
      */
     protected $operations = [];
-
 
     /**
      * Notify market place of order acceptance
@@ -46,14 +46,14 @@ class OrderOperation extends Operation\AbstractBulkOperation
      *
      * @return OrderOperation
      *
-     * @throws Order\Exception\UnexpectedTypeException
+     * @throws Exception\InvalidArgumentException
      */
     public function accept($reference, $channelName, $reason = '')
     {
         $this->addOperation(
             $reference,
             $channelName,
-            OrderOperation::TYPE_ACCEPT,
+            self::TYPE_ACCEPT,
             compact('reason')
         );
 
@@ -69,14 +69,14 @@ class OrderOperation extends Operation\AbstractBulkOperation
      *
      * @return OrderOperation
      *
-     * @throws Order\Exception\UnexpectedTypeException
+     * @throws Exception\InvalidArgumentException
      */
     public function cancel($reference, $channelName, $reason = '')
     {
         $this->addOperation(
             $reference,
             $channelName,
-            OrderOperation::TYPE_CANCEL,
+            self::TYPE_CANCEL,
             compact('reason')
         );
 
@@ -94,14 +94,14 @@ class OrderOperation extends Operation\AbstractBulkOperation
      *
      * @return OrderOperation
      *
-     * @throws Order\Exception\UnexpectedTypeException
+     * @throws Exception\InvalidArgumentException
      */
     public function ship($reference, $channelName, $carrier = '', $trackingNumber = '', $trackingLink = '')
     {
         $this->addOperation(
             $reference,
             $channelName,
-            OrderOperation::TYPE_SHIP,
+            self::TYPE_SHIP,
             compact('carrier', 'trackingNumber', 'trackingLink')
         );
 
@@ -113,19 +113,17 @@ class OrderOperation extends Operation\AbstractBulkOperation
      *
      * @param string $reference   Order reference
      * @param string $channelName Channel to notify
-     * @param array  $refund      Order item reference that will be refunded
      *
      * @return OrderOperation
      *
-     * @throws Order\Exception\UnexpectedTypeException
+     * @throws Exception\InvalidArgumentException
      */
-    public function refuse($reference, $channelName, $refund = [])
+    public function refuse($reference, $channelName)
     {
         $this->addOperation(
             $reference,
             $channelName,
-            OrderOperation::TYPE_REFUSE,
-            compact('refund')
+            self::TYPE_REFUSE
         );
 
         return $this;
@@ -142,16 +140,17 @@ class OrderOperation extends Operation\AbstractBulkOperation
      *
      * @return OrderOperation
      *
-     * @throws Order\Exception\UnexpectedTypeException
+     * @throws Exception\InvalidArgumentException
      * @throws \Exception
      */
-    public function acknowledge($reference, $channelName, $status, $storeReference, $message = '')
+    public function acknowledge($reference, $channelName, $storeReference = '', $status = 'success', $message = '')
     {
-        $acknowledgedAt = new \DateTimeImmutable('now');
+        $acknowledgedAt = date_create()->format('c');
+
         $this->addOperation(
             $reference,
             $channelName,
-            OrderOperation::TYPE_ACKNOWLEDGE,
+            self::TYPE_ACKNOWLEDGE,
             compact('status', 'storeReference', 'acknowledgedAt', 'message')
         );
 
@@ -161,25 +160,20 @@ class OrderOperation extends Operation\AbstractBulkOperation
     /**
      * Unacknowledge order reception
      *
-     * @param string $reference
-     * @param string $channelName
-     * @param string $status
-     * @param string $storeReference
-     * @param string $message
+     * @param string $reference   The channel's order reference
+     * @param string $channelName The channel's name
      *
      * @return OrderOperation
      *
-     * @throws Order\Exception\UnexpectedTypeException
+     * @throws Exception\InvalidArgumentException
      * @throws \Exception
      */
-    public function unacknowledge($reference, $channelName, $status, $storeReference, $message = '')
+    public function unacknowledge($reference, $channelName)
     {
-        $acknowledgedAt = new \DateTimeImmutable('now');
         $this->addOperation(
             $reference,
             $channelName,
-            OrderOperation::TYPE_UNACKNOWLEDGE,
-            compact('status', 'storeReference', 'acknowledgedAt', 'message')
+            self::TYPE_UNACKNOWLEDGE
         );
 
         return $this;
@@ -190,77 +184,53 @@ class OrderOperation extends Operation\AbstractBulkOperation
      *
      * @param Hal\HalLink $link
      *
-     * @return Api\Order\OrderTicketCollection
+     * @return Api\Order\OrderOperationResult
      */
     public function execute(Hal\HalLink $link)
     {
-        // Create requests per batch
-        $requests = [];
+        $requests  = new \ArrayObject();
+        $resources = new \ArrayObject();
+
         foreach ($this->allowedOperationTypes as $type) {
             $this->eachBatch(
-                function (array $chunk) use ($type, $link, &$requests) {
-                    $requests[] = $link->createRequest(
-                        'POST',
-                        ['operation' => $type],
-                        ['order' => $chunk]
-                    );
-                },
+                $this->createRequestGenerator($type, $link, $requests),
                 $type
             );
         }
 
-        // Send requests
-        $ticketReferences = [];
-        $resources        = [];
-        $requestIndex     = 0;
         $link->batchSend(
-            $requests,
-            function (Hal\HalResource $resource) use (&$resources, &$ticketReferences, &$requestIndex, $requests) {
-                $this->associateTicketWithReference(
-                    $resource,
-                    $requests[$requestIndex],
-                    $ticketReferences
-                );
-
-                array_push($resources, $resource);
-                $requestIndex++;
+            $requests->getArrayCopy(),
+            function (Hal\HalResource $batch) use ($resources) {
+                $resources->append($batch);
             },
             null,
             [],
             $this->getPoolSize()
         );
 
-        return new Api\Order\OrderTicketCollection($resources, $ticketReferences);
+        return new Api\Order\OrderOperationResult(
+            $resources->getArrayCopy()
+        );
     }
 
     /**
-     * Extract association between order references, operation and ticket
+     * Create request generation callback
      *
-     * @param Hal\HalResource $resource
-     * @param Request         $request
-     * @param                 $ticketReferences
+     * @param string      $type
+     * @param Hal\HalLink $link
+     * @param array       $requests
+     *
+     * @return \Closure
      */
-    private function associateTicketWithReference(
-        Hal\HalResource $resource,
-        Request $request,
-        &$ticketReferences
-    )
+    private function createRequestGenerator($type, Hal\HalLink $link, \ArrayAccess $requests)
     {
-        $ticketId  = $resource->getProperty('id');
-        $orders    = json_decode($request->getBody())->order;
-        $uri       = $request->getUri()->getPath();
-        $operation = substr($uri, strrpos($uri, '/') + 1);
-
-        // Extract reference > ticket association
-        foreach ($orders as $order) {
-            if (! isset($ticketReferences[$operation])) {
-                $ticketReferences[$operation][$ticketId] = [];
-            }
-
-            if (! in_array($order->reference, $ticketReferences[$operation][$ticketId])) {
-                $ticketReferences[$operation][$ticketId][] = $order->reference;
-            }
-        }
+        return function (array $chunk) use ($type, $link, &$requests) {
+            $requests[] = $link->createRequest(
+                'POST',
+                ['operation' => $type],
+                ['order' => $chunk]
+            );
+        };
     }
 
     /**
@@ -271,12 +241,12 @@ class OrderOperation extends Operation\AbstractBulkOperation
      * @param string $type        Type of operation
      * @param array  $data        Extra data to pass to operation call
      *
-     * @throws Order\Exception\UnexpectedTypeException
+     * @throws Exception\InvalidArgumentException
      */
     public function addOperation($reference, $channelName, $type, $data = [])
     {
         if (! in_array($type, $this->allowedOperationTypes)) {
-            throw new Order\Exception\UnexpectedTypeException(sprintf(
+            throw new Exception\InvalidArgumentException(sprintf(
                 'Only %s operations are accepted',
                 implode(', ', $this->allowedOperationTypes)
             ));
@@ -287,5 +257,29 @@ class OrderOperation extends Operation\AbstractBulkOperation
         }
 
         $this->operations[$type][] = array_merge(compact('reference', 'channelName'), $data);
+    }
+
+    /**
+     * Notify market place of order refund
+     *
+     * @param string $reference   Order reference
+     * @param string $channelName Channel to notify
+     * @param bool   $shipping    True to refund shipping costs
+     * @param array  $products    Order item reference and quantities that will be refunded
+     *
+     * @return OrderOperation
+     *
+     * @throws Exception\InvalidArgumentException
+     */
+    public function refund($reference, $channelName, $shipping = true, $products = [])
+    {
+        $this->addOperation(
+            $reference,
+            $channelName,
+            self::TYPE_REFUND,
+            ['refund' => compact('shipping', 'products')]
+        );
+
+        return $this;
     }
 }
