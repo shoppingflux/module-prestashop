@@ -30,7 +30,6 @@ class ProductSerializer
 
     public function __construct($product)
     {
-        Context::getContext()->employee = new \Employee(1);
         $this->sfModule = \Module::getInstanceByName('shoppingfeed');
         $this->link = new Link();
         $this->configurations = Configuration::getMultiple(
@@ -56,7 +55,7 @@ class ProductSerializer
         } else if ($this->product instanceof Product) {
             $this->product = $this->product;
         } else {
-            throw new \InvalidParameterException('product mus but a integer or a product');
+            throw new \Exception('product must be a integer or a product');
         }
     }
 

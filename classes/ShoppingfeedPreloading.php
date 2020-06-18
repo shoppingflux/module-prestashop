@@ -53,7 +53,7 @@ class ShoppingfeedPreloading extends ObjectModel
 
     public function saveProduct($product_id, $shop_id)
     {
-        $productSerialize = new ProductSerializer($product_id);
+        $productSerialize = new ProductSerializer((int)$product_id);
         $query = (new DbQuery())->select('*')
             ->from(self::$definition['table'])
             ->where('shop_id = ' . (int)$shop_id)
