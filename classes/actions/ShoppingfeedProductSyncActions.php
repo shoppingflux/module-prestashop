@@ -89,6 +89,8 @@ abstract class ShoppingfeedProductSyncActions extends DefaultActions
                 continue;
             }
 
+            (new ShoppingfeedPreloading())->saveProduct($id_product, $shop['id_shop']);
+
             $sfProduct = ShoppingfeedProduct::getFromUniqueKey(
                 $action,
                 $id_product,

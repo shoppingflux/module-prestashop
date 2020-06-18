@@ -6,11 +6,19 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
+    'Symfony\\Polyfill\\Php72\\' => array($vendorDir . '/symfony/polyfill-php72'),
+    'Symfony\\Polyfill\\Mbstring\\' => array($vendorDir . '/symfony/polyfill-mbstring'),
+    'Symfony\\Polyfill\\Intl\\Idn\\' => array($vendorDir . '/symfony/polyfill-intl-idn'),
     'ShoppingfeedClasslib\\' => array($vendorDir . '/totpsclasslib/src'),
     'ShoppingfeedAddon\\' => array($baseDir . '/src'),
-    'ShoppingFeed\\Sdk\\' => array($vendorDir . '/prefixed/shoppingfeed/php-sdk/src'),
+    'ShoppingFeed\\Sdk\\Test\\' => array($vendorDir . '/shoppingfeed/php-sdk/tests/unit'),
+    'ShoppingFeed\\Sdk\\' => array($vendorDir . '/prefixed/shoppingfeed/php-sdk/src', $vendorDir . '/shoppingfeed/php-sdk/src'),
+    'ShoppingFeed\\Feed\\' => array($vendorDir . '/shoppingfeed/php-feed-generator/src'),
     'SfGuzzle\\GuzzleHttp\\Psr7\\' => array($vendorDir . '/prefixed/guzzlehttp/psr7/src'),
     'SfGuzzle\\GuzzleHttp\\Promise\\' => array($vendorDir . '/prefixed/guzzlehttp/promises/src'),
     'SfGuzzle\\GuzzleHttp\\' => array($vendorDir . '/prefixed/guzzlehttp/guzzle/src'),
     'Psr\\Http\\Message\\' => array($vendorDir . '/psr/http-message/src'),
+    'GuzzleHttp\\Psr7\\' => array($vendorDir . '/guzzlehttp/psr7/src'),
+    'GuzzleHttp\\Promise\\' => array($vendorDir . '/guzzlehttp/promises/src'),
+    'GuzzleHttp\\' => array($vendorDir . '/guzzlehttp/guzzle/src'),
 );

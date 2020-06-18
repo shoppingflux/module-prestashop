@@ -67,8 +67,7 @@ class DbSchema
             ->setKeysSimple($this->def->getKeysSimple($this->id))
             ->setKeysUnique($this->def->getKeysUnique($this->id))
             ->setKeysFulltext($this->def->getKeysFulltext($this->id))
-            // @todo: fix foreign key with lang table not InnoDb
-            //->setKeysForeign($this->def->getKeysForeign($this->id))
+            ->setKeysForeign($this->def->getKeysForeign($this->id))
             ;
     }
 }

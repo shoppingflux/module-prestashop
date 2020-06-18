@@ -28,6 +28,7 @@ if (!defined('_PS_VERSION_')) {
 
 require_once _PS_MODULE_DIR_ . 'shoppingfeed/vendor/autoload.php';
 require_once _PS_MODULE_DIR_ . 'shoppingfeed/classes/ShoppingfeedProduct.php';
+require_once _PS_MODULE_DIR_ . 'shoppingfeed/classes/ShoppingfeedPreloading.php';
 require_once _PS_MODULE_DIR_ . 'shoppingfeed/classes/ShoppingfeedOrder.php';
 require_once _PS_MODULE_DIR_ . 'shoppingfeed/classes/ShoppingfeedCarrier.php';
 require_once _PS_MODULE_DIR_ . 'shoppingfeed/classes/ShoppingfeedTaskOrder.php';
@@ -93,6 +94,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         ShoppingfeedProduct::class,
         ShoppingfeedOrder::class,
         ShoppingfeedCarrier::class,
+        ShoppingfeedPreloading::class,
     );
 
     /**
@@ -488,7 +490,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
      * function, you can find them in this array
      * @return string
      */
-    public function mapProductPrice(ShoppingfeedProduct $sfProduct, $id_shop, ...$arguments)
+    public function mapProductPrice(ShoppingfeedProduct $sfProduct, $id_shop, $arguments = [])
     {
         $cloneContext = Context::getContext()->cloneContext();
         $cloneContext->shop = new Shop($id_shop);
@@ -503,7 +505,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             2, // decimals
             null, // divisor
             false, // only_reduc
-            false, // usereduc
+            is_array($arguments) && array_key_exists('price_with_reduction', $arguments) && $arguments['price_with_reduction'] === true, // usereduc
             1, // quantity
             false, // force_associated_tax
             null, // id_customer
@@ -521,7 +523,8 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             'ShoppingfeedMapProductPrice', // hook_name
             array(
                 'ShoppingFeedProduct' => &$sfProduct,
-                'price' => &$price
+                'price' => &$price,
+                'arguments' => $arguments,
             ) // hook_args
         );
 
