@@ -13,4 +13,5 @@ return array(
     'SfGuzzle\\GuzzleHttp\\Psr7\\' => array($vendorDir . '/prefixed/guzzlehttp/psr7/src'),
     'SfGuzzle\\GuzzleHttp\\Promise\\' => array($vendorDir . '/prefixed/guzzlehttp/promises/src'),
     'SfGuzzle\\GuzzleHttp\\' => array($vendorDir . '/prefixed/guzzlehttp/guzzle/src'),
+    'Psr\\Http\\Message\\' => array($vendorDir . '/psr/http-message/src'),
 );
