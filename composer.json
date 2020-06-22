@@ -1,8 +1,6 @@
 {
   "require": {
-    "shoppingfeed/php-feed-generator": "1.2.0",
-    "shoppingfeed/php-sdk": "0.2.5",
-    "guzzlehttp/guzzle": "^6.0"
+    "shoppingfeed/php-feed-generator": "1.2.0"
   },
   "config": {
     "vendor-dir": "vendor"
@@ -13,6 +11,7 @@
       "vendor/prefixed/guzzlehttp/psr7/src/functions_include.php",
       "vendor/prefixed/guzzlehttp/promises/src/functions_include.php"
     ],
+
     "psr-4": {
       "ShoppingfeedClasslib\\":          "vendor/totpsclasslib/src/",
       "SfGuzzle\\GuzzleHttp\\":          "vendor/prefixed/guzzlehttp/guzzle/src/",
