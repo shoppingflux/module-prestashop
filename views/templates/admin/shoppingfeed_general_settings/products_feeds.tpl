@@ -22,42 +22,36 @@
 *}
 <div class="panel kpi-container">
     <div class="row">
-        <div class="col-sm-6 col-lg-3">
-            <a style="display:block" href="#" id="box-disabled-products" data-toggle="tooltip" class="box-stats label-tooltip color4" data-original-title="{l s='You can also launch product task on page Logs & Crons.' mod='shoppingfeed'}">
+        <div class="col-sm-6 col-lg-4">
+            <a style="display:block" href="{$link->getAdminLink('AdminShoppingfeedProcessMonitor', true)}" id="box-disabled-products" data-toggle="tooltip" class="box-stats label-tooltip {if $syncProduct->id == null || $syncProduct->last_update > date('Y-m-d H:i:s', (time() - 3660 * 24))}color2{else}color4{/if}" data-original-title="{l s='You can also launch product task on page Logs & Crons.' mod='shoppingfeed'}">
                 <div class="kpi-content">
                     <i class="icon-off"></i><span class="title">{l s='Product sync task' mod='shoppingfeed'}</span>
-                    <span class="subtitle">{l s='Last launch' mod='shoppingfeed'} 20/06/2020 13:09</span>
+                    {if $syncProduct->id == null || $syncProduct->last_update > date('Y-m-d H:i:s', (time() - 3660 * 24))}
+                    <span class="value">{l s='inactive' mod='shoppingfeed'}</span>
+                    {else}
+                    <span class="subtitle">{l s='Last launch' mod='shoppingfeed'} {$syncProduct->last_update}</span>
                     <span class="value">{l s='active' mod='shoppingfeed'}</span>
+                    {/if}
                 </div>
             </a>
         </div>
-        <div class="col-sm-6 col-lg-3">
-            <a style="display:block" href="#" id="box-products-stock" data-toggle="tooltip" class="box-stats label-tooltip color1" data-original-title="{l s='Disabled products are not in the feed.' mod='shoppingfeed'}">
+        <div class="col-sm-6 col-lg-4">
+            <a href="{$link->getModuleLink('shoppingfeed', 'product')|escape:'html'}" id="box-products-stock" data-toggle="tooltip" class="box-stats label-tooltip color1" data-original-title="{l s='Disabled products are not in the feed.' mod='shoppingfeed'}">
                 <div class="kpi-content">
                     <i class="icon-archive"></i>
                     <span class="title">{l s='Exported products' mod='shoppingfeed'}</span>
-                    <span class="subtitle">{l s='from your catalog' mod='shoppingfeed'}</span>
                     <span class="value">{$count_products|default:0}</span>
+                    <span class="subtitle">{l s='Go to your XML feed' mod='shoppingfeed'}</span>
                 </div>
             </a>
         </div>
-        <div class="col-sm-6 col-lg-3">
-            <div id="box-avg-gross-margin" data-toggle="tooltip" class="box-stats label-tooltip color2" data-original-title="Pour éviter de calculer le flux produit au moment de son appel, le flux de produit est mis en cache .">
+        <div class="col-sm-6 col-lg-4">
+            {assign var="percent_preloading" value=ceil((1 - ($count_products - $count_preloading)/$count_products) * 100) }
+            <a href="#" id="box-avg-gross-margin" data-toggle="tooltip" class="box-stats label-tooltip {if $percent_preloading < 99}color2{else}color4{/if}" data-original-title="{l s='To avoid live computation of your feed during its call, your product are indexed in a cache system.' mod='shoppingfeed'}">
                 <div class="kpi-content">
                     <i class="icon-beaker"></i>
-                    <span class="title">{l s='Product feed preloading' mod='shoppingfeed'}</span>
-                    <span class="value">57% {l s='of your catalog' mod='shoppingfeed'}</span>
-                    <span class="subtitle">{l s='Go to your XML feed' mod='shoppingfeed'}</span>
-                </div>
-            </div>
-        </div>
-        <div class="col-sm-6 col-lg-3">
-            <a style="display:block" href="#" id="box-8020-sales-catalog" data-toggle="tooltip" class="box-stats label-tooltip color3" data-original-title="Le cache d'un produit est automatiquement recalculé s'il excède 7 jours.">
-                <div class="kpi-content">
-                    <i class="icon-tag"></i>
-                    <span class="title">{l s='Cache refreshing' mod='shoppingfeed'}</span>
-                    <span class="subtitle"></span>
-                    <span class="value">{l s='7 days' mod='shoppingfeed'}</span>
+                    <span class="title">{l s='Product feed indexing' mod='shoppingfeed'}</span>
+                    <span class="value">{$percent_preloading|default:0}% {l s='of your catalog' mod='shoppingfeed'}</span>
                     <span class="subtitle">{l s='Purge cache' mod='shoppingfeed'}</span>
                 </div>
             </a>

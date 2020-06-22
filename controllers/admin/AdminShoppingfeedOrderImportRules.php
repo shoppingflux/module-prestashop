@@ -293,7 +293,7 @@ class AdminShoppingfeedOrderImportRulesController extends ModuleAdminController
                                         'label' => $c['name'],
                                     );
                                 },
-                                Carrier::getCarriers(Context::getContext()->language->id, true)
+                                Carrier::getCarriers(Context::getContext()->language->id, true, false, false, null, Carrier::ALL_CARRIERS)
                             ),
                             'shoppingfeed_carriers' => $sfCarriers,
                         ),

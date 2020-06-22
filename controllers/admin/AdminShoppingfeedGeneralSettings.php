@@ -85,11 +85,19 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
 
         $this->context->smarty->assign('count_products', $this->countProducts());
 
+        $shoppingfeedPreloading = new ShoppingfeedPreloading();
+        $this->context->smarty->assign('count_preloading', $shoppingfeedPreloading->getPreloadingCount());
+
+        $crons = new ShoppingfeedClasslib\Extensions\ProcessMonitor\Classes\ProcessMonitorObjectModel();
+        $syncProduct = $crons->findOneByName('shoppingfeed:syncProduct');
+        $this->context->smarty->assign('syncProduct', $syncProduct);
 
         return $helper->generateForm(array(array('form' => $fields_form)));
     }
 
-
+    /**
+     * Count number of product in the feed
+     */
     protected function countProducts()
     {
         $getPack = '';
@@ -191,7 +199,6 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
      */
     public function renderFeedConfigForm()
     {
-        $sfCarriers = ShoppingfeedCarrier::getAllCarriers();
         $fields_form = array(
             'legend' => array(
                 'title' => $this->module->l('Products feed (all shops)', 'AdminShoppingfeedGeneralSettings'),
@@ -228,14 +235,13 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
                                     'name' => $c['name'],
                                 );
                             },
-                            Carrier::getCarriers(Context::getContext()->language->id, true)
+                            Carrier::getCarriers(Context::getContext()->language->id, true, false, false, null, Carrier::ALL_CARRIERS)
                         ),
                         'id' => 'id',
                         'name' => 'name',
                     ),
                     'label' => $this->module->l('Shipping cost based on carrier', 'AdminShoppingfeedGeneralSettings'),
                     'desc' => $this->module->l('Each product are computed according to this carrier.', 'AdminShoppingfeedGeneralSettings'),
-                    'shoppingfeed_carriers' => $sfCarriers,
                     'name' => Shoppingfeed::PRODUCT_FEED_CARRIER_REFERENCE,
                 ),
                 array(

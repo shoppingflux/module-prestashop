@@ -77,10 +77,22 @@ class ShoppingfeedPreloading extends ObjectModel
         $sql = new DbQuery();
         $sql->select('product')
             ->from(self::$definition['table']);
-        foreach (Db::getInstance()->executeS($sql) as $row) {
+        foreach (Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql) as $row) {
             $result[] = json_decode($row['product'], true);
         }
 
         return $result;
     }
+
+
+    public function getPreloadingCount()
+    {
+        $sql = new DbQuery();
+        $sql->select('COUNT('.self::$definition['primary'].')')
+            ->from(self::$definition['table']);
+        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
+
+        return $result;
+    }
+
 }

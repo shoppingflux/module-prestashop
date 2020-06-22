@@ -303,7 +303,7 @@ class ShoppingfeedApi
         $criteria = [
             'filters' => [
                 // Only retrieve unacknowleged (non-imported) orders
-               // 'acknowledgment' => 'unacknowledged',
+                'acknowledgment' => 'unacknowledged',
                 // TODO : since / until filters ?
             ]
         ];
