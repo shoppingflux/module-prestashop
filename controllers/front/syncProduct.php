@@ -67,7 +67,11 @@ class ShoppingfeedSyncProductModuleFrontController extends CronController
                 'actions_suffix' => 'Price'
             );
         }
-        
+
+        $actions[ShoppingFeedProduct::ACTION_SYNC_PRELODING] = array(
+            'actions_suffix' => 'Preloading'
+        );
+
         if (empty($actions)) {
             // The data to be saved in the CRON table
             return $data;

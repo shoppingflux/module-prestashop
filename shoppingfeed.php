@@ -34,6 +34,7 @@ require_once _PS_MODULE_DIR_ . 'shoppingfeed/classes/ShoppingfeedCarrier.php';
 require_once _PS_MODULE_DIR_ . 'shoppingfeed/classes/ShoppingfeedTaskOrder.php';
 require_once _PS_MODULE_DIR_ . 'shoppingfeed/classes/actions/ShoppingfeedProductSyncStockActions.php';
 require_once _PS_MODULE_DIR_ . 'shoppingfeed/classes/actions/ShoppingfeedProductSyncPriceActions.php';
+require_once _PS_MODULE_DIR_ . 'shoppingfeed/classes/actions/ShoppingfeedProductSyncPreloadingActions.php';
 require_once _PS_MODULE_DIR_ . 'shoppingfeed/classes/actions/ShoppingfeedOrderSyncActions.php';
 
 // Set this as comment so Classlib will import the files; but don't uncomment !
