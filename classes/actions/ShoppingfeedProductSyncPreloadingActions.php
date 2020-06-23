@@ -36,7 +36,7 @@ class ShoppingfeedProductSyncPreloadingActions extends DefaultActions
         $sql = new DbQuery();
         $sql->select('id_product')
             ->from(Product::$definition['table'] . '_shop')
-            ->where(sprintf('id_product NOT IN(select product_id from %s)', _DB_PREFIX_ . ShoppingfeedPreloading::$definition['table']))
+            ->where(sprintf('id_product NOT IN(SELECT product_id FROM %s)', _DB_PREFIX_ . ShoppingfeedPreloading::$definition['table']))
             ->where('id_shop = ' . $this->conveyor['id_shop'])
             ->limit(Configuration::get(ShoppingFeed::STOCK_SYNC_MAX_PRODUCTS));
 
