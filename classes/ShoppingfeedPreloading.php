@@ -1,10 +1,32 @@
 <?php
-
-use ShoppingfeedAddon\Services\ProductSerializer;
+/**
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to a commercial license from SARL 202 ecommence
+ * Use, copy, modification or distribution of this source file without written
+ * license agreement from the SARL 202 ecommence is strictly forbidden.
+ * In order to obtain a license, please contact us: tech@202-ecommerce.com
+ * ...........................................................................
+ * INFORMATION SUR LA LICENCE D'UTILISATION
+ *
+ * L'utilisation de ce fichier source est soumise a une licence commerciale
+ * concedee par la societe 202 ecommence
+ * Toute utilisation, reproduction, modification ou distribution du present
+ * fichier source sans contrat de licence ecrit de la part de la SARL 202 ecommence est
+ * expressement interdite.
+ * Pour obtenir une licence, veuillez contacter 202-ecommerce <tech@202-ecommerce.com>
+ * ...........................................................................
+ *
+ * @author    202-ecommerce <tech@202-ecommerce.com>
+ * @copyright Copyright (c) 202-ecommerce
+ * @license   Commercial license
+ */
 
 if (!defined('_PS_VERSION_')) {
     exit;
 }
+
+use ShoppingfeedAddon\Services\ProductSerializer;
 
 class ShoppingfeedPreloading extends ObjectModel
 {
@@ -14,7 +36,7 @@ class ShoppingfeedPreloading extends ObjectModel
 
     public $product_id;
 
-    public $product;
+    public $content;
 
     public $date_add;
 
@@ -34,7 +56,7 @@ class ShoppingfeedPreloading extends ObjectModel
                 'validate' => 'isUnsignedInt',
                 'unique' => true,
             ),
-            'product' => array(
+            'content' => array(
                 'type' => self::TYPE_STRING,
                 'validate' => 'isString',
                 'required' => true,
@@ -49,8 +71,31 @@ class ShoppingfeedPreloading extends ObjectModel
                 'validate' => 'isDate'
             ),
         ),
+        'associations' => array(
+            'products' => array(
+                'type' => ObjectModel::HAS_ONE,
+                'object' => 'Product',
+                'association' => 'product',
+                'field' => 'product_id',
+            ),
+            'shops' => array(
+                'type' => ObjectModel::HAS_ONE,
+                'object' => 'Shop',
+                'association' => 'shop',
+                'field' => 'shop_id',
+            ),
+        ),
     );
 
+
+    /**
+     * save content product in preloading table
+     *
+     * @param $product_id
+     * @param $shop_id
+     * @return bool
+     * @throws Exception
+     */
     public function saveProduct($product_id, $shop_id)
     {
         $productSerialize = new ProductSerializer((int)$product_id);
@@ -65,25 +110,31 @@ class ShoppingfeedPreloading extends ObjectModel
         } else {
             $this->hydrate($shoppingfeedPreloading);
         }
-        $this->product = json_encode($productSerialize->serialize(), JSON_UNESCAPED_UNICODE);
+        $this->content = Tools::jsonEncode($productSerialize->serialize(), JSON_UNESCAPED_UNICODE);
 
         return $this->save();
     }
 
-    public static function findAll()
+    /**
+     * get content product in preloading table
+     * @param int $limit
+     * @param int $from
+     * @return array
+     */
+    public static function findAll($limit = 100, $from = 0)
     {
         $result = [];
 
         $sql = new DbQuery();
-        $sql->select('product')
-            ->from(self::$definition['table']);
+        $sql->select('content')
+            ->from(self::$definition['table'])
+            ->limit($limit, $from);
         foreach (Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql) as $row) {
-            $result[] = json_decode($row['product'], true);
+            $result[] = Tools::jsonDecode($row['content'], true);
         }
 
         return $result;
     }
-
 
     public function getPreloadingCount()
     {

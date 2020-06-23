@@ -53,7 +53,7 @@ class ProductSerializer
         if (is_int($product)) {
             $this->product = new Product($product, true, $this->configurations['PS_LANG_DEFAULT']);
         } else if ($this->product instanceof Product) {
-            $this->product = $this->product;
+            $this->product = $product;
         } else {
             throw new \Exception('product must be a integer or a product');
         }
