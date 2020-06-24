@@ -32,15 +32,26 @@ class ShoppingfeedProductSyncPreloadingActions extends DefaultActions
 {
     public function getBatch()
     {
+        $db = Db::getInstance(_PS_USE_SQL_SLAVE_);
         $sfP = new ShoppingfeedPreloading();
         $sql = new DbQuery();
         $sql->select('id_product')
             ->from(Product::$definition['table'] . '_shop')
-            ->where(sprintf('id_product NOT IN(SELECT product_id FROM %s)', _DB_PREFIX_ . ShoppingfeedPreloading::$definition['table']))
             ->where('id_shop = ' . $this->conveyor['id_shop'])
+            ->where('active = 1')
+        ;
+        $db->delete(
+            ShoppingfeedPreloading::$definition['table'],
+            sprintf('product_id NOT IN(%s) AND shop_id = %d', (string)$sql, $this->conveyor['id_shop'])
+        );
+        $sql->where(
+            sprintf(
+                'id_product NOT IN(SELECT product_id FROM %s WHERE shop_id = %d)',
+                _DB_PREFIX_ . ShoppingfeedPreloading::$definition['table'],
+                $this->conveyor['id_shop'])
+            )
             ->limit(Configuration::get(ShoppingFeed::STOCK_SYNC_MAX_PRODUCTS));
-
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
+        $result = $db->executeS($sql);
         foreach ($result as $row) {
             $sfP->saveProduct($row['id_product'], $this->conveyor['id_shop']);
         }
