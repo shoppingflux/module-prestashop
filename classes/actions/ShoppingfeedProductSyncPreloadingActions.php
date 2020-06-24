@@ -32,6 +32,7 @@ class ShoppingfeedProductSyncPreloadingActions extends DefaultActions
 {
     public function getBatch()
     {
+        $stockSyncMax = Configuration::get(ShoppingFeed::STOCK_SYNC_MAX_PRODUCTS);
         $db = Db::getInstance(_PS_USE_SQL_SLAVE_);
         $sfP = new ShoppingfeedPreloading();
         $sql = new DbQuery();
@@ -42,8 +43,14 @@ class ShoppingfeedProductSyncPreloadingActions extends DefaultActions
         ;
         $db->delete(
             ShoppingfeedPreloading::$definition['table'],
-            sprintf('product_id NOT IN(%s) AND shop_id = %d', (string)$sql, $this->conveyor['id_shop'])
+            sprintf('product_id NOT IN(%s) AND shop_id = %d', (string)$sql, $this->conveyor['id_shop']),
+            $stockSyncMax
         );
+        $stockSyncMax -= $db->Affected_Rows();
+        if ($stockSyncMax < 1) {
+
+            return true;
+        }
         $sql->where(
             sprintf(
                 'id_product NOT IN(SELECT product_id FROM %s WHERE shop_id = %d)',
@@ -55,6 +62,8 @@ class ShoppingfeedProductSyncPreloadingActions extends DefaultActions
         foreach ($result as $row) {
             $sfP->saveProduct($row['id_product'], $this->conveyor['id_shop']);
         }
+
+        return true;
     }
 
     public static function getLogPrefix($id_shop = '')
