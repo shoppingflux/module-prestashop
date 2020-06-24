@@ -159,7 +159,6 @@ class ShoppingfeedProduct extends ObjectModel
     {
         $reference_format = Configuration::get(Shoppingfeed::PRODUCT_FEED_REFERENCE_FORMAT);
 
-            echo $reference_format;
         if (empty($reference_format) === true) {
             return $sfReference;
         }
