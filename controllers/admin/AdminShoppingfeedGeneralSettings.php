@@ -62,6 +62,7 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
         if ($token) {
             $this->content .= $this->renderGlobalConfigForm();
             $this->content .= $this->renderFeedConfigForm();
+            $this->content .= $this->renderFactoryConfigForm();
         }
 
         $this->module->setBreakingChangesNotices();
@@ -418,6 +419,92 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
     }
 
     /**
+     * Renders the HTML for the global configuration form
+     * @return string the rendered form's HTML
+     */
+    public function renderFactoryConfigForm()
+    {
+        $fields_form = array(
+            'legend' => array(
+                'title' => $this->module->l('Factory settings', 'AdminShoppingfeedGeneralSettings'),
+                'icon' => 'icon-cog'
+            ),
+            'input' => array(
+                array(
+                    'type' => 'html',
+                    'name' => 'real_synch_help',
+                    'html_content' => '<div id="real_synch" class="alert alert-info">
+                    '.$this->module->l('This settings are only updatable by Shoppingfeed support team.', 'AdminShoppingfeedGeneralSettings').'</div>',
+                ),
+                array(
+                    'type' => 'select',
+                    'disabled' => (Tools::getValue('with_factory') !== false) ? false : true,
+                    'options' => array(
+                        'query' => array(
+                            array(
+                                'id' => '',
+                                'name' => $this->module->l('Default value (ID product with ID combination)', 'AdminShoppingfeedGeneralSettings'),
+                            ),
+                            array(
+                                'id' => 'reference',
+                                'name' => $this->module->l('Reference (SKU defined by the merchand)', 'AdminShoppingfeedGeneralSettings'),
+                            ),
+                            array(
+                                'id' => 'supplier_reference',
+                                'name' => $this->module->l('Supplier reference', 'AdminShoppingfeedGeneralSettings'),
+                            ),
+                            array(
+                                'id' => 'isbn',
+                                'name' => $this->module->l('ISBN code', 'AdminShoppingfeedGeneralSettings'),
+                            ),
+                            array(
+                                'id' => 'ean13',
+                                'name' => $this->module->l('EAN-13 or JAN barcode', 'AdminShoppingfeedGeneralSettings'),
+                            ),
+                            array(
+                                'id' => 'upc',
+                                'name' => $this->module->l('UPC barcode', 'AdminShoppingfeedGeneralSettings'),
+                            ),
+                            array(
+                                'id' => 'mpn',
+                                'name' => $this->module->l('MPN', 'AdminShoppingfeedGeneralSettings'),
+                            ),
+                        ),
+                        'id' => 'id',
+                        'name' => 'name',
+                    ),
+                    'label' => $this->module->l('Product reference association', 'AdminShoppingfeedGeneralSettings'),
+                    'desc' => $this->module->l('Shoud be: Default shoppingfeed value, reference, supplier reference, isbn, ean13, upc or mpn.', 'AdminShoppingfeedGeneralSettings'),
+                    'name' => Shoppingfeed::PRODUCT_FEED_REFERENCE_FORMAT,
+                ),
+            ),
+        );
+        if (Tools::getValue('with_factory') !== false) {
+            $fields_form['submit'] = array(
+                'title' => $this->module->l('Save', 'AdminShoppingfeedGeneralSettings'),
+                'name' => 'saveFactoryConfig',
+            );
+            $fields_form['input'][] = array(
+                'type' => 'hidden',
+                'name' => 'with_factory',
+            );
+        }
+
+        $fields_value = array(
+            Shoppingfeed::PRODUCT_FEED_REFERENCE_FORMAT => Configuration::get(Shoppingfeed::PRODUCT_FEED_REFERENCE_FORMAT),
+            'with_factory' => Tools::getValue('with_factory'),
+        );
+
+        $helper = new HelperForm($this);
+        $this->setHelperDisplay($helper);
+        $helper->fields_value = $fields_value;
+        $helper->tpl_vars = $this->getTemplateFormVars();
+
+        return $helper->generateForm(array(array('form' => $fields_form)));
+    }
+
+
+    /**
      * @inheritdoc
      */
     public function postProcess()
@@ -428,6 +515,8 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
             return $this->saveSynchroConfig();
         } elseif (Tools::isSubmit('saveFeedConfig')) {
             return $this->saveFeedConfig();
+        } elseif (Tools::isSubmit('saveFactoryConfig') && Tools::getValue('with_factory') !== false) {
+            return $this->saveFactoryConfig();
         }
     }
 
@@ -444,6 +533,22 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
         foreach ($shops as $shop) {
             Configuration::updateValue(Shoppingfeed::STOCK_SYNC_ENABLED, ($stock_sync_enabled ? true : false), false, null, $shop['id_shop']);
             Configuration::updateValue(Shoppingfeed::PRICE_SYNC_ENABLED, ($price_sync_enabled ? true : false), false, null, $shop['id_shop']);
+        }
+
+        return true;
+    }
+
+    /**
+     * Saves the global configuration for the module
+     * @return bool
+     */
+    public function saveFactoryConfig()
+    {
+        $reference_format = Tools::getValue(Shoppingfeed::PRODUCT_FEED_REFERENCE_FORMAT);
+
+        $shops = Shop::getShops();
+        foreach ($shops as $shop) {
+            Configuration::updateValue(Shoppingfeed::PRODUCT_FEED_REFERENCE_FORMAT, $reference_format, false, null, $shop['id_shop']);
         }
 
         return true;

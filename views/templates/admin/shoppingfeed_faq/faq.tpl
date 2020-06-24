@@ -97,7 +97,6 @@
                 </div>
             </div>
 
-
             <div class="card">
                 <div class="card-header" id="heading7">
                     <h5 class="mb-0">
@@ -110,6 +109,22 @@
                 <div id="collapse7" class="collapse" aria-labelledby="heading7" data-parent="#accordion">
                     <div class="card-body">
                         {l s='Yes. You can map carrier from marketplaces with your PrestaShop carrier. Please consider a first order should be imported in your PrestaShop before seing a marketplace carrier. After that, you could go to Settings > Order Feed tab to configure your carrier.' mod='shoppingfeed'}
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header" id="heading7">
+                    <h5 class="mb-0">
+                        <a class="btn btn-link collapsed" role="button" data-toggle="collapse" data-target="#collapse7" aria-expanded="false" aria-controls="collapseTwo">
+                            <span> {l s='Can I manage ISBN, EAN13, MPN or my own reference in my product feed?' mod='shoppingfeed'}
+                           </span><i class="fa fa-chevron-up"></i>
+                        </a>
+                    </h5>
+                </div>
+                <div id="collapse7" class="collapse" aria-labelledby="heading7" data-parent="#accordion">
+                    <div class="card-body">
+                        {l s='Yes, but this configuration cannot be modify after publishing your feed on marketplaces. Shoppingfeed support can help you to define your strategy.' mod='shoppingfeed'}
                     </div>
                 </div>
             </div>

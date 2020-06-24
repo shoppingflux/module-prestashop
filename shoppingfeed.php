@@ -79,6 +79,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     const PRODUCT_FEED_IMAGE_FORMAT = "SHOPPINGFEED_PRODUCT_FEED_IMAGE_FORMAT";
     const PRODUCT_FEED_CATEGORY_DISPLAY = "SHOPPINGFEED_PRODUCT_FEED_CATEGORY_DISPLAY";
     const PRODUCT_FEED_CUSTOM_FIELDS = "SHOPPINGFEED_PRODUCT_FEED_CUSTOM_FIELDS";
+    const PRODUCT_FEED_REFERENCE_FORMAT = "SHOPPINGFEED_PRODUCT_FEED_REFERENCE_FORMAT";
 
 
     public $extensions = array(
@@ -435,7 +436,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
      */
     public function mapReference(ShoppingfeedProduct $sfProduct, ...$arguments)
     {
-        $reference = $sfProduct->id_product . ($sfProduct->id_product_attribute ? "_" . $sfProduct->id_product_attribute : "");
+        $reference = $sfProduct->getShoppingfeedReference();
 
         Hook::exec(
             'ShoppingfeedMapProductReference', // hook_name

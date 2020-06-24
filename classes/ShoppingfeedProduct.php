@@ -110,13 +110,110 @@ class ShoppingfeedProduct extends ObjectModel
         ),
     );
 
+
     /**
      * Returns the product's Shopping Feed reference
      * @return string
      */
     public function getShoppingfeedReference()
     {
-        return $this->id_product . ($this->id_product_attribute ? "_" . $this->id_product_attribute : "");
+        $reference = $this->id_product . ($this->id_product_attribute ? "_" . $this->id_product_attribute : "");
+        $reference_format = Configuration::get(Shoppingfeed::PRODUCT_FEED_REFERENCE_FORMAT);
+        if (empty($reference_format) === true) {
+            return $reference;
+        }
+        $sql = new DbQuery();
+        if (empty($this->id_product_attribute) === true) {
+            $sql->from('product', 'p');
+            $sql->join(Shop::addSqlAssociation('product', 'p'));
+            if ($reference_format === 'supplier_reference') {
+                $sql->select('sp.`product_supplier_reference`');
+                $sql->leftJoin('product_supplier', 'sp', 'sp.`id_product` = p.`id_product`');
+            } else {
+                $sql->select('p.`'.pSQL($reference_format).'`');
+            }
+            $where = 'p.`id_product` = ' . (int) $this->id_product;
+        } else {
+            $sql->from('product_attribute', 'pa');
+            if ($reference_format === 'supplier_reference') {
+                $sql->select('sp.`product_supplier_reference`');
+                $sql->leftJoin('product_supplier', 'sp', 'sp.`id_product_attribute` = pa.`id_product_attribute`');
+            } else {
+                $sql->select('pa.`'.pSQL($reference_format).'`');
+            }
+            $where = 'pa.`id_product_attribute` = ' . (int) $this->id_product_attribute .
+                ' AND pa.`id_product` = ' . (int) $this->id_product;
+        }
+        $sql->where($where);
+
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
+    }
+
+
+    /**
+     * Returns the product id and combination ID from Shopping Feed reference
+     * @param string $sfReference
+     * @return string
+     */
+    public function getReverseShoppingfeedReference($sfReference)
+    {
+        $reference_format = Configuration::get(Shoppingfeed::PRODUCT_FEED_REFERENCE_FORMAT);
+
+            echo $reference_format;
+        if (empty($reference_format) === true) {
+            return $sfReference;
+        }
+        if (Combination::isFeatureActive() === true) {
+            $sql = new DbQuery();
+            $sql->select('p.`id_product`, pa.`id_product_attribute`');
+            $sql->from('product', 'p');
+            $sql->join(Shop::addSqlAssociation('product', 'p'));
+            $sql->leftJoin('product_attribute', 'pa', 'pa.`id_product` = p.`id_product`');
+
+            if ($reference_format === 'supplier_reference') {
+                $where = 'EXISTS(
+                        SELECT * FROM `' . _DB_PREFIX_ . 'product_supplier` sp
+                        WHERE sp.`id_product_attribute` = pa.`id_product_attribute` AND `product_supplier_reference` = "' . pSQL($sfReference) . '"
+                    )';
+            } else {
+                $where = 'pa.`'.pSQL($reference_format).'` = "' . pSQL($sfReference) . '"';
+            }
+            $sql->where($where);
+            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql);
+
+            if (empty($result) === false) {
+                return $result['id_product'] . '_' . $result['id_product_attribute'];
+            }
+        }
+
+        $sql = new DbQuery();
+        $sql->from('product', 'p');
+        $sql->join(Shop::addSqlAssociation('product', 'p'));
+        $sql->select('p.`id_product`');
+        if ($reference_format === 'supplier_reference') {
+            $where = 'EXISTS(
+                    SELECT * FROM `' . _DB_PREFIX_ . 'product_supplier` sp
+                    WHERE sp.`id_product` = p.`id_product` AND `product_supplier_reference` = "' . pSQL($sfReference) . '"
+                )';
+        } else {
+            $where = 'p.`'.pSQL($reference_format).'` = "' . pSQL($sfReference) . '"';
+        }
+        $sql->where($where);
+        $value = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
+        if (empty($value) === false) {
+            return $value;
+        }
+
+        \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logInfo(
+            sprintf(
+                'Product with %s: %s is not retrieved in your catalog.',
+                $reference_format,
+                $sfReference
+            ),
+            'Product'
+        );
+
+        return null;
     }
 
     /**
