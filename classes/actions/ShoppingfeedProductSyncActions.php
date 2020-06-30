@@ -50,7 +50,7 @@ abstract class ShoppingfeedProductSyncActions extends DefaultActions
     public function saveProduct()
     {
         $logPrefix = static::getLogPrefix();
-            
+
         if (empty($this->conveyor['id_product'])) {
             ProcessLoggerHandler::logInfo(
                 $logPrefix . ' ' .
@@ -59,6 +59,7 @@ abstract class ShoppingfeedProductSyncActions extends DefaultActions
             );
             return false;
         }
+
         $id_product = $this->conveyor['id_product'];
         
         $id_product_attribute = null;
@@ -78,7 +79,7 @@ abstract class ShoppingfeedProductSyncActions extends DefaultActions
             return false;
         }
         $action = $this->conveyor['product_action'];
-        
+
         // Save the product for each shop
         $shops = Shop::getShops();
         foreach ($shops as $shop) {
@@ -88,8 +89,6 @@ abstract class ShoppingfeedProductSyncActions extends DefaultActions
             if (false == $token) {
                 continue;
             }
-
-            (new ShoppingfeedPreloading())->saveProduct($id_product, $shop['id_shop']);
 
             $sfProduct = ShoppingfeedProduct::getFromUniqueKey(
                 $action,
@@ -115,6 +114,8 @@ abstract class ShoppingfeedProductSyncActions extends DefaultActions
 
         return true;
     }
+
+
 
     /**
      * Gets a batch of ShoppindfeedProduct requiring synchronization, and saves it

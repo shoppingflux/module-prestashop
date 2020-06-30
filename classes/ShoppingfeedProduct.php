@@ -33,7 +33,6 @@ class ShoppingfeedProduct extends ObjectModel
 {
     const ACTION_SYNC_STOCK = "SYNC_STOCK";
     const ACTION_SYNC_PRICE = "SYNC_PRICE";
-    const ACTION_SYNC_PRELODING = "SYNC_PRELODING";
 
     /** @var string The action to execute for this product */
     public $action;

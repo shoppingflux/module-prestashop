@@ -17,6 +17,7 @@ use Country;
 use Tax;
 use Tag;
 use SpecificPrice;
+use Validate;
 use DateTime;
 use ProductCore;
 use Shoppingfeed;
@@ -28,9 +29,14 @@ class ProductSerializer
     private $link;
     private $sfModule;
 
-    public function __construct($product)
+    public function __construct($id_product, $id_lang, $id_shop)
     {
         $this->sfModule = \Module::getInstanceByName('shoppingfeed');
+        $this->product = new Product($id_product, true, $id_lang, $id_shop);
+        if (Validate::isLoadedObject($this->product) === false) {
+
+            throw new \Exception('product must be a valid product');
+        }
         $this->link = new Link();
         $this->configurations = Configuration::getMultiple(
             [
@@ -50,13 +56,14 @@ class ProductSerializer
                 Shoppingfeed::PRODUCT_FEED_CUSTOM_FIELDS,
             ]
         );
-        if (is_int($product)) {
-            $this->product = new Product($product, true, $this->configurations['PS_LANG_DEFAULT']);
-        } else if ($this->product instanceof Product) {
-            $this->product = $product;
-        } else {
-            throw new \Exception('product must be a integer or a product');
-        }
+    }
+
+    private function getCarrier()
+    {
+        $carrier = Carrier::getCarrierByReference((int)$this->configurations[Shoppingfeed::PRODUCT_FEED_CARRIER_REFERENCE]);
+        $carrier = is_object($carrier) ? $carrier : new Carrier((int)$this->configurations[Shoppingfeed::PRODUCT_FEED_CARRIER_REFERENCE]);
+
+        return $carrier;
     }
 
     public function serialize()
@@ -64,19 +71,14 @@ class ProductSerializer
         $sfp = new ShoppingfeedProduct();
         $sfp->id_product = $this->product->id;
         $link = new Link();
-        $priceWithoutReduction = $this->sfModule->mapProductPrice($sfp, $this->configurations['PS_SHOP_DEFAULT']);
-        $priceWithReduction = $this->sfModule->mapProductPrice($sfp, $this->configurations['PS_SHOP_DEFAULT'], ['price_with_reduction' => true]);
-        $carrier = Carrier::getCarrierByReference((int)$this->configurations[Shoppingfeed::PRODUCT_FEED_CARRIER_REFERENCE]);
-        $carrier = is_object($carrier) ? $carrier : new Carrier((int)$this->configurations[Shoppingfeed::PRODUCT_FEED_CARRIER_REFERENCE]);
+        $carrier = $this->getCarrier();
         $productLink = $link->getProductLink($this->product, null, null, null, $this->configurations['PS_LANG_DEFAULT']);
 
-        return  [
+        $content = [
             'reference' => $this->sfModule->mapReference($sfp),
             'gtin' => $this->product->ean13,
             'name' => $this->product->name,
             'link' => $productLink,
-            'price' => $priceWithoutReduction,
-            'quantity' => $this->product->quantity,
             'brand' => [
                 'name' => $this->product->manufacturer_name,
                 'link' => $link->getManufacturerLink($this->product->id_manufacturer, null, $this->configurations['PS_LANG_DEFAULT']),
@@ -85,24 +87,48 @@ class ProductSerializer
                 'name' => ($this->configurations[\Shoppingfeed::PRODUCT_FEED_CATEGORY_DISPLAY] === 'default_category')? $this->_getCategory(): $this->_getFilAriane(),
                 'link' => $link->getCategoryLink($this->product->id_category_default, null, $this->configurations['PS_LANG_DEFAULT']),
             ],
-            'discounts' => array_merge(
-                ($priceWithoutReduction > $priceWithReduction)? [$priceWithReduction]: [],
-                $this->getDiscounts()
-            ),
             'description' => [
                 'full' => $this->product->description,
                 'short' => $this->product->description_short,
-            ],
-            'shipping' => [
-                'amount' => $this->_getShipping($carrier, $priceWithReduction),
-                'label' => $carrier->delay[$this->configurations['PS_LANG_DEFAULT']],
             ],
             'images' => $this->getImages(),
             'attributes' => $this->getAttributes(),
             'variations' => $this->getVariations($carrier, $productLink),
         ];
+        $this->serializePrice($content);
+        $this->serializeStock($content);
 
-        return $product;
+
+        return $content;
+    }
+
+    public function serializePrice($content)
+    {
+        $contentUpdate = $content;
+        $carrier = $this->getCarrier();
+        $sfp = new ShoppingfeedProduct();
+        $sfp->id_product = $this->product->id;
+        $priceWithoutReduction = $this->sfModule->mapProductPrice($sfp, $this->configurations['PS_SHOP_DEFAULT']);
+        $priceWithReduction = $this->sfModule->mapProductPrice($sfp, $this->configurations['PS_SHOP_DEFAULT'], ['price_with_reduction' => true]);
+        $contentUpdate['price'] = $priceWithoutReduction;
+        $contentUpdate['discounts'] = $this->getDiscounts();
+        if ($priceWithoutReduction > $priceWithReduction) {
+            $contentUpdate['discounts'][] = $priceWithoutReduction;
+        }
+        $contentUpdate['shipping'] = [
+            'amount' => $this->_getShipping($carrier, $priceWithReduction),
+            'label' => $carrier->delay[$this->configurations['PS_LANG_DEFAULT']],
+        ];
+
+        return $contentUpdate;
+    }
+
+    public function serializeStock($content)
+    {
+        $contentUpdate = $content;
+        $contentUpdate['quantity'] = $this->product->quantity;
+
+        return $contentUpdate;
     }
 
     private function getDiscounts()
@@ -263,7 +289,7 @@ class ProductSerializer
                 'link' => $productLink . $this->product->getAnchor($id, true),
                 'price' => $priceWithoutReduction,
                 'shipping' => [
-                    'amount' => $this->_getShipping($carrier, $priceWithReduction, $id, $combination['weight']),
+                    'amount' => $this->_getShipping($carrier, $priceWithReduction, $combination['weight']),
                     'label' => $carrier->delay[$this->configurations['PS_LANG_DEFAULT']],
                 ],
                 'images' => [],
@@ -315,7 +341,7 @@ class ProductSerializer
         return Tools::substr($category, 0, -3);
     }
 
-    protected function _getShipping($carrier, $priceWithReduction, $attribute_id = null, $attribute_weight = null)
+    protected function _getShipping($carrier, $priceWithReduction, $attribute_weight = null)
     {
         $default_country = new Country($this->configurations['PS_COUNTRY_DEFAULT'], $this->configurations['PS_LANG_DEFAULT']);
         $id_zone = (int)$default_country->id_zone;

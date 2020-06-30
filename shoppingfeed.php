@@ -32,6 +32,7 @@ require_once _PS_MODULE_DIR_ . 'shoppingfeed/classes/ShoppingfeedPreloading.php'
 require_once _PS_MODULE_DIR_ . 'shoppingfeed/classes/ShoppingfeedOrder.php';
 require_once _PS_MODULE_DIR_ . 'shoppingfeed/classes/ShoppingfeedCarrier.php';
 require_once _PS_MODULE_DIR_ . 'shoppingfeed/classes/ShoppingfeedTaskOrder.php';
+require_once _PS_MODULE_DIR_ . 'shoppingfeed/classes/ShoppingfeedToken.php';
 require_once _PS_MODULE_DIR_ . 'shoppingfeed/classes/actions/ShoppingfeedProductSyncStockActions.php';
 require_once _PS_MODULE_DIR_ . 'shoppingfeed/classes/actions/ShoppingfeedProductSyncPriceActions.php';
 require_once _PS_MODULE_DIR_ . 'shoppingfeed/classes/actions/ShoppingfeedProductSyncPreloadingActions.php';
@@ -97,6 +98,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         ShoppingfeedOrder::class,
         ShoppingfeedCarrier::class,
         ShoppingfeedPreloading::class,
+        ShoppingfeedToken::class,
     );
 
     /**
@@ -543,6 +545,8 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
      */
     public function hookActionUpdateQuantity($params)
     {
+        $this->updateShoppingFeedPreloading($params, ShoppingfeedPreloading::ACTION_SYNC_STOCK);
+
         if (!Configuration::get(Shoppingfeed::STOCK_SYNC_ENABLED)) {
             return;
         }
@@ -702,6 +706,11 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::closeLogger();
     }
 
+    public function hookActionObjectProductDeleteBefore($params)
+    {
+
+    }
+
     /**
      * Updates a product on SF if realtime sync is enabled.
      * On PS1.6, it should also update the product's combinations if needed.
@@ -710,6 +719,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     public function hookActionObjectProductUpdateAfter($params)
     {
         $this->updateShoppingFeedPriceRealtime();
+        $this->updateShoppingFeedPreloading($params, ShoppingfeedPreloading::ACTION_SYNC_ALL);
     }
 
     /**
@@ -719,6 +729,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     public function hookActionObjectCombinationUpdateAfter($params)
     {
         $this->updateShoppingFeedPriceRealtime();
+        $this->updateShoppingFeedPreloading($params, ShoppingfeedPreloading::ACTION_SYNC_ALL);
     }
 
     /**
@@ -759,7 +770,41 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
                 )
             );
         }
+        \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::closeLogger();
+    }
 
+
+    public function updateShoppingFeedPreloading($params, $action)
+    {
+        $product = $params['object'];
+        if (!Validate::isLoadedObject($product)) {
+
+            return false;
+        }
+
+        try {
+            $handler = new \ShoppingfeedClasslib\Actions\ActionsHandler();
+            $handler->addActions('saveProduct')
+                    ->setConveyor(
+                        array(
+                            'product' => $product,
+                            'product_action' => $action
+                        )
+                    );
+            $processResult = $handler->process('ShoppingfeedProductSyncPreloading');
+            if (!$processResult) {
+                \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logError(
+                    ShoppingfeedProductSyncPriceActions::getLogPrefix() . ' ' . $this->l('Fail : An error occurred during process.')
+                );
+            }
+        } catch (Exception $e) {
+            \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logError(
+                sprintf(
+                    ShoppingfeedProductSyncPriceActions::getLogPrefix() . ' ' . $this->l('Fail : %s'),
+                    $e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine()
+                )
+            );
+        }
         \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::closeLogger();
     }
 

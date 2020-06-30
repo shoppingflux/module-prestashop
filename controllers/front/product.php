@@ -33,7 +33,7 @@ class ShoppingfeedProductModuleFrontController  extends \ModuleFrontController
 {
     public function initContent()
     {
-        $products = ShoppingfeedPreloading::findAll();
+        $products = (new ShoppingfeedPreloading)->findALlByToken('aaa');
 
         (new ProductGenerator('file.xml', 'xml'))
                 ->setPlatform('Prestashop', _PS_VERSION_)

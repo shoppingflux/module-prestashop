@@ -68,7 +68,7 @@ class ShoppingfeedSyncProductModuleFrontController extends CronController
             );
         }
 
-        $actions[ShoppingFeedProduct::ACTION_SYNC_PRELODING] = array(
+        $actions[ShoppingfeedPreloading::ACTION_SYNC_PRELODING] = array(
             'actions_suffix' => 'Preloading'
         );
 

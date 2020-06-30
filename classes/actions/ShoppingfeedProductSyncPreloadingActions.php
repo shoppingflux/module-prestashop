@@ -27,43 +27,134 @@ if (!defined('_PS_VERSION_')) {
 }
 
 use ShoppingfeedClasslib\Actions\DefaultActions;
+use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 
 class ShoppingfeedProductSyncPreloadingActions extends DefaultActions
 {
     public function getBatch()
     {
-        $stockSyncMax = Configuration::get(ShoppingFeed::STOCK_SYNC_MAX_PRODUCTS);
-        $db = Db::getInstance(_PS_USE_SQL_SLAVE_);
-        $sfP = new ShoppingfeedPreloading();
-        $sql = new DbQuery();
-        $sql->select('id_product')
-            ->from(Product::$definition['table'] . '_shop')
-            ->where('id_shop = ' . $this->conveyor['id_shop'])
-            ->where('active = 1')
-        ;
-        $db->delete(
-            ShoppingfeedPreloading::$definition['table'],
-            sprintf('product_id NOT IN(%s) AND shop_id = %d', (string)$sql, $this->conveyor['id_shop']),
-            $stockSyncMax
-        );
-        $stockSyncMax -= $db->Affected_Rows();
-        if ($stockSyncMax < 1) {
+        $sft = new ShoppingfeedToken();
 
-            return true;
+        if (empty($this->conveyor['token'])) {
+            $tokens = $sft->findALlActiveByShops(Shop::getContextListShopID());
+        } else {
+            $token = $sft->findByToken($this->conveyor['token']);
+            $tokens = ($token === []) ? [] : [$token];
         }
-        $sql->where(
-            sprintf(
-                'id_product NOT IN(SELECT product_id FROM %s WHERE shop_id = %d)',
-                _DB_PREFIX_ . ShoppingfeedPreloading::$definition['table'],
-                $this->conveyor['id_shop'])
-            )
+        if (empty($tokens)) {
+            throw new Exception("unable to find the token");
+        }
+
+        $db = Db::getInstance(_PS_USE_SQL_SLAVE_);
+        $sfp = new ShoppingfeedPreloading();
+        $sql = new DbQuery();
+        $sql->select('ps.id_product, sft.id_shoppingfeed_token, sft.shop_id, sft.lang_id, sft.currency_id')
+            ->from(Product::$definition['table'] . '_shop', 'ps')
+            ->innerJoin(Product::$definition['table'], 'p', 'p.id_product = ps.id_product')
+            ->leftJoin(ShoppingfeedPreloading::$definition['table'], 'sfp', 'sfp.product_id = ps.id_product and sfp.actions is not null')
+            ->leftJoin(ShoppingfeedToken::$definition['table'], 'sft', 'sft.id_shoppingfeed_token = sfp.token_id and sft.shop_id = ps.id_shop')
+            ->where('sft.id_shoppingfeed_token is null or (sfp.actions is not null and sft.id_shoppingfeed_token IN('.implode(', ', array_column($tokens, 'id_shoppingfeed_token')).'))')
+            ->where('ps.active = 1')
+            ->groupBy('ps.id_product, sft.id_shoppingfeed_token')
             ->limit(Configuration::get(ShoppingFeed::STOCK_SYNC_MAX_PRODUCTS));
+        
+        if ((bool)Configuration::get(ShoppingFeed::PRODUCT_FEED_SYNC_PACK) !== true) {
+            $sql->where('p.cache_is_pack = 0');
+        }
         $result = $db->executeS($sql);
+
         foreach ($result as $row) {
-            $sfP->saveProduct($row['id_product'], $this->conveyor['id_shop']);
+            if ($row['id_shoppingfeed_token'] === null) {
+                $tokensList = $tokens;
+            } else {
+                $tokensList = [
+                    [
+                        'id_shoppingfeed_token' => $row['id_shoppingfeed_token'],
+                        'shop_id' => $row['shop_id'],
+                        'lang_id' => $row['lang_id'],
+                        'currency_id' => $row['currency_id'],
+                    ]
+                ];
+            }
+            foreach ($tokensList as $token) {
+                $currency = new Currency($token['currency_id']);
+                if (Validate::isLoadedObject($currency) === false) {
+                    ProcessLoggerHandler::logInfo(
+                        $this->l('unable ton find currency.', 'ShoppingfeedProductSyncActions'),
+                        'Product'
+                    );
+
+                    continue;
+                }
+                Context::getContext()->currency = $currency;
+
+                $sfp->saveProduct($row['id_product'], $token['id_shoppingfeed_token'], $token['lang_id'], $token['shop_id']);
+            }
         }
 
         return true;
+    }
+
+
+    private function saveProduvtByToken($tokens)
+    {
+        foreach ($tokens as $token) {
+            $currency = new Currency($token['currency_id']);
+            if (Validate::isLoadedObject($currency) === false) {
+                ProcessLoggerHandler::logInfo(
+                    $this->l('unable ton find currency.', 'ShoppingfeedProductSyncActions'),
+                    'Product'
+                );
+
+                continue;
+            }
+            Context::getContext()->currency = $currency;
+
+            $sfp->saveProduct($row['id_product'], $token['id_shoppingfeed_token'], $token['lang_id'], $tokenId);
+        }
+    }
+
+    public function saveProduct() {
+        $logPrefix = static::getLogPrefix();
+
+        if (empty($this->conveyor['product']) || $this->conveyor['product'] instanceof Product === false) {
+            ProcessLoggerHandler::logInfo(
+                $logPrefix . ' ' .
+                $this->l('Product not valide for synchronization', 'ShoppingfeedProductSyncActions'),
+                'Product'
+            );
+            return false;
+        }
+
+        $product = $this->conveyor['product'];
+
+        if (empty($this->conveyor['product_action'])) {
+            ProcessLoggerHandler::logInfo(
+                sprintf(
+                    $logPrefix . ' ' .
+                    $this->l('Product %s not registered for synchronization; no Action found', 'ShoppingfeedProductSyncActions'),
+                    $product->id
+                ),
+                'Product'
+            );
+            return false;
+        }
+        $action = $this->conveyor['product_action'];
+        $tokens = (new ShoppingfeedToken())->findALlActiveByShops(Shop::getContextListShopID());
+        $sfp = new ShoppingfeedPreloading();
+
+        if ((bool)$product->active !== true ||
+            ((bool)Configuration::get(ShoppingFeed::PRODUCT_FEED_SYNC_PACK) !== true && (bool)$product->cache_is_pack !== true)) {
+            foreach ($tokens as $token) {
+                $sfp->deleteProduct($product->id, $token['id_shoppingfeed_token']);
+            }
+        } else {
+            foreach ($tokens as $token) {
+                $sfp->addAction($product->id, $token['id_shoppingfeed_token'], $action);
+            }
+        }
+
+        return $this->forward('getBatch');
     }
 
     public static function getLogPrefix($id_shop = '')
