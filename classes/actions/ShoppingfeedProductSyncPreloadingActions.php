@@ -77,7 +77,7 @@ class ShoppingfeedProductSyncPreloadingActions extends DefaultActions
                 ];
             }
             foreach ($tokensList as $token) {
-                $currency = new Currency($token['currency_id']);
+                $currency = new Currency($token['id_currency']);
                 if (Validate::isLoadedObject($currency) === false) {
                     ProcessLoggerHandler::logInfo(
                         $this->l('unable ton find currency.', 'ShoppingfeedProductSyncActions'),

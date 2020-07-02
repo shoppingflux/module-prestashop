@@ -30,11 +30,11 @@ class ShoppingfeedToken extends ObjectModel
 {
     public $id_shoppingfeed_token;
 
-    public $shop_id;
+    public $id_shop;
 
-    public $lang_id;
+    public $id_lang;
 
-    public $currency_id;
+    public $id_currency;
 
     public $content;
 
@@ -48,17 +48,17 @@ class ShoppingfeedToken extends ObjectModel
         'table' => 'shoppingfeed_token',
         'primary' => 'id_shoppingfeed_token',
         'fields' => array(
-            'shop_id' => array(
+            'id_shop' => array(
                 'type' => self::TYPE_INT,
                 'validate' => 'isUnsignedInt',
                 'required' => true
             ),
-            'lang_id' => array(
+            'id_lang' => array(
                 'type' => self::TYPE_INT,
                 'validate' => 'isUnsignedInt',
                 'required' => true
             ),
-            'currency_id' => array(
+            'id_currency' => array(
                 'type' => self::TYPE_INT,
                 'validate' => 'isUnsignedInt',
                 'required' => true
@@ -87,19 +87,19 @@ class ShoppingfeedToken extends ObjectModel
                 'type' => ObjectModel::HAS_ONE,
                 'object' => 'Shop',
                 'association' => 'shop',
-                'field' => 'shop_id',
+                'field' => 'id_shop',
             ),
             'langs' => array(
                 'type' => ObjectModel::HAS_ONE,
                 'object' => 'Language',
                 'association' => 'language',
-                'field' => 'lang_id',
+                'field' => 'id_lang',
             ),
             'currencies' => array(
                 'type' => ObjectModel::HAS_ONE,
                 'object' => 'Currency',
                 'association' => 'currency',
-                'field' => 'currency_id',
+                'field' => 'id_currency',
             ),
         ),
     );
@@ -119,21 +119,21 @@ class ShoppingfeedToken extends ObjectModel
         $sql = new DbQuery();
         $sql->select('*')
             ->from(self::$definition['table'])
-            ->where('shop_id IN('.implode(', ', $idShops).')')
+            ->where('id_shop IN('.implode(', ', $idShops).')')
             ->where('active = 1');
 
         return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql) ;
     }
 
-    public function addToken($shop_id, $lang_id, $currency_id, $token)
+    public function addToken($id_shop, $id_lang, $id_currency, $token)
     {
         if ($this->findByToken($token) !== false) {
 
             throw new Exception("Duplicate entry for token $token");
         }
-        $this->shop_id = $shop_id;
-        $this->lang_id = $lang_id;
-        $this->currency_id = $currency_id;
+        $this->id_shop = $id_shop;
+        $this->id_lang = $id_lang;
+        $this->id_currency = $id_currency;
         $this->content = $token;
         $this->active = true;
 
@@ -168,10 +168,10 @@ class ShoppingfeedToken extends ObjectModel
         $sql = new DbQuery();
         $sql->select('sft.content as token, sft.active, s.name as shop_name, l.name as lang_name, cl.name as currency_name')
             ->from(self::$definition['table'], 'sft')
-            ->innerJoin(\Shop::$definition['table'], 's', 's.id_shop = sft.shop_id')
-            ->innerJoin(\Language::$definition['table'], 'l', 'l.id_lang = sft.lang_id')
-            ->innerJoin(\Currency::$definition['table'], 'c', 'c.id_currency = sft.currency_id')
-            ->innerJoin(\Currency::$definition['table'] . '_lang', 'cl', 'c.id_currency = sft.currency_id and cl.id_lang = ' . Context::getContext()->language->id)
+            ->innerJoin(\Shop::$definition['table'], 's', 's.id_shop = sft.id_shop')
+            ->innerJoin(\Language::$definition['table'], 'l', 'l.id_lang = sft.id_lang')
+            ->innerJoin(\Currency::$definition['table'], 'c', 'c.id_currency = sft.id_currency')
+            ->innerJoin(\Currency::$definition['table'] . '_lang', 'cl', 'c.id_currency = sft.id_currency and cl.id_lang = ' . Context::getContext()->language->id)
         ;
 
         return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql) ;
