@@ -104,6 +104,16 @@ class ShoppingfeedToken extends ObjectModel
         ),
     );
 
+    public function findALlActive()
+    {
+        $sql = new DbQuery();
+        $sql->select('*')
+            ->from(self::$definition['table'])
+            ->where('active = 1');
+
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql) ;
+    }
+
     public function findALlActiveByShops($idShops)
     {
         $sql = new DbQuery();
@@ -125,6 +135,7 @@ class ShoppingfeedToken extends ObjectModel
         $this->lang_id = $lang_id;
         $this->currency_id = $currency_id;
         $this->content = $token;
+        $this->active = true;
 
         return $this->save();
 
@@ -136,6 +147,16 @@ class ShoppingfeedToken extends ObjectModel
             ->select('*')
             ->from(self::$definition['table'])
             ->where("content = '$token'")
+        ;
+
+        return  Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($query);
+    }
+
+    public function getDefaultToken()
+    {
+        $query = (new DbQuery())
+            ->select('*')
+            ->from(self::$definition['table'])
         ;
 
         return  Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($query);

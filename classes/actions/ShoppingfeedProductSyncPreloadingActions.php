@@ -36,7 +36,7 @@ class ShoppingfeedProductSyncPreloadingActions extends DefaultActions
         $sft = new ShoppingfeedToken();
 
         if (empty($this->conveyor['token'])) {
-            $tokens = $sft->findALlActiveByShops(Shop::getContextListShopID());
+            $tokens = $sft->findALlActive();
         } else {
             $token = $sft->findByToken($this->conveyor['token']);
             $tokens = ($token === []) ? [] : [$token];
@@ -125,18 +125,46 @@ class ShoppingfeedProductSyncPreloadingActions extends DefaultActions
         $sfp = new ShoppingfeedPreloading();
 
         if ((bool)$product->active !== true ||
-            ((bool)Configuration::get(ShoppingFeed::PRODUCT_FEED_SYNC_PACK) !== true && (bool)$product->cache_is_pack !== true)) {
-            foreach ($tokens as $token) {
-                $sfp->deleteProduct($product->id, $token['id_shoppingfeed_token']);
-            }
+            ((bool)Configuration::get(ShoppingFeed::PRODUCT_FEED_SYNC_PACK) !== true && (bool)$product->cache_is_pack === true)) {
+
+            return $this->forward('deleteProduct');
         } else {
             foreach ($tokens as $token) {
                 $sfp->addAction($product->id, $token['id_shoppingfeed_token'], $action);
             }
         }
+        if (Configuration::get(Shoppingfeed::REAL_TIME_SYNCHRONIZATION, null, null, $this->conveyor['id_shop'])) {
 
-        return $this->forward('getBatch');
+            return $this->forward('getBatch');
+        }
+
+        return true;
     }
+
+    public function deleteProduct()
+    {
+        $logPrefix = static::getLogPrefix();
+
+        if (empty($this->conveyor['product']) || $this->conveyor['product'] instanceof Product === false) {
+            ProcessLoggerHandler::logInfo(
+                $logPrefix . ' ' .
+                $this->l('Product not valide for synchronization', 'ShoppingfeedProductSyncActions'),
+                'Product'
+            );
+            return false;
+        }
+
+        $product = $this->conveyor['product'];
+        $tokens = (new ShoppingfeedToken())->findALlActiveByShops(Shop::getContextListShopID());
+        $sfp = new ShoppingfeedPreloading();
+
+        foreach ($tokens as $token) {
+            $sfp->deleteProduct($product->id, $token['id_shoppingfeed_token']);
+        }
+
+        return true;
+    }
+
 
     public static function getLogPrefix($id_shop = '')
     {

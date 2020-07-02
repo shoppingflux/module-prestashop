@@ -33,7 +33,13 @@ class ShoppingfeedProductModuleFrontController  extends \ModuleFrontController
 {
     public function initContent()
     {
-        $token = (new ShoppingfeedToken())->findByToken(Tools::getValue('token'));
+        $token = Tools::getValue('token');
+        if (empty($token)) {
+            $token = (new ShoppingfeedToken())->getDefaultToken();
+        } else {
+            $token = (new ShoppingfeedToken())->findByToken($token);
+        }
+
         if ($token === false) {
             die();
         }
@@ -44,7 +50,7 @@ class ShoppingfeedProductModuleFrontController  extends \ModuleFrontController
                 ->addMapper([$this, 'mapper'])
                 ->write($products);
 
-        header('HTTP/1.1 302 Moved Permanently');
+        header('HTTP/1.1 302 Moved Temporarily');
         header('Location: '. __PS_BASE_URI__ . $fileXml);
     }
 

@@ -246,6 +246,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         'actionValidateOrder',
         'actionOrderStatusPostUpdate',
         'actionShoppingfeedOrderImportRegisterSpecificRules',
+        'actionObjectProductDeleteBefore'
     );
 
     /**
@@ -708,7 +709,35 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
 
     public function hookActionObjectProductDeleteBefore($params)
     {
+        $product = $params['object'];
+        if (!Validate::isLoadedObject($product)) {
 
+            return false;
+        }
+
+        try {
+            $handler = new \ShoppingfeedClasslib\Actions\ActionsHandler();
+            $handler->addActions('deleteProduct')
+                ->setConveyor(
+                    array(
+                        'product' => $product,
+                    )
+                );
+            $processResult = $handler->process('ShoppingfeedProductSyncPreloading');
+            if (!$processResult) {
+                \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logError(
+                    ShoppingfeedProductSyncPriceActions::getLogPrefix() . ' ' . $this->l('Fail : An error occurred during process.')
+                );
+            }
+        } catch (Exception $e) {
+            \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logError(
+                sprintf(
+                    ShoppingfeedProductSyncPriceActions::getLogPrefix() . ' ' . $this->l('Fail : %s'),
+                    $e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine()
+                )
+            );
+        }
+        \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::closeLogger();
     }
 
     /**
