@@ -95,25 +95,6 @@ class ShoppingfeedProductSyncPreloadingActions extends DefaultActions
         return true;
     }
 
-
-    private function saveProduvtByToken($tokens)
-    {
-        foreach ($tokens as $token) {
-            $currency = new Currency($token['currency_id']);
-            if (Validate::isLoadedObject($currency) === false) {
-                ProcessLoggerHandler::logInfo(
-                    $this->l('unable ton find currency.', 'ShoppingfeedProductSyncActions'),
-                    'Product'
-                );
-
-                continue;
-            }
-            Context::getContext()->currency = $currency;
-
-            $sfp->saveProduct($row['id_product'], $token['id_shoppingfeed_token'], $token['lang_id'], $tokenId);
-        }
-    }
-
     public function saveProduct() {
         $logPrefix = static::getLogPrefix();
 

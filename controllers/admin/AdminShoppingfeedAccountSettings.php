@@ -62,6 +62,7 @@ class AdminShoppingfeedAccountSettingsController extends ModuleAdminController
         ));
 
         $this->content = $this->welcomeForm();
+        $this->content .= $this->renderTokensList();
         $this->content .= $this->renderLoginForm($shops, $currencies, $languagues);
         $this->content .= $this->renderTokenForm($shops, $currencies, $languagues);
 
@@ -354,5 +355,68 @@ class AdminShoppingfeedAccountSettingsController extends ModuleAdminController
 
         $this->confirmations[] = $this->module->l('Login successful; your token has been saved.', 'AdminShoppingfeedAccountSettings');
         return true;
+    }
+
+    public function renderTokensList()
+    {
+        $tokens = new ShoppingfeedToken();
+        $listTokens = $tokens->findALl();
+
+        if (count($listTokens) === 0) {
+
+            return '';
+        }
+        $fieldsList = array(
+            'token' => array(
+                'title' => $this->module->l('Tokens', 'AdminShoppingfeedAccountSettings'),
+                'search' => false,
+            ),
+            'shop_name' => array(
+                'title' => $this->module->l('Shop', 'AdminShoppingfeedAccountSettings'),
+                'search' => false,
+            ),
+            'lang_name' => array(
+                'title' => $this->module->l('Languague_', 'AdminShoppingfeedAccountSettings'),
+                'search' => false,
+            ),
+            'currency_name' => array(
+                'title' => $this->module->l('Currency', 'AdminShoppingfeedAccountSettings'),
+                'search' => false,
+            ),
+            'active' => array(
+                'title' => $this->module->l('Active', 'AdminShoppingfeedAccountSettings'),
+                'search' => false,
+                'active' => 'active',
+                'align' => 'text-center',
+                'type' => 'bool',
+                'class' => 'fixed-width-sm',
+                'orderby' => false,
+                'ajax' => true,
+
+            ),
+        );
+
+        $helper = new HelperList();
+        $this->setHelperDisplay($helper);
+        $helper->title = $this->module->l('Tokens', 'AdminShoppingfeedAccountSettings');
+        $helper->no_link = true;
+        $helper->listTotal = count($listTokens);
+
+        return $helper->generateList($listTokens, $fieldsList);
+    }
+
+    public function ajaxProcessActiveConfiguration()
+    {
+        if (!$id_shoppingfeed_token = (int)Tools::getValue('id_shoppingfeed_token')) {
+            die(Tools::jsonEncode(array('success' => false, 'error' => true, 'text' => $this->l('Failed to update the status'))));
+        }
+        $shoppingfeedToken = new ShoppingfeedToken((int)$id_shoppingfeed_token);
+        if (Validate::isLoadedObject($shoppingfeedToken) === false) {
+            die(Tools::jsonEncode(array('success' => false, 'error' => true, 'text' => $this->l('Failed to update the status'))));
+        }
+        $shoppingfeedToken->active = !$shoppingfeedToken->active;
+        $shoppingfeedToken->save() ?
+            die(Tools::jsonEncode(array('success' => true, 'text' => $this->l('The status has been updated successfully')))) :
+            die(Tools::jsonEncode(array('success' => false, 'error' => true, 'text' => $this->l('Failed to update the status'))));
     }
 }

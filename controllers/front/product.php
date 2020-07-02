@@ -33,13 +33,19 @@ class ShoppingfeedProductModuleFrontController  extends \ModuleFrontController
 {
     public function initContent()
     {
-        $products = (new ShoppingfeedPreloading)->findALlByToken('aaa');
-
-        (new ProductGenerator('file.xml', 'xml'))
+        $token = (new ShoppingfeedToken())->findByToken(Tools::getValue('token'));
+        if ($token === false) {
+            die();
+        }
+        $products = (new ShoppingfeedPreloading)->findALlByToken($token['content']);
+        $fileXml = sprintf('file-%d.xml', $token['id_shoppingfeed_token']);
+        (new ProductGenerator($fileXml, 'xml'))
                 ->setPlatform('Prestashop', _PS_VERSION_)
                 ->addMapper([$this, 'mapper'])
                 ->write($products);
-        die();
+
+        header('HTTP/1.1 302 Moved Permanently');
+        header('Location: '. __PS_BASE_URI__ . $fileXml);
     }
 
     public function mapper(array $item, Product $product)
