@@ -145,12 +145,13 @@ class ShoppingfeedToken extends ObjectModel
     public function findALl()
     {
         $sql = new DbQuery();
-        $sql->select('sft.content as token, sft.active, s.name as shop_name, l.name as lang_name, c.name as currency_name')
+        $sql->select('sft.content as token, sft.active, s.name as shop_name, l.name as lang_name, cl.name as currency_name')
             ->from(self::$definition['table'], 'sft')
             ->innerJoin(\Shop::$definition['table'], 's', 's.id_shop = sft.shop_id')
             ->innerJoin(\Language::$definition['table'], 'l', 'l.id_lang = sft.lang_id')
-            ->innerJoin(\Currency::$definition['table'], 'c', 'c.id_currency = sft.currency_id');
-
+            ->innerJoin(\Currency::$definition['table'], 'c', 'c.id_currency = sft.currency_id')
+            ->innerJoin(\Currency::$definition['table'] . '_lang', 'cl', 'c.id_currency = sft.currency_id and cl.id_lang = ' . Context::getContext()->language->id)
+        ;
 
         return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql) ;
     }
