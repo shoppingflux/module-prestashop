@@ -48,11 +48,11 @@ class ShoppingfeedProductSyncPreloadingActions extends DefaultActions
         $db = Db::getInstance(_PS_USE_SQL_SLAVE_);
         $sfp = new ShoppingfeedPreloading();
         $sql = new DbQuery();
-        $sql->select('ps.id_product, sft.id_shoppingfeed_token, sft.shop_id, sft.lang_id, sft.currency_id')
+        $sql->select('ps.id_product, sft.id_shoppingfeed_token, sft.id_shop, sft.id_lang, sft.id_currency')
             ->from(Product::$definition['table'] . '_shop', 'ps')
             ->innerJoin(Product::$definition['table'], 'p', 'p.id_product = ps.id_product')
-            ->leftJoin(ShoppingfeedPreloading::$definition['table'], 'sfp', 'sfp.product_id = ps.id_product and sfp.actions is not null')
-            ->leftJoin(ShoppingfeedToken::$definition['table'], 'sft', 'sft.id_shoppingfeed_token = sfp.token_id and sft.shop_id = ps.id_shop')
+            ->leftJoin(ShoppingfeedPreloading::$definition['table'], 'sfp', 'sfp.id_product = ps.id_product and sfp.actions is not null')
+            ->leftJoin(ShoppingfeedToken::$definition['table'], 'sft', 'sft.id_shoppingfeed_token = sfp.id_token and sft.id_shop = ps.id_shop')
             ->where('sft.id_shoppingfeed_token is null or (sfp.actions is not null and sft.id_shoppingfeed_token IN('.implode(', ', array_column($tokens, 'id_shoppingfeed_token')).'))')
             ->where('ps.active = 1')
             ->groupBy('ps.id_product, sft.id_shoppingfeed_token')
@@ -70,9 +70,9 @@ class ShoppingfeedProductSyncPreloadingActions extends DefaultActions
                 $tokensList = [
                     [
                         'id_shoppingfeed_token' => $row['id_shoppingfeed_token'],
-                        'shop_id' => $row['shop_id'],
-                        'lang_id' => $row['lang_id'],
-                        'currency_id' => $row['currency_id'],
+                        'id_shop' => $row['id_shop'],
+                        'id_lang' => $row['id_lang'],
+                        'id_currency' => $row['id_currency'],
                     ]
                 ];
             }
@@ -88,7 +88,11 @@ class ShoppingfeedProductSyncPreloadingActions extends DefaultActions
                 }
                 Context::getContext()->currency = $currency;
 
-                $sfp->saveProduct($row['id_product'], $token['id_shoppingfeed_token'], $token['lang_id'], $token['shop_id']);
+                try {
+                    $sfp->saveProduct($row['id_product'], $token['id_shoppingfeed_token'], $token['id_lang'], $token['id_shop']);
+                } catch (Exception $exception) {
+                    ProcessLoggerHandler::logError($exception->getMessage());
+                }
             }
         }
 
@@ -121,7 +125,7 @@ class ShoppingfeedProductSyncPreloadingActions extends DefaultActions
             return false;
         }
         $action = $this->conveyor['product_action'];
-        $tokens = (new ShoppingfeedToken())->findALlActiveByShops(Shop::getContextListShopID());
+        $tokens = (new ShoppingfeedToken())->findALlActive();
         $sfp = new ShoppingfeedPreloading();
 
         if ((bool)$product->active !== true ||
@@ -155,7 +159,7 @@ class ShoppingfeedProductSyncPreloadingActions extends DefaultActions
         }
 
         $product = $this->conveyor['product'];
-        $tokens = (new ShoppingfeedToken())->findALlActiveByShops(Shop::getContextListShopID());
+        $tokens = (new ShoppingfeedToken())->findALlActive(Shop::getContextListShopID());
         $sfp = new ShoppingfeedPreloading();
 
         foreach ($tokens as $token) {

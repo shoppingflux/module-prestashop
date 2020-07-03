@@ -178,6 +178,23 @@ class ShoppingfeedPreloading extends ObjectModel
         return $result;
     }
 
+    public function findALlByTokenId($id_token, $limit = 100, $from = 0)
+    {
+        $result = [];
+
+        $sql = new DbQuery();
+        $sql->select('content')
+            ->from(self::$definition['table'])
+            ->where(sprintf('id_token = %d', $id_token))
+            ->limit($limit, $from);
+
+        foreach (Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql) as $row) {
+            $result[] = Tools::jsonDecode($row['content'], true);
+        }
+
+        return $result;
+    }
+
     public function getPreloadingCount()
     {
         $sql = new DbQuery();

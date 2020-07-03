@@ -79,10 +79,6 @@ class ProductSerializer
             'gtin' => $this->product->ean13,
             'name' => $this->product->name,
             'link' => $productLink,
-            'brand' => [
-                'name' => $this->product->manufacturer_name,
-                'link' => $link->getManufacturerLink($this->product->id_manufacturer, null, $this->configurations['PS_LANG_DEFAULT']),
-            ],
             'category' =>[
                 'name' => ($this->configurations[\Shoppingfeed::PRODUCT_FEED_CATEGORY_DISPLAY] === 'default_category')? $this->_getCategory(): $this->_getFilAriane(),
                 'link' => $link->getCategoryLink($this->product->id_category_default, null, $this->configurations['PS_LANG_DEFAULT']),
@@ -95,9 +91,14 @@ class ProductSerializer
             'attributes' => $this->getAttributes(),
             'variations' => $this->getVariations($carrier, $productLink),
         ];
-        $this->serializePrice($content);
-        $this->serializeStock($content);
-
+        if ((int) $this->product->id_manufacturer !== 0) {
+            $content['brand'] = [
+                'name' => $this->product->manufacturer_name,
+                'link' => $link->getManufacturerLink($this->product->id_manufacturer, null, $this->configurations['PS_LANG_DEFAULT']),
+            ];
+        }
+        $content = $this->serializePrice($content);
+        $content = $this->serializeStock($content);
 
         return $content;
     }
@@ -157,7 +158,6 @@ class ProductSerializer
                 } else {
                     $images['additional'][] = $img_url;
                 }
-                $images[] =  $img_url;
             }
         }
 
@@ -212,6 +212,8 @@ class ProductSerializer
 
     protected function getAttributes()
     {
+        $combination = $this->product->getAttributeCombinations($this->configurations['PS_LANG_DEFAULT']);
+
         $attributes = [
             'meta_title' => $this->product->meta_title,
             'meta_description' => $this->product->meta_description,
@@ -231,6 +233,7 @@ class ProductSerializer
             'upc' => $this->product->upc,
             'wholesale-price' => $this->product->wholesale_price,
             'on_sale' => (int)$this->product->on_sale,
+            'hierararchy' => count($combination) > 0? 'parent' : 'child',
         ];
         $supplier = $this->product->supplier_name;
         $supplier_link = $this->link->getSupplierLink($this->product->id_supplier, null, $this->configurations['PS_LANG_DEFAULT']);

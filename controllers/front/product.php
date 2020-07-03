@@ -59,7 +59,6 @@ class ShoppingfeedProductModuleFrontController  extends \ModuleFrontController
         $product
             ->setName($item['name'])
             ->setDescription($item['description']['full'], $item['description']['short'])
-            ->setBrand($item['brand']['name'], $item['brand']['link'])
             ->setCategory($item['category']['name'], $item['category']['link'])
             ->setReference($item['reference'])
             ->setGtin($item['gtin'])
@@ -69,14 +68,16 @@ class ShoppingfeedProductModuleFrontController  extends \ModuleFrontController
             ->addShipping($item['shipping']['amount'], $item['shipping']['label'])
             ->setAttributes($item['attributes'])
         ;
+        if (empty($item['brand']) !== true) {
+            $product->setBrand($item['brand']['name'], $item['brand']['link']);
+        }
+
         foreach ($item['discounts'] as $discount) {
             $product->addDiscount($discount);
         }
-        if (empty($item['images']) !== false && empty($item['images']['main'])) {
+        if (empty($item['images']) !== true && empty($item['images']['main']) !== true) {
             $product->setMainImage($item['images']['main']);
-            foreach ($item['images']['additional'] as $additionalImage) {
-                $product->setAdditionalImages($additionalImage);
-            }
+            $product->setAdditionalImages($item['images']['additional']);
         }
 
         foreach ($item['variations'] as $variation) {
