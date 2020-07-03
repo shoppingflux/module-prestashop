@@ -162,17 +162,22 @@ class ShoppingfeedToken extends ObjectModel
         return  Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($query);
     }
 
-
     public function findALl()
     {
         $sql = new DbQuery();
-        $sql->select('sft.content as token, sft.active, s.name as shop_name, l.name as lang_name, cl.name as currency_name')
+        $sql
             ->from(self::$definition['table'], 'sft')
             ->innerJoin(\Shop::$definition['table'], 's', 's.id_shop = sft.id_shop')
             ->innerJoin(\Language::$definition['table'], 'l', 'l.id_lang = sft.id_lang')
             ->innerJoin(\Currency::$definition['table'], 'c', 'c.id_currency = sft.id_currency')
-            ->innerJoin(\Currency::$definition['table'] . '_lang', 'cl', 'c.id_currency = sft.id_currency and cl.id_lang = ' . Context::getContext()->language->id)
         ;
+
+        if (version_compare(_PS_VERSION_, '1.7.6.0', '>=')) {
+            $sql->select('sft.content as token, sft.active, s.name as shop_name, l.name as lang_name, cl.name as currency_name')
+                ->innerJoin(\Currency::$definition['table'] . '_lang', 'cl', 'c.id_currency = sft.id_currency and cl.id_lang = ' . Context::getContext()->language->id);
+        } else {
+            $sql->select('sft.content as token, sft.active, s.name as shop_name, l.name as lang_name, c.name as currency_name');
+        }
 
         return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql) ;
     }
