@@ -71,7 +71,9 @@ class ShoppingfeedProductModuleFrontController  extends \ModuleFrontController
         if (empty($item['brand']) !== true) {
             $product->setBrand($item['brand']['name'], $item['brand']['link']);
         }
-
+        if (empty($item['category']) !== true) {
+            $product->setBrand($item['category']['name'], $item['category']['link']);
+        }
         foreach ($item['discounts'] as $discount) {
             $product->addDiscount($discount);
         }

@@ -79,10 +79,6 @@ class ProductSerializer
             'gtin' => $this->product->ean13,
             'name' => $this->product->name,
             'link' => $productLink,
-            'category' =>[
-                'name' => ($this->configurations[\Shoppingfeed::PRODUCT_FEED_CATEGORY_DISPLAY] === 'default_category')? $this->_getCategory(): $this->_getFilAriane(),
-                'link' => $link->getCategoryLink($this->product->id_category_default, null, $this->configurations['PS_LANG_DEFAULT']),
-            ],
             'description' => [
                 'full' => $this->product->description,
                 'short' => $this->product->description_short,
@@ -91,6 +87,13 @@ class ProductSerializer
             'attributes' => $this->getAttributes(),
             'variations' => $this->getVariations($carrier, $productLink),
         ];
+        if ((int) $this->product->id_category_default !== 0) {
+            $content['category'] = [
+                'name' => ($this->configurations[\Shoppingfeed::PRODUCT_FEED_CATEGORY_DISPLAY] === 'default_category')? $this->_getCategory(): $this->_getFilAriane(),
+                'link' => $link->getCategoryLink($this->product->id_category_default, null, $this->configurations['PS_LANG_DEFAULT']),
+            ];
+        }
+
         if ((int) $this->product->id_manufacturer !== 0) {
             $content['brand'] = [
                 'name' => $this->product->manufacturer_name,
