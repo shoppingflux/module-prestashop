@@ -61,7 +61,11 @@ class AdminShoppingfeedAccountSettingsController extends ModuleAdminController
             $this->module->getPathUri() . 'views/css/font-awesome.min.css'
         ));
 
-        $this->content = $this->welcomeForm();
+        if (Configuration::get(shoppingfeed::AUTH_TOKEN)) {
+            $this->content = $this->welcomeForm();
+        } else {
+            $this->content = $this->registerForm();
+        }
         $this->content .= $this->renderTokensList();
         $this->content .= $this->renderLoginForm($shops, $currencies, $languagues);
         $this->content .= $this->renderTokenForm($shops, $currencies, $languagues);
@@ -84,6 +88,29 @@ class AdminShoppingfeedAccountSettingsController extends ModuleAdminController
         $helper->tpl_vars['img_path'] = $this->module->getPathUri() . "views/img/";
         $helper->base_folder = $this->getTemplatePath();
         $helper->base_tpl = 'welcome.tpl';
+
+        return $helper->generateForm(array(array('form' => $fields_form)));
+    }
+    public function registerForm()
+    {
+        $fields_form = array(
+            'legend' => array(
+                'title' => $this->module->l('15 min Marketplace Updates - Shopping', 'AdminShoppingfeedAccountSettings'),
+            )
+        );
+
+        $helper = new HelperForm($this);
+        $this->setHelperDisplay($helper);
+        $helper->tpl_vars['img_path'] = $this->module->getPathUri() . "views/img/";
+        $helper->base_folder = $this->getTemplatePath();
+        $helper->base_tpl = 'shoppingfeed_account_settings/register.tpl';
+
+        $id_default_country = Configuration::get('PS_COUNTRY_DEFAULT');
+        $this->default_country = new Country($id_default_country);
+        $this->context->smarty->assign('phone', Tools::safeOutput(Configuration::get('PS_SHOP_PHONE')));
+        $this->context->smarty->assign('email', Tools::safeOutput(Configuration::get('PS_SHOP_EMAIL')));
+        $this->context->smarty->assign('lang', Tools::strtolower($this->default_country->iso_code));
+        $this->context->smarty->assign('shoppingfeed_token', md5(rand()));
 
         return $helper->generateForm(array(array('form' => $fields_form)));
     }

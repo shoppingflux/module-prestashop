@@ -315,7 +315,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
 
     public function uninstall()
     {
-        return \Module::uninstall();
+        return parent::uninstall();
     }
 
     /**
@@ -707,6 +707,10 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::closeLogger();
     }
 
+    /**
+     * Delete a product on SF
+     * @param array $params The hook parameters
+     */
     public function hookActionObjectProductDeleteBefore($params)
     {
         $product = $params['object'];
@@ -726,13 +730,13 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             $processResult = $handler->process('ShoppingfeedProductSyncPreloading');
             if (!$processResult) {
                 \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logError(
-                    ShoppingfeedProductSyncPriceActions::getLogPrefix() . ' ' . $this->l('Fail : An error occurred during process.')
+                    ShoppingfeedProductSyncPreloadingActions::getLogPrefix() . ' ' . $this->l('Fail : An error occurred during process.')
                 );
             }
         } catch (Exception $e) {
             \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logError(
                 sprintf(
-                    ShoppingfeedProductSyncPriceActions::getLogPrefix() . ' ' . $this->l('Fail : %s'),
+                    ShoppingfeedProductSyncPreloadingActions::getLogPrefix() . ' ' . $this->l('Fail : %s'),
                     $e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine()
                 )
             );
@@ -802,7 +806,9 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::closeLogger();
     }
 
-
+    /**
+     * Processes products to indexed on add into XML feed.
+     */
     public function updateShoppingFeedPreloading($params, $action)
     {
         $product = $params['object'];
@@ -821,15 +827,10 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
                         )
                     );
             $processResult = $handler->process('ShoppingfeedProductSyncPreloading');
-            if (!$processResult) {
-                \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logError(
-                    ShoppingfeedProductSyncPriceActions::getLogPrefix() . ' ' . $this->l('Fail : An error occurred during process.')
-                );
-            }
         } catch (Exception $e) {
             \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logError(
                 sprintf(
-                    ShoppingfeedProductSyncPriceActions::getLogPrefix() . ' ' . $this->l('Fail : %s'),
+                    ShoppingfeedProductSyncPreloadingActions::getLogPrefix() . ' ' . $this->l('Fail : %s'),
                     $e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine()
                 )
             );

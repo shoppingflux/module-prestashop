@@ -57,7 +57,7 @@ class ShoppingfeedProductSyncPreloadingActions extends DefaultActions
             ->where('ps.active = 1')
             ->groupBy('ps.id_product, sft.id_shoppingfeed_token')
             ->limit(Configuration::get(ShoppingFeed::STOCK_SYNC_MAX_PRODUCTS));
-        
+
         if ((bool)Configuration::get(ShoppingFeed::PRODUCT_FEED_SYNC_PACK) !== true) {
             $sql->where('p.cache_is_pack = 0');
         }
@@ -137,7 +137,7 @@ class ShoppingfeedProductSyncPreloadingActions extends DefaultActions
                 $sfp->addAction($product->id, $token['id_shoppingfeed_token'], $action);
             }
         }
-        if (Configuration::get(Shoppingfeed::REAL_TIME_SYNCHRONIZATION, null, null, $this->conveyor['id_shop'])) {
+        if (Configuration::get(Shoppingfeed::REAL_TIME_SYNCHRONIZATION)) {
 
             return $this->forward('getBatch');
         }
