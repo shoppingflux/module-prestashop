@@ -546,8 +546,6 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
      */
     public function hookActionUpdateQuantity($params)
     {
-        $this->updateShoppingFeedPreloading($params, ShoppingfeedPreloading::ACTION_SYNC_STOCK);
-
         if (!Configuration::get(Shoppingfeed::STOCK_SYNC_ENABLED)) {
             return;
         }
@@ -762,7 +760,6 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     public function hookActionObjectCombinationUpdateAfter($params)
     {
         $this->updateShoppingFeedPriceRealtime();
-        $this->updateShoppingFeedPreloading($params, ShoppingfeedPreloading::ACTION_SYNC_ALL);
     }
 
     /**
