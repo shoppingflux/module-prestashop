@@ -43,8 +43,7 @@ class ShoppingfeedProduct extends ObjectModel
     /** @var int The combination's id */
     public $id_product_attribute;
 
-    /** @var int The shop to get the product from */
-    public $id_shop;
+    public $id_token;
 
     /** @var string The date and time after which the product will be updated.
      * If null, the product will never be updated.
@@ -78,7 +77,7 @@ class ShoppingfeedProduct extends ObjectModel
                 'required' => true,
                 'unique' => true,
             ),
-            'id_shop' => array(
+            'id_token' => array(
                 'type' => ObjectModel::TYPE_INT,
                 'validate' => 'isUnsignedInt',
                 'required' => true,
@@ -219,12 +218,12 @@ class ShoppingfeedProduct extends ObjectModel
      * @param $action
      * @param $id_product
      * @param $id_product_attribute
-     * @param $id_shop
+     * @param $id_token
      * @return bool|ShoppingfeedProduct
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public static function getFromUniqueKey($action, $id_product, $id_product_attribute, $id_shop)
+    public static function getFromUniqueKey($action, $id_product, $id_product_attribute, $id_token)
     {
         $sql = new DbQuery();
         $sql->select('id_shoppingfeed_product')
@@ -232,7 +231,7 @@ class ShoppingfeedProduct extends ObjectModel
             ->where('action = \'' . pSQL($action). '\'')
             ->where('id_product = ' . (int)$id_product)
             ->where('id_product_attribute = ' . (int)$id_product_attribute)
-            ->where('id_shop = ' . (int)$id_shop);
+            ->where('id_token = ' . (int)$id_token);
         $id = Db::getInstance()->getValue($sql);
         if ($id) {
             return new ShoppingfeedProduct($id);

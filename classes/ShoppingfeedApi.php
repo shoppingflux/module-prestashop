@@ -58,20 +58,23 @@ class ShoppingfeedApi
      * Returns the object's instance, using a token. If no session was
      * initialized, creates it. No exceptions are handled here.
      *
-     * @param $id_shop the shop to use (one token per shop)
+     * @param $id_token the shop to use (one token per shop)
      * @param $token the token to use, if no shop is specified
      * @return ShoppingfeedApi
      */
-    public static function getInstanceByToken($id_shop = null, $token = null)
+    public static function getInstanceByToken($id_token = null, $token = null)
     {
         if (static::$instance && static::$instance->getToken() == $token) {
+
             return static::$instance;
         }
 
-        if (!$token && !$id_shop) {
+        if (!$token && !$id_token) {
+
             return false;
-        } elseif ($id_shop) {
-            $token = Configuration::get(Shoppingfeed::AUTH_TOKEN, null, null, $id_shop);
+        } elseif ($id_token) {
+            $sft =  new ShoppingfeedToken($id_token);
+            $token = $sft->content;
         }
 
         try {

@@ -57,13 +57,9 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
             $this->content .= $this->renderSynchroConfigForm();
         }
 
-        $id_shop = $this->context->shop->id;
-        $token = Configuration::get(shoppingfeed::AUTH_TOKEN, null, null, $id_shop);
-        if ($token) {
-            $this->content .= $this->renderGlobalConfigForm();
-            $this->content .= $this->renderFeedConfigForm();
-            $this->content .= $this->renderFactoryConfigForm();
-        }
+        $this->content .= $this->renderGlobalConfigForm();
+        $this->content .= $this->renderFeedConfigForm();
+        $this->content .= $this->renderFactoryConfigForm();
 
         $this->module->setBreakingChangesNotices();
 
@@ -529,11 +525,8 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
         $stock_sync_enabled = Tools::getValue(Shoppingfeed::STOCK_SYNC_ENABLED);
         $price_sync_enabled = Tools::getValue(Shoppingfeed::PRICE_SYNC_ENABLED);
 
-        $shops = Shop::getShops();
-        foreach ($shops as $shop) {
-            Configuration::updateValue(Shoppingfeed::STOCK_SYNC_ENABLED, ($stock_sync_enabled ? true : false), false, null, $shop['id_shop']);
-            Configuration::updateValue(Shoppingfeed::PRICE_SYNC_ENABLED, ($price_sync_enabled ? true : false), false, null, $shop['id_shop']);
-        }
+        Configuration::updateGlobalValue(Shoppingfeed::STOCK_SYNC_ENABLED, ($stock_sync_enabled ? true : false));
+        Configuration::updateGlobalValue(Shoppingfeed::PRICE_SYNC_ENABLED, ($price_sync_enabled ? true : false));
 
         return true;
     }
@@ -546,10 +539,7 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
     {
         $reference_format = Tools::getValue(Shoppingfeed::PRODUCT_FEED_REFERENCE_FORMAT);
 
-        $shops = Shop::getShops();
-        foreach ($shops as $shop) {
-            Configuration::updateValue(Shoppingfeed::PRODUCT_FEED_REFERENCE_FORMAT, $reference_format, false, null, $shop['id_shop']);
-        }
+        Configuration::updateGlobalValue(Shoppingfeed::PRODUCT_FEED_REFERENCE_FORMAT, $reference_format);
 
         return true;
     }
@@ -563,15 +553,12 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
         $realtime_sync = Tools::getValue(Shoppingfeed::REAL_TIME_SYNCHRONIZATION);
         $stock_sync_max_products = (int)Tools::getValue(Shoppingfeed::STOCK_SYNC_MAX_PRODUCTS);
 
-        $shops = Shop::getShops();
-        foreach ($shops as $shop) {
-            Configuration::updateValue(Shoppingfeed::REAL_TIME_SYNCHRONIZATION, ($realtime_sync ? true : false), false, null, $shop['id_shop']);
+        Configuration::updateGlobalValue(Shoppingfeed::REAL_TIME_SYNCHRONIZATION, ($realtime_sync ? true : false));
 
-            if (!is_numeric($stock_sync_max_products) || $stock_sync_max_products > 200 || $stock_sync_max_products <= 0) {
-                $this->errors[] = $this->module->l('You must specify a \'Max. product update per request\' number (between 1 and 200 included).', 'AdminShoppingfeedGeneralSettings');
-            } else {
-                Configuration::updateValue(Shoppingfeed::STOCK_SYNC_MAX_PRODUCTS, $stock_sync_max_products, false, null, $shop['id_shop']);
-            }
+        if (!is_numeric($stock_sync_max_products) || $stock_sync_max_products > 200 || $stock_sync_max_products <= 0) {
+            $this->errors[] = $this->module->l('You must specify a \'Max. product update per request\' number (between 1 and 200 included).', 'AdminShoppingfeedGeneralSettings');
+        } else {
+            Configuration::updateGlobalValue(Shoppingfeed::STOCK_SYNC_MAX_PRODUCTS, $stock_sync_max_products);
         }
 
         return true;
@@ -590,14 +577,11 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
         $customFields = Tools::getValue(Shoppingfeed::PRODUCT_FEED_CUSTOM_FIELDS);
 
 
-        $shops = Shop::getShops();
-        foreach ($shops as $shop) {
-            Configuration::updateValue(Shoppingfeed::PRODUCT_FEED_SYNC_PACK, ($sync_pack ? true : false), false, null, $shop['id_shop']);
-            Configuration::updateValue(Shoppingfeed::PRODUCT_FEED_CARRIER_REFERENCE, $carrierReference, false, null, $shop['id_shop']);
-            Configuration::updateValue(Shoppingfeed::PRODUCT_FEED_IMAGE_FORMAT, $imageFormat, false, null, $shop['id_shop']);
-            Configuration::updateValue(Shoppingfeed::PRODUCT_FEED_CATEGORY_DISPLAY, $categoryDisplay, false, null, $shop['id_shop']);
-            Configuration::updateValue(Shoppingfeed::PRODUCT_FEED_CUSTOM_FIELDS, json_encode($customFields));
-        }
+        Configuration::updateGlobalValue(Shoppingfeed::PRODUCT_FEED_SYNC_PACK, ($sync_pack ? true : false));
+        Configuration::updateGlobalValue(Shoppingfeed::PRODUCT_FEED_CARRIER_REFERENCE, $carrierReference);
+        Configuration::updateGlobalValue(Shoppingfeed::PRODUCT_FEED_IMAGE_FORMAT, $imageFormat);
+        Configuration::updateGlobalValue(Shoppingfeed::PRODUCT_FEED_CATEGORY_DISPLAY, $categoryDisplay);
+        Configuration::updateGlobalValue(Shoppingfeed::PRODUCT_FEED_CUSTOM_FIELDS, json_encode($customFields));
 
         return true;
     }

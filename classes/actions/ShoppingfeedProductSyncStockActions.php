@@ -52,6 +52,7 @@ class ShoppingfeedProductSyncStockActions extends ShoppingfeedProductSyncActions
     {
         $this->conveyor['preparedBatch'] = array();
         $sfModule = Module::getInstanceByName('shoppingfeed');
+        $token = new ShoppingfeedToken($this->conveyor['id_token']);
 
         /** @var ShoppingfeedProduct $sfProduct */
         foreach ($this->conveyor['batch'] as $sfProduct) {
@@ -69,7 +70,7 @@ class ShoppingfeedProductSyncStockActions extends ShoppingfeedProductSyncActions
                 'quantity' => StockAvailable::getQuantityAvailableByProduct(
                     $sfProduct->id_product,
                     (empty($sfProduct->id_product_attribute) === true) ? $sfProduct->id_product_attribute : null,
-                    $sfProduct->id_shop
+                    $token->id_shop
                 ),
                 'sfProduct' => $sfProduct,
             );
@@ -87,7 +88,7 @@ class ShoppingfeedProductSyncStockActions extends ShoppingfeedProductSyncActions
      */
     public function executeBatch()
     {
-        $shoppingfeedApi = ShoppingfeedApi::getInstanceByToken($this->conveyor['id_shop']);
+        $shoppingfeedApi = ShoppingfeedApi::getInstanceByToken($this->conveyor['id_token']);
         if ($shoppingfeedApi == false) {
             ProcessLoggerHandler::logError(
                 static::getLogPrefix($this->conveyor['id_shop']) . ' ' .

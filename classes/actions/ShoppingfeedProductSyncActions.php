@@ -80,34 +80,29 @@ abstract class ShoppingfeedProductSyncActions extends DefaultActions
         }
         $action = $this->conveyor['product_action'];
 
-        // Save the product for each shop
-        $shops = Shop::getShops();
-        foreach ($shops as $shop) {
-            $this->conveyor['id_shop'] = $shop['id_shop'];
-
-            $token = Configuration::get(Shoppingfeed::AUTH_TOKEN, null, null, $shop['id_shop']);
-            if (false == $token) {
-                continue;
-            }
-
+        // Save the product for each token
+        $sft = new ShoppingfeedToken();
+        $tokens = $sft->findALlActive();
+        foreach ($tokens as $token) {
+            $this->conveyor['id_token'] = $token['id_shoppingfeed_token'];
             $sfProduct = ShoppingfeedProduct::getFromUniqueKey(
                 $action,
                 $id_product,
                 $id_product_attribute,
-                $this->conveyor['id_shop']
+                $token['id_shoppingfeed_token']
             );
             if (false === $sfProduct || !Validate::isLoadedObject($sfProduct)) {
                 $sfProduct = new ShoppingfeedProduct();
                 $sfProduct->action = $action;
                 $sfProduct->id_product = (int)$id_product;
                 $sfProduct->id_product_attribute = (int)$id_product_attribute;
-                $sfProduct->id_shop = (int)$this->conveyor['id_shop'];
+                $sfProduct->id_token = $token['id_shoppingfeed_token'];
             }
             
             $sfProduct->update_at = date('Y-m-d H:i:s');
             $sfProduct->save();
             
-            if (!$this->no_forward_after_save && true == Configuration::get(Shoppingfeed::REAL_TIME_SYNCHRONIZATION, null, null, $this->conveyor['id_shop'])) {
+            if (!$this->no_forward_after_save && true == Configuration::getGlobalValue(Shoppingfeed::REAL_TIME_SYNCHRONIZATION)) {
                 $this->forward('getBatch');
             }
         }
@@ -128,7 +123,7 @@ abstract class ShoppingfeedProductSyncActions extends DefaultActions
      */
     public function getBatch()
     {
-        $logPrefix = static::getLogPrefix($this->conveyor['id_shop']);
+        $logPrefix = static::getLogPrefix($this->conveyor['id_token']);
             
         if (empty($this->conveyor['product_action'])) {
             ProcessLoggerHandler::logInfo(
@@ -136,6 +131,7 @@ abstract class ShoppingfeedProductSyncActions extends DefaultActions
                     $this->l('Could not retrieve batch for synchronization; no product action found', 'ShoppingfeedProductSyncActions'),
                 'Product'
             );
+
             return false;
         }
         $action = $this->conveyor['product_action'];
@@ -145,7 +141,7 @@ abstract class ShoppingfeedProductSyncActions extends DefaultActions
             ->from('shoppingfeed_product')
             ->where("action = '" . pSQL($action) . "'")
             ->where('update_at IS NOT NULL')
-            ->where('id_shop ='. (int) $this->conveyor['id_shop'])
+            ->where('id_token ='. (int) $this->conveyor['id_token'])
             ->where("update_at <= '" . date('Y-m-d H:i:s') . "'")
             ->limit(Configuration::get(Shoppingfeed::STOCK_SYNC_MAX_PRODUCTS, null, null, $this->conveyor['id_shop']))
             ->orderBy('date_add ASC');

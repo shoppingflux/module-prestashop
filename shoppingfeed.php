@@ -288,27 +288,18 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     {
         $res = parent::install();
 
-        // Try to retrieve the token from the other SF module
-        $shops = Shop::getShops();
-        foreach ($shops as $shop) {
-            $token = Configuration::get('SHOPPING_FLUX_TOKEN', null, null, $shop['id_shop']);
-            if ($token) {
-                Configuration::updateValue(self::AUTH_TOKEN, $token, false, null, $shop['id_shop']);
-            }
-
-            // Set default values for configuration variables
-            $this->setConfigurationDefault(self::STOCK_SYNC_ENABLED, true, $shop['id_shop']);
-            $this->setConfigurationDefault(self::PRICE_SYNC_ENABLED, true, $shop['id_shop']);
-            $this->setConfigurationDefault(self::ORDER_SYNC_ENABLED, true, $shop['id_shop']);
-            $this->setConfigurationDefault(self::STOCK_SYNC_MAX_PRODUCTS, 100, $shop['id_shop']);
-            $this->setConfigurationDefault(self::REAL_TIME_SYNCHRONIZATION, false, $shop['id_shop']);
-            $this->setConfigurationDefault(self::ORDER_STATUS_TIME_SHIFT, 5, $shop['id_shop']);
-            $this->setConfigurationDefault(self::ORDER_STATUS_MAX_ORDERS, 100, $shop['id_shop']);
-            $this->setConfigurationDefault(self::SHIPPED_ORDERS, json_encode(array()), $shop['id_shop']);
-            $this->setConfigurationDefault(self::CANCELLED_ORDERS, json_encode(array()), $shop['id_shop']);
-            $this->setConfigurationDefault(self::REFUNDED_ORDERS, json_encode(array()), $shop['id_shop']);
-            $this->setConfigurationDefault(self::ORDER_IMPORT_ENABLED, true, $shop['id_shop']);
-        }
+        $this->setConfigurationDefault(self::STOCK_SYNC_ENABLED, true);
+        $this->setConfigurationDefault(self::PRICE_SYNC_ENABLED, true);
+        $this->setConfigurationDefault(self::ORDER_SYNC_ENABLED, true);
+        $this->setConfigurationDefault(self::STOCK_SYNC_MAX_PRODUCTS, 100);
+        $this->setConfigurationDefault(self::REAL_TIME_SYNCHRONIZATION, false);
+        $this->setConfigurationDefault(self::ORDER_STATUS_TIME_SHIFT, 5);
+        $this->setConfigurationDefault(self::ORDER_STATUS_MAX_ORDERS, 100);
+        $this->setConfigurationDefault(self::SHIPPED_ORDERS, json_encode(array()));
+        $this->setConfigurationDefault(self::CANCELLED_ORDERS, json_encode(array()));
+        $this->setConfigurationDefault(self::REFUNDED_ORDERS, json_encode(array()));
+        $this->setConfigurationDefault(self::ORDER_IMPORT_ENABLED, true);
+        $this->setConfigurationDefault(self::PRODUCT_FEED_CARRIER_REFERENCE, Configuration::getGlobalValue('PS_CARRIER_DEFAULT'));
 
         return $res;
     }
@@ -361,10 +352,10 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         return true;
     }
 
-    public function setConfigurationDefault($key, $defaultValue, $id_shop)
+    public function setConfigurationDefault($key, $defaultValue)
     {
-        if (!Configuration::hasKey($key, null, null, $id_shop)) {
-            Configuration::updateValue($key, $defaultValue, null, null, $id_shop);
+        if (!Configuration::hasKey($key)) {
+            Configuration::updateGlobalValue($key, $defaultValue);
         }
     }
 
@@ -749,8 +740,8 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
      */
     public function hookActionObjectProductUpdateAfter($params)
     {
-        $this->updateShoppingFeedPriceRealtime();
         $this->updateShoppingFeedPreloading($params, ShoppingfeedPreloading::ACTION_SYNC_ALL);
+        $this->updateShoppingFeedPriceRealtime();
     }
 
     /**
@@ -774,22 +765,22 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         try {
             $handler = new \ShoppingfeedClasslib\Actions\ActionsHandler();
             $handler->addActions('getBatch');
-            $shops = Shop::getShops();
-            foreach ($shops as $shop) {
-                if (false == Configuration::get(Shoppingfeed::REAL_TIME_SYNCHRONIZATION, null, null, $shop['id_shop'])) {
-                    continue;
-                }
+            $sft = new ShoppingfeedToken();
+            $tokens = $sft->findALlActive();
 
-                $handler->setConveyor(array(
-                    'id_shop' => $shop['id_shop'],
-                    'product_action' => ShoppingfeedProduct::ACTION_SYNC_PRICE,
-                ));
+            if (Configuration::getGlobalValue(Shoppingfeed::REAL_TIME_SYNCHRONIZATION)) {
+                foreach ($tokens as $token) {
+                    $handler->setConveyor(array(
+                        'id_token' => $token['id_shoppingfeed_token'],
+                        'product_action' => ShoppingfeedProduct::ACTION_SYNC_PRICE,
+                    ));
 
-                $processResult = $handler->process('shoppingfeedProductSyncPrice');
-                if (!$processResult) {
-                    \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logError(
-                        ShoppingfeedProductSyncPriceActions::getLogPrefix() . ' ' . $this->l('Fail : An error occurred during process.')
-                    );
+                    $processResult = $handler->process('shoppingfeedProductSyncPrice');
+                    if (!$processResult) {
+                        \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logError(
+                            ShoppingfeedProductSyncPriceActions::getLogPrefix() . ' ' . $this->l('Fail : An error occurred during process.')
+                        );
+                    }
                 }
             }
         } catch (Exception $e) {

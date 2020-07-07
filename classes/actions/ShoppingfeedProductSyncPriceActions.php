@@ -56,6 +56,7 @@ class ShoppingfeedProductSyncPriceActions extends ShoppingfeedProductSyncActions
         $this->conveyor['preparedBatch'] = array();
         /** @var Shoppingfeed $sfModule */
         $sfModule = Module::getInstanceByName('shoppingfeed');
+        $token = new ShoppingfeedToken($this->conveyor['id_token']);
 
         /** @var ShoppingfeedProduct $sfProduct */
         foreach ($this->conveyor['batch'] as $sfProduct) {
@@ -71,7 +72,7 @@ class ShoppingfeedProductSyncPriceActions extends ShoppingfeedProductSyncActions
             // The developer can skip products to sync by overriding
             // ShoppingFeed::mapProductPrice and have it return false (strict
             // comparison)
-            $price = $sfModule->mapProductPrice($sfProduct, $sfProduct->id_shop);
+            $price = $sfModule->mapProductPrice($sfProduct, $token->id_shop);
             if (false === $price) {
                 $sfProduct->delete();
                 continue;
@@ -96,7 +97,7 @@ class ShoppingfeedProductSyncPriceActions extends ShoppingfeedProductSyncActions
      */
     public function executeBatch()
     {
-        $shoppingfeedApi = ShoppingfeedApi::getInstanceByToken($this->conveyor['id_shop']);
+        $shoppingfeedApi = ShoppingfeedApi::getInstanceByToken($this->conveyor['id_token']);
         if ($shoppingfeedApi == false) {
             ProcessLoggerHandler::logError(
                 static::getLogPrefix($this->conveyor['id_shop']) . ' ' .

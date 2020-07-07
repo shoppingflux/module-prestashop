@@ -765,7 +765,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             return true;
         }
 
-        $shoppingfeedApi = ShoppingfeedApi::getInstanceByToken($this->conveyor['id_shop']);
+        $shoppingfeedApi = ShoppingfeedApi::getInstanceByToken($this->conveyor['id_token']);
         if ($shoppingfeedApi == false) {
             ProcessLoggerHandler::logError(
                 $this->logPrefix .
