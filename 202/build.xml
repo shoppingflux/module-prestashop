@@ -42,7 +42,8 @@
         </apply>
     </target>
 
-    <target name="clean" depends="clean-build,clean-composer" description="Cleanup build and composer artifacts" />
+    <!--target name="clean" depends="clean-build,clean-composer" description="Cleanup build and composer artifacts" /-->
+    <target name="clean" depends="clean-build" description="Cleanup build and composer artifacts" />
 
     <target name="clean-build" description="Cleanup build artifacts">
         <echo>Cleaning out the build artifacts</echo>
