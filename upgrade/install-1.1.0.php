@@ -36,13 +36,9 @@ function upgrade_module_1_1_0($module)
     // Install the ShoppingfeedProduct Model; we need to update the 'action' enum
     $installer->installObjectModel('ShoppingfeedProduct');
 
-    // Install the new configuration variables
-    $shops = Shop::getShops();
-    foreach ($shops as $shop) {
-        // Set default values for configuration variables
-        Configuration::updateValue(ShoppingFeed::STOCK_SYNC_ENABLED, true, false, null, $shop['id_shop']);
-        Configuration::updateValue(ShoppingFeed::PRICE_SYNC_ENABLED, true, false, null, $shop['id_shop']);
-    }
+    // Set default values for configuration variables
+    Configuration::updateGlobalValue(ShoppingFeed::STOCK_SYNC_ENABLED, true);
+    Configuration::updateGlobalValue(ShoppingFeed::PRICE_SYNC_ENABLED, true);
 
     return true;
 }

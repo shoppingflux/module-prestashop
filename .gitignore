@@ -2,6 +2,6 @@
 
 /202/build
 /config*.xml
-/composer.json
+#/composer.json
 /.project
 /node_modules

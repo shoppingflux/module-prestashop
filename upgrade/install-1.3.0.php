@@ -44,10 +44,7 @@ function upgrade_module_1_3_0($module)
     $installer->installObjectModel('ShoppingfeedCarrier');
 
     // Install the new configuration variables
-    $shops = Shop::getShops();
-    foreach ($shops as $shop) {
-        // Set default values for configuration variables
-        $module->setConfigurationDefault(Shoppingfeed::ORDER_IMPORT_ENABLED, false, $shop['id_shop']);
-    }
+    $module->setConfigurationDefault(Shoppingfeed::ORDER_IMPORT_ENABLED, false);
+
     return true;
 }

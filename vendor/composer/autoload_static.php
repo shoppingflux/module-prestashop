@@ -7,7 +7,7 @@ namespace Composer\Autoload;
 class ComposerStaticInit3fe85f86ff701f6bd7fd7d7a118b5533
 {
     public static $files = array (
-        '7b11c4dc42b3b3023073cb14e519683c' => __DIR__ . '/..' . '/ralouphie/getallheaders/src/getallheaders.php',
+        '1fcaacb5a22154c13db6129480b5e77c' => __DIR__ . '/..' . '/shoppingfeed/php-feed-generator/src/functions.php',
         'f33272d63e9a2d09c99203a9a97f54b1' => __DIR__ . '/..' . '/prefixed/guzzlehttp/guzzle/src/functions_include.php',
         '22c9b56222bf22d246f83bcbd185cd63' => __DIR__ . '/..' . '/prefixed/guzzlehttp/psr7/src/functions_include.php',
         '3e2b664baaaecea236641ee09d13e255' => __DIR__ . '/..' . '/prefixed/guzzlehttp/promises/src/functions_include.php',
@@ -19,6 +19,7 @@ class ComposerStaticInit3fe85f86ff701f6bd7fd7d7a118b5533
             'ShoppingfeedClasslib\\' => 21,
             'ShoppingfeedAddon\\' => 18,
             'ShoppingFeed\\Sdk\\' => 17,
+            'ShoppingFeed\\Feed\\' => 18,
             'SfGuzzle\\GuzzleHttp\\Psr7\\' => 25,
             'SfGuzzle\\GuzzleHttp\\Promise\\' => 28,
             'SfGuzzle\\GuzzleHttp\\' => 20,
@@ -41,6 +42,10 @@ class ComposerStaticInit3fe85f86ff701f6bd7fd7d7a118b5533
         'ShoppingFeed\\Sdk\\' => 
         array (
             0 => __DIR__ . '/..' . '/prefixed/shoppingfeed/php-sdk/src',
+        ),
+        'ShoppingFeed\\Feed\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/shoppingfeed/php-feed-generator/src',
         ),
         'SfGuzzle\\GuzzleHttp\\Psr7\\' => 
         array (

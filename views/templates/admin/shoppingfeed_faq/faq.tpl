@@ -39,22 +39,7 @@
 
                 <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
                     <div class="card-body">
-                        {l s='Yes. This new module works with or without the other module' mod='shoppingfeed'}
-                    </div>
-                </div>
-            </div>
-            <div class="card">
-                <div class="card-header" id="headingTwo">
-                    <h5 class="mb-0">
-                        <a class="btn btn-link collapsed" role="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                            <span> {l s='Does the 15 min Marketplace Updates - Shopping Feed module synchronize other data from my product listings ?' mod='shoppingfeed'}
-                           </span><i class="fa fa-chevron-up"></i>
-                        </a>
-                    </h5>
-                </div>
-                <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
-                    <div class="card-body">
-                        {l s='No. For the moment this module only synchronizes stocks, but we are already thinking about adding price updates on the same principle as stocks' mod='shoppingfeed'}
+                        {l s='No. This new module replace the old one. All features need are now in this module: your product feed, update stock or price in 15 minutes or import your orders from marketplaces.' mod='shoppingfeed'}
                     </div>
                 </div>
             </div>
@@ -75,7 +60,6 @@
                     </div>
                 </div>
             </div>
-
             <div class="card">
                 <div class="card-header" id="heading5">
                     <h5 class="mb-0">
@@ -88,11 +72,59 @@
                 <div id="collapse5" class="collapse" aria-labelledby="heading5" data-parent="#accordion">
                     <div class="card-body">
                         <ul>
-                            <li>                {l s='You activated multishop and have several Shopping feed account, the RealTime parameter on YES is recommended.' mod='shoppingfeed'}</li>
-                            <li>                {l s='You have less than 100 products, the RealTime parameter on YES is recommended. You have little stock for each reference and for you the stock precision is fundamental. Moreover, no need to set up any cron job. Sending real-time inventory updates to the Feed API makes it easy for you to sync inventory in less than 15 minutes. However, this multiplies the calls to the Shopping API stream which can slow the loading time of pages that decrement or increment the stock, especially during order status updates.' mod='shoppingfeed'}</li>
-                            <li>                {l s='You have between 100 and 1000 products, the Realtime parameter on NO is recommended. Updates are queued and the configuration of a cron job (URL) every 5 minutes will allow you to synchronize of all products waiting for synchronization. This reduce calls sent to the Shopping Flux API and improve page loading performances.' mod='shoppingfeed'}</li>
-                            <li>                {l s='You have more than 1000 products, Realtime parameter NO is required. You probably use an external tool (like an ERP) to manage your inventory which can lead to many updates at the same time. In this case, the updates are queued and the configuration of a cron job (URL) every 5 minutes will allow you to synchronize of all products waiting for synchronization. This reduce calls sent to the Shopping Flux API and improve page loading performances' mod='shoppingfeed'}</li>
+                            <li>{l s='You activated multishop and have several Shopping feed account, the RealTime parameter on YES is recommended.' mod='shoppingfeed'}</li>
+                            <li>{l s='You have less than 100 products, the RealTime parameter on YES is recommended. You have little stock for each reference and for you the stock precision is fundamental. Moreover, no need to set up any cron job. Sending real-time inventory updates to the Feed API makes it easy for you to sync inventory in less than 15 minutes. However, this multiplies the calls to the Shopping API stream which can slow the loading time of pages that decrement or increment the stock, especially during order status updates.' mod='shoppingfeed'}</li>
+                            <li>{l s='You have between 100 and 1000 products, the Realtime parameter on NO is recommended. Updates are queued and the configuration of a cron job (URL) every 5 minutes will allow you to synchronize of all products waiting for synchronization. This reduce calls sent to the Shopping Flux API and improve page loading performances.' mod='shoppingfeed'}</li>
+                            <li>{l s='You have more than 1000 products, Realtime parameter NO is required. You probably use an external tool (like an ERP) to manage your inventory which can lead to many updates at the same time. In this case, the updates are queued and the configuration of a cron job (URL) every 5 minutes will allow you to synchronize of all products waiting for synchronization. This reduce calls sent to the Shopping Flux API and improve page loading performances' mod='shoppingfeed'}</li>
                         </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header" id="heading2">
+                    <h5 class="mb-0">
+                        <a class="btn btn-link collapsed" role="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                            <span> {l s='Does the 15 min Marketplace Updates - Shopping Feed module synchronize other data from my product listings ?' mod='shoppingfeed'}
+                           </span><i class="fa fa-chevron-up"></i>
+                        </a>
+                    </h5>
+                </div>
+                <div id="collapseTwo" class="collapse" aria-labelledby="heading2" data-parent="#accordion">
+                    <div class="card-body">
+                        {l s='Yes. Your stocks and prices are sync every 15 minutes. But you catalog is crawled by Shoppingfeed each day.' mod='shoppingfeed'}
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header" id="heading7">
+                    <h5 class="mb-0">
+                        <a class="btn btn-link collapsed" role="button" data-toggle="collapse" data-target="#collapse7" aria-expanded="false" aria-controls="collapseTwo">
+                            <span> {l s='Can I manage carriers from a marketplace?' mod='shoppingfeed'}
+                           </span><i class="fa fa-chevron-up"></i>
+                        </a>
+                    </h5>
+                </div>
+                <div id="collapse7" class="collapse" aria-labelledby="heading7" data-parent="#accordion">
+                    <div class="card-body">
+                        {l s='Yes. You can map carrier from marketplaces with your PrestaShop carrier. Please consider a first order should be imported in your PrestaShop before seing a marketplace carrier. After that, you could go to Settings > Order Feed tab to configure your carrier.' mod='shoppingfeed'}
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header" id="heading7">
+                    <h5 class="mb-0">
+                        <a class="btn btn-link collapsed" role="button" data-toggle="collapse" data-target="#collapse7" aria-expanded="false" aria-controls="collapseTwo">
+                            <span> {l s='Can I manage ISBN, EAN13, MPN or my own reference in my product feed?' mod='shoppingfeed'}
+                           </span><i class="fa fa-chevron-up"></i>
+                        </a>
+                    </h5>
+                </div>
+                <div id="collapse7" class="collapse" aria-labelledby="heading7" data-parent="#accordion">
+                    <div class="card-body">
+                        {l s='Yes, but this configuration cannot be modify after publishing your feed on marketplaces. Shoppingfeed support can help you to define your strategy.' mod='shoppingfeed'}
                     </div>
                 </div>
             </div>
@@ -133,18 +165,18 @@
                         <br/>
                         <textarea readonly rows="10" >
 URL: {$shop_url|escape:'htmlall':'UTF-8'}
-                            Version PHP: {$php_version|escape:'htmlall':'UTF-8'}
-                            Version PrestaShop: {$prestashop_version|escape:'htmlall':'UTF-8'}
-                            Version ShoppingFeed: {$module_version|escape:'htmlall':'UTF-8'}
-                            Multishop: {$multishop|escape:'htmlall':'UTF-8'}
-                            Combination: {$combination|escape:'htmlall':'UTF-8'}
+Version PHP: {$php_version|escape:'htmlall':'UTF-8'}
+Version PrestaShop: {$prestashop_version|escape:'htmlall':'UTF-8'}
+Version ShoppingFeed: {$module_version|escape:'htmlall':'UTF-8'}
+Multishop: {$multishop|escape:'htmlall':'UTF-8'}
+Combination: {$combination|escape:'htmlall':'UTF-8'}
 
-                            Products: {$nbr_products|escape:'htmlall':'UTF-8'}
-                            Token : {$token|escape:'htmlall':'UTF-8'}
-                            Real time active: {$REAL_TIME_SYNCHRONIZATION|escape:'htmlall':'UTF-8'}
-                            Real time count products: {$STOCK_SYNC_MAX_PRODUCTS|escape:'htmlall':'UTF-8'}
-                            Cron url: {$syncProductUrl|escape:'htmlall':'UTF-8'}
-                            Last sync: {$LAST_CRON_TIME_SYNCHRONIZATION|escape:'htmlall':'UTF-8'}</textarea>
+Products: {$nbr_products|escape:'htmlall':'UTF-8'}
+Token : {$token|escape:'htmlall':'UTF-8'}
+Real time active: {$REAL_TIME_SYNCHRONIZATION|escape:'htmlall':'UTF-8'}
+Real time count products: {$STOCK_SYNC_MAX_PRODUCTS|escape:'htmlall':'UTF-8'}
+Cron url: {$syncProductUrl|escape:'htmlall':'UTF-8'}
+Last sync: {$LAST_CRON_TIME_SYNCHRONIZATION|escape:'htmlall':'UTF-8'}</textarea>
                     </div>
                 </div>
             </div>

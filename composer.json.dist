@@ -1,5 +1,6 @@
 {
   "require": {
+    "shoppingfeed/php-feed-generator": "1.2.0",
     "shoppingfeed/php-sdk": "0.2.5",
     "guzzlehttp/guzzle": "^6.0"
   },

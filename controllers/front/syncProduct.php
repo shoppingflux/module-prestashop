@@ -67,7 +67,11 @@ class ShoppingfeedSyncProductModuleFrontController extends CronController
                 'actions_suffix' => 'Price'
             );
         }
-        
+
+        $actions[ShoppingfeedPreloading::ACTION_SYNC_PRELODING] = array(
+            'actions_suffix' => 'Preloading'
+        );
+
         if (empty($actions)) {
             // The data to be saved in the CRON table
             return $data;
@@ -101,10 +105,11 @@ class ShoppingfeedSyncProductModuleFrontController extends CronController
             /** @var ShoppingfeedHandler $handler */
             $handler = new ActionsHandler();
             $handler->addActions('getBatch');
-            $shops = Shop::getShops();
-            foreach ($shops as $shop) {
+            $sft = new ShoppingfeedToken();
+            $tokens = $sft->findALlActive();
+            foreach ($tokens as $token) {
                 $handler->setConveyor(array(
-                    'id_shop' => $shop['id_shop'],
+                    'id_token' => $token['id_shoppingfeed_token'],
                     'product_action' => $action,
                 ));
 

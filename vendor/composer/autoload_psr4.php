@@ -9,6 +9,7 @@ return array(
     'ShoppingfeedClasslib\\' => array($vendorDir . '/totpsclasslib/src'),
     'ShoppingfeedAddon\\' => array($baseDir . '/src'),
     'ShoppingFeed\\Sdk\\' => array($vendorDir . '/prefixed/shoppingfeed/php-sdk/src'),
+    'ShoppingFeed\\Feed\\' => array($vendorDir . '/shoppingfeed/php-feed-generator/src'),
     'SfGuzzle\\GuzzleHttp\\Psr7\\' => array($vendorDir . '/prefixed/guzzlehttp/psr7/src'),
     'SfGuzzle\\GuzzleHttp\\Promise\\' => array($vendorDir . '/prefixed/guzzlehttp/promises/src'),
     'SfGuzzle\\GuzzleHttp\\' => array($vendorDir . '/prefixed/guzzlehttp/guzzle/src'),

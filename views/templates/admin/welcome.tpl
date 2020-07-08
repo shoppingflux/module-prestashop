@@ -28,10 +28,9 @@
        <div class="col-lg-6 logo_shoppingfeed">
            <img class="mb-0" id="logo_sf" src="{$img_path|escape:'htmlall':'UTF-8'}logo_shoppingfeed.png"/>
        </div>
-
        <div class="col-lg-6 desc_shoppingfeed">
            <p>
-               {l s='Improve your Shopping Feed module\'s  Marketplaces stocks synchronization speed.' mod='shoppingfeed'}
+               {l s='Improve your shoppingfeed module\'s Marketplaces synchronization speed.' mod='shoppingfeed'}
            </p>
        </div>
    </div>
