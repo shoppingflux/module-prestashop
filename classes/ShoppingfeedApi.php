@@ -307,7 +307,10 @@ class ShoppingfeedApi
             'filters' => [
                 // Only retrieve unacknowleged (non-imported) orders
                 'acknowledgment' => 'unacknowledged',
-                // TODO : since / until filters ?
+                // Available Shoppingfeed status:
+                // created, waiting_store_acceptance, refused, waiting_shipment, shipped,
+                // cancelled, refunded, partially_refunded, partially_shipped
+                'status' => 'waiting_shipment',
             ]
         ];
 

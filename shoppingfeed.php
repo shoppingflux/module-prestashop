@@ -455,6 +455,13 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
      */
     public function mapPrestashopProduct($sfProductReference, $id_shop, ...$arguments)
     {
+        Hook::exec(
+            'ShoppingfeedReverseProductReference', // hook_name
+            array(
+                'sfProductReference' => &$sfProductReference,
+            ) // hook_args
+        );
+
         $explodedReference = explode('_', $sfProductReference);
         $id_product = isset($explodedReference[0]) ? $explodedReference[0] : null;
 

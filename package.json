@@ -3,8 +3,9 @@
         "doc": "doc"
     },
     "scripts": {
-        "doc-build": "stylemark -i 202/doc -o 202/build/doc -c 202/doc/config.yml",
-        "doc-watch": "stylemark -i 202/doc -o 202/build/doc -c 202/doc/config.yml -w -b"
+        "build": "./node_modules/.bin/stylemark -i 202/doc -o 202/build/doc -c 202/doc/config.yml",
+        "doc-build": "./node_modules/.bin/stylemark -i 202/doc -o 202/build/doc -c 202/doc/config.yml",
+        "doc-watch": "./node_modules/.bin/stylemark -i 202/doc -o 202/build/doc -c 202/doc/config.yml -w -b"
     },
     "devDependencies": {
         "stylemark": "^3.0.3"
