@@ -59,7 +59,6 @@ class ShoppingfeedProductModuleFrontController  extends \ModuleFrontController
         $product
             ->setName($item['name'])
             ->setDescription($item['description']['full'], $item['description']['short'])
-            ->setCategory($item['category']['name'], $item['category']['link'])
             ->setReference($item['reference'])
             ->setGtin($item['gtin'])
             ->setQuantity($item['quantity'])
@@ -72,7 +71,7 @@ class ShoppingfeedProductModuleFrontController  extends \ModuleFrontController
             $product->setBrand($item['brand']['name'], $item['brand']['link']);
         }
         if (empty($item['category']) !== true) {
-            $product->setBrand($item['category']['name'], $item['category']['link']);
+            $product->setCategory($item['category']['name'], $item['category']['link']);
         }
         foreach ($item['discounts'] as $discount) {
             $product->addDiscount($discount);
