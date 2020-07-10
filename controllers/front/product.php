@@ -52,6 +52,7 @@ class ShoppingfeedProductModuleFrontController  extends \ModuleFrontController
 
         header('HTTP/1.1 302 Moved Temporarily');
         header('Location: '. __PS_BASE_URI__ . $fileXml);
+        exit;
     }
 
     public function mapper(array $item, Product $product)
