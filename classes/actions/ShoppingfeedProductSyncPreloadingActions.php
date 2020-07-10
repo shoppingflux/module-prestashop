@@ -28,6 +28,7 @@ if (!defined('_PS_VERSION_')) {
 
 use ShoppingfeedClasslib\Actions\DefaultActions;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
+use ShoppingfeedClasslib\Registry;
 
 class ShoppingfeedProductSyncPreloadingActions extends DefaultActions
 {
@@ -40,6 +41,7 @@ class ShoppingfeedProductSyncPreloadingActions extends DefaultActions
                 $this->l('unable ton find token.', 'ShoppingfeedProductSyncPreloadingActions'),
                 'Product'
             );
+            Registry::increment('errors');
 
             return false;
         }
@@ -50,6 +52,7 @@ class ShoppingfeedProductSyncPreloadingActions extends DefaultActions
                 $this->l('unable ton find currency.', 'ShoppingfeedProductSyncPreloadingActions'),
                 'Product'
             );
+            Registry::increment('errors');
 
             return false;
         }
@@ -64,9 +67,9 @@ class ShoppingfeedProductSyncPreloadingActions extends DefaultActions
             ->where(sprintf('(sfp.actions IS NOT NULL AND sfp.id_token = %d) OR (sfp.id_token IS NULL)', $token->id_shoppingfeed_token))
             ->where('ps.id_shop = ' . $token->id_shop)
             ->where('ps.active = 1')
-            ->limit(Configuration::get(ShoppingFeed::STOCK_SYNC_MAX_PRODUCTS));
+            ->limit(Configuration::getGlobalValue(ShoppingFeed::STOCK_SYNC_MAX_PRODUCTS));
 
-        if ((bool)Configuration::get(ShoppingFeed::PRODUCT_FEED_SYNC_PACK) !== true) {
+        if ((bool)Configuration::getGlobalValue(ShoppingFeed::PRODUCT_FEED_SYNC_PACK) !== true) {
             $sql->where('p.cache_is_pack = 0');
         }
         $result = $db->executeS($sql);
@@ -76,8 +79,11 @@ class ShoppingfeedProductSyncPreloadingActions extends DefaultActions
 
             try {
                 $sfp->saveProduct($row['id_product'], $token->id_shoppingfeed_token, $token->id_lang, $token->id_shop);
+
+                Registry::increment('updatedProducts');
             } catch (Exception $exception) {
                 ProcessLoggerHandler::logError($exception->getMessage());
+
             }
         }
 
