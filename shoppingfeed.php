@@ -767,7 +767,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
 
             return;
         }
-        if (Configuration::getGlobalValue(Shoppingfeed::REAL_TIME_SYNCHRONIZATION) !== true) {
+        if ((bool)Configuration::getGlobalValue(Shoppingfeed::REAL_TIME_SYNCHRONIZATION) === false) {
 
             return;
         }
