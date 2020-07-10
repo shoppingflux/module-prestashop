@@ -565,7 +565,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         } catch (Exception $e) {
             \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logInfo(
                 sprintf(
-                    ShoppingfeedProductSyncStockActions::getLogPrefix() . ' ' . $this->l('Product %s not registered for synchronization: %s', 'ShoppingfeedProductSyncActions'),
+                    $this->l('Product %s not registered for synchronization: %s', 'ShoppingfeedProductSyncActions'),
                     $id_product . ($id_product_attribute ? '_' . $id_product_attribute : ''),
                     $e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine()
                 ),
@@ -622,7 +622,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         } catch (Exception $e) {
             \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logInfo(
                 sprintf(
-                    ShoppingfeedProductSyncPriceActions::getLogPrefix() . ' ' . $this->l('Product %s not registered for synchronization: %s', 'ShoppingfeedProductSyncActions'),
+                    $this->l('Product %s not registered for synchronization: %s', 'ShoppingfeedProductSyncActions'),
                     $product->id,
                     $e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine()
                 ),
@@ -691,7 +691,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         } catch (Exception $e) {
             \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logInfo(
                 sprintf(
-                    ShoppingfeedProductSyncPriceActions::getLogPrefix() . ' ' . $this->l('Combination %s not registered for synchronization: %s', 'ShoppingfeedProductSyncActions'),
+                    $this->l('Combination %s not registered for synchronization: %s', 'ShoppingfeedProductSyncActions'),
                     $combination->id_product . ($combination->id ? '_' . $combination->id : ''),
                     $e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine()
                 ),
