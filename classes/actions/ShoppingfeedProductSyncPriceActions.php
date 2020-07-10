@@ -100,7 +100,7 @@ class ShoppingfeedProductSyncPriceActions extends ShoppingfeedProductSyncActions
         $shoppingfeedApi = ShoppingfeedApi::getInstanceByToken($this->conveyor['id_token']);
         if ($shoppingfeedApi == false) {
             ProcessLoggerHandler::logError(
-                static::getLogPrefix($this->conveyor['id_shop']) . ' ' .
+                static::getLogPrefix($this->conveyor['id_token']) . ' ' .
                     $this->l('Could not retrieve Shopping Feed API.', 'ShoppingfeedProductSyncPriceActions'),
                 'Product'
             );
@@ -123,7 +123,7 @@ class ShoppingfeedProductSyncPriceActions extends ShoppingfeedProductSyncActions
             
             ProcessLoggerHandler::logInfo(
                 sprintf(
-                    static::getLogPrefix($this->conveyor['id_shop']) . ' ' .
+                    static::getLogPrefix($this->conveyor['id_token']) . ' ' .
                         $this->l('Updated %s price: %s', 'ShoppingfeedProductSyncPriceActions'),
                     $reference,
                     $preparedBatchShop[$reference]['price']
@@ -145,7 +145,7 @@ class ShoppingfeedProductSyncPriceActions extends ShoppingfeedProductSyncActions
 
                 ProcessLoggerHandler::logInfo(
                     sprintf(
-                        static::getLogPrefix($this->conveyor['id_shop']) . ' ' .
+                        static::getLogPrefix($this->conveyor['id_token']) . ' ' .
                             $this->l('%s not in Shopping Feed catalog - price: %s', 'ShoppingfeedProductSyncPriceActions'),
                         $data['reference'],
                         $data['price']
@@ -162,11 +162,11 @@ class ShoppingfeedProductSyncPriceActions extends ShoppingfeedProductSyncActions
         return true;
     }
     
-    public static function getLogPrefix($id_shop = '')
+    public static function getLogPrefix($id_token)
     {
         return sprintf(
-            Translate::getModuleTranslation('shoppingfeed', '[Price shop:%s]', 'ShoppingfeedProductSyncPriceActions'),
-            $id_shop
+            Translate::getModuleTranslation('shoppingfeed', '[Price token:%s]', 'ShoppingfeedProductSyncPriceActions'),
+            $id_token
         );
     }
 }

@@ -85,24 +85,23 @@ class ShoppingfeedProductSyncPreloadingActions extends DefaultActions
     }
 
     public function saveProduct() {
-        $logPrefix = static::getLogPrefix();
 
         if (empty($this->conveyor['product']) || $this->conveyor['product'] instanceof Product === false) {
             ProcessLoggerHandler::logInfo(
-                $logPrefix . ' ' .
-                $this->l('Product not valide for synchronization', 'ShoppingfeedProductSyncActions'),
+                $this->l('Product not valide for synchronization', 'ShoppingfeedProductSyncPreloadingActions'),
                 'Product'
             );
             return false;
         }
-
         $product = $this->conveyor['product'];
+        $logPrefix = static::getLogPrefix($product->id);
+
 
         if (empty($this->conveyor['product_action'])) {
             ProcessLoggerHandler::logInfo(
                 sprintf(
                     $logPrefix . ' ' .
-                    $this->l('Product %s not registered for synchronization; no Action found', 'ShoppingfeedProductSyncActions'),
+                    $this->l('Product %s not registered for synchronization; no Action found', 'ShoppingfeedProductSyncPreloadingActions'),
                     $product->id
                 ),
                 'Product'
@@ -136,14 +135,12 @@ class ShoppingfeedProductSyncPreloadingActions extends DefaultActions
 
     public function deleteProduct()
     {
-        $logPrefix = static::getLogPrefix();
-
         if (empty($this->conveyor['product']) || $this->conveyor['product'] instanceof Product === false) {
             ProcessLoggerHandler::logInfo(
-                $logPrefix . ' ' .
-                $this->l('Product not valide for synchronization', 'ShoppingfeedProductSyncActions'),
+                $this->l('Product not valide for synchronization', 'ShoppingfeedProductSyncPreloadingActions'),
                 'Product'
             );
+
             return false;
         }
 
@@ -158,12 +155,11 @@ class ShoppingfeedProductSyncPreloadingActions extends DefaultActions
         return true;
     }
 
-
-    public static function getLogPrefix($id_shop = '')
+    public static function getLogPrefix($id_product)
     {
         return sprintf(
-            Translate::getModuleTranslation('shoppingfeed', '[Preloading shop:%s]', 'ShoppingfeedProductSyncPreloadingActions'),
-            $id_shop
+            Translate::getModuleTranslation('shoppingfeed', '[Preloading product:%s]', 'ShoppingfeedProductSyncPreloadingActions'),
+            $id_product
         );
     }
 }

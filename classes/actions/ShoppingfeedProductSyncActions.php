@@ -49,11 +49,8 @@ abstract class ShoppingfeedProductSyncActions extends DefaultActions
      */
     public function saveProduct()
     {
-        $logPrefix = static::getLogPrefix();
-
         if (empty($this->conveyor['id_product'])) {
             ProcessLoggerHandler::logInfo(
-                $logPrefix . ' ' .
                     $this->l('Product not registered for synchronization; no ID product found', 'ShoppingfeedProductSyncActions'),
                 'Product'
             );
@@ -70,8 +67,7 @@ abstract class ShoppingfeedProductSyncActions extends DefaultActions
         if (empty($this->conveyor['product_action'])) {
             ProcessLoggerHandler::logInfo(
                 sprintf(
-                    $logPrefix . ' ' .
-                        $this->l('Product %s not registered for synchronization; no Action found', 'ShoppingfeedProductSyncActions'),
+                    $this->l('Product %s not registered for synchronization; no Action found', 'ShoppingfeedProductSyncActions'),
                     $id_product . ($id_product_attribute ? '_' . $id_product_attribute : '')
                 ),
                 'Product'
@@ -143,7 +139,7 @@ abstract class ShoppingfeedProductSyncActions extends DefaultActions
             ->where('update_at IS NOT NULL')
             ->where('id_token ='. (int) $this->conveyor['id_token'])
             ->where("update_at <= '" . date('Y-m-d H:i:s') . "'")
-            ->limit(Configuration::get(Shoppingfeed::STOCK_SYNC_MAX_PRODUCTS, null, null, $this->conveyor['id_shop']))
+            ->limit(Configuration::getGlobalValue(Shoppingfeed::STOCK_SYNC_MAX_PRODUCTS))
             ->orderBy('date_add ASC');
         $sfProductsRows = Db::getInstance()->executeS($query);
 
@@ -196,11 +192,11 @@ abstract class ShoppingfeedProductSyncActions extends DefaultActions
      */
     abstract public function executeBatch();
     
-    public static function getLogPrefix($id_shop = '')
+    public static function getLogPrefix($id_token)
     {
         return sprintf(
-            Translate::getModuleTranslation('shoppingfeed', '[Product shop:%s]', 'ShoppingfeedProductSyncActions'),
-            $id_shop
+            Translate::getModuleTranslation('shoppingfeed', '[Product token:%s]', 'ShoppingfeedProductSyncActions'),
+            $id_token
         );
     }
 }

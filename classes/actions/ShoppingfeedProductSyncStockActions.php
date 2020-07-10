@@ -91,11 +91,12 @@ class ShoppingfeedProductSyncStockActions extends ShoppingfeedProductSyncActions
         $shoppingfeedApi = ShoppingfeedApi::getInstanceByToken($this->conveyor['id_token']);
         if ($shoppingfeedApi == false) {
             ProcessLoggerHandler::logError(
-                static::getLogPrefix($this->conveyor['id_shop']) . ' ' .
+                static::getLogPrefix($this->conveyor['id_token']) . ' ' .
                     $this->l('Could not retrieve Shopping Feed API.', 'ShoppingfeedProductSyncStockActions'),
                 'Product'
             );
             Registry::increment('errors');
+            
             return false;
         }
         $res = $shoppingfeedApi->updateMainStoreInventory($this->conveyor['preparedBatch']);
@@ -114,7 +115,7 @@ class ShoppingfeedProductSyncStockActions extends ShoppingfeedProductSyncActions
 
             ProcessLoggerHandler::logInfo(
                 sprintf(
-                    static::getLogPrefix($this->conveyor['id_shop']) . ' ' .
+                    static::getLogPrefix($this->conveyor['id_token']) . ' ' .
                         $this->l('Updated %s qty: %s', 'ShoppingfeedProductSyncStockActions'),
                     $reference,
                     $preparedBatchShop[$reference]['quantity']
@@ -136,7 +137,7 @@ class ShoppingfeedProductSyncStockActions extends ShoppingfeedProductSyncActions
 
                 ProcessLoggerHandler::logInfo(
                     sprintf(
-                        static::getLogPrefix($this->conveyor['id_shop']) . ' ' .
+                        static::getLogPrefix($this->conveyor['id_token']) . ' ' .
                             $this->l('%s not in Shopping Feed catalog - qty: %s', 'ShoppingfeedProductSyncStockActions'),
                         $data['reference'],
                         $data['quantity']
@@ -153,11 +154,11 @@ class ShoppingfeedProductSyncStockActions extends ShoppingfeedProductSyncActions
         return true;
     }
 
-    public static function getLogPrefix($id_shop = '')
+    public static function getLogPrefix($id_token)
     {
         return sprintf(
-            Translate::getModuleTranslation('shoppingfeed', '[Stock shop:%s]', 'ShoppingfeedProductSyncStockActions'),
-            $id_shop
+            Translate::getModuleTranslation('shoppingfeed', '[Stock token:%s]', 'ShoppingfeedProductSyncStockActions'),
+            $id_token
         );
     }
 }
