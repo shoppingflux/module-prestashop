@@ -28,6 +28,7 @@ if (!defined('_PS_VERSION_')) {
 
 use ShoppingfeedClasslib\Actions\DefaultActions;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
+use ShoppingfeedClasslib\Registry;
 
 class ShoppingfeedProductSyncPreloadingActions extends DefaultActions
 {
@@ -40,6 +41,7 @@ class ShoppingfeedProductSyncPreloadingActions extends DefaultActions
                 $this->l('unable ton find token.', 'ShoppingfeedProductSyncPreloadingActions'),
                 'Product'
             );
+            Registry::increment('errors');
 
             return false;
         }
@@ -50,6 +52,7 @@ class ShoppingfeedProductSyncPreloadingActions extends DefaultActions
                 $this->l('unable ton find currency.', 'ShoppingfeedProductSyncPreloadingActions'),
                 'Product'
             );
+            Registry::increment('errors');
 
             return false;
         }
@@ -64,9 +67,9 @@ class ShoppingfeedProductSyncPreloadingActions extends DefaultActions
             ->where(sprintf('(sfp.actions IS NOT NULL AND sfp.id_token = %d) OR (sfp.id_token IS NULL)', $token->id_shoppingfeed_token))
             ->where('ps.id_shop = ' . $token->id_shop)
             ->where('ps.active = 1')
-            ->limit(Configuration::get(ShoppingFeed::STOCK_SYNC_MAX_PRODUCTS));
+            ->limit(Configuration::getGlobalValue(ShoppingFeed::STOCK_SYNC_MAX_PRODUCTS));
 
-        if ((bool)Configuration::get(ShoppingFeed::PRODUCT_FEED_SYNC_PACK) !== true) {
+        if ((bool)Configuration::getGlobalValue(ShoppingFeed::PRODUCT_FEED_SYNC_PACK) !== true) {
             $sql->where('p.cache_is_pack = 0');
         }
         $result = $db->executeS($sql);
@@ -76,8 +79,11 @@ class ShoppingfeedProductSyncPreloadingActions extends DefaultActions
 
             try {
                 $sfp->saveProduct($row['id_product'], $token->id_shoppingfeed_token, $token->id_lang, $token->id_shop);
+
+                Registry::increment('updatedProducts');
             } catch (Exception $exception) {
                 ProcessLoggerHandler::logError($exception->getMessage());
+
             }
         }
 
@@ -85,24 +91,23 @@ class ShoppingfeedProductSyncPreloadingActions extends DefaultActions
     }
 
     public function saveProduct() {
-        $logPrefix = static::getLogPrefix();
 
         if (empty($this->conveyor['product']) || $this->conveyor['product'] instanceof Product === false) {
             ProcessLoggerHandler::logInfo(
-                $logPrefix . ' ' .
-                $this->l('Product not valide for synchronization', 'ShoppingfeedProductSyncActions'),
+                $this->l('Product not valide for synchronization', 'ShoppingfeedProductSyncPreloadingActions'),
                 'Product'
             );
             return false;
         }
-
         $product = $this->conveyor['product'];
+        $logPrefix = static::getLogPrefix($product->id);
+
 
         if (empty($this->conveyor['product_action'])) {
             ProcessLoggerHandler::logInfo(
                 sprintf(
                     $logPrefix . ' ' .
-                    $this->l('Product %s not registered for synchronization; no Action found', 'ShoppingfeedProductSyncActions'),
+                    $this->l('Product %s not registered for synchronization; no Action found', 'ShoppingfeedProductSyncPreloadingActions'),
                     $product->id
                 ),
                 'Product'
@@ -136,14 +141,12 @@ class ShoppingfeedProductSyncPreloadingActions extends DefaultActions
 
     public function deleteProduct()
     {
-        $logPrefix = static::getLogPrefix();
-
         if (empty($this->conveyor['product']) || $this->conveyor['product'] instanceof Product === false) {
             ProcessLoggerHandler::logInfo(
-                $logPrefix . ' ' .
-                $this->l('Product not valide for synchronization', 'ShoppingfeedProductSyncActions'),
+                $this->l('Product not valide for synchronization', 'ShoppingfeedProductSyncPreloadingActions'),
                 'Product'
             );
+
             return false;
         }
 
@@ -158,12 +161,11 @@ class ShoppingfeedProductSyncPreloadingActions extends DefaultActions
         return true;
     }
 
-
-    public static function getLogPrefix($id_shop = '')
+    public static function getLogPrefix($id_product)
     {
         return sprintf(
-            Translate::getModuleTranslation('shoppingfeed', '[Preloading shop:%s]', 'ShoppingfeedProductSyncPreloadingActions'),
-            $id_shop
+            Translate::getModuleTranslation('shoppingfeed', '[Preloading product:%s]', 'ShoppingfeedProductSyncPreloadingActions'),
+            $id_product
         );
     }
 }

@@ -565,7 +565,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         } catch (Exception $e) {
             \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logInfo(
                 sprintf(
-                    ShoppingfeedProductSyncStockActions::getLogPrefix() . ' ' . $this->l('Product %s not registered for synchronization: %s', 'ShoppingfeedProductSyncActions'),
+                    $this->l('Product %s not registered for synchronization: %s', 'ShoppingfeedProductSyncActions'),
                     $id_product . ($id_product_attribute ? '_' . $id_product_attribute : ''),
                     $e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine()
                 ),
@@ -622,7 +622,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         } catch (Exception $e) {
             \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logInfo(
                 sprintf(
-                    ShoppingfeedProductSyncPriceActions::getLogPrefix() . ' ' . $this->l('Product %s not registered for synchronization: %s', 'ShoppingfeedProductSyncActions'),
+                    $this->l('Product %s not registered for synchronization: %s', 'ShoppingfeedProductSyncActions'),
                     $product->id,
                     $e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine()
                 ),
@@ -691,7 +691,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         } catch (Exception $e) {
             \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logInfo(
                 sprintf(
-                    ShoppingfeedProductSyncPriceActions::getLogPrefix() . ' ' . $this->l('Combination %s not registered for synchronization: %s', 'ShoppingfeedProductSyncActions'),
+                    $this->l('Combination %s not registered for synchronization: %s', 'ShoppingfeedProductSyncActions'),
                     $combination->id_product . ($combination->id ? '_' . $combination->id : ''),
                     $e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine()
                 ),
@@ -714,25 +714,23 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
 
             return false;
         }
-
+        $handler = new \ShoppingfeedClasslib\Actions\ActionsHandler();
+        $handler->addActions('deleteProduct');
         try {
-            $handler = new \ShoppingfeedClasslib\Actions\ActionsHandler();
-            $handler->addActions('deleteProduct')
-                ->setConveyor(
-                    array(
-                        'product' => $product,
-                    )
-                );
+            $handler->setConveyor(array(
+                'product' => $product,
+                'product_action' => ShoppingfeedProduct::ACTION_SYNC_PRICE,
+            ));
             $processResult = $handler->process('ShoppingfeedProductSyncPreloading');
             if (!$processResult) {
                 \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logError(
-                    ShoppingfeedProductSyncPreloadingActions::getLogPrefix() . ' ' . $this->l('Fail : An error occurred during process.')
+                    $this->l('Fail : An error occurred during process.')
                 );
             }
         } catch (Exception $e) {
             \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logError(
                 sprintf(
-                    ShoppingfeedProductSyncPreloadingActions::getLogPrefix() . ' ' . $this->l('Fail : %s'),
+                    $this->l('Fail : %s'),
                     $e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine()
                 )
             );
@@ -766,34 +764,35 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     public function updateShoppingFeedPriceRealtime()
     {
         if (!Configuration::get(Shoppingfeed::PRICE_SYNC_ENABLED)) {
+
             return;
         }
+        if ((bool)Configuration::getGlobalValue(Shoppingfeed::REAL_TIME_SYNCHRONIZATION) === false) {
 
+            return;
+        }
+        $handler = new \ShoppingfeedClasslib\Actions\ActionsHandler();
+        $handler->addActions('getBatch');
+        $sft = new ShoppingfeedToken();
+        $tokens = $sft->findALlActive();
         try {
-            $handler = new \ShoppingfeedClasslib\Actions\ActionsHandler();
-            $handler->addActions('getBatch');
-            $sft = new ShoppingfeedToken();
-            $tokens = $sft->findALlActive();
+            foreach ($tokens as $token) {
+                $handler->setConveyor(array(
+                    'id_token' => $token['id_shoppingfeed_token'],
+                    'product_action' => ShoppingfeedProduct::ACTION_SYNC_PRICE,
+                ));
 
-            if (Configuration::getGlobalValue(Shoppingfeed::REAL_TIME_SYNCHRONIZATION)) {
-                foreach ($tokens as $token) {
-                    $handler->setConveyor(array(
-                        'id_token' => $token['id_shoppingfeed_token'],
-                        'product_action' => ShoppingfeedProduct::ACTION_SYNC_PRICE,
-                    ));
-
-                    $processResult = $handler->process('shoppingfeedProductSyncPrice');
-                    if (!$processResult) {
-                        \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logError(
-                            ShoppingfeedProductSyncPriceActions::getLogPrefix() . ' ' . $this->l('Fail : An error occurred during process.')
-                        );
-                    }
+                $processResult = $handler->process('shoppingfeedProductSyncPrice');
+                if (!$processResult) {
+                    \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logError(
+                        ShoppingfeedProductSyncPriceActions::getLogPrefix($token['id_shoppingfeed_token']) . ' ' . $this->l('Fail : An error occurred during process.')
+                    );
                 }
             }
         } catch (Exception $e) {
             \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logError(
                 sprintf(
-                    ShoppingfeedProductSyncPriceActions::getLogPrefix() . ' ' . $this->l('Fail : %s'),
+                    ShoppingfeedProductSyncPriceActions::getLogPrefix($token['id_shoppingfeed_token']) . ' ' . $this->l('Fail : %s'),
                     $e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine()
                 )
             );
@@ -811,21 +810,25 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
 
             return false;
         }
-
+        $handler = new \ShoppingfeedClasslib\Actions\ActionsHandler();
+        $handler->addActions('saveProduct')
+                ->setConveyor(
+                    array(
+                        'product' => $product,
+                        'product_action' => $action
+                    )
+                );
         try {
-            $handler = new \ShoppingfeedClasslib\Actions\ActionsHandler();
-            $handler->addActions('saveProduct')
-                    ->setConveyor(
-                        array(
-                            'product' => $product,
-                            'product_action' => $action
-                        )
-                    );
             $processResult = $handler->process('ShoppingfeedProductSyncPreloading');
+            if (!$processResult) {
+                \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logError(
+                    $this->l('Fail : An error occurred during process.')
+                );
+            }
         } catch (Exception $e) {
             \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logError(
                 sprintf(
-                    ShoppingfeedProductSyncPreloadingActions::getLogPrefix() . ' ' . $this->l('Fail : %s'),
+                    $this->l('Fail : %s'),
                     $e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine()
                 )
             );

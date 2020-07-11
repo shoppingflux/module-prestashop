@@ -90,24 +90,23 @@ class ShoppingfeedSyncProductModuleFrontController extends CronController
     protected function processAction($action, $actions_suffix)
     {
         $actionClassname = 'ShoppingfeedProductSync' . $actions_suffix . 'Actions';
-        $logPrefix = $actionClassname::getLogPrefix();
         ProcessLoggerHandler::logInfo(
-            $logPrefix . ' ' . $this->module->l('Process start', 'syncProduct'),
+            $this->module->l('Process start', 'syncProduct'),
             $this->processMonitor->getProcessObjectModelName(),
             $this->processMonitor->getProcessObjectModelId()
         );
+        Registry::set('updatedProducts', 0);
+        Registry::set('not-in-catalog', 0);
+        Registry::set('errors', 0);
 
+        /** @var ShoppingfeedHandler $handler */
+        $handler = new ActionsHandler();
+        $handler->addActions('getBatch');
+        $sft = new ShoppingfeedToken();
+        $tokens = $sft->findALlActive();
         try {
-            Registry::set('updatedProducts', 0);
-            Registry::set('not-in-catalog', 0);
-            Registry::set('errors', 0);
-                    
-            /** @var ShoppingfeedHandler $handler */
-            $handler = new ActionsHandler();
-            $handler->addActions('getBatch');
-            $sft = new ShoppingfeedToken();
-            $tokens = $sft->findALlActive();
             foreach ($tokens as $token) {
+                $logPrefix = $actionClassname::getLogPrefix($token['id_shoppingfeed_token']);
                 $handler->setConveyor(array(
                     'id_token' => $token['id_shoppingfeed_token'],
                     'product_action' => $action,
