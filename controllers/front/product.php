@@ -51,8 +51,8 @@ class ShoppingfeedProductModuleFrontController  extends \ModuleFrontController
         $limit = 100;
         $iterations = range(0, floor((new ShoppingfeedPreloading)->getPreloadingCount() / 100));
         foreach($iterations as $iteration) {
-            $products = (new ShoppingfeedPreloading)->findAllByToken($token['content']);
-            $productGenerator->write($products, $iteration * $limit, $limit);
+            $products = (new ShoppingfeedPreloading)->findAllByToken($token['content'], $iteration * $limit, $limit);
+            $productGenerator->write($products);
         }
 
         header('HTTP/1.1 302 Moved Temporarily');
