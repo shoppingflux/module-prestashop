@@ -49,11 +49,13 @@ class ShoppingfeedProductModuleFrontController  extends \ModuleFrontController
                 ->addMapper([$this, 'mapper']);
 
         $limit = 100;
+        $products = [];
         $iterations = range(0, floor((new ShoppingfeedPreloading)->getPreloadingCount() / 100));
         foreach($iterations as $iteration) {
-            $products = (new ShoppingfeedPreloading)->findAllByToken($token['content'], $iteration * $limit, $limit);
-            $productGenerator->write($products);
+            $products = array_merge($products, (new ShoppingfeedPreloading)->findAllByToken($token['content'], $iteration * $limit, $limit));
         }
+        $productGenerator->write($products);
+
 
         header('HTTP/1.1 302 Moved Temporarily');
         header('Location: '. __PS_BASE_URI__ . $fileXml);
@@ -64,15 +66,27 @@ class ShoppingfeedProductModuleFrontController  extends \ModuleFrontController
     {
         $product
             ->setName($item['name'])
-            ->setDescription($item['description']['full'], $item['description']['short'])
             ->setReference($item['reference'])
-            ->setGtin($item['gtin'])
-            ->setQuantity($item['quantity'])
-            ->setLink($item['link'])
             ->setPrice($item['price'])
-            ->addShipping($item['shipping']['amount'], $item['shipping']['label'])
-            ->setAttributes($item['attributes'])
         ;
+        if (isset($item['quantity']) === true) {
+            $product->setQuantity($item['quantity']);
+        }
+        if (empty($item['description']) !== true) {
+            $product->setDescription($item['description']['full'], $item['description']['short']);
+        }
+        if (empty($item['gtin']) !== true) {
+            $product->setGtin($item['gtin']);
+        }
+        if (empty($item['link']) !== true) {
+            $product->setLink($item['link']);
+        }
+        if (empty($item['shipping']) !== true) {
+            $product->addShipping($item['shipping']['amount'], $item['shipping']['label']);
+        }
+        if (empty($item['attributes']) !== true) {
+            $product->setAttributes($item['attributes']);
+        }
         if (empty($item['brand']) !== true) {
             $product->setBrand($item['brand']['name'], $item['brand']['link']);
         }
@@ -91,14 +105,26 @@ class ShoppingfeedProductModuleFrontController  extends \ModuleFrontController
             $variationProduct = $product->createVariation();
             $variationProduct
                 ->setReference($variation['reference'])
-                ->setGtin($variation['gtin'])
-                ->setQuantity($variation['quantity'])
-                ->setLink($variation['link'])
                 ->setPrice($variation['price'])
-                ->addShipping($variation['shipping']['amount'], $variation['shipping']['label'])
-                ->setAttributes($variation['attributes'])
-                ->setAdditionalImages($variation['images'])
             ;
+            if (isset($variation['quantity']) === true) {
+                $variationProduct->setQuantity($variation['quantity']);
+            }
+            if (empty($variation['gtin']) !== true) {
+                $variationProduct->setGtin($variation['gtin']);
+            }
+            if (empty($variation['link']) !== true) {
+                $variationProduct->setLink($variation['link']);
+            }
+            if (empty($variation['shipping']) !== true) {
+                $variationProduct->addShipping($variation['shipping']['amount'], $variation['shipping']['label']);
+            }
+            if (empty($variation['attributes']) !== true) {
+                $variationProduct->setAttributes($variation['attributes']);
+            }
+            if (empty($variation['images']) !== true) {
+                $variationProduct->setAdditionalImages($variation['images']);
+            }
         }
     }
 }
