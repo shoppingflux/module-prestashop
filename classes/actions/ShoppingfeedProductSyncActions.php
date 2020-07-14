@@ -1,25 +1,20 @@
 <?php
 /**
+ * Copyright since 2019 Shopping Feed
+ *
  * NOTICE OF LICENSE
  *
- * This source file is subject to a commercial license from SARL 202 ecommence
- * Use, copy, modification or distribution of this source file without written
- * license agreement from the SARL 202 ecommence is strictly forbidden.
- * In order to obtain a license, please contact us: tech@202-ecommerce.com
- * ...........................................................................
- * INFORMATION SUR LA LICENCE D'UTILISATION
+ * This source file is subject to the Academic Free License (AFL 3.0)
+ * that is bundled with this package in the file LICENSE.md.
+ * It is also available through the world-wide-web at this URL:
+ * https://opensource.org/licenses/AFL-3.0
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to tech@202-ecommerce.com so we can send you a copy immediately.
  *
- * L'utilisation de ce fichier source est soumise a une licence commerciale
- * concedee par la societe 202 ecommence
- * Toute utilisation, reproduction, modification ou distribution du present
- * fichier source sans contrat de licence ecrit de la part de la SARL 202 ecommence est
- * expressement interdite.
- * Pour obtenir une licence, veuillez contacter 202-ecommerce <tech@202-ecommerce.com>
- * ...........................................................................
- *
- * @author    202-ecommerce <tech@202-ecommerce.com>
- * @copyright Copyright (c) 202-ecommerce
- * @license   Commercial license
+ * @author    202 ecommerce <tech@202-ecommerce.com>
+ * @copyright Since 2019 Shopping Feed
+ * @license   https://opensource.org/licenses/AFL-3.0  Academic Free License (AFL 3.0)
  */
 
 if (!defined('_PS_VERSION_')) {
@@ -41,7 +36,7 @@ abstract class ShoppingfeedProductSyncActions extends DefaultActions
      * realtime sync ?
      */
     protected $no_forward_after_save = false;
-    
+
     /**
      * Saves a ShoppingfeedProduct to be synchronized. Runs the synchronization
      * if real-time is enabled.
@@ -58,12 +53,12 @@ abstract class ShoppingfeedProductSyncActions extends DefaultActions
         }
 
         $id_product = $this->conveyor['id_product'];
-        
+
         $id_product_attribute = null;
         if (!empty($this->conveyor['id_product_attribute'])) {
             $id_product_attribute = $this->conveyor['id_product_attribute'];
         }
-        
+
         if (empty($this->conveyor['product_action'])) {
             ProcessLoggerHandler::logInfo(
                 sprintf(
@@ -94,10 +89,10 @@ abstract class ShoppingfeedProductSyncActions extends DefaultActions
                 $sfProduct->id_product_attribute = (int)$id_product_attribute;
                 $sfProduct->id_token = $token['id_shoppingfeed_token'];
             }
-            
+
             $sfProduct->update_at = date('Y-m-d H:i:s');
             $sfProduct->save();
-            
+
             if (!$this->no_forward_after_save && true == Configuration::getGlobalValue(Shoppingfeed::REAL_TIME_SYNCHRONIZATION)) {
                 $this->forward('getBatch');
             }
@@ -120,7 +115,7 @@ abstract class ShoppingfeedProductSyncActions extends DefaultActions
     public function getBatch()
     {
         $logPrefix = static::getLogPrefix($this->conveyor['id_token']);
-            
+
         if (empty($this->conveyor['product_action'])) {
             ProcessLoggerHandler::logInfo(
                 $logPrefix . ' ' .
@@ -131,7 +126,7 @@ abstract class ShoppingfeedProductSyncActions extends DefaultActions
             return false;
         }
         $action = $this->conveyor['product_action'];
-        
+
         $query = new DbQuery();
         $query->select('*')
             ->from('shoppingfeed_product')
@@ -191,7 +186,7 @@ abstract class ShoppingfeedProductSyncActions extends DefaultActions
      * @return bool
      */
     abstract public function executeBatch();
-    
+
     public static function getLogPrefix($id_token)
     {
         return sprintf(

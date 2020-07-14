@@ -1,25 +1,20 @@
 <?php
 /**
+ * Copyright since 2019 Shopping Feed
+ *
  * NOTICE OF LICENSE
  *
- * This source file is subject to a commercial license from SARL 202 ecommence
- * Use, copy, modification or distribution of this source file without written
- * license agreement from the SARL 202 ecommence is strictly forbidden.
- * In order to obtain a license, please contact us: tech@202-ecommerce.com
- * ...........................................................................
- * INFORMATION SUR LA LICENCE D'UTILISATION
+ * This source file is subject to the Academic Free License (AFL 3.0)
+ * that is bundled with this package in the file LICENSE.md.
+ * It is also available through the world-wide-web at this URL:
+ * https://opensource.org/licenses/AFL-3.0
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to tech@202-ecommerce.com so we can send you a copy immediately.
  *
- * L'utilisation de ce fichier source est soumise a une licence commerciale
- * concedee par la societe 202 ecommence
- * Toute utilisation, reproduction, modification ou distribution du present
- * fichier source sans contrat de licence ecrit de la part de la SARL 202 ecommence est
- * expressement interdite.
- * Pour obtenir une licence, veuillez contacter 202-ecommerce <tech@202-ecommerce.com>
- * ...........................................................................
- *
- * @author    202-ecommerce <tech@202-ecommerce.com>
- * @copyright Copyright (c) 202-ecommerce
- * @license   Commercial license
+ * @author    202 ecommerce <tech@202-ecommerce.com>
+ * @copyright Since 2019 Shopping Feed
+ * @license   https://opensource.org/licenses/AFL-3.0  Academic Free License (AFL 3.0)
  */
 
 if (!defined('_PS_VERSION_')) {
@@ -160,7 +155,7 @@ class ShoppingfeedPreloading extends ObjectModel
      * @param int $from
      * @return array
      */
-    public function findALlByToken($token, $limit = 100, $from = 0)
+    public function findAllByToken($token, $from = 0, $limit = 100)
     {
         $result = [];
 
@@ -168,7 +163,7 @@ class ShoppingfeedPreloading extends ObjectModel
         $sql->select('sfp.content')
             ->from(self::$definition['table'], 'sfp')
             ->innerJoin(ShoppingfeedToken::$definition['table'], 'sft', 'sft.id_shoppingfeed_token = sfp.id_token')
-            ->where(sprintf('sft.content = "%s"', $token))
+            ->where(sprintf('sft.content = "%s"', pSQL($token)))
             ->limit($limit, $from);
 
         foreach (Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql) as $row) {
@@ -178,14 +173,20 @@ class ShoppingfeedPreloading extends ObjectModel
         return $result;
     }
 
-    public function findALlByTokenId($id_token, $limit = 100, $from = 0)
+    /**
+     * get content product in preloading table
+     * @param int $limit
+     * @param int $from
+     * @return array
+     */
+    public function findAllByTokenId($id_token, $from = 0, $limit = 100)
     {
         $result = [];
 
         $sql = new DbQuery();
         $sql->select('content')
             ->from(self::$definition['table'])
-            ->where(sprintf('id_token = %d', $id_token))
+            ->where(sprintf('id_token = %d', (int)$id_token))
             ->limit($limit, $from);
 
         foreach (Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql) as $row) {
