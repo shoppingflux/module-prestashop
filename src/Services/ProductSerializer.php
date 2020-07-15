@@ -218,26 +218,50 @@ class ProductSerializer
         $combination = $this->product->getAttributeCombinations($this->configurations['PS_LANG_DEFAULT']);
 
         $attributes = [
-            'meta_title' => $this->product->meta_title,
-            'meta_description' => $this->product->meta_description,
-            'meta_keywords' => $this->product->meta_keywords,
-            'tages' => $this->getStringTags(),
-            'width' => $this->product->width,
-            'depth' => $this->product->depth,
-            'height' => $this->product->height,
             'state' => $this->product->condition,
             'available_for_order' => $this->product->available_for_order,
             'out_of_stock' => $this->product->out_of_stock,
-            'weight' => $this->product->weight,
             'ecotax' => $this->product->ecotax,
             'vat' => $this->product->tax_rate,
-            'mpn' => $this->product->reference,
-            'supplier_reference' => $this->product->supplier_reference,
-            'upc' => $this->product->upc,
-            'wholesale-price' => $this->product->wholesale_price,
             'on_sale' => (int)$this->product->on_sale,
-            'hierararchy' => count($combination) > 0? 'parent' : 'child',
+            'hierararchy' => count($combination) > 0 ? 'parent' : 'child',
         ];
+        if (empty($this->product->meta_title) === false) {
+            $attributes['meta_title'] = $this->product->meta_title;
+        }
+        if (empty($this->product->meta_description) === false) {
+            $attributes['meta_description'] = $this->product->meta_description;
+        }
+        if (empty($this->getStringTags()) === false) {
+            $attributes['tages'] = $this->getStringTags();
+        }
+        if (empty($this->product->meta_keywords) === false) {
+            $attributes['meta_keywords'] = $this->product->meta_keywords;
+        }
+        if (empty($this->product->width) === false && $this->product->width != 0) {
+            $attributes['width'] = $this->product->width;
+        }
+        if (empty($this->product->depth) === false && $this->product->depth != 0) {
+            $attributes['depth'] = $this->product->depth;
+        }
+        if (empty($this->product->height) === false && $this->product->height != 0) {
+            $attributes['height'] = $this->product->height;
+        }
+        if (empty($this->product->weight) === false && $this->product->weight != 0) {
+            $attributes['weight'] = $this->product->weight;
+        }
+        if (empty($this->product->height) === false && $this->product->height != 0) {
+            $attributes['mpn'] = $this->product->reference;
+        }
+        if (empty($this->product->upc) === false) {
+            $attributes['upc'] = $this->product->upc;
+        }
+        if (empty($this->product->wholesale_price) === false && $this->product->wholesale_price != 0) {
+            $attributes['wholesale_price'] = $this->product->wholesale_price;
+        }
+        if (empty($this->product->supplier_reference) === false) {
+            $attributes['supplier_reference'] = $this->product->supplier_reference;
+        }
         $supplier = $this->product->supplier_name;
         $supplier_link = $this->link->getSupplierLink($this->product->id_supplier, null, $this->configurations['PS_LANG_DEFAULT']);
         if (empty($supplier) === false && empty($supplier_link) === false) {
@@ -282,7 +306,7 @@ class ProductSerializer
         }
 
         foreach ($combinations as $id => $combination) {
-            set_time_limit(60);
+            set_time_limit(600);
             asort($combination['attributes']);
             $image_child = true;
             $sfp->id_product_attribute = $id;
@@ -290,23 +314,31 @@ class ProductSerializer
             $priceWithReduction = $this->sfModule->mapProductPrice($sfp, $this->configurations['PS_SHOP_DEFAULT'], ['price_with_reduction' => true]);
             $variation = [
                 'reference' => $sfModule->mapReference($sfp),
-                'gtin' => $combination['ean13'],
                 'quantity' => $combination['quantity'],
                 'link' => $productLink . $this->product->getAnchor($id, true),
                 'price' => $priceWithoutReduction,
+                'images' => [],
                 'shipping' => [
                     'amount' => $this->_getShipping($carrier, $priceWithReduction, $combination['weight']),
                     'label' => $carrier->delay[$this->configurations['PS_LANG_DEFAULT']],
                 ],
-                'images' => [],
-                'attributes' => [
-                    'upc' => $combination['upc'],
-                    'weight' => $combination['weight'],
-                    'wholesale-price' => $combination['wholesale_price'],
-                    'mpn' => $combination['reference'],
-                ],
                 'discounts' => []
             ];
+            if (empty($combination['ean13']) === false) {
+                $variation['gtin'] = $combination['ean13'];
+            }
+            if (empty($combination['upc']) === false) {
+                $variation['attributes']['upc'] = $combination['upc'];
+            }
+            if (empty($combination['weight']) === false && $combination['wholesale_price'] != 0) {
+                $variation['attributes']['weight'] = $combination['weight'];
+            }
+            if (empty($combination['wholesale_price']) === false && $combination['wholesale_price'] != 0) {
+                $variation['attributes']['wholesale_price'] = $combination['wholesale_price'];
+            }
+            if (empty($combination['reference']) === false) {
+                $variation['attributes']['reference'] = $combination['reference'];
+            }
             if ($priceWithoutReduction > $priceWithReduction) {
                 $variation['discounts'][] = $priceWithReduction;
             }
@@ -325,7 +357,7 @@ class ProductSerializer
             }
             foreach ($combination['attributes'] as $attributeName => $attributeValue) {
                 $attributeName = $this->_clean($attributeName);
-                if (empty($attributeName) === false) {
+                if (empty($attributeName) === false && empty($attributeValue) === false) {
                     $variation['attributes'][$attributeName] = $attributeValue;
                 }
             }
@@ -450,11 +482,11 @@ class ProductSerializer
             $id_category = $id_category;
         } else {
             $row = Db::getInstance(_PS_USE_SQL_SLAVE_)->ExecuteS('
-			SELECT cl.`name`, p.`id_category_default` as id_category, c.`id_parent` FROM `'._DB_PREFIX_.'product` p
-			LEFT JOIN `'._DB_PREFIX_.'category_lang` cl ON (p.`id_category_default` = cl.`id_category`)
-			LEFT JOIN `'._DB_PREFIX_.'category` c ON (p.`id_category_default` = c.`id_category`)
-			WHERE p.`id_product` = '.(int)$id_product.'
-			AND cl.`id_lang` = '.(int)$id_lang);
+            SELECT cl.`name`, p.`id_category_default` as id_category, c.`id_parent` FROM `'._DB_PREFIX_.'product` p
+            LEFT JOIN `'._DB_PREFIX_.'category_lang` cl ON (p.`id_category_default` = cl.`id_category`)
+            LEFT JOIN `'._DB_PREFIX_.'category` c ON (p.`id_category_default` = c.`id_category`)
+            WHERE p.`id_product` = '.(int)$id_product.'
+            AND cl.`id_lang` = '.(int)$id_lang);
 
             foreach ($row as $val) {
                 $ret[$val['id_category']] = $val['name'];
@@ -465,22 +497,22 @@ class ProductSerializer
 
         while ($id_parent != 0 && $id_category != $id_parent) {
             $row = Db::getInstance(_PS_USE_SQL_SLAVE_)->ExecuteS('
-				SELECT cl.`name`, c.`id_category`, c.`id_parent` FROM `'._DB_PREFIX_.'category_lang` cl
-				LEFT JOIN `'._DB_PREFIX_.'category` c ON (c.`id_category` = '.(int)$id_parent.')
-				WHERE cl.`id_category` = '.(int)$id_parent.'
-				AND cl.`id_lang` = '.(int)$id_lang);
+                SELECT cl.`name`, c.`id_category`, c.`id_parent` FROM `'._DB_PREFIX_.'category_lang` cl
+                LEFT JOIN `'._DB_PREFIX_.'category` c ON (c.`id_category` = '.(int)$id_parent.')
+                WHERE cl.`id_category` = '.(int)$id_parent.'
+                AND cl.`id_lang` = '.(int)$id_lang);
 
             if (! sizeof($row)) {
                 // There is a problem with the category parent, let's try another category
                 $this->productCategory = Db::getInstance(_PS_USE_SQL_SLAVE_)->ExecuteS('
-            			SELECT DISTINCT c.`id_category`, cl.`name`, 
+                        SELECT DISTINCT c.`id_category`, cl.`name`,
                             c.`id_parent` FROM `'._DB_PREFIX_.'category_product` cp
-            			LEFT JOIN `'._DB_PREFIX_.'category_lang` cl ON (cp.`id_category` = cl.`id_category`)
-            			LEFT JOIN `'._DB_PREFIX_.'category` c ON (cp.`id_category` = c.`id_category`)
-            			WHERE cp.`id_product` = '.(int)$id_product.'
-			            AND cp.`id_category` NOT IN ('.$id_category.')
-            			AND cl.`id_lang` = '.(int)$id_lang.'
-			            ORDER BY level_depth DESC');
+                        LEFT JOIN `'._DB_PREFIX_.'category_lang` cl ON (cp.`id_category` = cl.`id_category`)
+                        LEFT JOIN `'._DB_PREFIX_.'category` c ON (cp.`id_category` = c.`id_category`)
+                        WHERE cp.`id_product` = '.(int)$id_product.'
+                        AND cp.`id_category` NOT IN ('.$id_category.')
+                        AND cl.`id_lang` = '.(int)$id_lang.'
+                        ORDER BY level_depth DESC');
 
                 if (! sizeof($this->productCategory)) {
                     return array();
