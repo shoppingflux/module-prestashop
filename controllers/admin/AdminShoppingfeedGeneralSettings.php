@@ -45,13 +45,7 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
         $this->addJS($this->module->getPathUri() . 'views/js/form_config.js');
 
         $this->content = $this->welcomeForm();
-
-        $price_sync = Configuration::get(Shoppingfeed::PRICE_SYNC_ENABLED);
-        $stock_sync = Configuration::get(Shoppingfeed::STOCK_SYNC_ENABLED);
-        if ($price_sync || $stock_sync) {
-            $this->content .= $this->renderSynchroConfigForm();
-        }
-
+        $this->content .= $this->renderSynchroConfigForm();
         $this->content .= $this->renderGlobalConfigForm();
         $this->content .= $this->renderFeedConfigForm();
         $this->content .= $this->renderFactoryConfigForm();
