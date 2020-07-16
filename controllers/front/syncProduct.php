@@ -86,7 +86,7 @@ class ShoppingfeedSyncProductModuleFrontController extends CronController
         Configuration::updateValue(ShoppingFeed::LAST_CRON_TIME_SYNCHRONIZATION, date("Y-m-d H:i:s"));
         ProcessLoggerHandler::closeLogger();
     }
-    
+
     protected function processAction($action, $actions_suffix)
     {
         $actionClassname = 'ShoppingfeedProductSync' . $actions_suffix . 'Actions';
@@ -103,7 +103,7 @@ class ShoppingfeedSyncProductModuleFrontController extends CronController
         $handler = new ActionsHandler();
         $handler->addActions('getBatch');
         $sft = new ShoppingfeedToken();
-        $tokens = $sft->findALlActive();
+        $tokens = $sft->findAllActive();
         try {
             foreach ($tokens as $token) {
                 $logPrefix = $actionClassname::getLogPrefix($token['id_shoppingfeed_token']);

@@ -529,6 +529,53 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         return $price;
     }
 
+
+    /**
+     * Returns the number of product in the feed The developer
+     * can skip products to sync so it's necessary to ajust the number of
+     * products in order to manage indexation.
+     * @return integer
+     */
+    public function countProductsOnFeed($id_shop = null)
+    {
+        $sql = $this->sqlProductsOnFeed($id_shop);
+        $sql->select('COUNT(p.`id_product`)');
+        $countProductsOnFeed = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
+
+        return $countProductsOnFeed;
+    }
+
+    /**
+     * Returns the
+     * @return DbQuery
+     */
+    public function sqlProductsOnFeed($id_shop = null)
+    {
+        $sql = new DbQuery();
+        $sql->from(Product::$definition['table'] . '_shop', 'ps')
+            ->leftJoin(Product::$definition['table'], 'p', 'p.id_product = ps.id_product')
+            ->where('ps.active = 1')
+            ->where('ps.available_for_order = 1');
+
+        if ($id_shop === null) {
+            $id_shop = (int)Configuration::get('PS_SHOP_DEFAULT');
+        }
+        $sql->where('ps.id_shop = ' . (int)$id_shop);
+
+        if ((bool)Configuration::getGlobalValue(ShoppingFeed::PRODUCT_FEED_SYNC_PACK) !== true) {
+            $sql->where('p.cache_is_pack = 0');
+        }
+
+        Hook::exec('ShoppingfeedSqlProductsOnFeed',
+            [
+                'id_shop' => $id_shop,
+                'sql' => &$sql,
+            ]
+        );
+
+        return $sql;
+    }
+
     /****************************** Stock hook *******************************/
 
     /**
@@ -769,7 +816,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         $handler = new \ShoppingfeedClasslib\Actions\ActionsHandler();
         $handler->addActions('getBatch');
         $sft = new ShoppingfeedToken();
-        $tokens = $sft->findALlActive();
+        $tokens = $sft->findAllActive();
         try {
             foreach ($tokens as $token) {
                 $handler->setConveyor(array(

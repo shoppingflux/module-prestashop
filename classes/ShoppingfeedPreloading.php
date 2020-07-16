@@ -250,4 +250,10 @@ class ShoppingfeedPreloading extends ObjectModel
             sprintf('id_product  = %d AND id_token = %d', $id_product, $id_token)
         );
     }
+
+    public function purge()
+    {
+        $sql = 'TRUNCATE ' . _DB_PREFIX_ . self::$definition['table'];
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->execute($sql);
+    }
 }

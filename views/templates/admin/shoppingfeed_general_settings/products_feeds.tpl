@@ -46,7 +46,7 @@
             </a>
         </div>
         <div class="col-sm-6 col-lg-4">
-            {assign var="percent_preloading" value=ceil((1 - ($count_products - $count_preloading)/$count_products) * 100) }
+            {assign var="percent_preloading" value=floor((1 - ($count_products - $count_preloading)/$count_products) * 100) }
             <a href="#" id="box-avg-gross-margin" data-toggle="tooltip" class="box-stats label-tooltip {if $percent_preloading < 99}color2{else}color4{/if}" data-original-title="{l s='To avoid live computation of your feed during its call, your product are indexed in a cache system.' mod='shoppingfeed'}">
                 <div class="kpi-content">
                     <i class="icon-beaker"></i>
@@ -58,3 +58,9 @@
         </div>
     </div>
 </div>
+{if $percent_preloading < 99}
+<div class="alert alert-danger">
+    <strong>{l s='Your products feed is not totally indexed.' mod='shoppingfeed'}</strong><br>
+    {l s='To indexed missing products, please launch manually or set on your server the following task: "Synchronize products on Shopping Feed" available on' mod='shoppingfeed'} <a href="{$link->getAdminLink('AdminShoppingfeedProcessMonitor', true)}">{l s='"Logs & Crons" pages' mod='shoppingfeed'}</a>.
+</div>
+{/if}

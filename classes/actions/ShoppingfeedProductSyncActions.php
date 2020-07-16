@@ -73,7 +73,7 @@ abstract class ShoppingfeedProductSyncActions extends DefaultActions
 
         // Save the product for each token
         $sft = new ShoppingfeedToken();
-        $tokens = $sft->findALlActive();
+        $tokens = $sft->findAllActive();
         foreach ($tokens as $token) {
             $this->conveyor['id_token'] = $token['id_shoppingfeed_token'];
             $sfProduct = ShoppingfeedProduct::getFromUniqueKey(
@@ -100,8 +100,6 @@ abstract class ShoppingfeedProductSyncActions extends DefaultActions
 
         return true;
     }
-
-
 
     /**
      * Gets a batch of ShoppindfeedProduct requiring synchronization, and saves it

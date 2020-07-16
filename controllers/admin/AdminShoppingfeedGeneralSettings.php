@@ -21,6 +21,8 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
+use ShoppingfeedClasslib\Actions\ActionsHandler;
+
 require_once(_PS_MODULE_DIR_ . 'shoppingfeed/shoppingfeed.php');
 require_once(_PS_MODULE_DIR_ . 'shoppingfeed/classes/ShoppingfeedCarrier.php');
 
@@ -41,7 +43,7 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
             $this->module->getPathUri() . 'views/css/shoppingfeed_configuration/form.css',
             $this->module->getPathUri() . 'views/css/font-awesome.min.css'
         ));
-
+        $this->nbr_products = $this->module->countProductsOnFeed();
         $this->addJS($this->module->getPathUri() . 'views/js/form_config.js');
 
         $this->content = $this->welcomeForm();
@@ -69,7 +71,7 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
         $helper->base_folder = $this->getTemplatePath() . $this->override_folder;
         $helper->base_tpl = 'products_feeds.tpl';
 
-        $this->context->smarty->assign('count_products', $this->countProducts());
+        $this->context->smarty->assign('count_products', $this->nbr_products);
 
         $shoppingfeedPreloading = new ShoppingfeedPreloading();
         $this->context->smarty->assign('count_preloading', $shoppingfeedPreloading->getPreloadingCount());
@@ -79,38 +81,6 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
         $this->context->smarty->assign('syncProduct', $syncProduct);
 
         return $helper->generateForm(array(array('form' => $fields_form)));
-    }
-
-    /**
-     * Count number of product in the feed
-     */
-    protected function countProducts()
-    {
-        $getPack = '';
-        if ((int) Configuration::get(Shoppingfeed::PRODUCT_FEED_SYNC_PACK) !== 1) {
-            $getPack = ' AND p.`cache_is_pack` = 0 ';
-        }
-
-        $context = Context::getContext();
-
-        if (!in_array($context->controller->controller_type, array('front', 'modulefront'))) {
-            $front = false;
-        } else {
-            $front = true;
-        }
-
-        $sql_association = Shop::addSqlAssociation('product', 'p');
-        $table = $sql_association ? 'product'.'_shop' : 'p';
-
-        $sql = 'SELECT COUNT(p.`id_product`)
-            FROM `'._DB_PREFIX_.'product` p
-            '.$sql_association.'
-            WHERE '.$table.'.`active`= 1 AND '.$table.'.`available_for_order`= 1
-            ' . $getPack . '
-            '.($front ? ' AND '.$table.'.`visibility` IN ("both", "catalog")' : '');
-
-
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
     }
 
     /**
@@ -195,7 +165,7 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
                     'type' => 'html',
                     'name' => 'real_synch_help',
                     'html_content' => '<div id="real_synch" class="alert alert-info">
-                    '.$this->module->l('This let configure product feed feed.', 'AdminShoppingfeedGeneralSettings').'</div>',
+                    '.$this->module->l('By updating this form, please not your index will be purge.', 'AdminShoppingfeedGeneralSettings').'</div>',
                 ),
                 array(
                     'type' => 'switch',
@@ -499,8 +469,10 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
         } elseif (Tools::isSubmit('saveSynchroConfig')) {
             return $this->saveSynchroConfig();
         } elseif (Tools::isSubmit('saveFeedConfig')) {
+            $this->purgePrealoading();
             return $this->saveFeedConfig();
         } elseif (Tools::isSubmit('saveFactoryConfig') && Tools::getValue('with_factory') !== false) {
+            $this->purgePrealoading();
             return $this->saveFactoryConfig();
         }
     }
@@ -518,6 +490,29 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
         Configuration::updateGlobalValue(Shoppingfeed::PRICE_SYNC_ENABLED, ($price_sync_enabled ? true : false));
 
         return true;
+    }
+
+    public function purgePrealoading()
+    {
+        $preloading = new ShoppingfeedPreloading();
+        $preloading->purge();
+        if ($this->module->countProductsOnFeed() < 100) {
+            $handler = new ActionsHandler();
+            $handler->addActions('getBatch');
+            $sft = new ShoppingfeedToken();
+            $tokens = $sft->findAllActive();
+            try {
+                foreach ($tokens as $token) {
+                    $handler->setConveyor(array(
+                        'id_token' => $token['id_shoppingfeed_token'],
+                        'product_action' => ShoppingfeedPreloading::ACTION_SYNC_PRELODING,
+                    ));
+                    $processResult = $handler->process('shoppingfeedProductSyncPreloading');
+                }
+            } catch (Exception $e) {
+                return true;
+            }
+        }
     }
 
     /**

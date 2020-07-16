@@ -383,7 +383,7 @@ class AdminShoppingfeedAccountSettingsController extends ModuleAdminController
     public function renderTokensList()
     {
         $tokens = new ShoppingfeedToken();
-        $listTokens = $tokens->findALl();
+        $listTokens = $tokens->findAll();
 
         if (count($listTokens) === 0) {
 

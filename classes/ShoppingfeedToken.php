@@ -99,7 +99,7 @@ class ShoppingfeedToken extends ObjectModel
         ),
     );
 
-    public function findALlActive()
+    public function findAllActive()
     {
         $sql = new DbQuery();
         $sql->select('*')
@@ -109,7 +109,7 @@ class ShoppingfeedToken extends ObjectModel
         return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql) ;
     }
 
-    public function findALlActiveByShops($idShops)
+    public function findAllActiveByShops($idShops)
     {
         $sql = new DbQuery();
         $sql->select('*')
@@ -157,7 +157,7 @@ class ShoppingfeedToken extends ObjectModel
         return  Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($query);
     }
 
-    public function findALl()
+    public function findAll()
     {
         $sql = new DbQuery();
         $sql
