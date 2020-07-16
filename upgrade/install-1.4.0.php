@@ -29,7 +29,7 @@ function upgrade_module_1_4_0($module)
     $installer = new Installer();
     $installer->setModule($module);
 
-    $installer->reset();
+    $installer->reset($module);
 
     return true;
 }
