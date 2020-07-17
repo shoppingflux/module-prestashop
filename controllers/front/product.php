@@ -28,6 +28,7 @@ if (!defined('_PS_VERSION_')) {
 
 use ShoppingFeed\Feed\ProductGenerator;
 use ShoppingFeed\Feed\Product\Product;
+use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 
 class ShoppingfeedProductModuleFrontController  extends \ModuleFrontController
 {
@@ -44,6 +45,8 @@ class ShoppingfeedProductModuleFrontController  extends \ModuleFrontController
             die();
         }
         $fileXml = sprintf('file-%d.xml', $token['id_shoppingfeed_token']);
+        ProcessLoggerHandler::logInfo(sprintf('Generate file %s for token %s:.', $fileXml, $token['content']), null, null, 'ShoppingfeedProductModuleFrontController');
+        ProcessLoggerHandler::closeLogger();
         $productGenerator = new ProductGenerator($fileXml, 'xml');
         $productGenerator->setPlatform('Prestashop', _PS_VERSION_)
                 ->addMapper([$this, 'mapper']);
