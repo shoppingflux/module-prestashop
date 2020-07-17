@@ -54,6 +54,7 @@ class ShoppingfeedProductSyncPreloadingActions extends DefaultActions
 
             return false;
         }
+        Context::getContext()->currency = $currency;
 
         $sfModule = Module::getInstanceByName('shoppingfeed');
         $limit = Configuration::getGlobalValue(ShoppingFeed::STOCK_SYNC_MAX_PRODUCTS);
@@ -76,7 +77,6 @@ class ShoppingfeedProductSyncPreloadingActions extends DefaultActions
             $result = $db->executeS($sql);
 
             foreach ($result as $key => $row) {
-                Context::getContext()->currency = $currency;
 
                 try {
                     $sfp->saveProduct($row['id_product'], $token->id_shoppingfeed_token, $token->id_lang, $token->id_shop);

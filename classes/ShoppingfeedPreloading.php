@@ -164,6 +164,7 @@ class ShoppingfeedPreloading extends ObjectModel
             ->from(self::$definition['table'], 'sfp')
             ->innerJoin(ShoppingfeedToken::$definition['table'], 'sft', 'sft.id_shoppingfeed_token = sfp.id_token')
             ->where(sprintf('sft.content = "%s"', pSQL($token)))
+            ->where('sfp.actions is null')
             ->limit($limit, $from);
 
         foreach (Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql) as $row) {
@@ -187,6 +188,7 @@ class ShoppingfeedPreloading extends ObjectModel
         $sql->select('content')
             ->from(self::$definition['table'])
             ->where(sprintf('id_token = %d', (int)$id_token))
+            ->where('actions is null')
             ->limit($limit, $from);
 
         foreach (Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql) as $row) {
@@ -200,7 +202,9 @@ class ShoppingfeedPreloading extends ObjectModel
     {
         $sql = new DbQuery();
         $sql->select('COUNT('.self::$definition['primary'].')')
-            ->from(self::$definition['table']);
+            ->from(self::$definition['table'])
+            ->where('actions is null')
+        ;
         $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
 
         return $result;
