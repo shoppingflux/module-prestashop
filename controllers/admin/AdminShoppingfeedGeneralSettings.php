@@ -599,4 +599,10 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
 
         return $newFields;
     }
+
+    public function displayAjaxPurgeCache()
+    {
+        $this->purgePrealoading();
+        $this->ajaxDie(Tools::jsonEncode(['success' => true]));
+    }
 }

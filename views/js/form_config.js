@@ -22,6 +22,15 @@
 */
 $(document).ready(function()
 {
+    $('#purge-cache').click(function(){
+        $.ajax({
+            url: $(this).data('link-purge-cache'),
+            type: 'POST',
+            dataType: 'JSON',
+            async: true,
+        });
+    });
+
     if ($('#SHOPPINGFEED_REAL_TIME_SYNCHRONIZATION_off').prop('checked') == false) {
         $('.for_real').closest('.form-group').hide();
         $('#for_real').closest('.form-group').hide();
