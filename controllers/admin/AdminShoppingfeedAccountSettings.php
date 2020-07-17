@@ -279,6 +279,8 @@ class AdminShoppingfeedAccountSettingsController extends ModuleAdminController
      */
     public function postProcess()
     {
+        parent::postProcess();
+
         $shop_id = Tools::getValue('shop');
         $lang_id = Tools::getValue('language');
         $currency_id = Tools::getValue('currency');
@@ -413,6 +415,7 @@ class AdminShoppingfeedAccountSettingsController extends ModuleAdminController
         $helper->title = $this->module->l('Tokens', 'AdminShoppingfeedAccountSettings');
         $helper->no_link = true;
         $helper->listTotal = count($listTokens);
+        $helper->identifier = ShoppingfeedToken::$definition['primary'];
 
         return $helper->generateList($listTokens, $fieldsList);
     }
