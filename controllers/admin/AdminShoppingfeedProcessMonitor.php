@@ -25,9 +25,7 @@
 if (!defined('_PS_VERSION_')) {
     exit;
 }
-
-require_once(_PS_MODULE_DIR_ . 'shoppingfeed/shoppingfeed.php');
-require_once(_PS_MODULE_DIR_ . 'shoppingfeed/classes/ShoppingfeedProduct.php');
+require_once _PS_MODULE_DIR_ . 'shoppingfeed/vendor/autoload.php';
 
 use ShoppingfeedClasslib\Extensions\ProcessMonitor\Controllers\Admin\AdminProcessMonitorController;
 

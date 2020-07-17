@@ -65,11 +65,29 @@ class ComposerStaticInit3fe85f86ff701f6bd7fd7d7a118b5533
         ),
     );
 
+    public static $classMap = array (
+        'ShoppingfeedApi' => __DIR__ . '/../..' . '/classes/ShoppingfeedApi.php',
+        'ShoppingfeedCarrier' => __DIR__ . '/../..' . '/classes/ShoppingfeedCarrier.php',
+        'ShoppingfeedOrder' => __DIR__ . '/../..' . '/classes/ShoppingfeedOrder.php',
+        'ShoppingfeedOrderImportActions' => __DIR__ . '/../..' . '/classes/actions/ShoppingfeedOrderImportActions.php',
+        'ShoppingfeedOrderSyncActions' => __DIR__ . '/../..' . '/classes/actions/ShoppingfeedOrderSyncActions.php',
+        'ShoppingfeedPaymentModule' => __DIR__ . '/../..' . '/classes/ShoppingfeedPaymentModule.php',
+        'ShoppingfeedPreloading' => __DIR__ . '/../..' . '/classes/ShoppingfeedPreloading.php',
+        'ShoppingfeedProduct' => __DIR__ . '/../..' . '/classes/ShoppingfeedProduct.php',
+        'ShoppingfeedProductSyncActions' => __DIR__ . '/../..' . '/classes/actions/ShoppingfeedProductSyncActions.php',
+        'ShoppingfeedProductSyncPreloadingActions' => __DIR__ . '/../..' . '/classes/actions/ShoppingfeedProductSyncPreloadingActions.php',
+        'ShoppingfeedProductSyncPriceActions' => __DIR__ . '/../..' . '/classes/actions/ShoppingfeedProductSyncPriceActions.php',
+        'ShoppingfeedProductSyncStockActions' => __DIR__ . '/../..' . '/classes/actions/ShoppingfeedProductSyncStockActions.php',
+        'ShoppingfeedTaskOrder' => __DIR__ . '/../..' . '/classes/ShoppingfeedTaskOrder.php',
+        'ShoppingfeedToken' => __DIR__ . '/../..' . '/classes/ShoppingfeedToken.php',
+    );
+
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
             $loader->prefixLengthsPsr4 = ComposerStaticInit3fe85f86ff701f6bd7fd7d7a118b5533::$prefixLengthsPsr4;
             $loader->prefixDirsPsr4 = ComposerStaticInit3fe85f86ff701f6bd7fd7d7a118b5533::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInit3fe85f86ff701f6bd7fd7d7a118b5533::$classMap;
 
         }, null, ClassLoader::class);
     }

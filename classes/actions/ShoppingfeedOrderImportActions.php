@@ -21,10 +21,6 @@ use ShoppingfeedClasslib\Actions\DefaultActions;
 use ShoppingfeedAddon\OrderImport\OrderData;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 
-require_once(_PS_MODULE_DIR_ . 'shoppingfeed/classes/ShoppingfeedCarrier.php');
-require_once(_PS_MODULE_DIR_ . 'shoppingfeed/classes/ShoppingfeedOrder.php');
-require_once(_PS_MODULE_DIR_ . 'shoppingfeed/classes/ShoppingfeedPaymentModule.php');
-
 class ShoppingfeedOrderImportActions extends DefaultActions
 {
     /** @var ShoppingfeedOrderImportSpecificRulesManager $specificRulesManager */

@@ -28,6 +28,10 @@ $(document).ready(function()
             type: 'POST',
             dataType: 'JSON',
             async: true,
+            data: {
+                ajax: true,
+                action: 'purgeCache',
+            },
         });
     });
 

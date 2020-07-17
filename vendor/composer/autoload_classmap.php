@@ -6,4 +6,18 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
+    'ShoppingfeedApi' => $baseDir . '/classes/ShoppingfeedApi.php',
+    'ShoppingfeedCarrier' => $baseDir . '/classes/ShoppingfeedCarrier.php',
+    'ShoppingfeedOrder' => $baseDir . '/classes/ShoppingfeedOrder.php',
+    'ShoppingfeedOrderImportActions' => $baseDir . '/classes/actions/ShoppingfeedOrderImportActions.php',
+    'ShoppingfeedOrderSyncActions' => $baseDir . '/classes/actions/ShoppingfeedOrderSyncActions.php',
+    'ShoppingfeedPaymentModule' => $baseDir . '/classes/ShoppingfeedPaymentModule.php',
+    'ShoppingfeedPreloading' => $baseDir . '/classes/ShoppingfeedPreloading.php',
+    'ShoppingfeedProduct' => $baseDir . '/classes/ShoppingfeedProduct.php',
+    'ShoppingfeedProductSyncActions' => $baseDir . '/classes/actions/ShoppingfeedProductSyncActions.php',
+    'ShoppingfeedProductSyncPreloadingActions' => $baseDir . '/classes/actions/ShoppingfeedProductSyncPreloadingActions.php',
+    'ShoppingfeedProductSyncPriceActions' => $baseDir . '/classes/actions/ShoppingfeedProductSyncPriceActions.php',
+    'ShoppingfeedProductSyncStockActions' => $baseDir . '/classes/actions/ShoppingfeedProductSyncStockActions.php',
+    'ShoppingfeedTaskOrder' => $baseDir . '/classes/ShoppingfeedTaskOrder.php',
+    'ShoppingfeedToken' => $baseDir . '/classes/ShoppingfeedToken.php',
 );

@@ -22,16 +22,6 @@ if (!defined('_PS_VERSION_')) {
 }
 
 require_once _PS_MODULE_DIR_ . 'shoppingfeed/vendor/autoload.php';
-require_once _PS_MODULE_DIR_ . 'shoppingfeed/classes/ShoppingfeedProduct.php';
-require_once _PS_MODULE_DIR_ . 'shoppingfeed/classes/ShoppingfeedPreloading.php';
-require_once _PS_MODULE_DIR_ . 'shoppingfeed/classes/ShoppingfeedOrder.php';
-require_once _PS_MODULE_DIR_ . 'shoppingfeed/classes/ShoppingfeedCarrier.php';
-require_once _PS_MODULE_DIR_ . 'shoppingfeed/classes/ShoppingfeedTaskOrder.php';
-require_once _PS_MODULE_DIR_ . 'shoppingfeed/classes/ShoppingfeedToken.php';
-require_once _PS_MODULE_DIR_ . 'shoppingfeed/classes/actions/ShoppingfeedProductSyncStockActions.php';
-require_once _PS_MODULE_DIR_ . 'shoppingfeed/classes/actions/ShoppingfeedProductSyncPriceActions.php';
-require_once _PS_MODULE_DIR_ . 'shoppingfeed/classes/actions/ShoppingfeedProductSyncPreloadingActions.php';
-require_once _PS_MODULE_DIR_ . 'shoppingfeed/classes/actions/ShoppingfeedOrderSyncActions.php';
 
 // Set this as comment so Classlib will import the files; but don't uncomment !
 // Installation will fail on PS 1.6 if "use" statements are in the main module file
@@ -241,7 +231,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         'actionValidateOrder',
         'actionOrderStatusPostUpdate',
         'actionShoppingfeedOrderImportRegisterSpecificRules',
-        'actionObjectProductDeleteBefore'
+        'actionObjectProductDeleteBefore',
     );
 
     /**

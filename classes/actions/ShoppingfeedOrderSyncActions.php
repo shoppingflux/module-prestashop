@@ -23,10 +23,6 @@ use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 
 use ShoppingFeed\Sdk\Api\Order\OrderOperation;
 
-require_once(_PS_MODULE_DIR_ . 'shoppingfeed/classes/ShoppingfeedOrder.php');
-require_once(_PS_MODULE_DIR_ . 'shoppingfeed/classes/ShoppingfeedTaskOrder.php');
-
-
 class ShoppingfeedOrderSyncActions extends DefaultActions
 {
     public static function getLogPrefix($id_order = '')

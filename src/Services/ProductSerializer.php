@@ -2,8 +2,6 @@
 
 namespace ShoppingfeedAddon\Services;
 
-require_once(_PS_MODULE_DIR_ . 'shoppingfeed/classes/ShoppingfeedProduct.php');
-
 use Context;
 use Configuration;
 use ShoppingfeedProduct;

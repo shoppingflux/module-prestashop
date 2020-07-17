@@ -23,9 +23,6 @@ if (!defined('_PS_VERSION_')) {
 
 use ShoppingfeedClasslib\Actions\ActionsHandler;
 
-require_once(_PS_MODULE_DIR_ . 'shoppingfeed/shoppingfeed.php');
-require_once(_PS_MODULE_DIR_ . 'shoppingfeed/classes/ShoppingfeedCarrier.php');
-
 /**
  * This admin controller displays the module's general configuration forms
  */
