@@ -36,6 +36,13 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
      */
     public function initContent()
     {
+        $sft = new ShoppingfeedToken();
+        $tokens = $sft->findAllActive();
+        if (empty($tokens)) {
+            Tools::redirectAdmin(
+                Context::getContext()->link->getAdminLink('AdminShoppingfeedAccountSettings')
+            );
+        }
         $this->addCSS(array(
             $this->module->getPathUri() . 'views/css/shoppingfeed_configuration/form.css',
             $this->module->getPathUri() . 'views/css/font-awesome.min.css'
@@ -493,6 +500,7 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
     {
         $preloading = new ShoppingfeedPreloading();
         $preloading->purge();
+
         if ($this->module->countProductsOnFeed() < 100) {
             $handler = new ActionsHandler();
             $handler->addActions('getBatch');

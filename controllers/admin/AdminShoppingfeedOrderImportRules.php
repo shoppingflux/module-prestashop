@@ -46,21 +46,23 @@ class AdminShoppingfeedOrderImportRulesController extends ModuleAdminController
         $this->addJS($this->module->getPathUri() . 'views/js/form_config.js');
         $this->content = $this->welcomeForm();
         $id_shop = $this->context->shop->id;
-        $token = Configuration::get(shoppingfeed::AUTH_TOKEN, null, null, $id_shop);
 
-        if ($token) {
-            $order_sync_available = ShoppingFeed::isOrderSyncAvailable();
-            $order_import_available = ShoppingFeed::isOrderImportAvailable();
-            $order_import_test = Configuration::get(Shoppingfeed::ORDER_IMPORT_TEST);
-
-            $this->content .= $this->renderOrderSyncForm($order_sync_available, $order_import_available, $order_import_test);
-
-            $this->specificRulesManager = new RulesManager($this->context->shop->id);
-            $this->content .= $this->renderRulesConfigurationForm();
-
-            $this->content .= $this->renderRulesList();
+        $sft = new ShoppingfeedToken();
+        $tokens = $sft->findAllActive();
+        if (empty($tokens)) {
+            Tools::redirectAdmin(
+                Context::getContext()->link->getAdminLink('AdminShoppingfeedAccountSettings')
+            );
         }
-        $this->module->setBreakingChangesNotices();
+        $order_sync_available = ShoppingFeed::isOrderSyncAvailable();
+        $order_import_available = ShoppingFeed::isOrderImportAvailable();
+        $order_import_test = Configuration::get(Shoppingfeed::ORDER_IMPORT_TEST);
+
+        $this->content .= $this->renderOrderSyncForm($order_sync_available, $order_import_available, $order_import_test);
+
+        $this->specificRulesManager = new RulesManager($this->context->shop->id);
+        $this->content .= $this->renderRulesConfigurationForm();
+        $this->content .= $this->renderRulesList();
 
         parent::initContent();
     }
