@@ -263,6 +263,82 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         $this->confirmUninstall = $this->l('Are you sure you want to uninstall?');
 
         $this->secure_key = Tools::encrypt($this->name);
+        if (version_compare(_PS_VERSION_, '1.7', '<')) {
+            $this->moduleAdminControllers = array(
+                array(
+                    'name' => array(
+                        'en' => 'Shopping Feed',
+                        'fr' => 'Shopping Feed'
+                    ),
+                    'class_name' => 'shoppingfeed',
+                    'icon' => 'AdminParentOrders',
+                    'visible' => true,
+                ),
+                array(
+                    'name' => array(
+                        'en' => 'Marketplaces Summary',
+                        'fr' => 'Commandes Marketplaces'
+                    ),
+                    'class_name' => 'AdminShoppingfeedOrders',
+                    'parent_class_name' => 'shoppingfeed',
+                    'visible' => true,
+                ),
+                array(
+                    'name' => array(
+                        'en' => 'Account settings',
+                        'fr' => 'Paramètres du compte'
+                    ),
+                    'class_name' => 'AdminShoppingfeedAccountSettings',
+                    'parent_class_name' => 'shoppingfeed',
+                    'visible' => true,
+                ),
+                array(
+                    'name' => array(
+                        'en' => 'Products feed',
+                        'fr' => 'Flux des produits'
+                    ),
+                    'class_name' => 'AdminShoppingfeedGeneralSettings',
+                    'parent_class_name' => 'shoppingfeed',
+                    'visible' => true,
+                ),
+                array(
+                    'name' => array(
+                        'en' => 'Orders feeds',
+                        'fr' => 'Flux des commandes'
+                    ),
+                    'class_name' => 'AdminShoppingfeedOrderImportRules',
+                    'parent_class_name' => 'shoppingfeed',
+                    'visible' => true,
+                ),
+                array(
+                    'name' => array(
+                        'en' => 'Logs',
+                        'fr' => 'Logs'
+                    ),
+                    'class_name' => 'AdminShoppingfeedProcessLogger',
+                    'parent_class_name' => 'shoppingfeed',
+                    'visible' => true,
+                ),
+                array(
+                    'name' => array(
+                        'en' => 'Cron Tasks',
+                        'fr' => 'Tâches cron'
+                    ),
+                    'class_name' => 'AdminShoppingfeedProcessMonitor',
+                    'parent_class_name' => 'shoppingfeed',
+                    'visible' => true,
+                ),
+                array(
+                    'name' => array(
+                        'en' => 'FAQ/Help',
+                        'fr' => 'FAQ/Aide'
+                    ),
+                    'class_name' => 'AdminShoppingfeedFaq',
+                    'parent_class_name' => 'shoppingfeed',
+                    'visible' => true,
+                ),
+            );
+        }
     }
 
     /**
