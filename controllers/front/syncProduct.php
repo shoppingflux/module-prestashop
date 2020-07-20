@@ -56,12 +56,12 @@ class ShoppingfeedSyncProductModuleFrontController extends CronController
     {
         $actions = array();
         if (Configuration::get(Shoppingfeed::STOCK_SYNC_ENABLED)) {
-            $actions[ShoppingFeedProduct::ACTION_SYNC_STOCK] = array(
+            $actions[ShoppingfeedProduct::ACTION_SYNC_STOCK] = array(
                 'actions_suffix' => 'Stock'
             );
         }
         if (Configuration::get(Shoppingfeed::PRICE_SYNC_ENABLED)) {
-            $actions[ShoppingFeedProduct::ACTION_SYNC_PRICE] = array(
+            $actions[ShoppingfeedProduct::ACTION_SYNC_PRICE] = array(
                 'actions_suffix' => 'Price'
             );
         }
