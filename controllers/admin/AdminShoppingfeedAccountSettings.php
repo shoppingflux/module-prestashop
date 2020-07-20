@@ -387,7 +387,7 @@ class AdminShoppingfeedAccountSettingsController extends ModuleAdminController
                 'search' => false,
             ),
             'lang_name' => array(
-                'title' => $this->module->l('Languague_', 'AdminShoppingfeedAccountSettings'),
+                'title' => $this->module->l('Languague', 'AdminShoppingfeedAccountSettings'),
                 'search' => false,
             ),
             'currency_name' => array(
