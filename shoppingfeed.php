@@ -361,8 +361,31 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         $this->setConfigurationDefault(self::REFUNDED_ORDERS, json_encode(array()));
         $this->setConfigurationDefault(self::ORDER_IMPORT_ENABLED, true);
         $this->setConfigurationDefault(self::PRODUCT_FEED_CARRIER_REFERENCE, Configuration::getGlobalValue('PS_CARRIER_DEFAULT'));
+        $this->saveToken();
 
         return $res;
+    }
+
+    private function saveToken()
+    {
+        $sfToken = new ShoppingfeedToken();
+        $shops = Shop::getShops();
+        foreach ($shops as $shop) {
+            $tokenConfig = Configuration::get('SHOPPING_FLUX_TOKEN', null, null, $shop['id_shop']);
+            if ($tokenConfig === false) {
+                continue;
+            }
+            $tokenTable = $sfToken->findByToken($tokenConfig);
+            if ($tokenTable !== false) {
+                continue;
+            }
+            $sfToken->addToken(
+                $shop['id_shop'],
+                Configuration::get('PS_LANG_DEFAULT', null, null, $shop['id_shop']),
+                Configuration::get('PS_CURRENCY_DEFAULT', null, null, $shop['id_shop']),
+                $tokenConfig
+            );
+        }
     }
 
     public function uninstall()

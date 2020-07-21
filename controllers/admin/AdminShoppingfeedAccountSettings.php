@@ -323,10 +323,6 @@ class AdminShoppingfeedAccountSettingsController extends ModuleAdminController
             return false;
         }
 
-
-        $id_shop = $this->context->shop->id;
-        Configuration::updateValue(shoppingfeed::AUTH_TOKEN, $token, null, null, $id_shop);
-
         $this->confirmations[] = $this->module->l('Your token has been saved.', 'AdminShoppingfeedAccountSettings');
         return true;
     }
