@@ -61,7 +61,7 @@ class ShoppingfeedPreloading extends ObjectModel
             'content' => array(
                 'type' => self::TYPE_STRING,
                 'validate' => 'isString',
-                'size' => 8160,
+                'size' => 65535,
                 'allow_null' => true,
             ),
             'actions' => array(
