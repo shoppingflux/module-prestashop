@@ -101,6 +101,11 @@ class ProductSerializer
         $content = $this->serializePrice($content);
         $content = $this->serializeStock($content);
 
+        \Hook::exec('shoppingfeedSerialize', [
+            'product' => $this->product,
+            'content' => &$content,
+        ]);
+
         return $content;
     }
 
@@ -122,6 +127,11 @@ class ProductSerializer
             'label' => $carrier->delay[$this->configurations['PS_LANG_DEFAULT']],
         ];
 
+        \Hook::exec('shoppingfeedSerializePrice', [
+            'product' => $this->product,
+            'content' => &$contentUpdate,
+        ]);
+
         return $contentUpdate;
     }
 
@@ -129,6 +139,11 @@ class ProductSerializer
     {
         $contentUpdate = $content;
         $contentUpdate['quantity'] = $this->product->quantity;
+
+        \Hook::exec('shoppingfeedSerializeStock', [
+            'product' => $this->product,
+            'content' => &$contentUpdate,
+        ]);
 
         return $contentUpdate;
     }
