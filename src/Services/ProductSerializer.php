@@ -26,11 +26,15 @@ class ProductSerializer
     private $configurations;
     private $link;
     private $sfModule;
+    private $id_shop;
+    private $id_lang;
 
     public function __construct($id_product, $id_lang, $id_shop)
     {
         $this->sfModule = \Module::getInstanceByName('shoppingfeed');
         $this->product = new Product($id_product, true, $id_lang, $id_shop);
+        $this->id_shop = $id_shop;
+        $this->id_lang = $id_lang;
         if (Validate::isLoadedObject($this->product) === false) {
 
             throw new \Exception('product must be a valid product');
@@ -102,6 +106,8 @@ class ProductSerializer
         $content = $this->serializeStock($content);
 
         \Hook::exec('shoppingfeedSerialize', [
+            'id_shop' => $id_shop,
+            'id_lang' => $id_lang,
             'product' => $this->product,
             'content' => &$content,
         ]);
@@ -128,6 +134,8 @@ class ProductSerializer
         ];
 
         \Hook::exec('shoppingfeedSerializePrice', [
+            'id_shop' => $id_shop,
+            'id_lang' => $id_lang,
             'product' => $this->product,
             'content' => &$contentUpdate,
         ]);
@@ -141,6 +149,8 @@ class ProductSerializer
         $contentUpdate['quantity'] = $this->product->quantity;
 
         \Hook::exec('shoppingfeedSerializeStock', [
+            'id_shop' => $id_shop,
+            'id_lang' => $id_lang,
             'product' => $this->product,
             'content' => &$contentUpdate,
         ]);
