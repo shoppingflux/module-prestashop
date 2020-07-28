@@ -40,12 +40,12 @@ class ProductSerializer
             throw new \Exception('product must be a valid product');
         }
         $this->link = new Link();
+        $this->id_lang = $id_lang;
         $this->configurations = Configuration::getMultiple(
             [
                 'PS_SHOP_DEFAULT',
                 'PS_TAX_ADDRESS_TYPE',
                 'PS_COUNTRY_DEFAULT',
-                'PS_LANG_DEFAULT',
                 'PS_SHIPPING_FREE_PRICE',
                 'PS_SHIPPING_HANDLING',
                 'PS_SHIPPING_METHOD',
@@ -74,7 +74,7 @@ class ProductSerializer
         $sfp->id_product = $this->product->id;
         $link = new Link();
         $carrier = $this->getCarrier();
-        $productLink = $link->getProductLink($this->product, null, null, null, $this->configurations['PS_LANG_DEFAULT']);
+        $productLink = $link->getProductLink($this->product, null, null, null, $this->id_lang);
 
         $content = [
             'reference' => $this->sfModule->mapReference($sfp),
@@ -92,14 +92,14 @@ class ProductSerializer
         if ((int) $this->product->id_category_default !== 0) {
             $content['category'] = [
                 'name' => ($this->configurations[\Shoppingfeed::PRODUCT_FEED_CATEGORY_DISPLAY] === 'default_category')? $this->_getCategory(): $this->_getFilAriane(),
-                'link' => $link->getCategoryLink($this->product->id_category_default, null, $this->configurations['PS_LANG_DEFAULT']),
+                'link' => $link->getCategoryLink($this->product->id_category_default, null, $this->id_lang),
             ];
         }
 
         if ((int) $this->product->id_manufacturer !== 0) {
             $content['brand'] = [
                 'name' => $this->product->manufacturer_name,
-                'link' => $link->getManufacturerLink($this->product->id_manufacturer, null, $this->configurations['PS_LANG_DEFAULT']),
+                'link' => $link->getManufacturerLink($this->product->id_manufacturer, null, $this->id_lang),
             ];
         }
         $content = $this->serializePrice($content);
@@ -130,7 +130,7 @@ class ProductSerializer
         }
         $contentUpdate['shipping'] = [
             'amount' => $this->_getShipping($carrier, $priceWithReduction),
-            'label' => $carrier->delay[$this->configurations['PS_LANG_DEFAULT']],
+            'label' => $carrier->delay[$this->id_lang],
         ];
 
         \Hook::exec('shoppingfeedSerializePrice', [
@@ -165,7 +165,7 @@ class ProductSerializer
 
     private function getImages()
     {
-        $imagesFromDb = $this->getImagesFromDb($this->product->id, $this->configurations['PS_LANG_DEFAULT']);
+        $imagesFromDb = $this->getImagesFromDb($this->product->id, $this->id_lang);
         $images = [
             'main' => null,
             'additional' => [],
@@ -229,16 +229,16 @@ class ProductSerializer
     private function getStringTags()
     {
         $tabTags = Tag::getProductTags($this->product->id);
-        if (empty($tabTags[$this->configurations['PS_LANG_DEFAULT']])) {
+        if (empty($tabTags[$this->id_lang])) {
             return '';
         } else {
-            return implode("|", $tabTags[$this->configurations['PS_LANG_DEFAULT']]);
+            return implode("|", $tabTags[$this->id_lang]);
         }
     }
 
     protected function getAttributes()
     {
-        $combination = $this->product->getAttributeCombinations($this->configurations['PS_LANG_DEFAULT']);
+        $combination = $this->product->getAttributeCombinations($this->id_lang);
 
         $attributes = [
             'state' => $this->product->condition,
@@ -286,7 +286,7 @@ class ProductSerializer
             $attributes['supplier_reference'] = $this->product->supplier_reference;
         }
         $supplier = $this->product->supplier_name;
-        $supplier_link = $this->link->getSupplierLink($this->product->id_supplier, null, $this->configurations['PS_LANG_DEFAULT']);
+        $supplier_link = $this->link->getSupplierLink($this->product->id_supplier, null, $this->id_lang);
         if (empty($supplier) === false && empty($supplier_link) === false) {
             $attributes['supplier'] = $supplier;
             $attributes['supplier_link'] = $supplier_link;
@@ -300,7 +300,7 @@ class ProductSerializer
                 }
             }
         }
-        foreach ($this->product->getFrontFeatures($this->configurations['PS_LANG_DEFAULT']) as $feature) {
+        foreach ($this->product->getFrontFeatures($this->id_lang) as $feature) {
             $feature['name'] = $this->_clean($feature['name']);
             if (empty($feature['name']) === false) {
                 $attributes[$feature['name']] = $feature['value'];
@@ -318,7 +318,7 @@ class ProductSerializer
         $sfp = new ShoppingfeedProduct();
         $sfp->id_product = $this->product->id;
 
-        foreach ($this->product->getAttributeCombinations($this->configurations['PS_LANG_DEFAULT']) as $combinaison) {
+        foreach ($this->product->getAttributeCombinations($this->id_lang) as $combinaison) {
             $combinations[$combinaison['id_product_attribute']]['attributes'][$combinaison['group_name']] = $combinaison['attribute_name'];
             $combinations[$combinaison['id_product_attribute']]['ean13'] = $combinaison['ean13'];
             $combinations[$combinaison['id_product_attribute']]['upc'] = $combinaison['upc'];
@@ -343,7 +343,7 @@ class ProductSerializer
                 'images' => [],
                 'shipping' => [
                     'amount' => $this->_getShipping($carrier, $priceWithReduction, $combination['weight']),
-                    'label' => $carrier->delay[$this->configurations['PS_LANG_DEFAULT']],
+                    'label' => $carrier->delay[$this->id_lang],
                 ],
                 'discounts' => []
             ];
@@ -373,7 +373,7 @@ class ProductSerializer
                 $variation['images'][] = Tools::getCurrentUrlProtocolPrefix(). $this->link->getImageLink($this->product->link_rewrite, $this->product->id.'-'.$image, $this->configurations['SHOPPING_FLUX_IMAGE']);
             }
             if ($image_child === false) {
-                foreach ($this->product->getImages($this->configurations['PS_LANG_DEFAULT']) as $images) {
+                foreach ($this->product->getImages($this->id_lang) as $images) {
                     $ids = $this->product->id.'-'.$images['id_image'];
                     $variation['images'][] = Tools::getCurrentUrlProtocolPrefix().$this->link->getImageLink($this->product->link_rewrite, $ids, $this->configurations['SHOPPING_FLUX_IMAGE']);
                 }
@@ -395,7 +395,7 @@ class ProductSerializer
     {
         $category = '';
 
-        foreach ($this->_getProductFilAriane($this->product->id, $this->configurations['PS_LANG_DEFAULT']) as $categories) {
+        foreach ($this->_getProductFilAriane($this->product->id, $this->id_lang) as $categories) {
             $category .= $categories . ' > ';
         }
 
@@ -404,7 +404,7 @@ class ProductSerializer
 
     protected function _getShipping($carrier, $priceWithReduction, $attribute_weight = null)
     {
-        $default_country = new Country($this->configurations['PS_COUNTRY_DEFAULT'], $this->configurations['PS_LANG_DEFAULT']);
+        $default_country = new Country($this->configurations['PS_COUNTRY_DEFAULT'], $this->id_lang);
         $id_zone = (int)$default_country->id_zone;
         $carrier_tax = Tax::getCarrierTaxRate((int)$carrier->id);
         $shipping = 0;
@@ -438,7 +438,7 @@ class ProductSerializer
             '.Shop::addSqlAssociation('product', 'p').'
             LEFT JOIN `'._DB_PREFIX_.'category_lang` cl ON (product_shop.`id_category_default` = cl.`id_category`)
             WHERE p.`id_product` = '.(int)$this->product->id.'
-            AND cl.`id_lang` = '.(int)$this->configurations['PS_LANG_DEFAULT']);
+            AND cl.`id_lang` = '.(int)$this->id_lang);
     }
 
     protected function getImagesFromDb($id_lang)
