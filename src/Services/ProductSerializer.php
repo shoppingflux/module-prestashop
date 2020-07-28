@@ -106,8 +106,8 @@ class ProductSerializer
         $content = $this->serializeStock($content);
 
         \Hook::exec('shoppingfeedSerialize', [
-            'id_shop' => $id_shop,
-            'id_lang' => $id_lang,
+            'id_shop' => $this->id_shop,
+            'id_lang' => $this->id_lang,
             'product' => $this->product,
             'content' => &$content,
         ]);
@@ -134,8 +134,8 @@ class ProductSerializer
         ];
 
         \Hook::exec('shoppingfeedSerializePrice', [
-            'id_shop' => $id_shop,
-            'id_lang' => $id_lang,
+            'id_shop' => $this->id_shop,
+            'id_lang' => $this->id_lang,
             'product' => $this->product,
             'content' => &$contentUpdate,
         ]);
@@ -149,8 +149,8 @@ class ProductSerializer
         $contentUpdate['quantity'] = $this->product->quantity;
 
         \Hook::exec('shoppingfeedSerializeStock', [
-            'id_shop' => $id_shop,
-            'id_lang' => $id_lang,
+            'id_shop' => $this->id_shop,
+            'id_lang' => $this->id_lang,
             'product' => $this->product,
             'content' => &$contentUpdate,
         ]);
