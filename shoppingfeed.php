@@ -232,6 +232,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         'actionOrderStatusPostUpdate',
         'actionShoppingfeedOrderImportRegisterSpecificRules',
         'actionObjectProductDeleteBefore',
+        'ActionObjectCategoryUpdateAfter',
     );
 
     /**
@@ -876,7 +877,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
      */
     public function hookActionObjectProductUpdateAfter($params)
     {
-        $this->updateShoppingFeedPreloading($params, ShoppingfeedPreloading::ACTION_SYNC_ALL);
+        $this->updateShoppingFeedPreloading(array($params['object']), ShoppingfeedPreloading::ACTION_SYNC_ALL);
         $this->updateShoppingFeedPriceRealtime();
     }
 
@@ -931,26 +932,51 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::closeLogger();
     }
 
+    public function hookActionObjectCategoryUpdateAfter($params)
+    {
+        $category = $params['object'];
+        $categoryIds = [];
+        foreach ($category->getAllParents() as $parent) {
+            $categoryIds[] = (int)$parent->id;
+        }
+        $categoryIds[] = (int)$category->id;
+        foreach ($category->getAllChildren() as $children) {
+            $categoryIds[] = (int)$children->id;
+        }
+        $products = $this->getProductsByCategoryIds($categoryIds);
+
+        if (empty($products) === false) {
+            $this->updateShoppingFeedPreloading($products, ShoppingfeedPreloading::ACTION_SYNC_ALL);
+        }
+    }
+
+    public function getProductsByCategoryIds($categoryIds)
+    {
+        $products = [];
+        $sql = new DbQuery();
+        $sql->from(Product::$definition['table'])
+            ->where('id_category_default in(' .  implode(',', $categoryIds) . ')');
+        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
+
+        return ObjectModel::hydrateCollection('Product', $result);
+    }
+
     /**
      * Processes products to indexed on add into XML feed.
      */
-    public function updateShoppingFeedPreloading($params, $action)
+    public function updateShoppingFeedPreloading($products, $action)
     {
-        $product = $params['object'];
-        if (!Validate::isLoadedObject($product)) {
-
-            return false;
-        }
         $handler = new \ShoppingfeedClasslib\Actions\ActionsHandler();
-        $handler->addActions('saveProduct')
-                ->setConveyor(
-                    array(
-                        'product' => $product,
-                        'product_action' => $action
-                    )
-                );
         try {
-            $processResult = $handler->process('ShoppingfeedProductSyncPreloading');
+            $processResult = $handler
+                        ->addActions('saveProduct')
+                        ->setConveyor(
+                            array(
+                                'products' => $products,
+                                'product_action' => $action,
+                            )
+                        )
+                        ->process('ShoppingfeedProductSyncPreloading');
             if (!$processResult) {
                 \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logError(
                     $this->l('Fail : An error occurred during process.')

@@ -91,17 +91,8 @@ class ShoppingfeedProductSyncPreloadingActions extends DefaultActions
         return true;
     }
 
-    public function saveProduct() {
-
-        if (empty($this->conveyor['product']) || $this->conveyor['product'] instanceof Product === false) {
-            ProcessLoggerHandler::logInfo(
-                '[Preloading] ' . $this->l('Product not valid for synchronization', 'ShoppingfeedProductSyncPreloadingActions'),
-                'Product'
-            );
-            return false;
-        }
-        $product = $this->conveyor['product'];
-
+    public function saveProduct() 
+    {
         if (empty($this->conveyor['product_action'])) {
             ProcessLoggerHandler::logInfo(
                 '[Preloading] ' . $this->l('Product not registered for synchronization; no action found', 'ShoppingfeedProductSyncPreloadingActions'),
@@ -114,26 +105,40 @@ class ShoppingfeedProductSyncPreloadingActions extends DefaultActions
         $tokens = (new ShoppingfeedToken())->findAllActive();
         $sfp = new ShoppingfeedPreloading();
 
-        if ((bool)$product->active !== true ||
-            ((bool)Configuration::get(ShoppingFeed::PRODUCT_FEED_SYNC_PACK) !== true && (bool)$product->cache_is_pack === true)) {
+        foreach ($this->conveyor['products'] as $product) {
+            if ($product instanceof Product === false) {
+                ProcessLoggerHandler::logInfo(
+                    '[Preloading] ' . $this->l('Product not valid for synchronization', 'ShoppingfeedProductSyncPreloadingActions'),
+                    'Product'
+                );
+                
+                continue;
+            }
+            if ((bool)$product->active !== true ||
+                ((bool)Configuration::get(ShoppingFeed::PRODUCT_FEED_SYNC_PACK) !== true && (bool)$product->cache_is_pack === true)) {
+                    foreach ($tokens as $token) {
+                        $sfp->deleteProduct($product->id, $token['id_shoppingfeed_token']);
+                    }
+            } else {
+                foreach ($tokens as $token) {
+                    $this->conveyor['id_token'] = $token['id_shoppingfeed_token'];
 
-            return $this->forward('deleteProduct');
-        } else {
-            foreach ($tokens as $token) {
-                $this->conveyor['id_token'] = $token['id_shoppingfeed_token'];
-
-                $sfp->addAction($product->id, $token['id_shoppingfeed_token'], $action);
-
-                if (Configuration::get(Shoppingfeed::REAL_TIME_SYNCHRONIZATION)) {
-
-                    $this->forward('getBatch');
+                    $sfp->addAction($product->id, $token['id_shoppingfeed_token'], $action);
                 }
             }
         }
 
+        foreach ($tokens as $token) {
+            $this->conveyor['id_token'] = $token['id_shoppingfeed_token'];
+            if (Configuration::get(Shoppingfeed::REAL_TIME_SYNCHRONIZATION)) {
+
+                $this->forward('getBatch');
+            }
+        }
 
         return true;
     }
+
 
     public function deleteProduct()
     {
@@ -152,6 +157,11 @@ class ShoppingfeedProductSyncPreloadingActions extends DefaultActions
 
         foreach ($tokens as $token) {
             $sfp->deleteProduct($product->id, $token['id_shoppingfeed_token']);
+        }
+
+        if (Configuration::get(Shoppingfeed::REAL_TIME_SYNCHRONIZATION)) {
+
+            return $this->forward('getBatch');
         }
 
         return true;
