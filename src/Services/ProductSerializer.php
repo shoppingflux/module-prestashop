@@ -89,22 +89,10 @@ class ProductSerializer
             'attributes' => $this->getAttributes(),
             'variations' => $this->getVariations($carrier, $productLink),
         ];
-        
-        if ((int) $this->product->id_category_default !== 0) {
-            $content['category'] = [
-                'name' => ($this->configurations[\Shoppingfeed::PRODUCT_FEED_CATEGORY_DISPLAY] === 'default_category')? $this->_getCategory(): $this->_getFilAriane(),
-                'link' => $link->getCategoryLink($this->product->id_category_default, null, $this->id_lang),
-            ];
-        }
 
-        if ((int) $this->product->id_manufacturer !== 0) {
-            $content['brand'] = [
-                'name' => $this->product->manufacturer_name,
-                'link' => $link->getManufacturerLink($this->product->id_manufacturer, null, $this->id_lang),
-            ];
-        }
         $content = $this->serializePrice($content);
         $content = $this->serializeStock($content);
+        $content = $this->serializeCategory($content);
 
         \Hook::exec('shoppingfeedSerialize', [
             'id_shop' => $this->id_shop,
@@ -155,6 +143,27 @@ class ProductSerializer
             'product' => $this->product,
             'content' => &$contentUpdate,
         ]);
+
+        return $contentUpdate;
+    }
+
+    public function serializeCategory($content)
+    {
+        if ((int) $this->product->id_category_default === 0) {
+
+            return $content;
+        }
+        $cat = $this->_getCategory();
+        if ($cat === false) {
+
+            return $content;
+        }
+        $link = new Link();
+        $contentUpdate = $content;
+        $contentUpdate['category'] = [
+            'name' => ($this->configurations[\Shoppingfeed::PRODUCT_FEED_CATEGORY_DISPLAY] === 'default_category')? $cat: $this->_getFilAriane(),
+            'link' => $link->getCategoryLink($this->product->id_category_default, null, $this->id_lang),
+        ];
 
         return $contentUpdate;
     }

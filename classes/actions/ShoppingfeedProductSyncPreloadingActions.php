@@ -75,9 +75,7 @@ class ShoppingfeedProductSyncPreloadingActions extends DefaultActions
                 ->where(sprintf('(sfp.actions IS NOT NULL AND sfp.id_token = %d) OR (sfp.id_token IS NULL)', $token->id_shoppingfeed_token));
 
             $result = $db->executeS($sql);
-
             foreach ($result as $key => $row) {
-
                 try {
                     $sfp->saveProduct($row['id_product'], $token->id_shoppingfeed_token, $token->id_lang, $token->id_shop);
 

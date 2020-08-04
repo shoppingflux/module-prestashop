@@ -946,7 +946,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         $products = $this->getProductsByCategoryIds($categoryIds);
 
         if (empty($products) === false) {
-            $this->updateShoppingFeedPreloading($products, ShoppingfeedPreloading::ACTION_SYNC_ALL);
+            $this->updateShoppingFeedPreloading($products, ShoppingfeedPreloading::ACTION_SYNC_CATEGORY);
         }
     }
 

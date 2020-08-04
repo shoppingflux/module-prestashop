@@ -29,6 +29,7 @@ class ShoppingfeedPreloading extends ObjectModel
     const ACTION_SYNC_PRICE = "SYNC_PRICE";
     const ACTION_SYNC_ALL = "SYNC_ALL";
     const ACTION_SYNC_PRELODING = "SYNC_PRELODING";
+    const ACTION_SYNC_CATEGORY = "ACTION_SYNC_CATEGORY";
 
     public $id_shoppingfeed_preloading;
 
@@ -139,6 +140,9 @@ class ShoppingfeedPreloading extends ObjectModel
                         case self::ACTION_SYNC_STOCK:
                             $this->content = Tools::jsonEncode($productSerialize->serializeStock(Tools::jsonDecode($this->content, true)), JSON_UNESCAPED_UNICODE);
                             break;
+                        case self::ACTION_SYNC_CATEGORY:
+                            $this->content = Tools::jsonEncode($productSerialize->serializeCategory(Tools::jsonDecode($this->content, true)), JSON_UNESCAPED_UNICODE);
+                            break;
                     }
                 }
             }
@@ -229,12 +233,12 @@ class ShoppingfeedPreloading extends ObjectModel
         } else {
             $this->hydrate($shoppingfeedPreloading);
             $actions = Tools::jsonDecode($this->actions, true);
-            if ($actions === null || $action === self::ACTION_SYNC_ALL) {
+            if ($this->content === null || $action === self::ACTION_SYNC_ALL) {
                 $this->actions = Tools::jsonEncode([$action]);
-            } else if ($action !== self::ACTION_SYNC_ALL && in_array(self::ACTION_SYNC_ALL, $actions)) {
+            } else if ($actions !== null && $action !== self::ACTION_SYNC_ALL && in_array(self::ACTION_SYNC_ALL, $actions)) {
 
                 return true;
-            } else if (in_array($action, $actions) === false) {
+            } else if ($actions === null || in_array($action, $actions) === false) {
                 $actions[] = $action;
                 $this->actions = Tools::jsonEncode($actions);
             } else {
