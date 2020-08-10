@@ -317,6 +317,8 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
                         'tracking_url' => $orderTrackingUrl,
                     );
                 }
+
+                Hook::exec('actionShoppingfeedTracking', ['order' => $order, 'taskOrderPayload' => &$taskOrderPayload]);
             } elseif (in_array($order->current_state, $cancelled_status)) {
                 $taskOrderOperation = OrderOperation::TYPE_CANCEL;
             // The "reason" field is not supported (at least for now)
