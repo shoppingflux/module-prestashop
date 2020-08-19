@@ -370,7 +370,7 @@ class ProductSerializer
                 $variation['attributes']['wholesale_price'] = $combination['wholesale_price'];
             }
             if (empty($combination['reference']) === false) {
-                $variation['attributes']['reference'] = $combination['reference'];
+                $variation['attributes']['ref-constructeur'] = $combination['reference'];
             }
             if ($priceWithoutReduction > $priceWithReduction) {
                 $variation['discounts'][] = $priceWithReduction;
