@@ -1,96 +1,83 @@
-# Requirements
+# Shoppingfeed PrestaShop Addons
 
-PHP 5.6
+## About
 
-# Installation
+Synchronize stocks, prices, products feed and orders from or to marketplace available on ShoppingFeed
 
-## Problem : Guzzle trouble
 
-As of today, the SDK uses Guzzle for HTTP communication. However, it uses
-a more recent version of Guzzle than Prestashop.  
-* If the SDK's Guzzle is used, Prestashop breaks.  
-* If Prestashop's Guzzle is used, the SDK breaks.
 
-## Solution
+#### Product page on PrestaShop Addons:
 
-### The prefixing script
+This addons is not avalable on PrestaShop Addons.
+This Git repository is for developpers only. 
+Please contact ShoppingFeed customer service to get 
 
-The `202/prefix-vendor-namespace.php` script is used to prefix  the Guzzle
-library namespaces used by the SDK, as well as the SDK itself. The script
-must be used from CLI, and is configured directly in the file.  
-However, changes must be made so that :
-* The autoloader won't load the "original" Guzzle, or any of its own
-dependencies
-* The autoloader won't load the "original" SDK, since it
-uses the "original" Guzzle
-* The autoloader will load the "prefixed" Guzzle, with all its own
-"prefixed" dependencies
-* The autoloader will load the "rewritten" SDK, which uses the new
-Guzzle namespace.
 
-Our composer.json file :
-```json
-{
-  "require": {
-    "shoppingfeed/php-sdk": "0.2.1-beta.1"
-  },
-  "config": {
-    "vendor-dir": "vendor"
-  },
-  "autoload": {
-    "files": [
-      "vendor/prefixed/guzzlehttp/guzzle/src/functions_include.php",
-      "vendor/prefixed/guzzlehttp/psr7/src/functions_include.php",
-      "vendor/prefixed/guzzlehttp/promises/src/functions_include.php"
-    ],
-    "psr-4": {
-      "SfGuzzle\\GuzzleHttp\\":          "vendor/prefixed/guzzlehttp/guzzle/src/",
-      "SfGuzzle\\GuzzleHttp\\Psr7\\":    "vendor/prefixed/guzzlehttp/psr7/src/",
-      "SfGuzzle\\GuzzleHttp\\Promise\\": "vendor/prefixed/guzzlehttp/promises/src/",
-      "ShoppingFeed\\Sdk\\":             "vendor/prefixed/shoppingfeed/php-sdk/src/"
-    }
-  }
-}
-```
+## Module version guide
 
-The "directly included files"
-(e.g. `vendor/prefixed/guzzlehttp/guzzle/src/functions_include.php`)
-must be modified by hand, as they use namespaces in strings.
+| PrestaShop version | Module version |  Repo               | Doc                |  PHP Version |
+|--------------------|----------------|---------------------|--------------------|--------------|
+| 1.6.0.x            | 1.x            |  [release/1.4.x]    | [module documentation][module-doc] |   5.6 or greater    |
+| 1.7.7.x            | 1.x            |  [master]           | [module documentation][module-doc] |   7.1 or greater    |
 
-```php
-if (!function_exists('SfGuzzle\GuzzleHttp\uri_template')) {
-    require __DIR__ . '/functions.php';
-}
-```
 
-You can find which files should be included directly by looking at the
-libraries own `composer.json` files
-(e.g. `/vendor/guzzlehttp/guzzle/composer.json`).  
-You can also check these files to fill the `psr-4` namespaces in the
-main `composer.json`.
+## Requirements
 
-### Autoloading
+PHP version (check Module version guide)
 
-As of now, the only way to prevent Composer from autoloading Guzzle is to
-rename or remove the folder. Using the `"exclude-from-classmap"` property does not
-work, since the namespace can still be resolved using the filesystem.  
-We don't have to do it for the SDK however, since we're not trying to
-_prevent_ Composer from loading it, but to have it loaded from a
-_different path_.  
 
-Nevertheless, the PHP script moves all the "original" libraries to
-the `202` folder to solve those problems.
+## Installation
 
-### Usage
+To install module on PrestaShop, download zip package supply by ShoppingFeed customer service.
 
-From the command line :
+If you are a developper, this module contain composer.json.dist file. If you clone or download the module from github
+repository, run the ```composer install``` is not necessary. You can see why on [module documentation][module-doc] on "Guzzle trouble".
 
-```bash
-modules/shoppingfeed$ composer install
-modules/shoppingfeed$ php 202/prefix-vendor-namespace.php
-modules/shoppingfeed$ composer dump-autoload
-```
+See the [composer documentation][composer-doc] to learn more about the composer.json file.
 
-The `vendor/prefixed` folder and the "original" libraries in `202`
-should be deleted before attempting a dependency update.  
-As mentioned previously, directly included files must be modified by hand.
+## Compiling assets
+**For development**
+
+We use _Webpack_ to compile our javascript and scss files.  
+In order to compile those files, you must :  
+1. have _Node 10+_ installed locally
+2. run `npm install` in the root folder to install dependencies
+3. then run `npm run watch` to compile assets and watch for file changes
+
+**For production**
+
+Run `npm run build` to compile for production.  
+Files are minified, `console.log` and comments dropped.
+
+## Contributing
+
+PrestaShop modules are open-source extensions to the PrestaShop e-commerce solution. Everyone is welcome and even encouraged to contribute with their own improvements.
+
+### Requirements
+
+Contributors **must** follow the following rules:
+
+* **Make your Pull Request on the "develop" branch**, NOT the "master" branch.
+* Do not update the module's version number.
+* Follow [the coding standards][1].
+
+### Process in details
+
+Contributors wishing to edit a module's files should follow the following process:
+
+1. Create your GitHub account, if you do not have one already.
+2. Fork the shoppingflux/module-prestashop project to your GitHub account.
+3. Clone your fork to your local machine in the ```/modules/shoppingfeed``` directory of your PrestaShop installation.
+4. Create a branch in your local clone of the module for your changes.
+5. Change the files in your branch. Be sure to follow [the coding standards][1]!
+6. Push your changed branch to your fork in your GitHub account.
+7. Create a pull request for your changes **on the _'develop'_ branch** of the module's project. Be sure to follow [the commit message norm][2] in your pull request. If you need help to make a pull request, read the [Github help page about creating pull requests][3].
+8. Wait for one of the core developers either to include your change in the codebase, or to comment on possible improvements you should make to your code.
+
+That's it: you have contributed to this open-source project! Congratulations!
+
+[1]: https://devdocs.prestashop.com/1.7/development/coding-standards/
+[2]: http://doc.prestashop.com/display/PS16/How+to+write+a+commit+message
+[3]: https://help.github.com/articles/using-pull-requests
+[composer-doc]: https://getcomposer.org/doc/04-schema.md
+[module-doc]: https://docs.202-ecommerce.com/shoppingfeed/
