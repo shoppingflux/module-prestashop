@@ -1,0 +1,12 @@
+Bonjour,
+
+Des erreurs se sont produites durant la synchronisation de vos commandes avec
+les marketplaces via Shopping Feed sur {shop_name}.
+Merci de vérifier les commandes en erreur ci-dessous :
+
+{list_order_sync_errors_txt}
+
+Merci de synchroniser à nouveau les commandes avec l'URL de votre tâche CRON
+(vous pouvez la trouver sur votre Back-Office PrestaShop; dans la configuration
+de votre module «15 Min Marketplace Updates – Shopping Feed», page "Tâches Cron").
+Vous pourrez trouver plus de détails sur la page "Logs d'activité".

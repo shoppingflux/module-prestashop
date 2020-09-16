@@ -1,0 +1,37 @@
+{
+  "name": "shoppingfeed/php-sdk",
+  "license": "Apache-2.0",
+  "minimum-stability": "stable",
+  "description": "Shopping Feed SDK to ease integration of our API",
+  "require": {
+    "php": ">= 5.6",
+    "ext-json": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "ShoppingFeed\\Sdk\\": "src/",
+      "ShoppingFeed\\Sdk\\Test\\": "tests/unit"
+    }
+  },
+  "suggest": {
+    "psr/log": "trace HTTP requests performed by the SDK",
+    "guzzlehttp/guzzle": "Guzzle Http 6 is the default http adapter integrated in the SDK",
+    "shoppingfeed/php-feed-generator": "Generates compliant Shopping-Feed XML feed with ease"
+  },
+  "require-dev": {
+    "monolog/monolog": "^1.23",
+    "guzzlehttp/guzzle": "^6.0",
+    "phpunit/phpunit": "^5.0",
+    "shoppingfeed/coding-style-php": "^2.0",
+    "overtrue/phplint": "^1.1"
+  },
+  "scripts": {
+    "test": [
+      "@php vendor/bin/phpunit",
+      "@php vendor/bin/sfcs src --progress -vvv"
+    ]
+  },
+  "scripts-descriptions": {
+    "test" : "Run PHPUnit tests suites and Coding standards validator"
+  }
+}

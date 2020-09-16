@@ -1,0 +1,13 @@
+{
+    "directories": {
+        "doc": "doc"
+    },
+    "scripts": {
+        "build": "./node_modules/.bin/stylemark -i 202/doc -o 202/build/doc -c 202/doc/config.yml",
+        "doc-build": "./node_modules/.bin/stylemark -i 202/doc -o 202/build/doc -c 202/doc/config.yml",
+        "doc-watch": "./node_modules/.bin/stylemark -i 202/doc -o 202/build/doc -c 202/doc/config.yml -w -b"
+    },
+    "devDependencies": {
+        "stylemark": "^3.0.3"
+    }
+}
