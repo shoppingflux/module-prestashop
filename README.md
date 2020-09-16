@@ -9,8 +9,8 @@ Synchronize stocks, prices, products feed and orders from or to marketplace avai
 #### Product page on PrestaShop Addons:
 
 This addons is not avalable on PrestaShop Addons.
-This Git repository is for developpers only. 
-Please contact ShoppingFeed customer service to get 
+This Git repository is for developpers only.
+Please contact ShoppingFeed customer service to get
 
 
 ## Module version guide
@@ -26,9 +26,12 @@ Please contact ShoppingFeed customer service to get
 PHP version (check Module version guide)
 
 
-## Installation
+## Installation for merchands
 
-To install module on PrestaShop, download zip package supply by ShoppingFeed customer service.
+To install module on PrestaShop, download zip package supply by ShoppingFeed customer service or the zip file
+named [v1.x.x-prod-shoppingfeed.zip](https://github.com/shoppingflux/module-prestashop/tags) attached on each detail release page.
+
+## Installation for developpers
 
 If you are a developper, this module contain composer.json.dist file. If you clone or download the module from github
 repository, run the ```composer install``` is not necessary. You can see why on [module documentation][module-doc] on "Guzzle trouble".
@@ -38,15 +41,15 @@ See the [composer documentation][composer-doc] to learn more about the composer.
 ## Compiling assets
 **For development**
 
-We use _Webpack_ to compile our javascript and scss files.  
-In order to compile those files, you must :  
+We use _Webpack_ to compile our javascript and scss files.
+In order to compile those files, you must :
 1. have _Node 10+_ installed locally
 2. run `npm install` in the root folder to install dependencies
 3. then run `npm run watch` to compile assets and watch for file changes
 
 **For production**
 
-Run `npm run build` to compile for production.  
+Run `npm run build` to compile for production.
 Files are minified, `console.log` and comments dropped.
 
 ## Contributing
