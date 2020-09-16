@@ -30,7 +30,7 @@
                 <div class="card-header" id="headingOne">
                     <h5 class="mb-0">
                         <a class="btn btn-link collapsed" role="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
-                           <span>{l s='Does the 15 min Marketplace Updates - Shopping Feed module work with the official Shopping Feed module?' mod='shoppingfeed'}
+                           <span>{l s='Does the Shoppingfeed Prestashop Plugin (Feed&Order) module work with the official Shopping Feed module?' mod='shoppingfeed'}
                            </span>
                             <i class="fa fa-chevron-up"></i>
                         </a>
@@ -47,7 +47,7 @@
                 <div class="card-header" id="headingThree">
                     <h5 class="mb-0">
                         <a class=" collapsed" role="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-                            <span> {l s='How does the 15 min Marketplace Updates - Shopping Feed work ?' mod='shoppingfeed'}</span>
+                            <span> {l s='How does the Shoppingfeed Prestashop Plugin (Feed&Order) work ?' mod='shoppingfeed'}</span>
                             <i class="fa fa-chevron-up"></i>
                         </a>
                     </h5>
@@ -85,7 +85,7 @@
                 <div class="card-header" id="heading2">
                     <h5 class="mb-0">
                         <a class="btn btn-link collapsed" role="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                            <span> {l s='Does the 15 min Marketplace Updates - Shopping Feed module synchronize other data from my product listings ?' mod='shoppingfeed'}
+                            <span> {l s='Does the Shoppingfeed Prestashop Plugin (Feed&Order) synchronize other data from my product listings ?' mod='shoppingfeed'}
                            </span><i class="fa fa-chevron-up"></i>
                         </a>
                     </h5>
@@ -140,10 +140,11 @@
                 </div>
                 <div id="collapse6" class="collapse" aria-labelledby="heading6" data-parent="#accordion">
                     <div class="card-body">
-                        <p>{l s='Only one cron task call is mendatory for all shops.' mod='shoppingfeed'}</p>
+                        <p>{l s='Only two cron tasks call are mendatory for all shops.' mod='shoppingfeed'}</p>
                         <p>{l s='Please contact your system admin or your webhost to configure this line.' mod='shoppingfeed'}</p>
                         <pre>
 */5 * * * *     curl -s {$syncProductUrl|escape:'htmlall':'UTF-8'}  >/dev/null
+*/5 * * * *     curl -s {$syncOrderUrl|escape:'htmlall':'UTF-8'}  >/dev/null
 </pre>
                     </div>
                 </div>
@@ -175,7 +176,8 @@ Products: {$nbr_products|escape:'htmlall':'UTF-8'}
 Token : {$token|escape:'htmlall':'UTF-8'}
 Real time active: {$REAL_TIME_SYNCHRONIZATION|escape:'htmlall':'UTF-8'}
 Real time count products: {$STOCK_SYNC_MAX_PRODUCTS|escape:'htmlall':'UTF-8'}
-Cron url: {$syncProductUrl|escape:'htmlall':'UTF-8'}
+Cron product url: {$syncProductUrl|escape:'htmlall':'UTF-8'}
+Cron order url: {$syncOrderUrl|escape:'htmlall':'UTF-8'}
 Last sync: {$LAST_CRON_TIME_SYNCHRONIZATION|escape:'htmlall':'UTF-8'}</textarea>
                     </div>
                 </div>

@@ -258,7 +258,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
 
         parent::__construct();
 
-        $this->displayName = $this->l('15 min Marketplace Updates - Shopping Feed');
+        $this->displayName = $this->l('Shoppingfeed Prestashop Plugin (Feed&Order)');
         $this->description = $this->l('Improve your Shopping Feed module\'s  Marketplaces stocks synchronization speed.');
 
         $this->confirmUninstall = $this->l('Are you sure you want to uninstall?');

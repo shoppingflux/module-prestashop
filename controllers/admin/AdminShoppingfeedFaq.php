@@ -58,7 +58,7 @@ class AdminShoppingfeedFaqController extends ModuleAdminController
     {
         $fields_form = array(
             'legend' => array(
-                'title' => $this->module->l('15 min Marketplace Updates - Shopping', 'AdminShoppingfeedAccountSettings'),
+                'title' => $this->module->l('Shoppingfeed Prestashop Plugin (Feed&Order)', 'AdminShoppingfeedAccountSettings'),
             )
         );
 
@@ -86,6 +86,12 @@ class AdminShoppingfeedFaqController extends ModuleAdminController
             array('secure_key' => $this->module->secure_key)
         );
 
+        $syncOrderUrl = $this->context->link->getModuleLink(
+            'shoppingfeed',
+            'syncOrder',
+            array('secure_key' => $this->module->secure_key)
+        );
+
         $helper = new HelperForm($this);
         $helper->tpl_vars['REAL_TIME_SYNCHRONIZATION'] = Configuration::get(Shoppingfeed::REAL_TIME_SYNCHRONIZATION)?'true':'false';
         $helper->tpl_vars['nbr_products'] = $this->nbr_products;
@@ -97,6 +103,7 @@ class AdminShoppingfeedFaqController extends ModuleAdminController
         $helper->tpl_vars['multishop'] = Configuration::get('PS_MULTISHOP_FEATURE_ACTIVE') ? 'true' : 'false';
         $helper->tpl_vars['combination'] = Configuration::get('PS_COMBINATION_FEATURE_ACTIVE');
         $helper->tpl_vars['syncProductUrl'] = $syncProductUrl;
+        $helper->tpl_vars['syncOrderUrl'] = $syncOrderUrl;
         $helper->tpl_vars['STOCK_SYNC_MAX_PRODUCTS'] = Configuration::get(Shoppingfeed::STOCK_SYNC_MAX_PRODUCTS);
         $helper->tpl_vars['LAST_CRON_TIME_SYNCHRONIZATION'] = Configuration::get(Shoppingfeed::LAST_CRON_TIME_SYNCHRONIZATION);
         $helper->base_folder = $this->getTemplatePath() . $this->override_folder;

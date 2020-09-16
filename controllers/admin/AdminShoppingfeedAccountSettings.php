@@ -60,7 +60,7 @@ class AdminShoppingfeedAccountSettingsController extends ModuleAdminController
     {
         $fields_form = array(
             'legend' => array(
-                'title' => $this->module->l('15 min Marketplace Updates - Shopping', 'AdminShoppingfeedAccountSettings'),
+                'title' => $this->module->l('Shoppingfeed Prestashop Plugin (Feed&Order)', 'AdminShoppingfeedAccountSettings'),
             )
         );
 
@@ -77,7 +77,7 @@ class AdminShoppingfeedAccountSettingsController extends ModuleAdminController
     {
         $fields_form = array(
             'legend' => array(
-                'title' => $this->module->l('15 min Marketplace Updates - Shopping', 'AdminShoppingfeedAccountSettings'),
+                'title' => $this->module->l('Shoppingfeed Prestashop Plugin (Feed&Order)', 'AdminShoppingfeedAccountSettings'),
             )
         );
 

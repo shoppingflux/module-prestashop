@@ -65,7 +65,7 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
     {
         $fields_form = array(
             'legend' => array(
-                'title' => $this->module->l('15 min Marketplace Updates - Shopping', 'AdminShoppingfeedGeneralSettings'),
+                'title' => $this->module->l('Shoppingfeed Prestashop Plugin (Feed&Order)', 'AdminShoppingfeedGeneralSettings'),
             )
         );
 
