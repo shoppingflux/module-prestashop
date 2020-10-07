@@ -115,7 +115,7 @@ class ProductSerializer
         $contentUpdate['price'] = $priceWithoutReduction;
         $contentUpdate['discounts'] = $this->getDiscounts();
         if ($priceWithoutReduction > $priceWithReduction) {
-            $contentUpdate['discounts'][] = $priceWithoutReduction;
+            $contentUpdate['discounts'][] = $priceWithReduction;
         }
         $contentUpdate['shipping'] = [
             'amount' => $this->_getShipping($carrier, $priceWithReduction),
