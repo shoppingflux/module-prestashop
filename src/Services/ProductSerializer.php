@@ -283,7 +283,7 @@ class ProductSerializer
         if (empty($this->product->weight) === false && $this->product->weight != 0) {
             $attributes['weight'] = $this->product->weight;
         }
-        if (empty($this->product->height) === false && $this->product->height != 0) {
+        if (empty($this->product->reference) === false) {
             $attributes['mpn'] = $this->product->reference;
         }
         if (empty($this->product->upc) === false) {
