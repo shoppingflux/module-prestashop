@@ -72,24 +72,30 @@ class ShoppingfeedProductSyncPreloadingActions extends DefaultActions
                 ->select('ps.id_product')
                 ->limit($limit)
                 ->leftJoin(ShoppingfeedPreloading::$definition['table'], 'sfp', 'sfp.id_product = ps.id_product')
-                ->where(sprintf('(sfp.actions IS NOT NULL AND sfp.id_token = %d) OR (sfp.id_token IS NULL)', $token->id_shoppingfeed_token));
+                ->where(sprintf('(sfp.actions IS NOT NULL AND sfp.actions != "" AND sfp.id_token = %d) OR (sfp.id_token IS NULL)', $token->id_shoppingfeed_token));
 
-            $result = $db->executeS($sql);
+            $result = $db->executeS($sql, true, false);
+            $ids = '';
             foreach ($result as $key => $row) {
+                $ids .= $row['id_product'] . ',';
                 try {
                     $sfp->saveProduct($row['id_product'], $token->id_shoppingfeed_token, $token->id_lang, $token->id_shop);
-
                     Registry::increment('updatedProducts');
                 } catch (Exception $exception) {
                     ProcessLoggerHandler::logError($exception->getMessage());
                 }
             }
+            ProcessLoggerHandler::logInfo(
+                $logPrefix . ' ' .
+                $this->l('products added: ', 'ShoppingfeedProductSyncPreloadingActions') . $ids,
+                'Product'
+            );
         }
 
         return true;
     }
 
-    public function saveProduct() 
+    public function saveProduct()
     {
         if (empty($this->conveyor['product_action'])) {
             ProcessLoggerHandler::logInfo(
@@ -109,7 +115,7 @@ class ShoppingfeedProductSyncPreloadingActions extends DefaultActions
                     '[Preloading] ' . $this->l('Product not valid for synchronization', 'ShoppingfeedProductSyncPreloadingActions'),
                     'Product'
                 );
-                
+
                 continue;
             }
             if ((bool)$product->active !== true ||
