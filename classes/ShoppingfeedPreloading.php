@@ -252,7 +252,7 @@ class ShoppingfeedPreloading extends ObjectModel
 
     public function deleteProduct($id_product, $id_token)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->delete(
+        return Db::getInstance()->delete(
             self::$definition['table'],
             sprintf('id_product  = %d AND id_token = %d', $id_product, $id_token)
         );
@@ -261,6 +261,7 @@ class ShoppingfeedPreloading extends ObjectModel
     public function purge()
     {
         $sql = 'TRUNCATE ' . _DB_PREFIX_ . self::$definition['table'];
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->execute($sql);
+
+        return Db::getInstance()->execute($sql);
     }
 }
