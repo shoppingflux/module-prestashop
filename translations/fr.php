@@ -293,7 +293,7 @@ $_MODULE['<{shoppingfeed}prestashop>products_feeds_81eb930d543540547765196cdcf91
 $_MODULE['<{shoppingfeed}prestashop>products_feeds_7e400bc3ffd4b3c997594ecd276948fe'] = 'Indexation du flux produits';
 $_MODULE['<{shoppingfeed}prestashop>products_feeds_99c89186e2453564fc96bf2f73cf34cb'] = 'de votre catalogue';
 $_MODULE['<{shoppingfeed}prestashop>products_feeds_158fb546775e24c1143c4e1e473282a3'] = 'Purger le cache';
-$_MODULE['<{shoppingfeed}prestashop>products_feeds_79860b827b95a71c16f13b806f9b0566'] = 'Votre flux produits est complètement indexé.';
+$_MODULE['<{shoppingfeed}prestashop>products_feeds_79860b827b95a71c16f13b806f9b0566'] = 'Votre flux produits n\'est pas complètement indexé.';
 $_MODULE['<{shoppingfeed}prestashop>products_feeds_cc77b90992a467fd70ccae2cfb2570ee'] = 'Pour indexer les produits manquants, veuillez lancer manuellement ou mettre en place sur votre serveur la tâche suivante : \"Synchronisation des produits sur Shopping Feed\" disponible sur la';
 $_MODULE['<{shoppingfeed}prestashop>products_feeds_d872b8674f58b7aa564aa10aca184902'] = 'page \"Logs & Crons\"';
 $_MODULE['<{shoppingfeed}prestashop>process_modal_d95e61c3da448145f029fad6bc342c86'] = 'Tâche cron :';
