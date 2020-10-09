@@ -23,6 +23,8 @@ We recommand to not use override classes but hooks thinking for developpers.
 * actionShoppingfeedOrderImportRegisterSpecificRules:
     * Adds the order import specific rules class to the manager.
     * Add, remove or extend an order import rule ! Use this hook to declare your own behaviour.
+* actionShoppingfeedTracking
+    * Manage specific tracking url (shippment) on order feed (for instance URL with name of reciepient like "Relais colis")
 
 ### Handler Actions class
 

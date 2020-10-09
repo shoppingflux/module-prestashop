@@ -26,7 +26,7 @@
             <a style="display:block" href="{$link->getAdminLink('AdminShoppingfeedProcessMonitor', true)}" id="box-disabled-products" data-toggle="tooltip" class="box-stats label-tooltip {if $syncProduct->id == null || $syncProduct->last_update > date('Y-m-d H:i:s', (time() - 3660 * 24))}color2{else}color4{/if}" data-original-title="{l s='You can also launch product task on page Logs & Crons.' mod='shoppingfeed'}">
                 <div class="kpi-content">
                     <i class="icon-off"></i><span class="title">{l s='Product sync task' mod='shoppingfeed'}</span>
-                    {if $syncProduct->id == null || $syncProduct->last_update > date('Y-m-d H:i:s', (time() - 3660 * 24))}
+                    {if $syncProduct->id == null || $syncProduct->last_update < date('Y-m-d H:i:s', (time() - 3600 * 24))}
                     <span class="value">{l s='inactive' mod='shoppingfeed'}</span>
                     {else}
                     <span class="subtitle">{l s='Last launch' mod='shoppingfeed'} {$syncProduct->last_update}</span>

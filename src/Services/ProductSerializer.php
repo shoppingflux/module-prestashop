@@ -89,6 +89,13 @@ class ProductSerializer
             'attributes' => $this->getAttributes(),
             'variations' => $this->getVariations($carrier, $productLink),
         ];
+        if (empty($this->product->manufacturer_name) === false) {
+            $manufacturerLink = $this->link->getManufacturerLink($this->product->id_manufacturer, null, $this->id_lang);
+            $content['brand'] = [
+                'name' => $this->product->manufacturer_name,
+                'link' => $manufacturerLink,
+            ];
+        }
 
         $content = $this->serializePrice($content);
         $content = $this->serializeStock($content);
@@ -283,7 +290,7 @@ class ProductSerializer
         if (empty($this->product->weight) === false && $this->product->weight != 0) {
             $attributes['weight'] = $this->product->weight;
         }
-        if (empty($this->product->height) === false && $this->product->height != 0) {
+        if (empty($this->product->reference) === false) {
             $attributes['mpn'] = $this->product->reference;
         }
         if (empty($this->product->upc) === false) {
