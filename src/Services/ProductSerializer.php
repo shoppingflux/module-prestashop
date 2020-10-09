@@ -89,6 +89,13 @@ class ProductSerializer
             'attributes' => $this->getAttributes(),
             'variations' => $this->getVariations($carrier, $productLink),
         ];
+        if (empty($this->product->manufacturer_name) === false) {
+            $manufacturerLink = $this->link->getManufacturerLink($this->product->id_manufacturer, null, $this->id_lang);
+            $content['brand'] = [
+                'name' => $this->product->manufacturer_name,
+                'link' => $manufacturerLink,
+            ];
+        }
 
         $content = $this->serializePrice($content);
         $content = $this->serializeStock($content);
