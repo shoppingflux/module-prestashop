@@ -1137,6 +1137,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             ShoppingfeedAddon\OrderImport\Rules\Socolissimo::class,
             ShoppingfeedAddon\OrderImport\Rules\ShippedByMarketplace::class,
             ShoppingfeedAddon\OrderImport\Rules\TestingOrder::class,
+            ShoppingfeedAddon\OrderImport\Rules\ChangeStateOrder::class,
         );
 
         foreach($defaultRulesClassNames as $ruleClassName) {

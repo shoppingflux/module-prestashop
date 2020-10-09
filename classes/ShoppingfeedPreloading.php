@@ -167,7 +167,7 @@ class ShoppingfeedPreloading extends ObjectModel
             ->from(self::$definition['table'], 'sfp')
             ->innerJoin(ShoppingfeedToken::$definition['table'], 'sft', 'sft.id_shoppingfeed_token = sfp.id_token')
             ->where(sprintf('sft.content = "%s"', pSQL($token)))
-            ->where('sfp.actions is null')
+            ->where('sfp.actions IS NULL OR sfp.actions = ""')
             ->limit($limit, $from);
 
         foreach (Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql) as $row) {
@@ -191,7 +191,7 @@ class ShoppingfeedPreloading extends ObjectModel
         $sql->select('content')
             ->from(self::$definition['table'])
             ->where(sprintf('id_token = %d', (int)$id_token))
-            ->where('actions is null')
+            ->where('actions IS NULL OR actions = ""')
             ->limit($limit, $from);
 
         foreach (Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql) as $row) {
@@ -206,7 +206,7 @@ class ShoppingfeedPreloading extends ObjectModel
         $sql = new DbQuery();
         $sql->select('COUNT('.self::$definition['primary'].')')
             ->from(self::$definition['table'])
-            ->where('actions is null')
+            ->where('actions IS NULL OR actions = ""')
         ;
         $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
 
@@ -252,7 +252,7 @@ class ShoppingfeedPreloading extends ObjectModel
 
     public function deleteProduct($id_product, $id_token)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->delete(
+        return Db::getInstance()->delete(
             self::$definition['table'],
             sprintf('id_product  = %d AND id_token = %d', $id_product, $id_token)
         );
@@ -261,6 +261,7 @@ class ShoppingfeedPreloading extends ObjectModel
     public function purge()
     {
         $sql = 'TRUNCATE ' . _DB_PREFIX_ . self::$definition['table'];
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->execute($sql);
+
+        return Db::getInstance()->execute($sql);
     }
 }
