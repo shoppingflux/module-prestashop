@@ -353,7 +353,7 @@ class ShoppingfeedSyncOrderModuleFrontController extends CronController
 
         ProcessLoggerHandler::logInfo(
             sprintf(
-                $this->l('%d orders to import; %d success; %d errors', 'ShoppingfeedOrderImportActions'),
+                $this->module->l('%d orders to import; %d success; %d errors', 'ShoppingfeedOrderImportActions'),
                 count($result),
                 Registry::get('importedOrders'),
                 Registry::get('errors')
