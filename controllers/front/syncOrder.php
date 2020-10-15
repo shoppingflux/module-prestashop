@@ -205,7 +205,7 @@ class ShoppingfeedSyncOrderModuleFrontController extends CronController
                     $errorMailHandler = new ActionsHandler();
                     $errorMailHandler->setConveyor(array(
                         'id_shop' => $token['id_shop'],
-                    '   id_token' => $token['id_shoppingfeed_token'],
+                        'id_token' => $token['id_shoppingfeed_token'],
                         'failedTaskOrders' => $failedTaskOrders,
                     ));
                     $errorMailHandler->addActions(
