@@ -195,10 +195,11 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
             ->where('action = "' . pSQL($action) . '"')
             ->where('update_at IS NOT NULL')
             ->where('update_at <= "' . pSQL(date('Y-m-d H:i:s')) . '"')
-            ->where('id_shop = ' . $id_shop)
+            ->where('id_shop = ' . (int) $id_shop)
             ->orderBy('sto.date_upd ASC')
             ->limit((int)Configuration::get(ShoppingFeed::ORDER_STATUS_MAX_ORDERS, null, null, $id_shop));
         $taskOrdersData = DB::getInstance()->executeS($query);
+
         if (false === $taskOrdersData) {
             ProcessLoggerHandler::logInfo(
                 $this->l('Could not retrieve Task Orders.', 'ShoppingfeedProductSyncActions'),
