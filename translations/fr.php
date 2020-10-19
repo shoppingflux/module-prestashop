@@ -212,6 +212,7 @@ $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedaccountsettings_c795621ab03
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedaccountsettings_8206cd915d13f963c3eb63d3775b92ab'] = 'Authentifié avec succès. Votre Token a été sauvegardé.';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedaccountsettings_f6861770bdf2fb702a665f1b34e4f9ed'] = 'Tokens';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedaccountsettings_df4d92b521abb80c1e9b0a40f1c30930'] = 'Langue';
+$_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedaccountsettings_11e707ce9327a614622f52dfe732b78b'] = 'URL du flux produit';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedaccountsettings_4d3d769b812b6faa6b76e1a8abaece2d'] = 'Actif';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedaccountsettings_f86f7b91afe27e79305a6b07bdb0d3c0'] = 'Echec lors de la mise à jour du statut';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedaccountsettings_de360c8b5dd9a9fdd592b1c08b3b4a62'] = 'Le statut a été mis à jour avec succès';
