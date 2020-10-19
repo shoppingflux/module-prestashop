@@ -57,8 +57,9 @@ class AdminShoppingfeedOrderImportRulesController extends ModuleAdminController
         $order_sync_available = ShoppingFeed::isOrderSyncAvailable();
         $order_import_available = ShoppingFeed::isOrderImportAvailable();
         $order_import_test = Configuration::get(Shoppingfeed::ORDER_IMPORT_TEST);
+        $order_import_shipped = Configuration::get(Shoppingfeed::ORDER_IMPORT_SHIPPED);
 
-        $this->content .= $this->renderOrderSyncForm($order_sync_available, $order_import_available, $order_import_test);
+        $this->content .= $this->renderOrderSyncForm($order_sync_available, $order_import_available, $order_import_test, $order_import_shipped);
 
         $this->specificRulesManager = new RulesManager($this->context->shop->id);
         $this->content .= $this->renderRulesConfigurationForm();
@@ -161,7 +162,7 @@ class AdminShoppingfeedOrderImportRulesController extends ModuleAdminController
     /**
      * @return string
      */
-    public function renderOrderSyncForm($order_sync_available, $order_import_available, $order_import_test = false)
+    public function renderOrderSyncForm($order_sync_available, $order_import_available, $order_import_test = false, $order_import_shipped = false)
     {
         $cronLink = $this->context->link->getAdminLink('AdminShoppingfeedProcessMonitor');
 
@@ -239,6 +240,22 @@ class AdminShoppingfeedOrderImportRulesController extends ModuleAdminController
                             'type' => 'switch',
                             'label' => $this->module->l('Allow import testing order', 'AdminShoppingfeedOrderImportRules'),
                             'name' => Shoppingfeed::ORDER_IMPORT_TEST,
+                            'id' => 'shoppingfeed_order-import-switch',
+                            'is_bool' => true,
+                            'disabled' => !Configuration::get(Shoppingfeed::ORDER_IMPORT_ENABLED),
+                            'values' => array(
+                                array(
+                                    'value' => 1,
+                                ),
+                                array(
+                                    'value' => 0,
+                                )
+                            ),
+                        ),
+                        array(
+                            'type' => 'switch',
+                            'label' => $this->module->l('Allow import already shipped order', 'AdminShoppingfeedOrderImportRules'),
+                            'name' => Shoppingfeed::ORDER_IMPORT_SHIPPED,
                             'id' => 'shoppingfeed_order-import-switch',
                             'is_bool' => true,
                             'disabled' => !Configuration::get(Shoppingfeed::ORDER_IMPORT_ENABLED),
@@ -433,6 +450,7 @@ class AdminShoppingfeedOrderImportRulesController extends ModuleAdminController
         $helper->fields_value = array(
             Shoppingfeed::ORDER_IMPORT_ENABLED => !$order_import_available ? false : Configuration::get(Shoppingfeed::ORDER_IMPORT_ENABLED),
             Shoppingfeed::ORDER_IMPORT_TEST => !$order_import_test ? false : Configuration::get(Shoppingfeed::ORDER_IMPORT_TEST),
+            Shoppingfeed::ORDER_IMPORT_SHIPPED => !$order_import_shipped ? false : Configuration::get(Shoppingfeed::ORDER_IMPORT_SHIPPED),
             Shoppingfeed::ORDER_SYNC_ENABLED => !$order_sync_available ? false : Configuration::get(Shoppingfeed::ORDER_SYNC_ENABLED),
             Shoppingfeed::ORDER_DEFAULT_CARRIER_REFERENCE => Configuration::get(Shoppingfeed::ORDER_DEFAULT_CARRIER_REFERENCE),
             'tracking_timeshift' => Configuration::get(Shoppingfeed::ORDER_STATUS_TIME_SHIFT),
@@ -494,12 +512,14 @@ class AdminShoppingfeedOrderImportRulesController extends ModuleAdminController
         $order_import_enabled = Tools::getValue(Shoppingfeed::ORDER_IMPORT_ENABLED);
         $order_sync_enabled = Tools::getValue(Shoppingfeed::ORDER_SYNC_ENABLED);
         $order_sync_test = Tools::getValue(Shoppingfeed::ORDER_IMPORT_TEST);
+        $order_sync_shipped = Tools::getValue(Shoppingfeed::ORDER_IMPORT_SHIPPED);
 
         $shops = Shop::getShops();
         foreach ($shops as $shop) {
             Configuration::updateValue(Shoppingfeed::ORDER_IMPORT_ENABLED, ($order_import_enabled ? true : false), false, null, $shop['id_shop']);
             Configuration::updateValue(Shoppingfeed::ORDER_IMPORT_TEST, ($order_sync_test ? true : false), false, null, $shop['id_shop']);
             Configuration::updateValue(Shoppingfeed::ORDER_SYNC_ENABLED, ($order_sync_enabled ? true : false), false, null, $shop['id_shop']);
+            Configuration::updateValue(Shoppingfeed::ORDER_IMPORT_SHIPPED, ($order_sync_shipped ? true : false), false, null, $shop['id_shop']);
         }
 
         $orderStatusesShipped = Tools::getValue('status_shipped_order');

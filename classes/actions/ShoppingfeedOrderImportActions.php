@@ -106,11 +106,14 @@ class ShoppingfeedOrderImportActions extends DefaultActions
 
         // Check if order already exists
         if (ShoppingfeedOrder::existsInternalId($apiOrder->getId())) {
-            ProcessLoggerHandler::logSuccess(
+            ProcessLoggerHandler::logInfo(
                 $this->logPrefix .
                     $this->l('Order not imported; already present.', 'ShoppingfeedOrderImportActions'),
                 'Order'
             );
+            $this->conveyor['sfOrder'] = ShoppingfeedOrder::getByShoppingfeedInternalId($apiOrder->getId());
+            $this->forward('acknowledgeOrder');
+
             return false;
         }
 
@@ -760,7 +763,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 $this->logPrefix .
                     $this->l('Could not retrieve associated sfOrder', 'ShoppingfeedOrderSyncActions'),
                 'Order',
-                $this->conveyor['id_order']
+                $this->conveyor['sfOrder']->id_order
             );
             return true;
         }
@@ -771,7 +774,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 $this->logPrefix .
                     $this->l('Could not retrieve Shopping Feed API.', 'ShoppingfeedOrderSyncActions'),
                 'Order',
-                $this->conveyor['id_order']
+                $this->conveyor['sfOrder']->id_order
             );
             return true;
         }
@@ -786,7 +789,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 $this->logPrefix .
                     $this->l('Failed to acknowledge order on Shoppingfeed API.', 'ShoppingfeedOrderSyncActions'),
                 'Order',
-                $this->conveyor['id_order']
+                $this->conveyor['sfOrder']->id_order
             );
             return true;
         }
@@ -795,7 +798,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             $this->logPrefix .
                 $this->l('Step 10/11 : Order acknowledged with SF API.', 'ShoppingfeedOrderImportActions'),
             'Order',
-            $this->conveyor['id_order']
+            $this->conveyor['sfOrder']->id_order
         );
 
         return true;

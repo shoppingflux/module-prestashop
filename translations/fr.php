@@ -41,13 +41,14 @@ $_MODULE['<{shoppingfeed}prestashop>socolissimo_e2fac82fe38a82dbf371b301c40238a2
 $_MODULE['<{shoppingfeed}prestashop>socolissimo_6f4cfb0f3391b430bf53b0591902f2da'] = 'Échec lors de l\'insersion de données dans le module Soliberte.';
 $_MODULE['<{shoppingfeed}prestashop>socolissimo_1680e383558a8025cfb4ab4ed6f8940e'] = 'Données insérées dans le module Soliberte.';
 $_MODULE['<{shoppingfeed}prestashop>socolissimo_2f8b5644d9da79225f46935c76bdc84e'] = 'Échec lors de l\'insersion de données dans le module Soliberte.';
-$_MODULE['<{shoppingfeed}prestashop>socolissimo_4c96fd6e2d4973be45673726772bf0a2'] = 'Si le module \'soliberte\' OU \'soflexibilite\' est installé';
+$_MODULE['<{shoppingfeed}prestashop>socolissimo_4c96fd6e2d4973be45673726772bf0a2'] = 'Si le module ”soliberte” OU ”soflexibilite” est installé';
 $_MODULE['<{shoppingfeed}prestashop>socolissimo_dff8d31a11be2b3d707f69ac88e19388'] = 'Ajout des informations de la commande dans le module correspondant.';
 $_MODULE['<{shoppingfeed}prestashop>changestateorder_0cc1e925b5703e8da52b7c3e91829499'] = '[Commande: %s]';
 $_MODULE['<{shoppingfeed}prestashop>changestateorder_03275de7e261d8b79350d172bb5e5e51'] = 'Règle déclenchée.';
 $_MODULE['<{shoppingfeed}prestashop>changestateorder_f476717bb2263fa77ade5b486eecdd0c'] = 'Aucune condition spécifique.';
 $_MODULE['<{shoppingfeed}prestashop>changestateorder_d7335923ab9c4180e4a20a869e57c99e'] = 'Appliquer le statut spécifique en fin de processus d\'import.';
-$_MODULE['<{shoppingfeed}prestashop>changestateorder_f30a6676f6e32d196c61e78b002cba38'] = 'Après l\'import d\'une commande, passer celle-ci au statut suivant';
+$_MODULE['<{shoppingfeed}prestashop>changestateorder_90af155a2edddebb35d633c17e19ceb8'] = 'Après un import avec succès, passer cette commande en statut';
+$_MODULE['<{shoppingfeed}prestashop>changestateorder_d661491c32d9076c599fce939db0090d'] = 'Après un import d\'une commande ”EXPEDIÉE”, passer cette commande en statut';
 $_MODULE['<{shoppingfeed}prestashop>mondialrelay_0cc1e925b5703e8da52b7c3e91829499'] = '[Commande %s]';
 $_MODULE['<{shoppingfeed}prestashop>mondialrelay_097fc69a9135eec0504f5bad2e82d590'] = 'Règle déclenchée. Aucun ID relais trouvé dans le champs \'autre\' de l\'adresse de livraison';
 $_MODULE['<{shoppingfeed}prestashop>mondialrelay_817aa2ea486ef416bd37f0194d5814bc'] = 'Règle déclenchée.  ID relais : %s / id_address_delivery : %s / isoCountry : %s';
@@ -58,7 +59,7 @@ $_MODULE['<{shoppingfeed}prestashop>mondialrelay_9a3496f5e01b8b70ef5f53604443f95
 $_MODULE['<{shoppingfeed}prestashop>mondialrelay_20fe454cdcf7c73a8bc4aba20706d52c'] = 'Impossible d\'ajotuer les informations du point relais';
 $_MODULE['<{shoppingfeed}prestashop>mondialrelay_13cdd01ac581d06066f8ef47f762162b'] = 'Impossible de créer le client SOAP pour le endpoint %s';
 $_MODULE['<{shoppingfeed}prestashop>mondialrelay_a6dbf1ce6c3dcf00dc7618ce2ded69b6'] = 'Erreur lors de la réception des informations du point relais %s : code %s';
-$_MODULE['<{shoppingfeed}prestashop>mondialrelay_7b667cdcb38acfdefc7e872f1718a46d'] = 'Si la commande doit être livrée par \'Mondial Relay\'.';
+$_MODULE['<{shoppingfeed}prestashop>mondialrelay_7b667cdcb38acfdefc7e872f1718a46d'] = 'Si la commande doit être livrée par ”Mondial Relay”.';
 $_MODULE['<{shoppingfeed}prestashop>mondialrelay_7177cc7c0f9dec75e5b34797b469b539'] = 'Ajout des informations de la commande dans le module Mondial Relay.';
 $_MODULE['<{shoppingfeed}prestashop>amazonprime_0cc1e925b5703e8da52b7c3e91829499'] = '[Commande %s]';
 $_MODULE['<{shoppingfeed}prestashop>amazonprime_4a71f7c39b134c1934a4b4b3c7f1e966'] = 'Règle déclenchée. Méthode de paiement changé pour ”amazon prime”';
@@ -72,7 +73,7 @@ $_MODULE['<{shoppingfeed}prestashop>cdiscount_0cc1e925b5703e8da52b7c3e91829499']
 $_MODULE['<{shoppingfeed}prestashop>cdiscount_43b6ade8fd758b0597ad2f31c9cd1b41'] = 'Règle déclenchée. ';
 $_MODULE['<{shoppingfeed}prestashop>cdiscount_e57bbf77c09cc684e13dece4dab3c599'] = 'Frais ajoutés à la commande.';
 $_MODULE['<{shoppingfeed}prestashop>cdiscount_944ef8a365522b31999e069600eb122a'] = 'Si la commande provient de CDiscount ET que le champs additionnel ”INTERETBCA” est rempli';
-$_MODULE['<{shoppingfeed}prestashop>cdiscount_0222978137c9d5458d0074e456e6ebf8'] = 'Ajouter un produit \"Frais CDiscount\" à la commande dont le montant sera visible sur la commande.';
+$_MODULE['<{shoppingfeed}prestashop>cdiscount_0222978137c9d5458d0074e456e6ebf8'] = 'Ajouter un produit ”Frais CDiscount” à la commande dont le montant sera visible sur la commande.';
 $_MODULE['<{shoppingfeed}prestashop>adminprocessloggercontroller_d3b206d196cd6be3a2764c1fb90b200f'] = 'Supprimer la sélection';
 $_MODULE['<{shoppingfeed}prestashop>adminprocessloggercontroller_53c6a96a3df980c3270d6ed82b6f174b'] = 'Souhaitez-vous supprimer la sélection ?';
 $_MODULE['<{shoppingfeed}prestashop>adminprocessloggercontroller_b718adec73e04ce3ec720dd11a06a308'] = 'ID';
@@ -170,6 +171,7 @@ $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_d8169ca55c
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_425ba278d4f2f2cb1502c8d7aef88357'] = 'Le module Shopping Flux Officiel (shoppingfluxexport) est installé sur votre boutique pour permettre d\'importer les commandes. L\'option “Importer les commandes“ doit être désactivées sur le module Shopping Flux Officiel. Si vous désactivez cette option sur le module Shopping Flux Officiel puis la ré-activez à nouveau plus tard, la l\'import des commandes via \"15 min Marketplace Updates - Shopping\" sera suspendu.';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_5af9a55b484dd6b5c85a1c36b9ccccce'] = 'Importer les nouvelles commandes';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_4d6c83f9b9c479537912e766636000cb'] = 'Importer les commandes de test';
+$_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_248c4a7ae1cc25f78743b92635aafa91'] = 'Importer les commandes déjà en statut ”expédié” sur Shoppignfeed ou la marketplace';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_0c097c8d2f2d519cf7bf6fd1f8476e3d'] = 'Correspondance des transporteurs';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_1e7cb1bf2bb42659e8a3f466e2191e5f'] = 'Correspondance des transporteurs entre les marketplaces et votre PrestaShop';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_578ec6d74357b4a196a9ff7c6d97e236'] = 'Le module Shopping Flux Officiel (shoppingfluxexport) doit être installé sur votre boutique pour permettre de synchroniser les commandes déjà importées. Les options “Expédition de commande“ et “Annulation de commande“ doivent être désactivées sur le module Shopping Flux Officiel. Si vous désactivez ces options sur le module Shopping Flux Officiel puis les ré-activez à nouveau plus tard, la ”synchronisation les commandes déjà importées” via \"15 min Marketplace Updates - Shopping\" sera suspendu.';

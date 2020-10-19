@@ -272,6 +272,9 @@ class ShoppingfeedSyncOrderModuleFrontController extends CronController
                 }
 
                 $result = $shoppingfeedApi->getUnacknowledgedOrders();
+                if (Configuration::get(\Shoppingfeed::ORDER_IMPORT_SHIPPED) == true) {
+                    $result = array_merge($result, $shoppingfeedApi->getUnacknowledgedOrders(true));
+                }
             } catch (Exception $e) {
                 ProcessLoggerHandler::logError(
                     sprintf(
@@ -317,6 +320,7 @@ class ShoppingfeedSyncOrderModuleFrontController extends CronController
 
                     $handler->setConveyor(array(
                         'id_shop' => $id_shop,
+                        'id_token' => $token['id_shoppingfeed_token'],
                         'apiOrder' => $apiOrder,
                     ));
 
