@@ -207,6 +207,7 @@ class AdminShoppingfeedAccountSettingsController extends ModuleAdminController
                     'label' => $this->module->l('Username', 'AdminShoppingfeedAccountSettings'),
                     'name' => 'username',
                     'required' => true,
+                    'autocomplete' => 'off',
                 ),
                 array(
                     'type' => 'password',

@@ -49,27 +49,15 @@ class ChangeStateOrder extends RuleAbstract implements RuleInterface
 {
     public function isApplicable(OrderResource $apiOrder)
     {
+        if (empty($this->configuration['end_order_state'])) {
+            return false;
+        }
+
         return true;
     }
 
     public function onPostProcess($params)
     {
-        $apiOrder = $params['apiOrder'];
-        if (empty($this->configuration['end_order_state']) === false
-            && $apiOrder->getStatus() == 'waiting_shipment') {
-            $changeStateId = $this->configuration['end_order_state'];
-
-        } elseif (empty($this->configuration['end_order_state_shipped']) === false
-            && $apiOrder->getStatus() == 'shipped') {
-            $changeStateId = $this->configuration['end_order_state_shipped'];
-
-        } elseif ($apiOrder->getStatus() == 'shipped') {
-            $changeStateId = Configuration::get('PS_OS_SHIPPING');
-
-        } else {
-
-            return true;
-        }
         /** @var \ShoppingfeedAddon\OrderImport\OrderData $orderData */
         $orderData = $params['orderData'];
         $apiOrder = $params['apiOrder'];
@@ -94,7 +82,7 @@ class ChangeStateOrder extends RuleAbstract implements RuleInterface
         $history = new OrderHistory();
         $history->id_order = $params['sfOrder']->id_order;
         $use_existings_payment = true;
-        $history->changeIdOrderState((int) $changeStateId, $psOrder, $use_existings_payment);
+        $history->changeIdOrderState((int) $this->configuration['end_order_state'], $psOrder, $use_existings_payment);
         // Save all changes
         $history->addWithemail();
     }
@@ -126,35 +114,19 @@ class ChangeStateOrder extends RuleAbstract implements RuleInterface
           'id_order_state' => '',
           'name' => '',
         ]);
-        $states = [
-            [
+        return array(
+            array(
                 'type' => 'select',
                 'label' =>
-                    $this->l('After a sucessfull order import, turn this order status into', 'ChangeStateOrder'),
+                    $this->l('After a sucessfull order import, turn this order status into ', 'ChangeStateOrder'),
                 'name' => 'end_order_state',
-                'options' => [
+                'options' => array(
                     'query' => $statuses,
                     'id' => 'id_order_state',
                     'name' => 'name'
-                ],
+                ),
                 'required' => false,
-            ]
-        ];
-        if (Configuration::get(\Shoppingfeed::ORDER_IMPORT_SHIPPED) == true) {
-            $states[] = [
-                'type' => 'select',
-                'label' =>
-                    $this->l('After a SHIPPED order import, turn this order status into', 'ChangeStateOrder'),
-                'name' => 'end_order_state_shipped',
-                'options' => [
-                    'query' => $statuses,
-                    'id' => 'id_order_state',
-                    'name' => 'name'
-                ],
-                'required' => false,
-            ];
-        }
-
-        return $states;
+            )
+        );
     }
 }

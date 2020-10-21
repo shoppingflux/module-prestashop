@@ -20,8 +20,10 @@ $_MODULE['<{shoppingfeed}prestashop>rueducommercemondialrelay_caa2bffa194f3192ac
 $_MODULE['<{shoppingfeed}prestashop>shippedbymarketplace_0cc1e925b5703e8da52b7c3e91829499'] = '[Commande %s]';
 $_MODULE['<{shoppingfeed}prestashop>shippedbymarketplace_9e8b433ca751ff0b5ed976125108103a'] = 'Règle déclenchée. Commande expédiée par la marketplace %s, augmentation du stock pour le produit %s : stock précédent %d, ajouté %d.';
 $_MODULE['<{shoppingfeed}prestashop>shippedbymarketplace_bf6268797ddbc9e9333d906763b31069'] = 'Règle déclenchée. Configuration dela commande sur LIVRÉ.';
-$_MODULE['<{shoppingfeed}prestashop>shippedbymarketplace_6450eb7f955260dc6b622c2c987addd9'] = 'Si la commande est expédiée par la marketplace';
-$_MODULE['<{shoppingfeed}prestashop>shippedbymarketplace_da07501fbb475aa139aeff8b40c05b1b'] = 'Augmenter le stock des produits avant de passer la commande. Configurer en fin d\'import la commande sur LIVRÉ.';
+$_MODULE['<{shoppingfeed}prestashop>shippedbymarketplace_b54bf972c4560b820f51e3e33a9c7d47'] = 'Si une commande est expédiée par la marketplace OU le statut d\'import de commande est Expédié.';
+$_MODULE['<{shoppingfeed}prestashop>shippedbymarketplace_07172e18fb8d0ded766f9851a25aab96'] = 'Ne décrémente pas de stock pour cette commande. Affecte le statut LIVRÉ après le processus d\'import ou le statut configuré ci-dessus.';
+$_MODULE['<{shoppingfeed}prestashop>shippedbymarketplace_6d37db035b07261b99e9fc78a4413361'] = 'Après import d\'une commande EXPEDIÉE par une marketplace, passer celle-ci au statut suivant';
+$_MODULE['<{shoppingfeed}prestashop>shippedbymarketplace_8c1e740f41b7a8fea37e5643874fcf77'] = 'Par défaut : Livré';
 $_MODULE['<{shoppingfeed}prestashop>cdiscountrelay_0cc1e925b5703e8da52b7c3e91829499'] = '[Commande %s]';
 $_MODULE['<{shoppingfeed}prestashop>cdiscountrelay_1705267a14f0d6133019291dcf8b03ed'] = 'Règle déclenchée. Adresse de livraison mise à jour avec l\'ID du point relais.';
 $_MODULE['<{shoppingfeed}prestashop>cdiscountrelay_dec006e857c0ad54d3aadd8f00064519'] = 'Si la commande provient de CDiscount ET le transporteur est ”SO1”, ”REL” or ”RCO”.';
@@ -47,8 +49,7 @@ $_MODULE['<{shoppingfeed}prestashop>changestateorder_0cc1e925b5703e8da52b7c3e918
 $_MODULE['<{shoppingfeed}prestashop>changestateorder_03275de7e261d8b79350d172bb5e5e51'] = 'Règle déclenchée.';
 $_MODULE['<{shoppingfeed}prestashop>changestateorder_f476717bb2263fa77ade5b486eecdd0c'] = 'Aucune condition spécifique.';
 $_MODULE['<{shoppingfeed}prestashop>changestateorder_d7335923ab9c4180e4a20a869e57c99e'] = 'Appliquer le statut spécifique en fin de processus d\'import.';
-$_MODULE['<{shoppingfeed}prestashop>changestateorder_90af155a2edddebb35d633c17e19ceb8'] = 'Après un import avec succès, passer cette commande en statut';
-$_MODULE['<{shoppingfeed}prestashop>changestateorder_d661491c32d9076c599fce939db0090d'] = 'Après un import d\'une commande ”EXPEDIÉE”, passer cette commande en statut';
+$_MODULE['<{shoppingfeed}prestashop>changestateorder_f30a6676f6e32d196c61e78b002cba38'] = 'Après l\'import d\'une commande, passer celle-ci au statut suivant';
 $_MODULE['<{shoppingfeed}prestashop>mondialrelay_0cc1e925b5703e8da52b7c3e91829499'] = '[Commande %s]';
 $_MODULE['<{shoppingfeed}prestashop>mondialrelay_097fc69a9135eec0504f5bad2e82d590'] = 'Règle déclenchée. Aucun ID relais trouvé dans le champs \'autre\' de l\'adresse de livraison';
 $_MODULE['<{shoppingfeed}prestashop>mondialrelay_817aa2ea486ef416bd37f0194d5814bc'] = 'Règle déclenchée.  ID relais : %s / id_address_delivery : %s / isoCountry : %s';
@@ -172,9 +173,12 @@ $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_425ba278d4
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_5af9a55b484dd6b5c85a1c36b9ccccce'] = 'Importer les nouvelles commandes';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_4d6c83f9b9c479537912e766636000cb'] = 'Importer les commandes de test';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_248c4a7ae1cc25f78743b92635aafa91'] = 'Importer les commandes déjà en statut ”expédié” sur Shoppignfeed ou la marketplace';
+$_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_6dbfa8cd9d1f3e4310f714be1780936f'] = 'Permet d\'importer une commande avec un statut ”expédié” sur Shoppingfeed. Votre stock ne sera pas décrémenté pour ces commandes.';
+$_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_791cb4d0c9bd529dc79bfc1ab07da553'] = 'Par défaut, une commande importée avec un statut ”expédiée” sera créée avec un statut ”livré”. Cette règle d\'import peut-être configuré ci-dessous.';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_0c097c8d2f2d519cf7bf6fd1f8476e3d'] = 'Correspondance des transporteurs';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_1e7cb1bf2bb42659e8a3f466e2191e5f'] = 'Correspondance des transporteurs entre les marketplaces et votre PrestaShop';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_578ec6d74357b4a196a9ff7c6d97e236'] = 'Le module Shopping Flux Officiel (shoppingfluxexport) doit être installé sur votre boutique pour permettre de synchroniser les commandes déjà importées. Les options “Expédition de commande“ et “Annulation de commande“ doivent être désactivées sur le module Shopping Flux Officiel. Si vous désactivez ces options sur le module Shopping Flux Officiel puis les ré-activez à nouveau plus tard, la ”synchronisation les commandes déjà importées” via \"15 min Marketplace Updates - Shopping\" sera suspendu.';
+$_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_7517e70636dc93796a0015d7a56a764b'] = 'La synchronisation post-import permet de gérer les statuts suivants : Expédié, Annulé et Remboursé.';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_aa625fb3ff7fe1efaf63a228d563dc21'] = 'Synchroniser les commandes déjà importées';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_5a6422643151d2fdf0907231b4b7d6d4'] = 'Vous devez définir une fréquence de synchronisation dans la tâche CRON pour mettre à jour les statuts de vos commandes';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_841bc7ef1cabc42a4cf4cf5e5f2be45e'] = 'Synchronisation des commandes envoyées';
@@ -352,6 +356,7 @@ $_MODULE['<{shoppingfeed}prestashop>shoppingfeedproductsyncpriceactions_73c1f14a
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedproductsyncpriceactions_88f3784c2963bc004558697d67f77e1d'] = '%s non référencé dans le catalogue Shopping Feed - prix : %s';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedproductsyncpreloadingactions_b3c12e2d090b3a14fb33a6e1bbfd4b42'] = 'Impossible de trouver le token.';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedproductsyncpreloadingactions_8ff1345785936b576d52b8a53f4e90ff'] = 'Impossible de trouver la devise.';
+$_MODULE['<{shoppingfeed}prestashop>shoppingfeedproductsyncpreloadingactions_bb2d6b44e2dbe4b1f7fa2fc01464f313'] = 'produits ajoutés :';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedproductsyncpreloadingactions_0cad7748069105b9968dd1c784f596ff'] = 'Produit non enregistré poru la synchronisation; aucune action trouvée';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedproductsyncpreloadingactions_c25748151dc0557c659c8a7f6a2997d4'] = 'Produit non valide pour la synchronisation';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedordersyncactions_d8a735dbc925444997f3ea4c1637e76f'] = 'Commande provenant de Shopping feed non importé; Aucun ID de commande trouvé';

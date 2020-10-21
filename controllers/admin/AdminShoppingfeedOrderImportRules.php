@@ -72,12 +72,12 @@ class AdminShoppingfeedOrderImportRulesController extends ModuleAdminController
     {
         $fields_form = array(
             'legend' => array(
-                'title' => $this->l('Rules Configuration', 'AdminShoppingfeedOrderImportRules'),
+                'title' => $this->module->l('Rules Configuration', 'AdminShoppingfeedOrderImportRules'),
                 'icon' => 'icon-cogs'
             ),
             'input' => array(),
             'submit' => array(
-                'title' => $this->l('Save', 'AdminShoppingfeedOrderImportRules'),
+                'title' => $this->module->l('Save', 'AdminShoppingfeedOrderImportRules'),
                 'name' => 'saveRulesConfiguration',
                 // PS hides the button if this is not set
                 'id' => 'shoppingfeed_saveRulesConfiguration-submit'
@@ -257,6 +257,8 @@ class AdminShoppingfeedOrderImportRulesController extends ModuleAdminController
                             'label' => $this->module->l('Allow import already shipped order', 'AdminShoppingfeedOrderImportRules'),
                             'name' => Shoppingfeed::ORDER_IMPORT_SHIPPED,
                             'id' => 'shoppingfeed_order-import-switch',
+                            'desc' => $this->module->l('Let\'s import order with status ”shipped” order on Shopping feed. Your stock won\'t decrease for these orders.', 'AdminShoppingfeedOrderImportRules'),
+                            'hint' => $this->module->l('By default, a ”shipped” order will be imported as ”delivered” on PrestaShop. This can be configured.', 'AdminShoppingfeedOrderImportRules'),
                             'is_bool' => true,
                             'disabled' => !Configuration::get(Shoppingfeed::ORDER_IMPORT_ENABLED),
                             'values' => array(
@@ -321,7 +323,7 @@ class AdminShoppingfeedOrderImportRulesController extends ModuleAdminController
                             'type' => 'switch',
                             'is_bool' => true,
                             'disabled' => !$order_sync_available,
-                            'hint' => "The order post-import synchronization allows you to manage the following order statuses : shipped, cancelled, refunded.",
+                            'hint' => $this->module->l('The order post-import synchronization allows you to manage the following order statuses : shipped, cancelled, refunded.', 'AdminShoppingfeedOrderImportRules'),
                             'values' => array(
                                 array(
                                     'value' => 1,
