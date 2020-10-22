@@ -58,6 +58,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     const REFUNDED_ORDERS = "SHOPPINGFEED_REFUNDED_ORDERS";
     const ORDER_IMPORT_ENABLED = "SHOPPINGFEED_ORDER_IMPORT_ENABLED";
     const ORDER_IMPORT_TEST = "SHOPPINGFEED_ORDER_IMPORT_TEST";
+    const ORDER_IMPORT_SHIPPED = "SHOPPINGFEED_ORDER_IMPORT_SHIPPED";
     const ORDER_IMPORT_SPECIFIC_RULES_CONFIGURATION = "SHOPPINGFEED_ORDER_IMPORT_SPECIFIC_RULES_CONFIGURATION";
     const ORDER_DEFAULT_CARRIER_REFERENCE = "SHOPPINGFEED_ORDER_DEFAULT_CARRIER_REFERENCE";
     const PRODUCT_FEED_CARRIER_REFERENCE = "SHOPPINGFEED_PRODUCT_FEED_CARRIER_REFERENCE";
@@ -361,6 +362,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         $this->setConfigurationDefault(self::CANCELLED_ORDERS, json_encode(array()));
         $this->setConfigurationDefault(self::REFUNDED_ORDERS, json_encode(array()));
         $this->setConfigurationDefault(self::ORDER_IMPORT_ENABLED, true);
+        $this->setConfigurationDefault(self::ORDER_IMPORT_SHIPPED, false);
         $this->setConfigurationDefault(self::PRODUCT_FEED_CARRIER_REFERENCE, Configuration::getGlobalValue('PS_CARRIER_DEFAULT'));
         $this->saveToken();
 
@@ -1135,9 +1137,9 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             ShoppingfeedAddon\OrderImport\Rules\Mondialrelay::class,
             ShoppingfeedAddon\OrderImport\Rules\RueducommerceMondialrelay::class,
             ShoppingfeedAddon\OrderImport\Rules\Socolissimo::class,
+            ShoppingfeedAddon\OrderImport\Rules\ChangeStateOrder::class,
             ShoppingfeedAddon\OrderImport\Rules\ShippedByMarketplace::class,
             ShoppingfeedAddon\OrderImport\Rules\TestingOrder::class,
-            ShoppingfeedAddon\OrderImport\Rules\ChangeStateOrder::class,
         );
 
         foreach($defaultRulesClassNames as $ruleClassName) {

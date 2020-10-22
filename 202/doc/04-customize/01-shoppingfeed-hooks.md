@@ -25,6 +25,10 @@ We recommand to not use override classes but hooks thinking for developpers.
     * Add, remove or extend an order import rule ! Use this hook to declare your own behaviour.
 * actionShoppingfeedTracking
     * Manage specific tracking url (shippment) on order feed (for instance URL with name of reciepient like "Relais colis")
+* actionShoppingfeedOrderImportCriteria
+    * Manage criteria to retrienve new order
+        * Skip unacknowledge order
+        * Import available Shoppingfeed status: created, waiting_store_acceptance (default), refused, waiting_shipment, shipped, cancelled, refunded, partially_refunded, partially_shipped
 
 ### Handler Actions class
 

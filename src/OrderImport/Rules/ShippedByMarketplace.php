@@ -36,6 +36,7 @@ use Configuration;
 use Carrier;
 use Order;
 use OrderHistory;
+use OrderState;
 use Tools;
 use StockAvailable;
 use ShoppingfeedAddon\OrderImport\RuleAbstract;
@@ -55,6 +56,10 @@ class ShippedByMarketplace extends RuleAbstract implements RuleInterface
 {
     public function isApplicable(OrderResource $apiOrder)
     {
+        if ($apiOrder->getStatus() == 'shipped') {
+            return true;
+        }
+
         $shippedByMarketplace = [
             'amazon fba',
             'epmm',
@@ -121,13 +126,17 @@ class ShippedByMarketplace extends RuleAbstract implements RuleInterface
             'Order',
             $params['sfOrder']->id_order
         );
-
+        if (empty($this->configuration['end_order_state_shipped']) === false) {
+            $changeStateId = $this->configuration['end_order_state_shipped'];
+        } else {
+            $changeStateId = (int) Configuration::get('PS_OS_DELIVERED');
+        }
         $psOrder = new Order($params['sfOrder']->id_order);
         // Set order to DELIVERED
         $history = new OrderHistory();
         $history->id_order = $params['sfOrder']->id_order;
         $use_existings_payment = true;
-        $history->changeIdOrderState((int) Configuration::get('PS_OS_DELIVERED'), $psOrder, $use_existings_payment);
+        $history->changeIdOrderState($changeStateId, $psOrder, $use_existings_payment);
         // Save all changes
         $history->addWithemail();
     }
@@ -137,7 +146,7 @@ class ShippedByMarketplace extends RuleAbstract implements RuleInterface
      */
     public function getConditions()
     {
-        return $this->l('If order is shipped by the marketplace.', 'ShippedByMarketplace');
+        return $this->l('If order is shipped by the marketplace OR import order status already as Shipped.', 'ShippedByMarketplace');
     }
 
     /**
@@ -145,6 +154,35 @@ class ShippedByMarketplace extends RuleAbstract implements RuleInterface
      */
     public function getDescription()
     {
-        return $this->l('Increase stocks before order. Set order to DELIVERED after the process.', 'ShippedByMarketplace');
+        return $this->l('Increase stocks before order. Set order to DELIVERED after the process or status configured behind.', 'ShippedByMarketplace');
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getConfigurationSubform()
+    {
+        $context = \Context::getContext();
+        $statuses = OrderState::getOrderStates((int) $context->language->id);
+        array_unshift($statuses, [
+          'id_order_state' => '',
+          'name' => '',
+        ]);
+        $states[] = [
+            'type' => 'select',
+            'label' =>
+                $this->l('After a SHIPPED by marketplace order import, turn this order status into', 'ShippedByMarketplace'),
+            'desc' =>
+                $this->l('By default: Delivered', 'ShippedByMarketplace'),
+            'name' => 'end_order_state_shipped',
+            'options' => [
+                'query' => $statuses,
+                'id' => 'id_order_state',
+                'name' => 'name'
+            ],
+            'required' => false,
+        ];
+
+        return $states;
     }
 }

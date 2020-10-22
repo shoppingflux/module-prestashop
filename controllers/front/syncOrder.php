@@ -64,11 +64,13 @@ class ShoppingfeedSyncOrderModuleFrontController extends CronController
     public function syncOrderStatus()
     {
         ProcessLoggerHandler::openLogger($this->processMonitor);
-        $shops = Shop::getShops();
-        foreach ($shops as $shop) {
-            $logPrefix = '[Shop ' . $shop['id_shop'] . ']';
 
-            if (!ShoppingFeed::isOrderSyncAvailable($shop['id_shop'])) {
+        $sft = new ShoppingfeedToken();
+        $tokens = $sft->findAllActive();
+        foreach ($tokens as $token) {
+            $logPrefix = '[Shop ' . $token['id_shop'] . ']';
+
+            if (!ShoppingFeed::isOrderSyncAvailable($token['id_shop'])) {
                 ProcessLoggerHandler::logInfo(
                     $logPrefix . ' ' .
                         $this->module->l('Synchronization error : the Shopping Feed Official module (shoppingfluxexport) is enabled for the post-import synchronization. The “Order shipment” & “Order cancellation” options must be disabled in the official module for enabling this type of synchronization in the new module.', 'syncOrder'),
@@ -93,7 +95,8 @@ class ShoppingfeedSyncOrderModuleFrontController extends CronController
                 /** @var ShoppingfeedHandler $ticketsHandler */
                 $ticketsHandler = new ActionsHandler();
                 $ticketsHandler->setConveyor(array(
-                    'id_shop' => $shop['id_shop'],
+                    'id_shop' => $token['id_shop'],
+                    'id_token' => $token['id_shoppingfeed_token'],
                     'order_action' => ShoppingfeedTaskOrder::ACTION_CHECK_TICKET_SYNC_STATUS,
                 ));
                 $ticketsHandler->addActions(
@@ -151,7 +154,8 @@ class ShoppingfeedSyncOrderModuleFrontController extends CronController
                 /** @var ShoppingfeedHandler $orderStatusHandler */
                 $orderStatusHandler = new ActionsHandler();
                 $orderStatusHandler->setConveyor(array(
-                    'id_shop' => $shop['id_shop'],
+                    'id_shop' => $token['id_shop'],
+                    'id_token' => $token['id_shoppingfeed_token'],
                     'order_action' => ShoppingfeedTaskOrder::ACTION_SYNC_STATUS,
                 ));
                 $orderStatusHandler->addActions(
@@ -200,7 +204,8 @@ class ShoppingfeedSyncOrderModuleFrontController extends CronController
                 if (!empty($failedTaskOrders)) {
                     $errorMailHandler = new ActionsHandler();
                     $errorMailHandler->setConveyor(array(
-                        'id_shop' => $shop['id_shop'],
+                        'id_shop' => $token['id_shop'],
+                        'id_token' => $token['id_shoppingfeed_token'],
                         'failedTaskOrders' => $failedTaskOrders,
                     ));
                     $errorMailHandler->addActions(
@@ -267,6 +272,9 @@ class ShoppingfeedSyncOrderModuleFrontController extends CronController
                 }
 
                 $result = $shoppingfeedApi->getUnacknowledgedOrders();
+                if (Configuration::get(\Shoppingfeed::ORDER_IMPORT_SHIPPED) == true) {
+                    $result = array_merge($result, $shoppingfeedApi->getUnacknowledgedOrders(true));
+                }
             } catch (Exception $e) {
                 ProcessLoggerHandler::logError(
                     sprintf(
@@ -312,6 +320,7 @@ class ShoppingfeedSyncOrderModuleFrontController extends CronController
 
                     $handler->setConveyor(array(
                         'id_shop' => $id_shop,
+                        'id_token' => $token['id_shoppingfeed_token'],
                         'apiOrder' => $apiOrder,
                     ));
 
@@ -353,7 +362,7 @@ class ShoppingfeedSyncOrderModuleFrontController extends CronController
 
         ProcessLoggerHandler::logInfo(
             sprintf(
-                $this->l('%d orders to import; %d success; %d errors', 'ShoppingfeedOrderImportActions'),
+                $this->module->l('%d orders to import; %d success; %d errors', 'ShoppingfeedOrderImportActions'),
                 count($result),
                 Registry::get('importedOrders'),
                 Registry::get('errors')

@@ -77,7 +77,7 @@ class ShoppingfeedProductSyncPreloadingActions extends DefaultActions
             $result = $db->executeS($sql, true, false);
             $ids = '';
             foreach ($result as $key => $row) {
-                $ids .= $row['id_product'] . ',';
+                $ids .= $row['id_product'] . ', ';
                 try {
                     $sfp->saveProduct($row['id_product'], $token->id_shoppingfeed_token, $token->id_lang, $token->id_shop);
                     Registry::increment('updatedProducts');
