@@ -55,9 +55,11 @@ $(document).ready(function()
         if ($("#SHOPPINGFEED_ORDER_IMPORT_ENABLED_on").prop('checked')) {
             $("#shoppingfeed_carriers-matching").show();
             $('[name="SHOPPINGFEED_ORDER_IMPORT_TEST"]').removeAttr('disabled');
+            $('[name="SHOPPINGFEED_ORDER_IMPORT_SHIPPED"]').removeAttr('disabled');
         } else {
             $("#shoppingfeed_carriers-matching").hide();
             $('[name="SHOPPINGFEED_ORDER_IMPORT_TEST"]').attr('disabled', true);
+            $('[name="SHOPPINGFEED_ORDER_IMPORT_SHIPPED"]').attr('disabled', true);
         }
     }).change();
 

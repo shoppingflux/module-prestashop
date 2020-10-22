@@ -42,7 +42,9 @@ class AdminShoppingfeedAccountSettingsController extends ModuleAdminController
             $this->module->getPathUri() . 'views/css/font-awesome.min.css'
         ));
 
-        if (Configuration::get(shoppingfeed::AUTH_TOKEN)) {
+        $tokens = new ShoppingfeedToken();
+        $listTokens = $tokens->findAll();
+        if (empty($listTokens) === false) {
             $this->content = $this->welcomeForm();
         } else {
             $this->content = $this->registerForm();
@@ -205,6 +207,7 @@ class AdminShoppingfeedAccountSettingsController extends ModuleAdminController
                     'label' => $this->module->l('Username', 'AdminShoppingfeedAccountSettings'),
                     'name' => 'username',
                     'required' => true,
+                    'autocomplete' => 'off',
                 ),
                 array(
                     'type' => 'password',
@@ -373,6 +376,19 @@ class AdminShoppingfeedAccountSettingsController extends ModuleAdminController
 
             return '';
         }
+
+        foreach ($listTokens as $key => $listToken) {
+            $link = $this->context->link->getModuleLink(
+                'shoppingfeed',
+                'product',
+                ['token' => $listToken['token']],
+                true,
+                Configuration::get('PS_LANG_DEFAULT'),
+                Configuration::get('PS_SHOP_DEFAULT')
+            );
+            $listTokens[$key]['link'] = $link;
+        }
+
         $fieldsList = array(
             'token' => array(
                 'title' => $this->module->l('Tokens', 'AdminShoppingfeedAccountSettings'),
@@ -388,6 +404,10 @@ class AdminShoppingfeedAccountSettingsController extends ModuleAdminController
             ),
             'currency_name' => array(
                 'title' => $this->module->l('Currency', 'AdminShoppingfeedAccountSettings'),
+                'search' => false,
+            ),
+            'link' => array(
+                'title' => $this->module->l('Product feed URL', 'AdminShoppingfeedAccountSettings'),
                 'search' => false,
             ),
             'active' => array(
