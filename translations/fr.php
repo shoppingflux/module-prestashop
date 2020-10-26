@@ -303,6 +303,8 @@ $_MODULE['<{shoppingfeed}prestashop>products_feeds_158fb546775e24c1143c4e1e47328
 $_MODULE['<{shoppingfeed}prestashop>products_feeds_79860b827b95a71c16f13b806f9b0566'] = 'Votre flux produits n\'est pas complètement indexé.';
 $_MODULE['<{shoppingfeed}prestashop>products_feeds_cc77b90992a467fd70ccae2cfb2570ee'] = 'Pour indexer les produits manquants, veuillez lancer manuellement ou mettre en place sur votre serveur la tâche suivante : \"Synchronisation des produits sur Shopping Feed\" disponible sur la';
 $_MODULE['<{shoppingfeed}prestashop>products_feeds_d872b8674f58b7aa564aa10aca184902'] = 'page \"Logs & Crons\"';
+$_MODULE['<{shoppingfeed}prestashop>products_feeds_0ba6288ffcf18262940c255410220f67'] = 'Le filtre appliqué ne va renvoyer aucun produit dans votre flux, veuillez corriger votre filtre.';
+$_MODULE['<{shoppingfeed}prestashop>products_feeds_9c34fbb6d8d4de2ca06bf5d7226f64fd'] = "En raison de l'application d'un filtre, tous les produits de votre catalogue ne sont pas envoyés vers Shopping Feed";
 $_MODULE['<{shoppingfeed}prestashop>process_modal_d95e61c3da448145f029fad6bc342c86'] = 'Tâche cron :';
 $_MODULE['<{shoppingfeed}prestashop>process_modal_8524de963f07201e5c086830d370797f'] = 'Chargement en cours...';
 $_MODULE['<{shoppingfeed}prestashop>process_modal_b6216f9b980414b99e33a19aa098a98c'] = 'La tâche est terminée. Veuillez vérifier les journaux pour plus d\'information.';

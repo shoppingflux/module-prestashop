@@ -96,9 +96,7 @@ class ShoppingfeedProductSyncPreloadingActions extends DefaultActions
     {
         if (empty($this->conveyor['product_action'])) {
             ProcessLoggerHandler::logInfo(
-                '[Preloading] ' . $this->l('Product not registered for synchronization; no action found', 'ShoppingfeedProductSyncPreloadingActions'),
-                'Product',
-                $product->id
+                '[Preloading] ' . $this->l('Product not registered for synchronization; no action found', 'ShoppingfeedProductSyncPreloadingActions')
             );
             return false;
         }

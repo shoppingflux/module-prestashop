@@ -67,7 +67,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     const PRODUCT_FEED_CATEGORY_DISPLAY = "SHOPPINGFEED_PRODUCT_FEED_CATEGORY_DISPLAY";
     const PRODUCT_FEED_CUSTOM_FIELDS = "SHOPPINGFEED_PRODUCT_FEED_CUSTOM_FIELDS";
     const PRODUCT_FEED_REFERENCE_FORMAT = "SHOPPINGFEED_PRODUCT_FEED_REFERENCE_FORMAT";
-
+    const PRODUCT_FEED_RULE_FILTERS = "SHOPPINGFEED_PRODUCT_FEED_RULE_FILTERS";
 
     public $extensions = array(
         \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerExtension::class,
@@ -665,6 +665,34 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             $id_shop = (int)Configuration::get('PS_SHOP_DEFAULT');
         }
         $sql->where('ps.id_shop = ' . (int)$id_shop);
+        $product_feed_rule_filters = Configuration::getGlobalValue(Shoppingfeed::PRODUCT_FEED_RULE_FILTERS);
+        $product_filters = Tools::jsonDecode($product_feed_rule_filters, true);
+        if (is_array($product_filters)) {
+            foreach ($product_filters as $product_filter_type => $product_filter) {
+                switch ($product_filter_type) {
+                    case 'products': 
+                        $sql->where('ps.id_product IN (' . $product_filter . ')');
+                        break;
+                    case 'attributes': 
+                        $sql->where('ps.id_product IN (select id_product from '._DB_PREFIX_. 'product_attribute pa JOIN '._DB_PREFIX_. 'product_attribute_combination pac on pa.id_product_attribute = pac.id_product_attribute where id_product IN (' . $product_filter . '))');
+                        break;
+                    case 'manufacturers':  
+                        $sql->where('ps.id_product IN (select id_product from '._DB_PREFIX_. 'product where id_manufacturer IN (' . $product_filter . '))');
+                        break;
+                    case 'categories': 
+                        $sql->where('ps.id_product IN (select id_product from '._DB_PREFIX_. 'category_product where id_category IN (' . $product_filter . '))');
+                        break;
+                    case 'suppliers': 
+                        $sql->where('ps.id_product IN (select id_product from '._DB_PREFIX_. 'product_supplier where id_supplier IN (' . $product_filter . '))');
+                        break;
+                    case 'features':
+                        $sql->where('ps.id_product IN (select id_product from '._DB_PREFIX_. 'feature_product where id_feature IN (' . $product_filter . '))');
+                        break;
+                    default:
+                        continue;
+                }
+            }
+        }
 
         if ((bool)Configuration::getGlobalValue(ShoppingFeed::PRODUCT_FEED_SYNC_PACK) !== true) {
             $sql->where('p.cache_is_pack = 0');
@@ -959,27 +987,27 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             $categoryIds[] = (int)$children->id;
         }
         $products = $this->getProductsByCategoryIds($categoryIds);
-
+  
         if (empty($products) === false) {
             $this->updateShoppingFeedPreloading($products, ShoppingfeedPreloading::ACTION_SYNC_CATEGORY);
         }
     }
 
-    public function getProductsByCategoryIds($categoryIds)
+    private function getProductsByCategoryIds($categoryIds)
     {
         $products = [];
         $sql = new DbQuery();
         $sql->from(Product::$definition['table'])
             ->where('id_category_default in(' .  implode(',', $categoryIds) . ')');
         $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
-
+        
         return $result === []? [] : array_column($result, 'id_product');
     }
 
     /**
      * Processes products to indexed on add into XML feed.
      */
-    public function updateShoppingFeedPreloading($products_ids, $action)
+    public function updateShoppingFeedPreloading($products_id, $action)
     {
         $handler = new \ShoppingfeedClasslib\Actions\ActionsHandler();
         try {
@@ -987,7 +1015,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
                         ->addActions('saveProduct')
                         ->setConveyor(
                             array(
-                                'products_ids' => $products_ids,
+                                'products_id' => $products_id,
                                 'product_action' => $action,
                             )
                         )
