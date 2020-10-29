@@ -152,6 +152,7 @@ class ShoppingfeedToken extends ObjectModel
         $query = (new DbQuery())
             ->select('*')
             ->from(self::$definition['table'])
+            ->where('active = 1')
         ;
 
         return  Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($query);
