@@ -70,7 +70,7 @@ class ShoppingfeedProductSyncPreloadingActions extends DefaultActions
             $sql = $sfModule->sqlProductsOnFeed($token->id_shop)
                 ->select('ps.id_product')
                 ->limit($limit)
-                ->where(sprintf('ps.`id_product` NOT IN (SELECT spf.`id_product` FROM `ps_shoppingfeed_preloading` spf WHERE `id_token` = %d and (spf.`actions`  IS NULL OR  spf.`actions` = ""))', $token->id_shoppingfeed_token));
+                ->where(sprintf('ps.`id_product` NOT IN (SELECT spf.`id_product` FROM `ps_shoppingfeed_preloading` spf WHERE `id_token` = %d AND (spf.`actions`  IS NULL OR  spf.`actions` = ""))', $token->id_shoppingfeed_token));
             $result = $db->executeS($sql, true, false);
             $ids = '';
             foreach ($result as $key => $row) {
