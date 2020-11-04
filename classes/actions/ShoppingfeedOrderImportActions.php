@@ -828,7 +828,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 ->leftJoin('orders', 'o', 'o.id_order = od.id_order')
                 ->leftJoin('order_detail_tax', 'odt', 'odt.id_order_detail = od.id_order_detail')
                 ->leftJoin('tax', 'tax', 'tax.id_tax = odt.id_tax')
-                ->where('o.reference LIKE "' . pSQL($this->conveyor['order_reference']). '"')
+                ->where('o.id_order = ' . (int)$this->conveyor['id_order'])
                 ->where('product_id = ' . (int)$psProduct->id)
             ;
             if ($psProduct->id_product_attribute) {
