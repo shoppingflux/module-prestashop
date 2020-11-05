@@ -305,7 +305,7 @@ class ShoppingfeedApi
         $criteria = [
             'filters' => [
                 // Only retrieve unacknowleged (non-imported) orders
-//                'acknowledgment' => 'unacknowledged',
+                'acknowledgment' => 'unacknowledged',
                 // Available Shoppingfeed status:
                 // created, waiting_store_acceptance, refused, waiting_shipment, shipped,
                 // cancelled, refunded, partially_refunded, partially_shipped
