@@ -318,6 +318,7 @@ $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_33f4bd7e53089
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_1d193d7f9d55135cc874cd57eecaa94b'] = 'La référence produit %s n\'est pas disponible à la vente sur PrestaShop.';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_582eb1e23f1ac722deee9a4acfe02d21'] = 'Transporteur non trouvé ou non valide. Veuillez configurer au moins un transporteur sur votre PrestaShop dans le module  Shoppingfeed > Parametres > Flux des commandes.';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_4a8402cde5f01d66795cb8cc009ef845'] = 'Étape 1/11 : Récupération du transporteur';
+$_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_72a66a238d1ae82da4e757953280c054'] = 'Impossible d\'ajotuer un transporteur valide. ';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_1f4d41966a2505d93fc50f3c1facfaee'] = 'Étape 2/11 : Vérification de la commande';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_64b95d1703f3d38fa3eadbe24c08cc80'] = 'Étape 3/11 : Création du compte client';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_a831361f130025b2329084b147768588'] = 'Étape 3/11 : Récupération du compte client à partir de l\'adresse de facturation';
@@ -334,7 +335,6 @@ $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_8ab9c67bbe8e0
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_48d713671514081ea184aadd6df7f28d'] = 'Contexte pays réglé sur %d';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_658d3d759bad7a53489481eaac6db3ee'] = 'Commandes non valdie sur PrestaShop.';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_ee6ee73bed6c5cc16f24191a6bfe61ec'] = 'Étape 9/11 : Commande validée';
-$_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_492d9a9ff3edb3ff62d128759cd7711b'] = 'Impossible de récupérer l\'objet sfOrder.';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_4930df58c29fc86597530234bec3d755'] = 'Impossible d\'accéder à l\'API Shopping feed.';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_520287c7a5a62cb7f57f700310fbda50'] = 'Échec lors de l\'acquittement de la commande sur l\'API Shopping feed';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_edddef134d67a9a3b81190c2980996e3'] = 'Étape 10/11 : Commande acquittée sur l\'API Shopping feed';
