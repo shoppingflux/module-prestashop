@@ -201,13 +201,15 @@ class ShoppingfeedPreloading extends ObjectModel
         return $result;
     }
 
-    public function getPreloadingCount()
+    public function getPreloadingCount($id_token = null)
     {
         $sql = new DbQuery();
         $sql->select('COUNT('.self::$definition['primary'].')')
             ->from(self::$definition['table'])
-            ->where('actions IS NULL OR actions = ""')
-        ;
+            ->where('actions IS NULL OR actions = ""');
+        if ($id_token != null) {
+            $sql->where('id_token = ' . (int)$id_token);
+        }
         $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
 
         return $result;

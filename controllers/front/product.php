@@ -53,7 +53,7 @@ class ShoppingfeedProductModuleFrontController  extends \ModuleFrontController
 
         $limit = 100;
         $products = [];
-        $iterations = range(0, floor((new ShoppingfeedPreloading)->getPreloadingCount() / 100));
+        $iterations = range(0, floor((new ShoppingfeedPreloading)->getPreloadingCount($token['id_shoppingfeed_token']) / 100));
         foreach($iterations as $iteration) {
             $products = array_merge($products, (new ShoppingfeedPreloading)->findAllByTokenId($token['id_shoppingfeed_token'], $iteration * $limit, $limit));
         }

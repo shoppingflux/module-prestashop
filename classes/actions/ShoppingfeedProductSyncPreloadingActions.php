@@ -30,7 +30,6 @@ class ShoppingfeedProductSyncPreloadingActions extends DefaultActions
     public function getBatch()
     {
         $token = new ShoppingfeedToken($this->conveyor['id_token']);
-
         $logPrefix = static::getLogPrefix($this->conveyor['id_token']);
 
         if (Validate::isLoadedObject($token) === false) {
@@ -59,7 +58,7 @@ class ShoppingfeedProductSyncPreloadingActions extends DefaultActions
         $sfModule = Module::getInstanceByName('shoppingfeed');
         $limit = Configuration::getGlobalValue(ShoppingFeed::STOCK_SYNC_MAX_PRODUCTS);
         $nb_total_product = $sfModule->countProductsOnFeed();
-        $nb_preloaded_product = (new ShoppingfeedPreloading())->getPreloadingCount();
+        $nb_preloaded_product = (new ShoppingfeedPreloading())->getPreloadingCount($token->id_shoppingfeed_token);
         if ($nb_total_product == $nb_preloaded_product) {
             return true;
         }
@@ -68,12 +67,10 @@ class ShoppingfeedProductSyncPreloadingActions extends DefaultActions
         $db = Db::getInstance(_PS_USE_SQL_SLAVE_);
         $sfp = new ShoppingfeedPreloading();
         foreach($iterations as $iteration) {
-            $sql = $sfModule->sqlProductsOnFeed()
+            $sql = $sfModule->sqlProductsOnFeed($token->id_shop)
                 ->select('ps.id_product')
                 ->limit($limit)
-                ->leftJoin(ShoppingfeedPreloading::$definition['table'], 'sfp', 'sfp.id_product = ps.id_product')
-                ->where(sprintf('(sfp.actions IS NOT NULL AND sfp.actions != "" AND sfp.id_token = %d) OR (sfp.id_token IS NULL)', $token->id_shoppingfeed_token));
-
+                ->where(sprintf('ps.`id_product` NOT IN (SELECT spf.`id_product` FROM `'._DB_PREFIX_.'shoppingfeed_preloading` spf WHERE `id_token` = %d AND (spf.`actions`  IS NULL OR  spf.`actions` = ""))', $token->id_shoppingfeed_token));
             $result = $db->executeS($sql, true, false);
             $ids = '';
             foreach ($result as $key => $row) {

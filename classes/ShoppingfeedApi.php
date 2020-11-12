@@ -353,7 +353,7 @@ class ShoppingfeedApi
         return $filteredOrders;
     }
 
-    public function acknowledgeOrder($id_order_marketplace, $name_marketplace, $id_order_prestashop)
+    public function acknowledgeOrder($id_order_marketplace, $name_marketplace, $id_order_prestashop, $is_success = true, $message = '')
     {
         try {
             $orderApi = $this->session->getMainStore()->getOrderApi();
@@ -363,7 +363,8 @@ class ShoppingfeedApi
                     (string)$id_order_marketplace,
                     (string)$name_marketplace,
                     (string)$id_order_prestashop,
-                    'success'
+                    ($is_success === true) ? 'success' : 'error',
+                    $message
                 );
 
             return $orderApi->execute($operation);
