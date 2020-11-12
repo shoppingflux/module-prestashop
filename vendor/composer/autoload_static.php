@@ -66,6 +66,13 @@ class ComposerStaticInit3fe85f86ff701f6bd7fd7d7a118b5533
     );
 
     public static $classMap = array (
+        'AdminShoppingfeedAccountSettingsController' => __DIR__ . '/../..' . '/controllers/admin/AdminShoppingfeedAccountSettings.php',
+        'AdminShoppingfeedFaqController' => __DIR__ . '/../..' . '/controllers/admin/AdminShoppingfeedFaq.php',
+        'AdminShoppingfeedGeneralSettingsController' => __DIR__ . '/../..' . '/controllers/admin/AdminShoppingfeedGeneralSettings.php',
+        'AdminShoppingfeedOrderImportRulesController' => __DIR__ . '/../..' . '/controllers/admin/AdminShoppingfeedOrderImportRules.php',
+        'AdminShoppingfeedOrdersController' => __DIR__ . '/../..' . '/controllers/admin/AdminShoppingfeedOrders.php',
+        'AdminShoppingfeedProcessLoggerController' => __DIR__ . '/../..' . '/controllers/admin/AdminShoppingfeedProcessLogger.php',
+        'AdminShoppingfeedProcessMonitorController' => __DIR__ . '/../..' . '/controllers/admin/AdminShoppingfeedProcessMonitor.php',
         'ShoppingfeedApi' => __DIR__ . '/../..' . '/classes/ShoppingfeedApi.php',
         'ShoppingfeedCarrier' => __DIR__ . '/../..' . '/classes/ShoppingfeedCarrier.php',
         'ShoppingfeedOrder' => __DIR__ . '/../..' . '/classes/ShoppingfeedOrder.php',
@@ -74,10 +81,14 @@ class ComposerStaticInit3fe85f86ff701f6bd7fd7d7a118b5533
         'ShoppingfeedPaymentModule' => __DIR__ . '/../..' . '/classes/ShoppingfeedPaymentModule.php',
         'ShoppingfeedPreloading' => __DIR__ . '/../..' . '/classes/ShoppingfeedPreloading.php',
         'ShoppingfeedProduct' => __DIR__ . '/../..' . '/classes/ShoppingfeedProduct.php',
+        'ShoppingfeedProductModuleFrontController' => __DIR__ . '/../..' . '/controllers/front/product.php',
         'ShoppingfeedProductSyncActions' => __DIR__ . '/../..' . '/classes/actions/ShoppingfeedProductSyncActions.php',
         'ShoppingfeedProductSyncPreloadingActions' => __DIR__ . '/../..' . '/classes/actions/ShoppingfeedProductSyncPreloadingActions.php',
         'ShoppingfeedProductSyncPriceActions' => __DIR__ . '/../..' . '/classes/actions/ShoppingfeedProductSyncPriceActions.php',
         'ShoppingfeedProductSyncStockActions' => __DIR__ . '/../..' . '/classes/actions/ShoppingfeedProductSyncStockActions.php',
+        'ShoppingfeedSyncAllModuleFrontController' => __DIR__ . '/../..' . '/controllers/front/syncAll.php',
+        'ShoppingfeedSyncOrderModuleFrontController' => __DIR__ . '/../..' . '/controllers/front/syncOrder.php',
+        'ShoppingfeedSyncProductModuleFrontController' => __DIR__ . '/../..' . '/controllers/front/syncProduct.php',
         'ShoppingfeedTaskOrder' => __DIR__ . '/../..' . '/classes/ShoppingfeedTaskOrder.php',
         'ShoppingfeedToken' => __DIR__ . '/../..' . '/classes/ShoppingfeedToken.php',
     );
