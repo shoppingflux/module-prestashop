@@ -6,6 +6,13 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
+    'AdminShoppingfeedAccountSettingsController' => $baseDir . '/controllers/admin/AdminShoppingfeedAccountSettings.php',
+    'AdminShoppingfeedFaqController' => $baseDir . '/controllers/admin/AdminShoppingfeedFaq.php',
+    'AdminShoppingfeedGeneralSettingsController' => $baseDir . '/controllers/admin/AdminShoppingfeedGeneralSettings.php',
+    'AdminShoppingfeedOrderImportRulesController' => $baseDir . '/controllers/admin/AdminShoppingfeedOrderImportRules.php',
+    'AdminShoppingfeedOrdersController' => $baseDir . '/controllers/admin/AdminShoppingfeedOrders.php',
+    'AdminShoppingfeedProcessLoggerController' => $baseDir . '/controllers/admin/AdminShoppingfeedProcessLogger.php',
+    'AdminShoppingfeedProcessMonitorController' => $baseDir . '/controllers/admin/AdminShoppingfeedProcessMonitor.php',
     'ShoppingfeedApi' => $baseDir . '/classes/ShoppingfeedApi.php',
     'ShoppingfeedCarrier' => $baseDir . '/classes/ShoppingfeedCarrier.php',
     'ShoppingfeedOrder' => $baseDir . '/classes/ShoppingfeedOrder.php',
@@ -14,10 +21,14 @@ return array(
     'ShoppingfeedPaymentModule' => $baseDir . '/classes/ShoppingfeedPaymentModule.php',
     'ShoppingfeedPreloading' => $baseDir . '/classes/ShoppingfeedPreloading.php',
     'ShoppingfeedProduct' => $baseDir . '/classes/ShoppingfeedProduct.php',
+    'ShoppingfeedProductModuleFrontController' => $baseDir . '/controllers/front/product.php',
     'ShoppingfeedProductSyncActions' => $baseDir . '/classes/actions/ShoppingfeedProductSyncActions.php',
     'ShoppingfeedProductSyncPreloadingActions' => $baseDir . '/classes/actions/ShoppingfeedProductSyncPreloadingActions.php',
     'ShoppingfeedProductSyncPriceActions' => $baseDir . '/classes/actions/ShoppingfeedProductSyncPriceActions.php',
     'ShoppingfeedProductSyncStockActions' => $baseDir . '/classes/actions/ShoppingfeedProductSyncStockActions.php',
+    'ShoppingfeedSyncAllModuleFrontController' => $baseDir . '/controllers/front/syncAll.php',
+    'ShoppingfeedSyncOrderModuleFrontController' => $baseDir . '/controllers/front/syncOrder.php',
+    'ShoppingfeedSyncProductModuleFrontController' => $baseDir . '/controllers/front/syncProduct.php',
     'ShoppingfeedTaskOrder' => $baseDir . '/classes/ShoppingfeedTaskOrder.php',
     'ShoppingfeedToken' => $baseDir . '/classes/ShoppingfeedToken.php',
 );

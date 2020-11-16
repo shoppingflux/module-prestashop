@@ -129,6 +129,12 @@ class ShoppingfeedProductModuleFrontController  extends \ModuleFrontController
             if (empty($variation['images']) !== true) {
                 $variationProduct->setAdditionalImages($variation['images']);
             }
+
+            if (isset($variation['discounts']) && false === empty($variation['discounts'])) {
+                foreach ($variation['discounts'] as $discount) {
+                    $variationProduct->addDiscount($discount);
+                }
+            }
         }
     }
 }

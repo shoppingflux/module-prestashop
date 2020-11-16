@@ -110,6 +110,14 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
                 'fr' => 'Synchronisation des commandes sur Shopping Feed'
             ),
             'frequency' => '5min',
+        ),
+        'syncAll' => array(
+            'name' => 'shoppingfeed:syncAll',
+            'title' => array(
+                'en' => 'Sync shoppingfeed products and orders',
+                'fr' => 'Sync produits et commandes shoppingfeed'
+            ),
+            'frequency' => '5min',
         )
     );
 
