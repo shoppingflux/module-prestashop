@@ -404,12 +404,13 @@ class ProductSerializer
                     $image_child = false;
                     break;
                 }
-                $variation['images'][] = Tools::getCurrentUrlProtocolPrefix(). $this->link->getImageLink($this->product->link_rewrite, $this->product->id.'-'.$image, $this->configurations['SHOPPING_FLUX_IMAGE']);
+
+                $variation['images'][] = Tools::getCurrentUrlProtocolPrefix(). $this->link->getImageLink($this->product->link_rewrite, $this->product->id.'-'.$image, $this->configurations[Shoppingfeed::PRODUCT_FEED_IMAGE_FORMAT]);
             }
             if ($image_child === false) {
                 foreach ($this->product->getImages($this->id_lang) as $images) {
                     $ids = $this->product->id.'-'.$images['id_image'];
-                    $variation['images'][] = Tools::getCurrentUrlProtocolPrefix().$this->link->getImageLink($this->product->link_rewrite, $ids, $this->configurations['SHOPPING_FLUX_IMAGE']);
+                    $variation['images'][] = Tools::getCurrentUrlProtocolPrefix().$this->link->getImageLink($this->product->link_rewrite, $ids, $this->configurations[Shoppingfeed::PRODUCT_FEED_IMAGE_FORMAT]);
                 }
             }
             foreach ($combination['attributes'] as $attributeName => $attributeValue) {
