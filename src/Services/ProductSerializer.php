@@ -372,7 +372,7 @@ class ProductSerializer
             $variation = [
                 'reference' => $sfModule->mapReference($sfp),
                 'quantity' => $combination['quantity'],
-                'link' => $productLink . $this->product->getAnchor($id, true),
+                'link' => Context::getContext()->link->getProductLink($this->product, null, null, null, null, null, (int)$id),
                 'price' => $priceWithoutReduction,
                 'images' => [],
                 'shipping' => [
@@ -381,6 +381,7 @@ class ProductSerializer
                 ],
                 'discounts' => []
             ];
+
             if (empty($combination['ean13']) === false) {
                 $variation['gtin'] = $combination['ean13'];
             }
