@@ -686,14 +686,33 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 $cart->secure_key
             );
         } catch (Exception $e) {
-            $this->values['error'] = $this->l('Order not valid on PrestaShop.', 'ShoppingfeedOrderImportActions') . ' ' .$e->getMessage();
-            ProcessLoggerHandler::logError($this->logPrefix . $this->values['error'], 'Order', $this->conveyor['id_order']);
-            $this->forward('acknowledgeOrder');
+            if (false === is_int($paymentModule->currentOrder) || $paymentModule->currentOrder === 0) {
+                $order = $this->getOrderByCartId((int)$cart->id);
 
+                if (Validate::isLoadedObject($order)) {
+                    $paymentModule->currentOrder = $order->id;
+                    $paymentModule->currentOrderReference = $order->reference;
+                }
+            }
+
+            $log = [
+                'Message: ' . $e->getMessage(),
+                'File: ' . $e->getFile(),
+                'Line: ' . $e->getLine(),
+                'Error type: ' . get_class($e)
+            ];
+            $message = implode(';', $log);
+            $this->values['error'] = $this->l('Order not valid on PrestaShop.', 'ShoppingfeedOrderImportActions') . ' ' .$message;
+            ProcessLoggerHandler::logError($this->logPrefix . $this->values['error'], 'Order');
+        }
+
+        if ($paymentModule->currentOrder && $paymentModule->currentOrderReference) {
+            $this->conveyor['id_order'] = $paymentModule->currentOrder;
+            $this->conveyor['order_reference'] = $paymentModule->currentOrderReference;
+        } else {
+            $this->forward('acknowledgeOrder');
             return false;
         }
-        $this->conveyor['id_order'] = $paymentModule->currentOrder;
-        $this->conveyor['order_reference'] = $paymentModule->currentOrderReference;
 
         // Reset customer mail
         $this->conveyor['customer']->email = $customerEmail;
@@ -1135,5 +1154,18 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         }
 
         return false;
+    }
+
+    /**
+     * @param $idCart int
+     * @return Order
+     */
+    protected function getOrderByCartId($idCart)
+    {
+        if (version_compare(_PS_VERSION_, '1.7.1', '<')) {
+            return new Order(Order::getOrderByCartId((int)$idCart));
+        } else {
+            return new Order(Order::getIdByCartId((int)$idCart));
+        }
     }
 }
