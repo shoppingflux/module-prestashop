@@ -160,6 +160,9 @@ class ProductSerializer
     {
         $contentUpdate = $content;
         $contentUpdate['quantity'] = $this->product->quantity;
+        foreach ($content['variations'] as $id_product_attribute => $variation) {
+            $variation['quantity'] = Product::getQuantity($this->product->id, $id_product_attribute);
+        }
 
         \Hook::exec('shoppingfeedSerializeStock', [
             'id_shop' => $this->id_shop,
@@ -371,7 +374,6 @@ class ProductSerializer
             $priceWithReduction = $this->sfModule->mapProductPrice($sfp, $this->configurations['PS_SHOP_DEFAULT'], ['price_with_reduction' => true]);
             $variation = [
                 'reference' => $sfModule->mapReference($sfp),
-                'quantity' => $combination['quantity'],
                 'link' => Context::getContext()->link->getProductLink($this->product, null, null, null, null, null, (int)$id),
                 'price' => $priceWithoutReduction,
                 'images' => [],
@@ -420,8 +422,7 @@ class ProductSerializer
                     $variation['attributes'][$attributeName] = $attributeValue;
                 }
             }
-
-            $variations[] = $variation;
+            $variations[$id] = $variation;
         }
 
         return $variations;
