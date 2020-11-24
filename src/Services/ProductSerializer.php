@@ -160,6 +160,9 @@ class ProductSerializer
     {
         $contentUpdate = $content;
         $contentUpdate['quantity'] = $this->product->quantity;
+        foreach ($content['variations'] as $id_product_attribute => $variation) {
+            $variation['quantity'] = Product::getQuantity($this->product->id, $id_product_attribute);
+        }
 
         \Hook::exec('shoppingfeedSerializeStock', [
             'id_shop' => $this->id_shop,
@@ -371,8 +374,7 @@ class ProductSerializer
             $priceWithReduction = $this->sfModule->mapProductPrice($sfp, $this->configurations['PS_SHOP_DEFAULT'], ['price_with_reduction' => true]);
             $variation = [
                 'reference' => $sfModule->mapReference($sfp),
-                'quantity' => $combination['quantity'],
-                'link' => $productLink . $this->product->getAnchor($id, true),
+                'link' => Context::getContext()->link->getProductLink($this->product, null, null, null, null, null, (int)$id),
                 'price' => $priceWithoutReduction,
                 'images' => [],
                 'shipping' => [
@@ -381,6 +383,7 @@ class ProductSerializer
                 ],
                 'discounts' => []
             ];
+
             if (empty($combination['ean13']) === false) {
                 $variation['gtin'] = $combination['ean13'];
             }
@@ -404,12 +407,13 @@ class ProductSerializer
                     $image_child = false;
                     break;
                 }
-                $variation['images'][] = Tools::getCurrentUrlProtocolPrefix(). $this->link->getImageLink($this->product->link_rewrite, $this->product->id.'-'.$image, $this->configurations['SHOPPING_FLUX_IMAGE']);
+
+                $variation['images'][] = Tools::getCurrentUrlProtocolPrefix(). $this->link->getImageLink($this->product->link_rewrite, $this->product->id.'-'.$image, $this->configurations[Shoppingfeed::PRODUCT_FEED_IMAGE_FORMAT]);
             }
             if ($image_child === false) {
                 foreach ($this->product->getImages($this->id_lang) as $images) {
                     $ids = $this->product->id.'-'.$images['id_image'];
-                    $variation['images'][] = Tools::getCurrentUrlProtocolPrefix().$this->link->getImageLink($this->product->link_rewrite, $ids, $this->configurations['SHOPPING_FLUX_IMAGE']);
+                    $variation['images'][] = Tools::getCurrentUrlProtocolPrefix().$this->link->getImageLink($this->product->link_rewrite, $ids, $this->configurations[Shoppingfeed::PRODUCT_FEED_IMAGE_FORMAT]);
                 }
             }
             foreach ($combination['attributes'] as $attributeName => $attributeValue) {
@@ -418,8 +422,7 @@ class ProductSerializer
                     $variation['attributes'][$attributeName] = $attributeValue;
                 }
             }
-
-            $variations[] = $variation;
+            $variations[$id] = $variation;
         }
 
         return $variations;
