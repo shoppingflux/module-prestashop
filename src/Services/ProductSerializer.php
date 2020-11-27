@@ -36,6 +36,7 @@ use Validate;
 use DateTime;
 use ProductCore;
 use Shoppingfeed;
+use StockAvailable;
 
 class ProductSerializer
 {
@@ -160,8 +161,8 @@ class ProductSerializer
     {
         $contentUpdate = $content;
         $contentUpdate['quantity'] = $this->product->quantity;
-        foreach ($content['variations'] as $id_product_attribute => $variation) {
-            $variation['quantity'] = Product::getQuantity($this->product->id, $id_product_attribute);
+        foreach ($contentUpdate['variations'] as $id_product_attribute => &$variation) {
+            $variation['quantity'] = StockAvailable::getQuantityAvailableByProduct($this->product->id, $id_product_attribute);
         }
 
         \Hook::exec('shoppingfeedSerializeStock', [
