@@ -60,7 +60,7 @@ class ShoppingfeedProductSyncStockActions extends ShoppingfeedProductSyncActions
                 'reference' => $sfReference,
                 'quantity' => StockAvailable::getQuantityAvailableByProduct(
                     $sfProduct->id_product,
-                    (empty($sfProduct->id_product_attribute) === true) ? $sfProduct->id_product_attribute : null,
+                    (empty($sfProduct->id_product_attribute) === false) ? $sfProduct->id_product_attribute : null,
                     $token->id_shop
                 ),
                 'sfProduct' => $sfProduct,
