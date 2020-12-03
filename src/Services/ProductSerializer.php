@@ -375,7 +375,6 @@ class ProductSerializer
             $priceWithReduction = $this->sfModule->mapProductPrice($sfp, $this->configurations['PS_SHOP_DEFAULT'], ['price_with_reduction' => true]);
             $variation = [
                 'reference' => $sfModule->mapReference($sfp),
-                'link' => Context::getContext()->link->getProductLink($this->product, null, null, null, null, null, (int)$id),
                 'price' => $priceWithoutReduction,
                 'images' => [],
                 'shipping' => [
@@ -400,6 +399,9 @@ class ProductSerializer
             if (empty($combination['reference']) === false) {
                 $variation['attributes']['ref-constructeur'] = $combination['reference'];
             }
+
+            $variation['attributes']['link-variation'] = Context::getContext()->link->getProductLink($this->product, null, null, null, null, null, (int)$id);
+
             if ($priceWithoutReduction > $priceWithReduction) {
                 $variation['discounts'][] = $priceWithReduction;
             }
