@@ -547,6 +547,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
 
         $cart->id_carrier = $this->conveyor['carrier']->id;
         $cart->id_shop = $this->getIdShop();
+        $cart->delivery_option = json_encode([$cart->id_address_delivery => $cart->id_carrier.',']);
         $cart->add();
 
         ProcessLoggerHandler::logInfo(
