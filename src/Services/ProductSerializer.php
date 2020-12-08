@@ -160,7 +160,7 @@ class ProductSerializer
     public function serializeStock($content)
     {
         $contentUpdate = $content;
-        $contentUpdate['quantity'] = $this->product->quantity;
+        $contentUpdate['quantity'] = StockAvailable::getQuantityAvailableByProduct($this->product->id);
         foreach ($contentUpdate['variations'] as $id_product_attribute => &$variation) {
             $variation['quantity'] = StockAvailable::getQuantityAvailableByProduct($this->product->id, $id_product_attribute);
         }
