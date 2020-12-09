@@ -117,9 +117,6 @@ class ShoppingfeedProductModuleFrontController  extends \ModuleFrontController
             if (empty($variation['gtin']) !== true) {
                 $variationProduct->setGtin($variation['gtin']);
             }
-            if (empty($variation['link']) !== true) {
-                $variationProduct->setLink($variation['link']);
-            }
             if (empty($variation['shipping']) !== true) {
                 $variationProduct->addShipping($variation['shipping']['amount'], $variation['shipping']['label']);
             }

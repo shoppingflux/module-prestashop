@@ -75,7 +75,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         $apiOrder = $this->conveyor['apiOrder'];
         $this->initProcess($apiOrder);
 
-        $this->specificRulesManager = new ShoppingfeedAddon\OrderImport\RulesManager($this->conveyor['id_shop'], $apiOrder);
+        $this->specificRulesManager = new ShoppingfeedAddon\OrderImport\RulesManager($this->getIdShop(), $apiOrder);
 
         // Specific rule : give a chance to tweak general data before using them
         $this->specificRulesManager->applyRules(
@@ -145,7 +145,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             }
             $psProduct = $sfModule->mapPrestashopProduct(
                 $apiProduct->reference,
-                $this->conveyor['id_shop']
+                $this->getIdShop()
             );
 
             // Does the product exist ?
@@ -310,6 +310,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             $customer->id_default_group = Configuration::get('PS_UNIDENTIFIED_GROUP');
             $customer->email = $customerEmail;
             $customer->newsletter = 0;
+            $customer->id_shop = $this->getIdShop();
 
             // Numbers are forbidden in firstname / lastname
             $customer->lastname = preg_replace('/\-?\d+/', '', $customer->lastname);
@@ -467,7 +468,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             $this->specificRulesManager->applyRules(
                 'checkProductStock',
                 array(
-                    'is_shop' => $this->conveyor['id_shop'],
+                    'is_shop' => $this->getIdShop(),
                     'apiOrder' => $apiOrder,
                     'orderData' => &$this->conveyor['orderData'],
                     'psProduct' => $psProduct,
@@ -498,7 +499,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 $currentStock = StockAvailable::getQuantityAvailableByProduct(
                     $psProduct->id,
                     $psProduct->id_product_attribute,
-                    $this->conveyor['id_shop']
+                    $this->getIdShop()
                 );
                 $stockToAdd = (int)$apiProduct->quantity - (int)$currentStock;
                 ProcessLoggerHandler::logInfo(
@@ -516,7 +517,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                     $psProduct->id,
                     $psProduct->id_product_attribute,
                     $stockToAdd,
-                    $this->conveyor['id_shop']
+                    $this->getIdShop()
                 );
             }
         }
@@ -545,6 +546,8 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         $cart->secure_key = md5(uniqid(rand(), true));
 
         $cart->id_carrier = $this->conveyor['carrier']->id;
+        $cart->id_shop = $this->getIdShop();
+        $cart->delivery_option = json_encode([$cart->id_address_delivery => $cart->id_carrier.',']);
         $cart->add();
 
         ProcessLoggerHandler::logInfo(
@@ -1167,5 +1170,17 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         } else {
             return new Order(Order::getIdByCartId((int)$idCart));
         }
+    }
+
+    /**
+     * @return int
+     */
+    protected function getIdShop()
+    {
+        if (isset($this->conveyor['id_shop']) && (int)$this->conveyor['id_shop']) {
+            return (int) $this->conveyor['id_shop'];
+        }
+
+        return (int) Configuration::get('PS_SHOP_DEFAULT');
     }
 }

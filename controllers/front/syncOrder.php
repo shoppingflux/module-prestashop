@@ -246,20 +246,21 @@ class ShoppingfeedSyncOrderModuleFrontController extends CronController
     public function importOrders()
     {
         ProcessLoggerHandler::openLogger($this->processMonitor);
-        $id_shop = Configuration::get('PS_SHOP_DEFAULT');
-
-        // If order import is not available
-        if (!ShoppingFeed::isOrderImportAvailable($id_shop)) {
-            ProcessLoggerHandler::logInfo(
-                $this->module->l('The Shopping Feed module (shoppingfluxexport) is installed on your shop for enabling the orders import synchronization. The “Order importation” option must be disabled in the module for enabling this type of synchronization in this module. If you disable the options in the shoppingfluxexport\'s module and you enable it again later the button "New orders import" will be disabled automatically in the Shopping feed 15 min module.', 'syncOrder'),
-                $this->processMonitor->getProcessObjectModelName(),
-                $this->processMonitor->getProcessObjectModelId()
-            );
-        }
 
         $sft = new ShoppingfeedToken();
         $tokens = $sft->findAllActive();
         foreach ($tokens as $token) {
+            $id_shop = (int) $token['id_shop'];
+
+            // If order import is not available
+            if (!ShoppingFeed::isOrderImportAvailable($id_shop)) {
+                ProcessLoggerHandler::logInfo(
+                    $this->module->l('The Shopping Feed module (shoppingfluxexport) is installed on your shop for enabling the orders import synchronization. The “Order importation” option must be disabled in the module for enabling this type of synchronization in this module. If you disable the options in the shoppingfluxexport\'s module and you enable it again later the button "New orders import" will be disabled automatically in the Shopping feed 15 min module.', 'syncOrder'),
+                    $this->processMonitor->getProcessObjectModelName(),
+                    $this->processMonitor->getProcessObjectModelId()
+                );
+            }
+
             try {
                 $shoppingfeedApi = ShoppingfeedApi::getInstanceByToken($token['id_shoppingfeed_token']);
                 if ($shoppingfeedApi == false) {

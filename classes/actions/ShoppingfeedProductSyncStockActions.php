@@ -104,6 +104,19 @@ class ShoppingfeedProductSyncStockActions extends ShoppingfeedProductSyncActions
             $reference = $inventoryResource->getReference();
             $sfProduct = $preparedBatchShop[$reference]['sfProduct'];
 
+            if (false === Validate::isLoadedObject($sfProduct)) {
+                ProcessLoggerHandler::logError(
+                    sprintf(
+                        static::getLogPrefix($this->conveyor['id_token']) . ' ' .
+                        $this->l('Cannot retrieve a product for a reference %s', 'ShoppingfeedProductSyncStockActions'),
+                        $reference
+                    ),
+                    'Product'
+                );
+
+                continue;
+            }
+
             ProcessLoggerHandler::logInfo(
                 sprintf(
                     static::getLogPrefix($this->conveyor['id_token']) . ' ' .
