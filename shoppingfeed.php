@@ -690,6 +690,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
      */
     public function hookActionUpdateQuantity($params)
     {
+        $this->updateShoppingFeedPreloading([$params['id_product']], ShoppingfeedPreloading::ACTION_SYNC_STOCK);
         if (!Configuration::get(Shoppingfeed::STOCK_SYNC_ENABLED)) {
             return;
         }
@@ -891,7 +892,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
      */
     public function hookActionObjectProductUpdateAfter($params)
     {
-        $this->updateShoppingFeedPreloading(array($params['object']), ShoppingfeedPreloading::ACTION_SYNC_ALL);
+        $this->updateShoppingFeedPreloading([$params['object']->id], ShoppingfeedPreloading::ACTION_SYNC_ALL);
         $this->updateShoppingFeedPriceRealtime();
     }
 
@@ -972,13 +973,13 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             ->where('id_category_default in(' .  implode(',', $categoryIds) . ')');
         $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
 
-        return ObjectModel::hydrateCollection('Product', $result);
+        return $result === []? [] : array_column($result, 'id_product');
     }
 
     /**
      * Processes products to indexed on add into XML feed.
      */
-    public function updateShoppingFeedPreloading($products, $action)
+    public function updateShoppingFeedPreloading($products_ids, $action)
     {
         $handler = new \ShoppingfeedClasslib\Actions\ActionsHandler();
         try {
@@ -986,7 +987,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
                         ->addActions('saveProduct')
                         ->setConveyor(
                             array(
-                                'products' => $products,
+                                'products_ids' => $products_ids,
                                 'product_action' => $action,
                             )
                         )

@@ -105,27 +105,24 @@ class ShoppingfeedProductSyncPreloadingActions extends DefaultActions
         $action = $this->conveyor['product_action'];
         $tokens = (new ShoppingfeedToken())->findAllActive();
         $sfp = new ShoppingfeedPreloading();
+        $sfModule = Module::getInstanceByName('shoppingfeed');
+        $db = Db::getInstance(_PS_USE_SQL_SLAVE_);
+        $sql = $sfModule->sqlProductsOnFeed()
+                ->select('ps.id_product')
+                ->where('ps.id_product in (' . implode(',', $this->conveyor['products_ids']) .  ')');
+        $result = $db->executeS($sql, true, false);
+        $productsAvailable = ($result === [])? [] : array_column($result, 'id_product');
 
-        foreach ($this->conveyor['products'] as $product) {
-            if ($product instanceof Product === false) {
-                ProcessLoggerHandler::logInfo(
-                    '[Preloading] ' . $this->l('Product not valid for synchronization', 'ShoppingfeedProductSyncPreloadingActions'),
-                    'Product'
-                );
-
-                continue;
-            }
-            if ((bool)$product->active !== true ||
-                ((bool)Configuration::get(ShoppingFeed::PRODUCT_FEED_SYNC_PACK) !== true && (bool)$product->cache_is_pack === true)) {
-                    foreach ($tokens as $token) {
-                        $sfp->deleteProduct($product->id, $token['id_shoppingfeed_token']);
-                    }
-            } else {
+        foreach ($this->conveyor['products_ids'] as $product_id) {
+            if (in_array($product_id, $productsAvailable)) {
                 foreach ($tokens as $token) {
                     $this->conveyor['id_token'] = $token['id_shoppingfeed_token'];
-
-                    $sfp->addAction($product->id, $token['id_shoppingfeed_token'], $action);
+                    $sfp->addAction($product_id, $token['id_shoppingfeed_token'], $action);
                 }
+                continue;
+            }
+            foreach ($tokens as $token) {
+                $sfp->deleteProduct($product_id, $token['id_shoppingfeed_token']);
             }
         }
 
