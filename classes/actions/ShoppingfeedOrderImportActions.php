@@ -686,7 +686,8 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 array(),
                 $cart->id_currency,
                 false,
-                $cart->secure_key
+                $cart->secure_key,
+                new Shop($this->getIdShop())
             );
         } catch (Exception $e) {
             if (false === is_int($paymentModule->currentOrder) || $paymentModule->currentOrder === 0) {
