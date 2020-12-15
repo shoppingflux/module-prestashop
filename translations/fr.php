@@ -385,3 +385,4 @@ $_MODULE['<{shoppingfeed}prestashop>shoppingfeedordersyncactions_948b31dd0f66b9e
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedordersyncactions_04a31a2d2c31b9392edec8ed801b01e3'] = 'Aucune tâche de traitement des commandes trouvée.';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedordersyncactions_9a1d463e01520f0f748e12d8b8410ce9'] = 'Statut du ticket : %s';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedordersyncactions_ec79d50bff110cff4702118dd52b525f'] = 'Erreurs de synchronisation de Shopping feed';
+$_MODULE['<{shoppingfeed}prestashop>order_status_syncro_bec154cf96926858240b98c628c9949b'] = 'Sélectionnez votre transporteur';
