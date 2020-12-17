@@ -589,6 +589,10 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
 
         $id_lang = (int)Configuration::get('PS_LANG_DEFAULT', null, null, $id_shop);
 
+        if (false === $this->isEmailTemplateExists('order-sync-errors', $id_lang, $id_shop)) {
+            return false;
+        }
+
         // Get order data
         $failedTaskOrdersMailData = array();
         foreach ($failedTaskOrders as $taskOrder) {
@@ -646,8 +650,60 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
      */
     protected function getEmailTemplateContent($template_name, $id_lang, $id_shop, $var)
     {
+        $shop = new Shop((int)$id_shop);
+
+        if (false === Validate::isLoadedObject($shop)) {
+            return '';
+        }
+
+        $templatePath = $this->getEmailTemplatePath($template_name, $id_lang, $id_shop);
+
+        if (!$templatePath) {
+            return '';
+        }
+
+        // Multi-shop / multi-theme might not work properly when using
+        // the basic "$context->smarty->createTemplate($tpl_name)" syntax, as
+        // the template's compile_id will be the same for every shop / theme
+        // See https://github.com/PrestaShop/PrestaShop/pull/13804
+        $context = Context::getContext();
+        $scope = $context->smarty->createData($context->smarty);
+        $scope->assign($var);
+
+        if (isset($shop->theme)) {
+            // PS17
+            $themeName = $shop->theme->getName();
+        } else {
+            // PS16
+            $themeName = $shop->theme_name;
+        }
+
+        $templateContent = $context->smarty->createTemplate(
+            $templatePath,
+            $scope,
+            $themeName
+        )->fetch();
+
+        return $templateContent;
+    }
+
+    /**
+     * @param string $template_name template name with extension
+     * @param int $id_lang
+     * @param int $id_shop
+     *
+     * @return string the template's path
+     */
+    protected function getEmailTemplatePath($template_name, $id_lang, $id_shop)
+    {
+        $templatePath = '';
         $isoLang = Language::getIsoById($id_lang);
         $shop = new Shop($id_shop);
+
+        if (false === Validate::isLoadedObject($shop)) {
+            return $templatePath;
+        }
+
         if (isset($shop->theme)) {
             // PS17
             $themeName = $shop->theme->getName();
@@ -663,7 +719,6 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
             _PS_MODULE_DIR_ . 'shoppingfeed/mails/en/' . $template_name,
         );
 
-        $templatePath = '';
         foreach ($pathsToCheck as $path) {
             if (Tools::file_exists_cache($path)) {
                 $templatePath = $path;
@@ -671,24 +726,28 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
             }
         }
 
-        if (!$templatePath) {
-            return '';
+        return $templatePath;
+    }
+
+    /**
+     * @param string $template_name template name with extension
+     * @param int $id_lang
+     * @param int $id_shop
+     *
+     * @return bool
+     */
+    protected function isEmailTemplateExists($template_name, $id_lang, $id_shop)
+    {
+        $mailType = Configuration::get('PS_MAIL_TYPE', null, null, $id_shop);
+
+        if (($mailType == Mail::TYPE_BOTH || $mailType == Mail::TYPE_HTML) && empty($this->getEmailTemplatePath($template_name . '.html', $id_lang, $id_shop))) {
+            return false;
         }
 
-        // Multi-shop / multi-theme might not work properly when using
-        // the basic "$context->smarty->createTemplate($tpl_name)" syntax, as
-        // the template's compile_id will be the same for every shop / theme
-        // See https://github.com/PrestaShop/PrestaShop/pull/13804
-        $context = Context::getContext();
-        $scope = $context->smarty->createData($context->smarty);
-        $scope->assign($var);
+        if (($mailType == Mail::TYPE_BOTH || $mailType == Mail::TYPE_TEXT) && empty($this->getEmailTemplatePath($template_name . '.txt', $id_lang, $id_shop))) {
+            return false;
+        }
 
-        $templateContent = $context->smarty->createTemplate(
-            $templatePath,
-            $scope,
-            $themeName
-        )->fetch();
-
-        return $templateContent;
+        return true;
     }
 }
