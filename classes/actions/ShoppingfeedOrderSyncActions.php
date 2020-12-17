@@ -590,7 +590,11 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
         $id_lang = (int)Configuration::get('PS_LANG_DEFAULT', null, null, $id_shop);
 
         if (false === $this->isEmailTemplateExists('order-sync-errors', $id_lang, $id_shop)) {
-            return false;
+            $id_lang = (int)Language::getIdByIso('en');
+
+            if ($id_lang == false) {
+                return false;
+            }
         }
 
         // Get order data
@@ -714,9 +718,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
 
         $pathsToCheck = array(
             _PS_ALL_THEMES_DIR_ . $themeName . '/shoppingfeed/mails/' . $isoLang . '/' . $template_name,
-            _PS_MODULE_DIR_ . 'shoppingfeed/mails/' . $isoLang . '/' . $template_name,
-            _PS_ALL_THEMES_DIR_ . $themeName . '/shoppingfeed/mails/en/' . $template_name,
-            _PS_MODULE_DIR_ . 'shoppingfeed/mails/en/' . $template_name,
+            _PS_MODULE_DIR_ . 'shoppingfeed/mails/' . $isoLang . '/' . $template_name
         );
 
         foreach ($pathsToCheck as $path) {
