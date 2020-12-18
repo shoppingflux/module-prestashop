@@ -786,7 +786,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         $result = $shoppingfeedApi->acknowledgeOrder(
             $apiOrder->getReference(),
             $apiOrder->getChannel()->getName(),
-            $apiOrder->getId(),
+            empty($this->conveyor['sfOrder']) === false ? $this->conveyor['sfOrder']->id_order : '',
             $isSucess,
             ($isSucess === false) ? $this->values['error'] : null
         );
