@@ -765,15 +765,6 @@ class ShoppingfeedOrderImportActions extends DefaultActions
      */
     public function acknowledgeOrder()
     {
-        if (false === isset($this->conveyor['id_order'])) {
-            ProcessLoggerHandler::logError(
-                $this->logPrefix .
-                $this->l('Could not retrieve PrestaShop order.', 'ShoppingfeedOrderSyncActions'),
-                'Order'
-            );
-            return false;
-        }
-
         /** @var ShoppingFeed\Sdk\Api\Order\OrderResource $apiOrder */
         $apiOrder = $this->conveyor['apiOrder'];
         $this->initProcess($apiOrder);
@@ -794,7 +785,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         $result = $shoppingfeedApi->acknowledgeOrder(
             $apiOrder->getReference(),
             $apiOrder->getChannel()->getName(),
-            (int)$this->conveyor['id_order'],
+            isset($this->conveyor['id_order']) ? $this->conveyor['id_order'] : '',
             $isSucess,
             ($isSucess === false) ? $this->values['error'] : null
         );
