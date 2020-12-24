@@ -249,11 +249,8 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             try {
                 $sfCarrier->save();
             } catch (Exception $e) {
-                $this->values['error'] = $this->l('Could not add a valid carrier on PrestaShop for this order.', 'ShoppingfeedOrderImportActions') . $e->getMessage();
-                ProcessLoggerHandler::logError($this->logPrefix . $this->values['error'], 'Order');
-                $this->forward('acknowledgeOrder');
-
-                return false;
+                $errorMessage = $this->l('Could not add a valid carrier on PrestaShop for this order.', 'ShoppingfeedOrderImportActions') . $e->getMessage();
+                ProcessLoggerHandler::logError($this->logPrefix . $errorMessage, 'Order');
             }
         }
 
