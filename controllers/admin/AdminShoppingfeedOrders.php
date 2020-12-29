@@ -72,12 +72,14 @@ class AdminShoppingfeedOrdersController extends ModuleAdminController
                 'title' => $this->module->l('ID', 'AdminShoppingfeedOrders'),
                 'align' => 'text-center',
                 'class' => 'fixed-width-xs',
+                'filter_key' => 'a!id_order'
             ),
             'reference' => array(
                 'title' => $this->module->l('Reference', 'AdminShoppingfeedOrders'),
             ),
             'customer_name' => array(
                 'title' => $this->module->l('Customer', 'AdminShoppingfeedOrders'),
+                'filter_key' => 'c!lastname'
             ),
             'total_paid' => array(
                 'title' => $this->module->l('Amount', 'AdminShoppingfeedOrders'),
