@@ -249,11 +249,8 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             try {
                 $sfCarrier->save();
             } catch (Exception $e) {
-                $this->values['error'] = $this->l('Could not add a valid carrier on PrestaShop for this order.', 'ShoppingfeedOrderImportActions') . $e->getMessage();
-                ProcessLoggerHandler::logError($this->logPrefix . $this->values['error'], 'Order');
-                $this->forward('acknowledgeOrder');
-
-                return false;
+                $errorMessage = $this->l('Could not add a valid carrier on PrestaShop for this order.', 'ShoppingfeedOrderImportActions') . $e->getMessage();
+                ProcessLoggerHandler::logError($this->logPrefix . $errorMessage, 'Order');
             }
         }
 
@@ -686,7 +683,8 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 array(),
                 $cart->id_currency,
                 false,
-                $cart->secure_key
+                $cart->secure_key,
+                new Shop($this->getIdShop())
             );
         } catch (Exception $e) {
             if (false === is_int($paymentModule->currentOrder) || $paymentModule->currentOrder === 0) {
@@ -713,8 +711,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             $this->conveyor['id_order'] = $paymentModule->currentOrder;
             $this->conveyor['order_reference'] = $paymentModule->currentOrderReference;
         } else {
-            $this->forward('acknowledgeOrder');
-            return false;
+            return true;
         }
 
         // Reset customer mail
@@ -780,14 +777,14 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             return true;
         }
 
-        $isSucess = empty($this->values['error']);
+        $isSucess = array_key_exists('id_order', $this->conveyor);
 
         $result = $shoppingfeedApi->acknowledgeOrder(
             $apiOrder->getReference(),
             $apiOrder->getChannel()->getName(),
-            $apiOrder->getId(),
+            $isSucess ? $this->conveyor['id_order'] : null,
             $isSucess,
-            ($isSucess === false) ? $this->values['error'] : null
+            empty($this->values['error']) ? null : $this->values['error']
         );
         if (!$result || !iterator_count($result->getTickets())) {
             ProcessLoggerHandler::logError(

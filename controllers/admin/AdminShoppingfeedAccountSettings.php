@@ -384,7 +384,7 @@ class AdminShoppingfeedAccountSettingsController extends ModuleAdminController
                 ['token' => $listToken['token']],
                 true,
                 Configuration::get('PS_LANG_DEFAULT'),
-                Configuration::get('PS_SHOP_DEFAULT')
+                $listToken['id_shop']
             );
             $listTokens[$key]['link'] = $link;
         }

@@ -80,6 +80,10 @@ class OrderData
     /** @var array $additionalFields */
     public $additionalFields;
 
+    protected $isoCountryMap = [
+        'UK' => 'GB'
+    ];
+
     public function __construct(\ShoppingFeed\Sdk\Api\Order\OrderResource $apiOrder)
     {
         $this->storeReference = $apiOrder->getStoreReference();
@@ -87,8 +91,8 @@ class OrderData
         $this->acknowledgedAt = $apiOrder->getAcknowledgedAt();
         $this->updatedAt = $apiOrder->getUpdatedAt();
         $this->createdAt = $apiOrder->getCreatedAt();
-        $this->shippingAddress = $apiOrder->getShippingAddress();
-        $this->billingAddress = $apiOrder->getBillingAddress();
+        $this->shippingAddress = $this->validateISO($apiOrder->getShippingAddress());
+        $this->billingAddress = $this->validateISO($apiOrder->getBillingAddress());
         $this->payment = $apiOrder->getPaymentInformation();
         $this->shipment = $apiOrder->getShipment();
         $this->itemsReferencesAliases = $apiOrder->getItemsReferencesAliases();
@@ -100,5 +104,27 @@ class OrderData
         foreach ($apiOrder->getItems() as $apiOrderItem) {
             $this->items[] = new OrderItemData($apiOrderItem);
         }
+    }
+
+    /**
+     * @param array $address
+     * @return array
+     */
+    protected function validateISO($address)
+    {
+        if (false === is_array($address)) {
+            return $address;
+        }
+
+        if (false === isset($address['country'])) {
+            return $address;
+        }
+
+        // ISO in PrestaShop can differ one of Shoppingfeed
+        if (isset($this->isoCountryMap[$address['country']])) {
+            $address['country'] = $this->isoCountryMap[$address['country']];
+        }
+
+        return $address;
     }
 }
