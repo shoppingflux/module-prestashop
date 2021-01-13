@@ -247,7 +247,6 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
             /** @var $taskOrder ShoppingfeedTaskOrder */
             $logPrefix = self::getLogPrefix($taskOrder->id_order);
             $order = new Order($taskOrder->id_order);
-
             if (!Validate::isLoadedObject($order)) {
                 ProcessLoggerHandler::logError(
                     $logPrefix . ' ' .
@@ -282,68 +281,58 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
                 continue;
             }
 
-            $orderHistory = $order->getHistory($order->id_lang);
             $taskOrderOperation = null;
             $taskOrderPayload = array();
+            if (in_array($order->current_state, $shipped_status)) {
+                $taskOrderOperation = OrderOperation::TYPE_SHIP;
 
-            foreach ($orderHistory as $state) {
-                $idOrderState = (int)$state['id_order_state'];
-                if (in_array($idOrderState, $shipped_status)) {
-                    $taskOrderOperation = OrderOperation::TYPE_SHIP;
+                // Default values...
+                $taskOrderPayload = array(
+                    'carrier_name' => '',
+                    'tracking_number' => '',
+                    'tracking_url' => '',
+                );
 
-                    // Default values...
-                    $taskOrderPayload = array(
-                        'carrier_name' => '',
-                        'tracking_number' => '',
-                        'tracking_url' => '',
-                    );
-
-                    $carrier = new Carrier((int)$order->id_carrier);
-                    if (!Validate::isLoadedObject($carrier)) {
-                        ProcessLoggerHandler::logWarning(
-                            $logPrefix . ' ' .
+                $carrier = new Carrier((int)$order->id_carrier);
+                if (!Validate::isLoadedObject($carrier)) {
+                    ProcessLoggerHandler::logWarning(
+                        $logPrefix . ' ' .
                             $this->l('Carrier could not be loaded.', 'ShoppingfeedOrderSyncActions'),
-                            'Order',
-                            $taskOrder->id_order
-                        );
-                    }
-
-                    // We don't support multi-shipping; use the first shipping method
-                    $orderShipping = $order->getShipping();
-                    if (!empty($orderShipping[0])) {
-                        // From the old module. Not sure if it's all useful, but
-                        // we'll suppose it knows better.
-                        // Build the tracking url.
-                        $orderTrackingUrl = str_replace('http://http://', 'http://', $carrier->url);
-                        $orderTrackingUrl = str_replace('@', $orderShipping[0]['tracking_number'], $orderTrackingUrl);
-
-                        $taskOrderPayload = array(
-                            // "state_name" is indeed the carrier's name...
-                            'carrier_name' => $orderShipping[0]['state_name'],
-                            'tracking_number' => $orderShipping[0]['tracking_number'],
-                            'tracking_url' => $orderTrackingUrl,
-                        );
-                    }
-
-                    Hook::exec('actionShoppingfeedTracking', ['order' => $order, 'taskOrderPayload' => &$taskOrderPayload]);
-                    break;
-                } elseif (in_array($idOrderState, $cancelled_status)) {
-                    $taskOrderOperation = OrderOperation::TYPE_CANCEL;
-                    break;
-                    // The "reason" field is not supported (at least for now)
-                } elseif (in_array($idOrderState, $refunded_status)) {
-                    $taskOrderOperation = OrderOperation::TYPE_REFUND;
-                    break;
-                    // No partial refund (at least for now), so no optional
-                    // parameters to set.
+                        'Order',
+                        $taskOrder->id_order
+                    );
                 }
-            }
 
-            if (is_null($taskOrderOperation)) {
+                // We don't support multi-shipping; use the first shipping method
+                $orderShipping = $order->getShipping();
+                if (!empty($orderShipping[0])) {
+                    // From the old module. Not sure if it's all useful, but
+                    // we'll suppose it knows better.
+                    // Build the tracking url.
+                    $orderTrackingUrl = str_replace('http://http://', 'http://', $carrier->url);
+                    $orderTrackingUrl = str_replace('@', $orderShipping[0]['tracking_number'], $orderTrackingUrl);
+
+                    $taskOrderPayload = array(
+                        // "state_name" is indeed the carrier's name...
+                        'carrier_name' => $orderShipping[0]['state_name'],
+                        'tracking_number' => $orderShipping[0]['tracking_number'],
+                        'tracking_url' => $orderTrackingUrl,
+                    );
+                }
+
+                Hook::exec('actionShoppingfeedTracking', ['order' => $order, 'taskOrderPayload' => &$taskOrderPayload]);
+            } elseif (in_array($order->current_state, $cancelled_status)) {
+                $taskOrderOperation = OrderOperation::TYPE_CANCEL;
+            // The "reason" field is not supported (at least for now)
+            } elseif (in_array($order->current_state, $refunded_status)) {
+                $taskOrderOperation = OrderOperation::TYPE_REFUND;
+            // No partial refund (at least for now), so no optional
+                // parameters to set.
+            } else {
                 ProcessLoggerHandler::logInfo(
                     sprintf(
                         $logPrefix . ' ' .
-                        $this->l('No matching operation for Order State %d. Deleting Task Order.', 'ShoppingfeedOrderSyncActions'),
+                            $this->l('No matching operation for Order State %d. Deleting Task Order.', 'ShoppingfeedOrderSyncActions'),
                         $order->current_state
                     ),
                     'Order'
