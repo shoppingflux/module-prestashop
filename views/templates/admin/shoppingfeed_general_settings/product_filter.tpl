@@ -90,6 +90,19 @@
                     </table>
                 </div>
             </div>
+
+            <div class="form-group form-check">
+                <label class="control-label col-lg-3">
+                    {l s='Send products depending to their visibility'}
+                </label>
+                <div class="col-lg-9">
+					<div class="checkbox">
+						<label for="product_visibility_nowhere">
+							<input type="checkbox" name="product_visibility_nowhere" id="product_visibility_nowhere" value="1" {if $product_visibility_nowhere}checked="checked" {/if}>
+                        </label>
+					</div>
+				</div>
+            </div>
         </div>
         <div class="panel-footer">
             <button type="submit" value="1" name="saveFeedFilterConfig" class="btn btn-default pull-right">

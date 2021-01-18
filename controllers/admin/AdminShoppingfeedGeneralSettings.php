@@ -474,9 +474,11 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
 
         $product_feed_rule_filters = Configuration::getGlobalValue(Shoppingfeed::PRODUCT_FEED_RULE_FILTERS);
         $product_filters = Tools::jsonDecode($product_feed_rule_filters, true);
+        $product_visibility_nowhere = (bool)Configuration::getGlobalValue(Shoppingfeed::PRODUCT_VISIBILTY_NOWHERE);
 
         $tpl->assign([
             'product_filters' => ($product_feed_rule_filters === null)? [] : $product_filters,
+            'product_visibility_nowhere' => $product_visibility_nowhere,
         ]);
 
         return $tpl->fetch();
@@ -521,6 +523,7 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
 
     public function saveFilterConfig()
     {
+        $product_visibility_nowhere = (bool)Tools::getValue('product_visibility_nowhere', false);
         $product_rule_select = Tools::getValue('product_rule_select', []);
         $product_filter = [];
 
@@ -538,6 +541,7 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
             $product_filter[$type] = $id;
         }
         Configuration::updateGlobalValue(Shoppingfeed::PRODUCT_FEED_RULE_FILTERS, Tools::jsonEncode($product_filter));
+        Configuration::updateGlobalValue(Shoppingfeed::PRODUCT_VISIBILTY_NOWHERE, $product_visibility_nowhere);
 
         return true;
     }

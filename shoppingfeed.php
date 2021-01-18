@@ -68,6 +68,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     const PRODUCT_FEED_CUSTOM_FIELDS = "SHOPPINGFEED_PRODUCT_FEED_CUSTOM_FIELDS";
     const PRODUCT_FEED_REFERENCE_FORMAT = "SHOPPINGFEED_PRODUCT_FEED_REFERENCE_FORMAT";
     const PRODUCT_FEED_RULE_FILTERS = "SHOPPINGFEED_PRODUCT_FEED_RULE_FILTERS";
+    const PRODUCT_VISIBILTY_NOWHERE = "SHOPPINGFEED_PRODUCT_VISIBILTY_NOWHERE";
 
     public $extensions = array(
         \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerExtension::class,
@@ -666,6 +667,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         }
         $sql->where('ps.id_shop = ' . (int)$id_shop);
         $product_feed_rule_filters = Configuration::getGlobalValue(Shoppingfeed::PRODUCT_FEED_RULE_FILTERS);
+        $product_visibility_nowhere = (bool)Tools::getValue('product_visibility_nowhere', false);
         $product_filters = Tools::jsonDecode($product_feed_rule_filters, true);
         $sqlFilter = array();
         if (is_array($product_filters)) {
@@ -700,7 +702,9 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         if ((bool)Configuration::getGlobalValue(ShoppingFeed::PRODUCT_FEED_SYNC_PACK) !== true) {
             $sql->where('p.cache_is_pack = 0');
         }
-
+        if ($product_visibility_nowhere === false) {
+            $sql->where("p.visibility != 'none'");
+        }
         Hook::exec('ShoppingfeedSqlProductsOnFeed',
             [
                 'id_shop' => $id_shop,
