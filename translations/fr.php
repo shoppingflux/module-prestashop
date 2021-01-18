@@ -163,6 +163,10 @@ $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_294598238a4
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_779542eb20045c3a9c77372de0f1983d'] = 'Choix de la référence';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_e40ba930b9c7e6d656e463b20a47d816'] = 'Doit valoir : valeur par défaut, référence, référence fournisseur, isbn, ean13, upc ou mpn.';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_5c22d5886dd068b2538e59bf291ab2eb'] = 'Vous devez spécifier un \"Nombre de produits maximum\" entre 1 et 200.';
+$_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_8418bb52f108670fbb6e0acc7d439cf7'] = 'Sélection de produits';
+$_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_32c54267ec80754f2746e922ef335d06'] = 'Envoyer les produits en fonction de leur visibilité';
+$_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_d4f89bc1f5b3b949d8c61bb91fcc6d8a'] = "Envoyer vers Shopping Feed les produits ayant une visibilité à 'Nulle part'";
+$_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_0f500d988373a125295a82293de0ff84'] = 'Choisir les produits envoyés à Shopping Feed';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_cfc532694722abc6458eb3c003404a9c'] = 'Configuration des règles d\'import des commandes';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_c9cc8cce247e49bae79f15173ce97354'] = 'Sauvegarder';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_913bbbcc18c73000eebac72686037496'] = 'Nom de la classe';
