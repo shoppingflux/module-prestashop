@@ -667,33 +667,36 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         $sql->where('ps.id_shop = ' . (int)$id_shop);
         $product_feed_rule_filters = Configuration::getGlobalValue(Shoppingfeed::PRODUCT_FEED_RULE_FILTERS);
         $product_filters = Tools::jsonDecode($product_feed_rule_filters, true);
+        $sqlFilter = array();
         if (is_array($product_filters)) {
             foreach ($product_filters as $product_filter_type => $product_filter) {
                 switch ($product_filter_type) {
                     case 'products': 
-                        $sql->where('ps.id_product IN (' . $product_filter . ')');
+                        $sqlFilter[] = 'ps.id_product IN (' . $product_filter . ')';
                         break;
                     case 'attributes': 
-                        $sql->where('ps.id_product IN (select id_product from '._DB_PREFIX_. 'product_attribute pa JOIN '._DB_PREFIX_. 'product_attribute_combination pac on pa.id_product_attribute = pac.id_product_attribute where id_product IN (' . $product_filter . '))');
+                        $sqlFilter[] = 'ps.id_product IN (select id_product from '._DB_PREFIX_. 'product_attribute pa JOIN '._DB_PREFIX_. 'product_attribute_combination pac on pa.id_product_attribute = pac.id_product_attribute where pac.id_attribute IN (' . $product_filter . '))';
                         break;
                     case 'manufacturers':  
-                        $sql->where('ps.id_product IN (select id_product from '._DB_PREFIX_. 'product where id_manufacturer IN (' . $product_filter . '))');
+                        $sqlFilter[] = 'ps.id_product IN (select id_product from '._DB_PREFIX_. 'product where id_manufacturer IN (' . $product_filter . '))';
                         break;
                     case 'categories': 
-                        $sql->where('ps.id_product IN (select id_product from '._DB_PREFIX_. 'category_product where id_category IN (' . $product_filter . '))');
+                        $sqlFilter[] = 'ps.id_category_default IN (' . $product_filter . ')';
                         break;
                     case 'suppliers': 
-                        $sql->where('ps.id_product IN (select id_product from '._DB_PREFIX_. 'product_supplier where id_supplier IN (' . $product_filter . '))');
+                        $sqlFilter[] = 'ps.id_product IN (select id_product from '._DB_PREFIX_. 'product_supplier where id_supplier IN (' . $product_filter . '))';
                         break;
                     case 'features':
-                        $sql->where('ps.id_product IN (select id_product from '._DB_PREFIX_. 'feature_product where id_feature IN (' . $product_filter . '))');
+                        $sqlFilter[] = 'ps.id_product IN (select id_product from '._DB_PREFIX_. 'feature_product where id_feature IN (' . $product_filter . '))';
                         break;
                     default:
                         continue;
                 }
             }
         }
-
+        if (count($sqlFilter) > 0) {
+            $sql->where( '(' . implode(' or ', $sqlFilter) . ')');
+        }
         if ((bool)Configuration::getGlobalValue(ShoppingFeed::PRODUCT_FEED_SYNC_PACK) !== true) {
             $sql->where('p.cache_is_pack = 0');
         }
