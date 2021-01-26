@@ -75,11 +75,18 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
         $helper->base_folder = $this->getTemplatePath() . $this->override_folder;
         $helper->base_tpl = 'products_feeds.tpl';
 
-        $this->context->smarty->assign('count_products', $this->nbr_products);
-
+        $tokens = (new ShoppingfeedToken())->findAllActive();
         $shoppingfeedPreloading = new ShoppingfeedPreloading();
-        $token = (new ShoppingfeedToken())->getDefaultToken();
-        $this->context->smarty->assign('count_preloading', $shoppingfeedPreloading->getPreloadingCount($token['id_shoppingfeed_token']));
+        $count_preloading = 0;
+
+        foreach ($tokens as $token) {
+            $count_preloading += (int)$shoppingfeedPreloading->getPreloadingCount($token['id_shoppingfeed_token']);
+        }
+
+        $count_preloading = $count_preloading/count($tokens);
+
+        $this->context->smarty->assign('count_products', $this->nbr_products);
+        $this->context->smarty->assign('count_preloading', $count_preloading);
 
         $crons = new ShoppingfeedClasslib\Extensions\ProcessMonitor\Classes\ProcessMonitorObjectModel();
         $syncProduct = $crons->findOneByName('shoppingfeed:syncProduct');
