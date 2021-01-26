@@ -649,6 +649,21 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         return $countProductsOnFeed;
     }
 
+    public function getIndexationPercent()
+    {
+        $tokens = (new ShoppingfeedToken())->findAllActive();
+        $shoppingfeedPreloading = new ShoppingfeedPreloading();
+        $count_preloading = 0;
+
+        foreach ($tokens as $token) {
+            $count_preloading += (int)$shoppingfeedPreloading->getPreloadingCount($token['id_shoppingfeed_token']);
+        }
+
+        $count_preloading = $count_preloading/count($tokens);
+
+        return round((float) ($count_preloading / $this->countProductsOnFeed()) * 100);
+    }
+
     /**
      * Returns the
      * @return DbQuery
