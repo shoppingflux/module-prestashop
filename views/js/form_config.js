@@ -104,33 +104,4 @@ $(document).ready(function()
         })
     });
 
-    document.querySelector('[btn-run-indexation]').addEventListener('click', indexProduct);
-
-    function indexProduct() {
-      var url = new URL(document.location.href);
-      url.searchParams.append('ajax', '1');
-      url.searchParams.append('action', 'RunIndexation');
-
-      fetch(url.toString())
-        .then(function(response) {
-          return response.json();
-        })
-        .then(function(data) {
-
-          if (typeof data['percent'] === 'undefined') {
-            return;
-          }
-
-          document.querySelector('[indexation-percent]').innerText = data['percent'];
-
-          if (data['percent'] == 100) {
-            document.getElementById('purge-cache').classList.remove('color2');
-            document.getElementById('purge-cache').classList.add('color4');
-            return;
-          }
-
-          indexProduct();
-        });
-    }
-
 });

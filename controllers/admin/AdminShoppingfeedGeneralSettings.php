@@ -75,8 +75,18 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
         $helper->base_folder = $this->getTemplatePath() . $this->override_folder;
         $helper->base_tpl = 'products_feeds.tpl';
 
+        $tokens = (new ShoppingfeedToken())->findAllActive();
+        $shoppingfeedPreloading = new ShoppingfeedPreloading();
+        $count_preloading = 0;
+
+        foreach ($tokens as $token) {
+            $count_preloading += (int)$shoppingfeedPreloading->getPreloadingCount($token['id_shoppingfeed_token']);
+        }
+
+        $count_preloading = $count_preloading/count($tokens);
+
         $this->context->smarty->assign('count_products', $this->nbr_products);
-        $this->context->smarty->assign('indexationPercent', $this->module->getIndexationPercent());
+        $this->context->smarty->assign('count_preloading', $count_preloading);
 
         $crons = new ShoppingfeedClasslib\Extensions\ProcessMonitor\Classes\ProcessMonitorObjectModel();
         $syncProduct = $crons->findOneByName('shoppingfeed:syncProduct');
@@ -607,29 +617,5 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
     {
         $this->purgePrealoading();
         $this->ajaxDie(Tools::jsonEncode(['success' => true]));
-    }
-
-    public function displayAjaxRunIndexation()
-    {
-        /** @var ShoppingfeedHandler $handler */
-        $handler = new ActionsHandler();
-        $handler->addActions('getBatch');
-        $sft = new ShoppingfeedToken();
-        $tokens = $sft->findAllActive();
-
-        foreach ($tokens as $token) {
-            $handler->setConveyor(array(
-                'id_token' => $token['id_shoppingfeed_token'],
-                'product_action' => ShoppingfeedPreloading::ACTION_SYNC_PRELODING,
-            ));
-
-            $handler->process('ShoppingfeedProductSyncPreloading');
-        }
-
-        $response = [
-            'percent' => $this->module->getIndexationPercent()
-        ];
-
-        $this->ajaxDie(json_encode($response));
     }
 }
