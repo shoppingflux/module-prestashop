@@ -232,24 +232,33 @@ class ShoppingfeedPreloading extends ObjectModel
             $this->id_token = $id_token;
             $this->id_product = $id_product;
             $this->actions = Tools::jsonEncode([self::ACTION_SYNC_ALL]);
-        } else {
-            $this->hydrate($shoppingfeedPreloading);
-            $actions = Tools::jsonDecode($this->actions, true);
-            if ($this->content === null || $action === self::ACTION_SYNC_ALL) {
-                $this->actions = Tools::jsonEncode([$action]);
-            } else if ($actions !== null && $action !== self::ACTION_SYNC_ALL && in_array(self::ACTION_SYNC_ALL, $actions)) {
 
-                return true;
-            } else if ($actions === null || in_array($action, $actions) === false) {
-                $actions[] = $action;
-                $this->actions = Tools::jsonEncode($actions);
-            } else {
+            return $this->save();
+        }
+        $this->hydrate($shoppingfeedPreloading);
+        if ($this->content === null || $action === self::ACTION_SYNC_ALL) {
+            $this->actions = Tools::jsonEncode([$self::ACTION_SYNC_ALL]);
 
-                return true;
-            }
+            return $this->save();
+        }
+        $actions = Tools::jsonDecode($this->actions, true);
+        if (is_array($actions) === false) {
+            $this->actions = Tools::jsonEncode([$action]);
+
+            return $this->save();
+        }
+        if (in_array(self::ACTION_SYNC_ALL, $actions)){
+
+            return true;
+        }
+        if (in_array($action, $actions) === false) {
+            $actions[] = $action;
+            $this->actions = Tools::jsonEncode($actions);
+
+            return $this->save();
         }
 
-        return $this->save();
+        return true;
     }
 
     public function deleteProduct($id_product, $id_token)

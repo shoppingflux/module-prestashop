@@ -243,6 +243,9 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         'actionShoppingfeedOrderImportRegisterSpecificRules',
         'actionObjectProductDeleteBefore',
         'ActionObjectCategoryUpdateAfter',
+        'actionObjectSpecificPriceAddAfter',
+        'actionObjectSpecificPriceUpdateAfter',
+        'actionObjectSpecificPriceDeleteAfter',
     );
 
     /**
@@ -1193,5 +1196,20 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         foreach($defaultRulesClassNames as $ruleClassName) {
             $params['specificRulesClassNames'][] = $ruleClassName;
         }
+    }
+
+    public function hookActionObjectSpecificPriceAddAfter($params)
+    {
+        $this->updateShoppingFeedPreloading([$params['object']->id_product], ShoppingfeedPreloading::ACTION_SYNC_PRICE);
+    }
+
+    public function hookActionObjectSpecificPriceUpdateAfter($params)
+    {
+        $this->updateShoppingFeedPreloading([$params['object']->id_product], ShoppingfeedPreloading::ACTION_SYNC_PRICE);
+    }
+
+    public function hookActionObjectSpecificPriceDeleteAfter($params)
+    {
+        $this->updateShoppingFeedPreloading([$params['object']->id_product], ShoppingfeedPreloading::ACTION_SYNC_PRICE);
     }
 }
