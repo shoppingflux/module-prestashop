@@ -124,6 +124,8 @@ class ShoppingfeedPreloading extends ObjectModel
             $this->id_token = $id_token;
             $this->id_product = $id_product;
             $this->content = Tools::jsonEncode($productSerialize->serialize(), JSON_UNESCAPED_UNICODE);
+        } elseif(strlen($content['content']) === 0) {
+            $this->content = Tools::jsonEncode($productSerialize->serialize(), JSON_UNESCAPED_UNICODE);
         } else {
             $this->hydrate($shoppingfeedPreloading);
             $actions = Tools::jsonDecode($this->actions, true);
