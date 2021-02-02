@@ -47,7 +47,7 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
             $this->module->getPathUri() . 'views/css/shoppingfeed_configuration/form.css',
             $this->module->getPathUri() . 'views/css/font-awesome.min.css'
         ));
-        $this->nbr_products = $this->module->countProductsOnFeed();
+        $this->nbr_products = $this->module->countProductsOnFeed($this->context->shop->id);
         $this->addJS($this->module->getPathUri() . 'views/js/form_config.js');
 
         $this->content = $this->welcomeForm();
@@ -77,16 +77,18 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
 
         $tokens = (new ShoppingfeedToken())->findAllActive();
         $shoppingfeedPreloading = new ShoppingfeedPreloading();
-        $count_preloading = 0;
+        $countPreloading = 0;
+        $countProductInShops = 0;
 
         foreach ($tokens as $token) {
-            $count_preloading += (int)$shoppingfeedPreloading->getPreloadingCount($token['id_shoppingfeed_token']);
+            $countProductInShops += (int)$this->module->countProductsOnFeed((int)$token['id_shop']);
+            $countPreloading += (int)$shoppingfeedPreloading->getPreloadingCount($token['id_shoppingfeed_token']);
         }
 
-        $count_preloading = $count_preloading/count($tokens);
+        $percentPreloading = ($countPreloading / $countProductInShops) * 100;
 
         $this->context->smarty->assign('count_products', $this->nbr_products);
-        $this->context->smarty->assign('count_preloading', $count_preloading);
+        $this->context->smarty->assign('percent_preloading', $percentPreloading);
 
         $crons = new ShoppingfeedClasslib\Extensions\ProcessMonitor\Classes\ProcessMonitorObjectModel();
         $syncProduct = $crons->findOneByName('shoppingfeed:syncProduct');
