@@ -82,7 +82,7 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
 
         foreach ($tokens as $token) {
             $countProductInShops += (int)$this->module->countProductsOnFeed((int)$token['id_shop']);
-            $countPreloading += (int)$shoppingfeedPreloading->getPreloadingCount($token['id_shoppingfeed_token']);
+            $countPreloading += (int)$shoppingfeedPreloading->getPreloadingCountForSync($token['id_shoppingfeed_token']);
         }
 
         $percentPreloading = ($countPreloading / $countProductInShops) * 100;

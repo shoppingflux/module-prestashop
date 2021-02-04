@@ -155,29 +155,15 @@ class ShoppingfeedPreloading extends ObjectModel
         return $this->save();
     }
 
-    /**
-     * get content product in preloading table
-     * @param int $limit
-     * @param int $from
-     * @return array
-     */
-    public function findAllByToken($token, $from = 0, $limit = 100)
+
+    private function getQueryPreloading($id_token) 
     {
-        $result = [];
-
         $sql = new DbQuery();
-        $sql->select('sfp.content')
-            ->from(self::$definition['table'], 'sfp')
-            ->innerJoin(ShoppingfeedToken::$definition['table'], 'sft', 'sft.id_shoppingfeed_token = sfp.id_token')
-            ->where(sprintf('sft.content = "%s"', pSQL($token)))
-            ->where('sfp.actions IS NULL OR sfp.actions = ""')
-            ->limit($limit, $from);
+        $sql->from(self::$definition['table'])
+            ->where(sprintf('id_token = %d', (int)$id_token))
+            ->where('length(content) > 0');
 
-        foreach (Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql) as $row) {
-            $result[] = Tools::jsonDecode($row['content'], true);
-        }
-
-        return $result;
+        return $sql;
     }
 
     /**
@@ -189,13 +175,9 @@ class ShoppingfeedPreloading extends ObjectModel
     public function findAllByTokenId($id_token, $from = 0, $limit = 100)
     {
         $result = [];
-
-        $sql = new DbQuery();
-        $sql->select('content')
-            ->from(self::$definition['table'])
-            ->where(sprintf('id_token = %d', (int)$id_token))
-            ->where('actions IS NULL OR actions = ""')
-            ->limit($limit, $from);
+        $sql = $this->getQueryPreloading($id_token)
+                    ->select('content')
+                    ->limit($limit, $from);
 
         foreach (Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql) as $row) {
             $result[] = Tools::jsonDecode($row['content'], true);
@@ -225,15 +207,24 @@ class ShoppingfeedPreloading extends ObjectModel
         return $result;
     }
 
-    public function getPreloadingCount($id_token = null)
+    public function getPreloadingCount($id_token)
+    {
+        $sql = $this->getQueryPreloading($id_token)
+                    ->select('COUNT('.self::$definition['primary'].')');
+        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
+
+        return $result;
+    }
+
+
+    public function getPreloadingCountForSync($id_token)
     {
         $sql = new DbQuery();
         $sql->select('COUNT('.self::$definition['primary'].')')
             ->from(self::$definition['table'])
-            ->where('actions IS NULL OR actions = ""');
-        if ($id_token != null) {
-            $sql->where('id_token = ' . (int)$id_token);
-        }
+            ->where('actions IS NULL OR actions = ""')
+            ->where('id_token = ' . (int)$id_token);
+
         $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
 
         return $result;
@@ -261,7 +252,7 @@ class ShoppingfeedPreloading extends ObjectModel
         }
         $this->hydrate($shoppingfeedPreloading);
         if ($this->content === null || $action === self::ACTION_SYNC_ALL) {
-            $this->actions = Tools::jsonEncode([$self::ACTION_SYNC_ALL]);
+            $this->actions = Tools::jsonEncode([self::ACTION_SYNC_ALL]);
 
             return $this->save();
         }

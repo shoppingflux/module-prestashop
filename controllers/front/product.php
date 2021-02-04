@@ -44,9 +44,6 @@ class ShoppingfeedProductModuleFrontController  extends \ModuleFrontController
         if ($token === false) {
             die();
         }
-
-        $this->preparePreloading($token);
-
         $fileXml = sprintf('file-%d.xml', $token['id_shoppingfeed_token']);
         ProcessLoggerHandler::logInfo(sprintf('Generate file %s for token %s:.', $fileXml, $token['content']), null, null, 'ShoppingfeedProductModuleFrontController');
         ProcessLoggerHandler::closeLogger();
@@ -56,11 +53,10 @@ class ShoppingfeedProductModuleFrontController  extends \ModuleFrontController
 
         $limit = 100;
         $products = [];
-        $iterations = range(0, floor((new ShoppingfeedPreloading)->getPreloadingCount($token['id_shoppingfeed_token']) / 100));
-        foreach($iterations as $iteration) {
-            $products = array_merge($products, (new ShoppingfeedPreloading)->findAllByTokenId($token['id_shoppingfeed_token'], $iteration * $limit, $limit));
+        $nb_iteration = ceil((new ShoppingfeedPreloading)->getPreloadingCount($token['id_shoppingfeed_token']) / 100);
+        for ($i = 0; $i < $nb_iteration; ++$i) {
+            $products = array_merge($products, (new ShoppingfeedPreloading)->findAllByTokenId($token['id_shoppingfeed_token'], $i * $limit, $limit));
         }
-
         $productGenerator->write($products);
 
 
