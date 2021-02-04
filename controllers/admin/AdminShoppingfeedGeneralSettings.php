@@ -88,7 +88,7 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
         $percentPreloading = ($countPreloading / $countProductInShops) * 100;
 
         $this->context->smarty->assign('count_products', $this->nbr_products);
-        $this->context->smarty->assign('percent_preloading', $percentPreloading);
+        $this->context->smarty->assign('percent_preloading', round($percentPreloading));
 
         $crons = new ShoppingfeedClasslib\Extensions\ProcessMonitor\Classes\ProcessMonitorObjectModel();
         $syncProduct = $crons->findOneByName('shoppingfeed:syncProduct');
