@@ -44,6 +44,9 @@ class ShoppingfeedProductModuleFrontController  extends \ModuleFrontController
         if ($token === false) {
             die();
         }
+
+        $this->preparePreloading($token);
+
         $fileXml = sprintf('file-%d.xml', $token['id_shoppingfeed_token']);
         ProcessLoggerHandler::logInfo(sprintf('Generate file %s for token %s:.', $fileXml, $token['content']), null, null, 'ShoppingfeedProductModuleFrontController');
         ProcessLoggerHandler::closeLogger();
@@ -133,5 +136,41 @@ class ShoppingfeedProductModuleFrontController  extends \ModuleFrontController
                 }
             }
         }
+    }
+
+    protected function preparePreloading($token)
+    {
+        $sfp = new ShoppingfeedPreloading();
+        $products = $sfp->findAllPoorByTokenId($token['id_shoppingfeed_token']);
+        $ids = [];
+
+        if (empty($products)) {
+            return true;
+        }
+
+        try {
+            foreach ($products as $product) {
+                $ids[] = $product['id_product'];
+                $sfp->saveProduct($product['id_product'], $product['id_token'], $token['id_lang'], $token['id_shop']);
+            }
+        } catch (Exception $e) {
+            ProcessLoggerHandler::logError(
+                sprintf('Error while update a preloading products: $s. File: %s. Line: %d', $e->getMessage(), $e->getFile(), $e->getLine()),
+                null,
+                null,
+                'ShoppingfeedProductModuleFrontController'
+            );
+
+            return false;
+        }
+
+        ProcessLoggerHandler::logInfo(
+            sprintf($this->l('products updated: %s'), implode(',', $ids)),
+            null,
+            null,
+            'ShoppingfeedProductModuleFrontController'
+        );
+
+        return true;
     }
 }

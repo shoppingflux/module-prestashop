@@ -124,7 +124,8 @@ class ShoppingfeedPreloading extends ObjectModel
             $this->id_token = $id_token;
             $this->id_product = $id_product;
             $this->content = Tools::jsonEncode($productSerialize->serialize(), JSON_UNESCAPED_UNICODE);
-        } elseif(strlen($content['content']) === 0) {
+        } elseif(strlen($shoppingfeedPreloading['content']) === 0) {
+            $this->hydrate($shoppingfeedPreloading);
             $this->content = Tools::jsonEncode($productSerialize->serialize(), JSON_UNESCAPED_UNICODE);
         } else {
             $this->hydrate($shoppingfeedPreloading);
@@ -198,6 +199,27 @@ class ShoppingfeedPreloading extends ObjectModel
 
         foreach (Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql) as $row) {
             $result[] = Tools::jsonDecode($row['content'], true);
+        }
+
+        return $result;
+    }
+
+    /**
+     * get content product in preloading table
+     * @param string $id_token
+     * @return array
+     */
+    public function findAllPoorByTokenId($id_token)
+    {
+        $sql = new DbQuery();
+        $sql->from(self::$definition['table'])
+            ->where(sprintf('id_token = %d', (int)$id_token))
+            ->where('(actions IS NOT NULL AND actions <> "") OR content IS NULL OR content = ""');
+
+        $result = Db::getInstance()->executeS($sql);
+
+        if ($result === false || is_array($result) === false) {
+            return [];
         }
 
         return $result;
