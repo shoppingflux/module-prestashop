@@ -155,8 +155,7 @@ class ShoppingfeedPreloading extends ObjectModel
         return $this->save();
     }
 
-
-    private function getQueryPreloading($id_token) 
+    private function getQueryPreloading($id_token)
     {
         $sql = new DbQuery();
         $sql->from(self::$definition['table'])
@@ -215,7 +214,6 @@ class ShoppingfeedPreloading extends ObjectModel
 
         return $result;
     }
-
 
     public function getPreloadingCountForSync($id_token)
     {
