@@ -47,13 +47,15 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
             $this->module->getPathUri() . 'views/css/shoppingfeed_configuration/form.css',
             $this->module->getPathUri() . 'views/css/font-awesome.min.css'
         ));
-        $this->nbr_products = $this->module->countProductsOnFeed();
+        $this->nbr_products = $this->module->countProductsOnFeed($this->context->shop->id);
         $this->addJS($this->module->getPathUri() . 'views/js/form_config.js');
-
+        $this->addJS($this->module->getPathUri() . 'views/js/form_config_filter.js');
+        Media::addJsDef(['url_product_selection_form' => $this->context->link->getAdminLink('AdminShoppingfeedGeneralSettings')]);
         $this->content = $this->welcomeForm();
         $this->content .= $this->renderSynchroConfigForm();
         $this->content .= $this->renderGlobalConfigForm();
         $this->content .= $this->renderFeedConfigForm();
+        $this->content .= $this->renderProductSelectionConfigForm();
         $this->content .= $this->renderFactoryConfigForm();
 
         $this->module->setBreakingChangesNotices();
@@ -63,6 +65,9 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
 
     public function welcomeForm()
     {
+        $product_feed_rule_filters = Configuration::getGlobalValue(Shoppingfeed::PRODUCT_FEED_RULE_FILTERS);
+        $product_filters = Tools::jsonDecode($product_feed_rule_filters, true);
+
         $fields_form = array(
             'legend' => array(
                 'title' => $this->module->l('Shoppingfeed Prestashop Plugin (Feed&Order)', 'AdminShoppingfeedGeneralSettings'),
@@ -74,11 +79,21 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
         $helper->tpl_vars['img_path'] = $this->module->getPathUri() . "views/img/";
         $helper->base_folder = $this->getTemplatePath() . $this->override_folder;
         $helper->base_tpl = 'products_feeds.tpl';
+        $tokens = (new ShoppingfeedToken())->findAllActive();
+        $shoppingfeedPreloading = new ShoppingfeedPreloading();
+        $countPreloading = 0;
+        $countProductInShops = 0;
+
+        foreach ($tokens as $token) {
+            $countProductInShops += (int)$this->module->countProductsOnFeed((int)$token['id_shop']);
+            $countPreloading += (int)$shoppingfeedPreloading->getPreloadingCountForSync($token['id_shoppingfeed_token']);
+        }
+
+        $percentPreloading = ($countPreloading / $countProductInShops) * 100;
 
         $this->context->smarty->assign('count_products', $this->nbr_products);
-
-        $shoppingfeedPreloading = new ShoppingfeedPreloading();
-        $this->context->smarty->assign('count_preloading', $shoppingfeedPreloading->getPreloadingCount());
+        $this->context->smarty->assign('hasAFilter', $product_filters !== null);
+        $this->context->smarty->assign('percent_preloading', round($percentPreloading));
 
         $crons = new ShoppingfeedClasslib\Extensions\ProcessMonitor\Classes\ProcessMonitorObjectModel();
         $syncProduct = $crons->findOneByName('shoppingfeed:syncProduct');
@@ -462,13 +477,32 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
         return $helper->generateForm(array(array('form' => $fields_form)));
     }
 
+    public function renderProductSelectionConfigForm()
+    {
+        $tpl = Context::getContext()->smarty->createTemplate(_PS_MODULE_DIR_ . 'shoppingfeed/views/templates/admin/shoppingfeed_general_settings/product_filter.tpl');
+
+        $product_feed_rule_filters = Configuration::getGlobalValue(Shoppingfeed::PRODUCT_FEED_RULE_FILTERS);
+        $product_filters = Tools::jsonDecode($product_feed_rule_filters, true);
+        $product_visibility_nowhere = (bool)Configuration::getGlobalValue(Shoppingfeed::PRODUCT_VISIBILTY_NOWHERE);
+
+        $tpl->assign([
+            'product_filters' => ($product_feed_rule_filters === null)? [] : $product_filters,
+            'product_visibility_nowhere' => $product_visibility_nowhere,
+        ]);
+
+        return $tpl->fetch();
+    }
 
     /**
      * @inheritdoc
      */
     public function postProcess()
     {
-        if (Tools::isSubmit('saveGlobalConfig')) {
+        if (Tools::isSubmit('saveFeedFilterConfig')) {
+            $this->saveFilterConfig();
+            $this->purgePrealoading();
+            return true;
+        } else if (Tools::isSubmit('saveGlobalConfig')) {
             return $this->saveGlobalConfig();
         } elseif (Tools::isSubmit('saveSynchroConfig')) {
             return $this->saveSynchroConfig();
@@ -495,6 +529,32 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
 
         return true;
     }
+
+    public function saveFilterConfig()
+    {
+        $product_visibility_nowhere = (bool)Tools::getValue('product_visibility_nowhere', false);
+        $product_rule_select = Tools::getValue('product_rule_select', []);
+        $product_filter = [];
+
+        foreach ($product_rule_select as $type => $filterIds) {
+            if (empty($type)) {
+                continue;
+            }
+            $id = implode(',', $filterIds);
+            $id = explode(',', $id);
+            $id = array_filter($id, 'is_numeric');
+            $id = implode(',', $id);
+            if (empty($id)) {
+                continue;
+            }
+            $product_filter[$type] = $id;
+        }
+        Configuration::updateGlobalValue(Shoppingfeed::PRODUCT_FEED_RULE_FILTERS, Tools::jsonEncode($product_filter));
+        Configuration::updateGlobalValue(Shoppingfeed::PRODUCT_VISIBILTY_NOWHERE, $product_visibility_nowhere);
+
+        return true;
+    }
+    
 
     public function purgePrealoading()
     {
@@ -609,5 +669,87 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
     {
         $this->purgePrealoading();
         $this->ajaxDie(Tools::jsonEncode(['success' => true]));
+    }
+
+    public function displayAjaxProductSelectionConfigForm()
+    {
+        $product_rule_type = Tools::getValue('product_rule_type');
+        $selected = Tools::getValue('selected', '');
+        if (Tools::getValue('selected', '') === '') {
+            $selected = [];
+        } else {
+            $selected = explode(',', $selected);
+        }
+        $products = [
+            'selected' => [], 
+            'unselected' => []
+        ];
+        switch ($product_rule_type) {
+            case 'attributes':
+                $results = Db::getInstance()->executeS('
+				SELECT CONCAT(agl.name, " - ", al.name) as name, a.id_attribute as id
+				FROM '._DB_PREFIX_.'attribute_group_lang agl
+				LEFT JOIN '._DB_PREFIX_.'attribute a ON a.id_attribute_group = agl.id_attribute_group
+				LEFT JOIN '._DB_PREFIX_.'attribute_lang al ON (a.id_attribute = al.id_attribute AND al.id_lang = '.(int)Context::getContext()->language->id.')
+				WHERE agl.id_lang = '.(int)Context::getContext()->language->id.'
+				ORDER BY agl.name, al.name');
+                break;
+            case 'products':
+                $results = Db::getInstance()->executeS('
+				SELECT DISTINCT name, p.id_product as id
+				FROM '._DB_PREFIX_.'product p
+				LEFT JOIN `'._DB_PREFIX_.'product_lang` pl
+					ON (p.`id_product` = pl.`id_product`
+					AND pl.`id_lang` = '.(int)Context::getContext()->language->id.Shop::addSqlRestrictionOnLang('pl').')
+				'.Shop::addSqlAssociation('product', 'p').'
+				WHERE id_lang = '.(int)Context::getContext()->language->id.'
+				ORDER BY name');
+                break;
+            case 'manufacturers':
+                $results = Db::getInstance()->executeS('
+				SELECT name, id_manufacturer as id
+				FROM '._DB_PREFIX_.'manufacturer
+				ORDER BY name');
+                break;
+            case 'suppliers':
+                $results = Db::getInstance()->executeS('
+				SELECT name, id_supplier as id
+				FROM '._DB_PREFIX_.'supplier
+				ORDER BY name');
+                break;
+            case 'categories':
+                $results = Db::getInstance()->executeS('
+				SELECT DISTINCT name, c.id_category as id
+				FROM '._DB_PREFIX_.'category c
+				LEFT JOIN `'._DB_PREFIX_.'category_lang` cl
+					ON (c.`id_category` = cl.`id_category`
+					AND cl.`id_lang` = '.(int)Context::getContext()->language->id.Shop::addSqlRestrictionOnLang('cl').')
+				'.Shop::addSqlAssociation('category', 'c').'
+				WHERE id_lang = '.(int)Context::getContext()->language->id.'
+				ORDER BY name');
+                break;
+            case 'features':
+                $results = Db::getInstance()->executeS('
+                SELECT DISTINCT name, f.id_feature as id
+                FROM '._DB_PREFIX_.'feature f
+                LEFT JOIN `'._DB_PREFIX_.'feature_lang` fl
+                    ON (f.`id_feature` = fl.`id_feature`)
+                '.Shop::addSqlAssociation('feature', 'f').'
+                WHERE id_lang = '.(int)Context::getContext()->language->id.'
+                ORDER BY name');
+                break;
+            default :
+                return '';
+        }
+        foreach ($results as $row) {
+            $products[in_array($row['id'], $selected) ? 'selected' : 'unselected'][] = $row;
+        }
+
+        $tpl = Context::getContext()->smarty->createTemplate(_PS_MODULE_DIR_ . 'shoppingfeed/views/templates/admin/shoppingfeed_general_settings/product_filter_rules.tpl');
+        $tpl->assign([
+            'products' => $products,
+        ]);
+
+        return $tpl->display();
     }
 }

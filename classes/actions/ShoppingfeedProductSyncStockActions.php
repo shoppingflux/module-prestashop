@@ -60,7 +60,7 @@ class ShoppingfeedProductSyncStockActions extends ShoppingfeedProductSyncActions
                 'reference' => $sfReference,
                 'quantity' => StockAvailable::getQuantityAvailableByProduct(
                     $sfProduct->id_product,
-                    (empty($sfProduct->id_product_attribute) === true) ? $sfProduct->id_product_attribute : null,
+                    (empty($sfProduct->id_product_attribute) === false) ? $sfProduct->id_product_attribute : null,
                     $token->id_shop
                 ),
                 'sfProduct' => $sfProduct,
@@ -103,6 +103,19 @@ class ShoppingfeedProductSyncStockActions extends ShoppingfeedProductSyncActions
         foreach ($res as $inventoryResource) {
             $reference = $inventoryResource->getReference();
             $sfProduct = $preparedBatchShop[$reference]['sfProduct'];
+
+            if (false === Validate::isLoadedObject($sfProduct)) {
+                ProcessLoggerHandler::logError(
+                    sprintf(
+                        static::getLogPrefix($this->conveyor['id_token']) . ' ' .
+                        $this->l('Cannot retrieve a product for a reference %s', 'ShoppingfeedProductSyncStockActions'),
+                        $reference
+                    ),
+                    'Product'
+                );
+
+                continue;
+            }
 
             ProcessLoggerHandler::logInfo(
                 sprintf(

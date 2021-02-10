@@ -67,7 +67,8 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     const PRODUCT_FEED_CATEGORY_DISPLAY = "SHOPPINGFEED_PRODUCT_FEED_CATEGORY_DISPLAY";
     const PRODUCT_FEED_CUSTOM_FIELDS = "SHOPPINGFEED_PRODUCT_FEED_CUSTOM_FIELDS";
     const PRODUCT_FEED_REFERENCE_FORMAT = "SHOPPINGFEED_PRODUCT_FEED_REFERENCE_FORMAT";
-
+    const PRODUCT_FEED_RULE_FILTERS = "SHOPPINGFEED_PRODUCT_FEED_RULE_FILTERS";
+    const PRODUCT_VISIBILTY_NOWHERE = "SHOPPINGFEED_PRODUCT_VISIBILTY_NOWHERE";
 
     public $extensions = array(
         \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerExtension::class,
@@ -108,6 +109,14 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             'title' => array(
                 'en' => 'Synchronize orders on Shopping Feed',
                 'fr' => 'Synchronisation des commandes sur Shopping Feed'
+            ),
+            'frequency' => '5min',
+        ),
+        'syncAll' => array(
+            'name' => 'shoppingfeed:syncAll',
+            'title' => array(
+                'en' => 'Sync shoppingfeed products and orders',
+                'fr' => 'Sync produits et commandes shoppingfeed'
             ),
             'frequency' => '5min',
         )
@@ -234,6 +243,9 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         'actionShoppingfeedOrderImportRegisterSpecificRules',
         'actionObjectProductDeleteBefore',
         'ActionObjectCategoryUpdateAfter',
+        'actionObjectSpecificPriceAddAfter',
+        'actionObjectSpecificPriceUpdateAfter',
+        'actionObjectSpecificPriceDeleteAfter',
     );
 
     /**
@@ -364,6 +376,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         $this->setConfigurationDefault(self::ORDER_IMPORT_ENABLED, true);
         $this->setConfigurationDefault(self::ORDER_IMPORT_SHIPPED, false);
         $this->setConfigurationDefault(self::PRODUCT_FEED_CARRIER_REFERENCE, Configuration::getGlobalValue('PS_CARRIER_DEFAULT'));
+        $this->setConfigurationDefault(self::ORDER_DEFAULT_CARRIER_REFERENCE, Configuration::getGlobalValue('PS_CARRIER_DEFAULT'));
         $this->saveToken();
 
         return $res;
@@ -542,6 +555,9 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
      */
     public function mapPrestashopProduct($sfProductReference, $id_shop, ...$arguments)
     {
+        $sfProduct = new ShoppingfeedProduct();
+        $sfProductReference = $sfProduct->getReverseShoppingfeedReference($sfProductReference);
+
         Hook::exec(
             'ShoppingfeedReverseProductReference', // hook_name
             array(
@@ -653,11 +669,45 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             $id_shop = (int)Configuration::get('PS_SHOP_DEFAULT');
         }
         $sql->where('ps.id_shop = ' . (int)$id_shop);
-
+        $product_feed_rule_filters = Configuration::getGlobalValue(Shoppingfeed::PRODUCT_FEED_RULE_FILTERS);
+        $product_visibility_nowhere = (bool)Configuration::getGlobalValue(Shoppingfeed::PRODUCT_VISIBILTY_NOWHERE);
+        $product_filters = Tools::jsonDecode($product_feed_rule_filters, true);
+        $sqlFilter = array();
+        if (is_array($product_filters)) {
+            foreach ($product_filters as $product_filter_type => $product_filter) {
+                switch ($product_filter_type) {
+                    case 'products': 
+                        $sqlFilter[] = 'ps.id_product IN (' . $product_filter . ')';
+                        break;
+                    case 'attributes': 
+                        $sqlFilter[] = 'ps.id_product IN (select id_product from '._DB_PREFIX_. 'product_attribute pa JOIN '._DB_PREFIX_. 'product_attribute_combination pac on pa.id_product_attribute = pac.id_product_attribute where pac.id_attribute IN (' . $product_filter . '))';
+                        break;
+                    case 'manufacturers':  
+                        $sqlFilter[] = 'ps.id_product IN (select id_product from '._DB_PREFIX_. 'product where id_manufacturer IN (' . $product_filter . '))';
+                        break;
+                    case 'categories': 
+                        $sqlFilter[] = 'ps.id_category_default IN (' . $product_filter . ')';
+                        break;
+                    case 'suppliers': 
+                        $sqlFilter[] = 'ps.id_product IN (select id_product from '._DB_PREFIX_. 'product_supplier where id_supplier IN (' . $product_filter . '))';
+                        break;
+                    case 'features':
+                        $sqlFilter[] = 'ps.id_product IN (select id_product from '._DB_PREFIX_. 'feature_product where id_feature IN (' . $product_filter . '))';
+                        break;
+                    default:
+                        continue;
+                }
+            }
+        }
+        if (count($sqlFilter) > 0) {
+            $sql->where( '(' . implode(' or ', $sqlFilter) . ')');
+        }
         if ((bool)Configuration::getGlobalValue(ShoppingFeed::PRODUCT_FEED_SYNC_PACK) !== true) {
             $sql->where('p.cache_is_pack = 0');
         }
-
+        if ($product_visibility_nowhere === false) {
+            $sql->where("p.visibility != 'none'");
+        }
         Hook::exec('ShoppingfeedSqlProductsOnFeed',
             [
                 'id_shop' => $id_shop,
@@ -678,6 +728,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
      */
     public function hookActionUpdateQuantity($params)
     {
+        $this->updateShoppingFeedPreloading([$params['id_product']], ShoppingfeedPreloading::ACTION_SYNC_STOCK);
         if (!Configuration::get(Shoppingfeed::STOCK_SYNC_ENABLED)) {
             return;
         }
@@ -879,7 +930,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
      */
     public function hookActionObjectProductUpdateAfter($params)
     {
-        $this->updateShoppingFeedPreloading(array($params['object']), ShoppingfeedPreloading::ACTION_SYNC_ALL);
+        $this->updateShoppingFeedPreloading([$params['object']->id], ShoppingfeedPreloading::ACTION_SYNC_ALL);
         $this->updateShoppingFeedPriceRealtime();
     }
 
@@ -946,27 +997,27 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             $categoryIds[] = (int)$children->id;
         }
         $products = $this->getProductsByCategoryIds($categoryIds);
-
+  
         if (empty($products) === false) {
             $this->updateShoppingFeedPreloading($products, ShoppingfeedPreloading::ACTION_SYNC_CATEGORY);
         }
     }
 
-    public function getProductsByCategoryIds($categoryIds)
+    private function getProductsByCategoryIds($categoryIds)
     {
         $products = [];
         $sql = new DbQuery();
         $sql->from(Product::$definition['table'])
             ->where('id_category_default in(' .  implode(',', $categoryIds) . ')');
         $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
-
-        return ObjectModel::hydrateCollection('Product', $result);
+        
+        return $result === []? [] : array_column($result, 'id_product');
     }
 
     /**
      * Processes products to indexed on add into XML feed.
      */
-    public function updateShoppingFeedPreloading($products, $action)
+    public function updateShoppingFeedPreloading($products_id, $action)
     {
         $handler = new \ShoppingfeedClasslib\Actions\ActionsHandler();
         try {
@@ -974,7 +1025,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
                         ->addActions('saveProduct')
                         ->setConveyor(
                             array(
-                                'products' => $products,
+                                'products_id' => $products_id,
                                 'product_action' => $action,
                             )
                         )
@@ -1145,5 +1196,20 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         foreach($defaultRulesClassNames as $ruleClassName) {
             $params['specificRulesClassNames'][] = $ruleClassName;
         }
+    }
+
+    public function hookActionObjectSpecificPriceAddAfter($params)
+    {
+        $this->updateShoppingFeedPreloading([$params['object']->id_product], ShoppingfeedPreloading::ACTION_SYNC_PRICE);
+    }
+
+    public function hookActionObjectSpecificPriceUpdateAfter($params)
+    {
+        $this->updateShoppingFeedPreloading([$params['object']->id_product], ShoppingfeedPreloading::ACTION_SYNC_PRICE);
+    }
+
+    public function hookActionObjectSpecificPriceDeleteAfter($params)
+    {
+        $this->updateShoppingFeedPreloading([$params['object']->id_product], ShoppingfeedPreloading::ACTION_SYNC_PRICE);
     }
 }

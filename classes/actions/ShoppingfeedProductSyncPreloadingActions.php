@@ -30,7 +30,6 @@ class ShoppingfeedProductSyncPreloadingActions extends DefaultActions
     public function getBatch()
     {
         $token = new ShoppingfeedToken($this->conveyor['id_token']);
-
         $logPrefix = static::getLogPrefix($this->conveyor['id_token']);
 
         if (Validate::isLoadedObject($token) === false) {
@@ -59,7 +58,7 @@ class ShoppingfeedProductSyncPreloadingActions extends DefaultActions
         $sfModule = Module::getInstanceByName('shoppingfeed');
         $limit = Configuration::getGlobalValue(ShoppingFeed::STOCK_SYNC_MAX_PRODUCTS);
         $nb_total_product = $sfModule->countProductsOnFeed();
-        $nb_preloaded_product = (new ShoppingfeedPreloading())->getPreloadingCount();
+        $nb_preloaded_product = (new ShoppingfeedPreloading())->getPreloadingCountForSync($token->id_shoppingfeed_token);
         if ($nb_total_product == $nb_preloaded_product) {
             return true;
         }
@@ -68,12 +67,10 @@ class ShoppingfeedProductSyncPreloadingActions extends DefaultActions
         $db = Db::getInstance(_PS_USE_SQL_SLAVE_);
         $sfp = new ShoppingfeedPreloading();
         foreach($iterations as $iteration) {
-            $sql = $sfModule->sqlProductsOnFeed()
+            $sql = $sfModule->sqlProductsOnFeed($token->id_shop)
                 ->select('ps.id_product')
                 ->limit($limit)
-                ->leftJoin(ShoppingfeedPreloading::$definition['table'], 'sfp', 'sfp.id_product = ps.id_product')
-                ->where(sprintf('(sfp.actions IS NOT NULL AND sfp.actions != "" AND sfp.id_token = %d) OR (sfp.id_token IS NULL)', $token->id_shoppingfeed_token));
-
+                ->where(sprintf('ps.`id_product` NOT IN (SELECT spf.`id_product` FROM `'._DB_PREFIX_.'shoppingfeed_preloading` spf WHERE `id_token` = %d AND (spf.`actions`  IS NULL OR  spf.`actions` = ""))', $token->id_shoppingfeed_token));
             $result = $db->executeS($sql, true, false);
             $ids = '';
             foreach ($result as $key => $row) {
@@ -99,36 +96,31 @@ class ShoppingfeedProductSyncPreloadingActions extends DefaultActions
     {
         if (empty($this->conveyor['product_action'])) {
             ProcessLoggerHandler::logInfo(
-                '[Preloading] ' . $this->l('Product not registered for synchronization; no action found', 'ShoppingfeedProductSyncPreloadingActions'),
-                'Product',
-                $product->id
+                '[Preloading] ' . $this->l('Product not registered for synchronization; no action found', 'ShoppingfeedProductSyncPreloadingActions')
             );
             return false;
         }
         $action = $this->conveyor['product_action'];
         $tokens = (new ShoppingfeedToken())->findAllActive();
         $sfp = new ShoppingfeedPreloading();
+        $sfModule = Module::getInstanceByName('shoppingfeed');
+        $db = Db::getInstance(_PS_USE_SQL_SLAVE_);
+        $sql = $sfModule->sqlProductsOnFeed()
+                ->select('ps.id_product')
+                ->where('ps.id_product in (' . implode(',', $this->conveyor['products_id']) .  ')');
+        $result = $db->executeS($sql, true, false);
+        $productsAvailable = ($result === [])? [] : array_column($result, 'id_product');
 
-        foreach ($this->conveyor['products'] as $product) {
-            if ($product instanceof Product === false) {
-                ProcessLoggerHandler::logInfo(
-                    '[Preloading] ' . $this->l('Product not valid for synchronization', 'ShoppingfeedProductSyncPreloadingActions'),
-                    'Product'
-                );
-
-                continue;
-            }
-            if ((bool)$product->active !== true ||
-                ((bool)Configuration::get(ShoppingFeed::PRODUCT_FEED_SYNC_PACK) !== true && (bool)$product->cache_is_pack === true)) {
-                    foreach ($tokens as $token) {
-                        $sfp->deleteProduct($product->id, $token['id_shoppingfeed_token']);
-                    }
-            } else {
+        foreach ($this->conveyor['products_id'] as $product_id) {
+            if (in_array($product_id, $productsAvailable)) {
                 foreach ($tokens as $token) {
                     $this->conveyor['id_token'] = $token['id_shoppingfeed_token'];
-
-                    $sfp->addAction($product->id, $token['id_shoppingfeed_token'], $action);
+                    $sfp->addAction($product_id, $token['id_shoppingfeed_token'], $action);
                 }
+                continue;
+            }
+            foreach ($tokens as $token) {
+                $sfp->deleteProduct($product_id, $token['id_shoppingfeed_token']);
             }
         }
 

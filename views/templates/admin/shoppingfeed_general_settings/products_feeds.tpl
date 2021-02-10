@@ -46,7 +46,6 @@
             </a>
         </div>
         <div class="col-sm-6 col-lg-4">
-            {assign var="percent_preloading" value=floor((1 - ($count_products - $count_preloading)/$count_products) * 100) }
             <a id="purge-cache" href="#" data-link-purge-cache="{{$link->getAdminLink('AdminShoppingfeedGeneralSettings')}}" id="box-avg-gross-margin" data-toggle="tooltip" class="box-stats label-tooltip {if $percent_preloading < 99}color2{else}color4{/if}" data-original-title="{l s='To avoid live computation of your feed during its call, your product are indexed in a cache system.' mod='shoppingfeed'}">
                 <div class="kpi-content">
                     <i class="icon-beaker"></i>
@@ -58,9 +57,20 @@
         </div>
     </div>
 </div>
-{if $percent_preloading < 99}
+
+{if $count_products == 0}
 <div class="alert alert-danger">
-    <strong>{l s='Your products feed is not totally indexed.' mod='shoppingfeed'}</strong><br>
-    {l s='To indexed missing products, please launch manually or set on your server the following task: "Synchronize products on Shopping Feed" available on' mod='shoppingfeed'} <a href="{$link->getAdminLink('AdminShoppingfeedProcessMonitor', true)}">{l s='"Logs & Crons" pages' mod='shoppingfeed'}</a>.
+    <strong>{l s='The filter applied will not return any product in your feed, please correct your filter.' mod='shoppingfeed'}</strong>
 </div>
+{else if $percent_preloading < 99}
+    {if $hasAFilter}
+        <div class="alert alert-warning">
+            <strong>{l s='Due to the application of a filter, not all products in your catalog are sent to Shopping Feed.' mod='shoppingfeed'}</strong>
+        </div>
+    {else}
+    <div class="alert alert-danger">
+        <strong>{l s='Your products feed is not totally indexed.' mod='shoppingfeed'}</strong><br>
+        {l s='To indexed missing products, please launch manually or set on your server the following task: "Synchronize products on Shopping Feed" available on' mod='shoppingfeed'} <a href="{$link->getAdminLink('AdminShoppingfeedProcessMonitor', true)}">{l s='"Logs & Crons" pages' mod='shoppingfeed'}</a>.
+    </div>
+    {/if}
 {/if}

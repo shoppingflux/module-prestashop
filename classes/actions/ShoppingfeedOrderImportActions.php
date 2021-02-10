@@ -75,7 +75,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         $apiOrder = $this->conveyor['apiOrder'];
         $this->initProcess($apiOrder);
 
-        $this->specificRulesManager = new ShoppingfeedAddon\OrderImport\RulesManager($this->conveyor['id_shop'], $apiOrder);
+        $this->specificRulesManager = new ShoppingfeedAddon\OrderImport\RulesManager($this->getIdShop(), $apiOrder);
 
         // Specific rule : give a chance to tweak general data before using them
         $this->specificRulesManager->applyRules(
@@ -106,12 +106,8 @@ class ShoppingfeedOrderImportActions extends DefaultActions
 
         // Check if order already exists
         if (ShoppingfeedOrder::existsInternalId($apiOrder->getId())) {
-            ProcessLoggerHandler::logInfo(
-                $this->logPrefix .
-                    $this->l('Order not imported; already present.', 'ShoppingfeedOrderImportActions'),
-                'Order'
-            );
-            $this->conveyor['sfOrder'] = ShoppingfeedOrder::getByShoppingfeedInternalId($apiOrder->getId());
+            $this->values['error'] = $this->l('Order not imported; already present.', 'ShoppingfeedOrderImportActions');
+            ProcessLoggerHandler::logError($this->logPrefix . $this->values['error'], 'Order');
             $this->forward('acknowledgeOrder');
 
             return false;
@@ -149,45 +145,42 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             }
             $psProduct = $sfModule->mapPrestashopProduct(
                 $apiProduct->reference,
-                $this->conveyor['id_shop']
+                $this->getIdShop()
             );
 
             // Does the product exist ?
             if (!Validate::isLoadedObject($psProduct)) {
-                ProcessLoggerHandler::logError(
-                    sprintf(
-                        $this->logPrefix .
-                            $this->l('Product reference %s does not match a product.', 'ShoppingfeedOrderImportActions'),
+                $this->values['error'] = sprintf(
+                        $this->l('Product reference %s does not match a product on PrestaShop.', 'ShoppingfeedOrderImportActions'),
                         $apiProduct->reference
-                    ),
-                    'Order'
-                );
+                    );
+                ProcessLoggerHandler::logError($this->logPrefix . $this->values['error'], 'Order');
+                $this->forward('acknowledgeOrder');
+
                 return false;
             }
 
             // Is the product active ?
             if (!$psProduct->active) {
-                ProcessLoggerHandler::logError(
-                    sprintf(
-                        $this->logPrefix .
-                            $this->l('Product %s is inactive.', 'ShoppingfeedOrderImportActions'),
+                $this->values['error'] = sprintf(
+                        $this->l('Product %s on PrestaShop is inactive.', 'ShoppingfeedOrderImportActions'),
                         $psProduct->reference
-                    ),
-                    'Order'
-                );
+                    );
+                ProcessLoggerHandler::logError($this->logPrefix . $this->values['error'], 'Order');
+                $this->forward('acknowledgeOrder');
+
                 return false;
             }
 
             // Can the product be ordered ?
             if (!$psProduct->available_for_order) {
-                ProcessLoggerHandler::logError(
-                    sprintf(
-                        $this->logPrefix .
-                            $this->l('Product %s is not available for order.', 'ShoppingfeedOrderImportActions'),
+                $this->values['error'] = sprintf(
+                        $this->l('Product %s on PrestaShop is not available for order.', 'ShoppingfeedOrderImportActions'),
                         $psProduct->reference
-                    ),
-                    'Order'
-                );
+                    );
+                ProcessLoggerHandler::logError($this->logPrefix . $this->values['error'], 'Order');
+                $this->forward('acknowledgeOrder');
+
                 return false;
             }
 
@@ -230,17 +223,17 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         }
 
         if (!Validate::isLoadedObject($carrier)) {
-            ProcessLoggerHandler::logError(
-                $this->logPrefix .
-                    $this->l('Could not find a valid carrier for order.', 'ShoppingfeedOrderImportActions'),
-                'Order'
-            );
+            $this->values['error'] =
+                $this->l('Could not find a valid carrier for order. Please configure a default carrier on PrestaShop module Shoppingfeed > Parameters > Order feed', 'ShoppingfeedOrderImportActions');
+            ProcessLoggerHandler::logError($this->logPrefix . $this->values['error'], 'Order');
+            $this->forward('acknowledgeOrder');
+
             return false;
         }
 
         $this->conveyor['carrier'] = $carrier;
 
-        ProcessLoggerHandler::logSuccess(
+        ProcessLoggerHandler::logInfo(
             $this->logPrefix .
                 $this->l('Step 1/11 : Carrier retrieved', 'ShoppingfeedOrderImportActions'),
             'Carrier',
@@ -253,7 +246,12 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             $sfCarrier->name_carrier = $apiOrderShipment['carrier'];
             $sfCarrier->id_carrier_reference = $carrier->id;
             $sfCarrier->is_new = true;
-            $sfCarrier->save();
+            try {
+                $sfCarrier->save();
+            } catch (Exception $e) {
+                $errorMessage = $this->l('Could not add a valid carrier on PrestaShop for this order.', 'ShoppingfeedOrderImportActions') . $e->getMessage();
+                ProcessLoggerHandler::logError($this->logPrefix . $errorMessage, 'Order');
+            }
         }
 
         // Specific rules validation
@@ -264,7 +262,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             )
         );
 
-        ProcessLoggerHandler::logSuccess(
+        ProcessLoggerHandler::logInfo(
             $this->logPrefix .
                 $this->l('Step 2/11 : Order verified', 'ShoppingfeedOrderImportActions'),
             'Order'
@@ -276,10 +274,10 @@ class ShoppingfeedOrderImportActions extends DefaultActions
     public function createOrderCart()
     {
         if (empty($this->conveyor['apiOrder'])) {
-            ProcessLoggerHandler::logError(
-                $this->l('No apiOrder found', 'ShoppingfeedOrderImportActions'),
-                'Order'
-            );
+            $this->values['error'] = $this->l('No apiOrder found', 'ShoppingfeedOrderImportActions');
+            ProcessLoggerHandler::logError($this->logPrefix . $this->values['error'], 'Order');
+            $this->forward('acknowledgeOrder');
+
             return false;
         }
         /** @var ShoppingFeed\Sdk\Api\Order\OrderResource $apiOrder */
@@ -309,6 +307,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             $customer->id_default_group = Configuration::get('PS_UNIDENTIFIED_GROUP');
             $customer->email = $customerEmail;
             $customer->newsletter = 0;
+            $customer->id_shop = $this->getIdShop();
 
             // Numbers are forbidden in firstname / lastname
             $customer->lastname = preg_replace('/\-?\d+/', '', $customer->lastname);
@@ -325,7 +324,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
 
             $customer->add();
 
-            ProcessLoggerHandler::logSuccess(
+            ProcessLoggerHandler::logInfo(
                 $this->logPrefix .
                     $this->l('Step 3/11 : Customer created', 'ShoppingfeedOrderImportActions'),
                 'Customer',
@@ -341,7 +340,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 )
             );
 
-            ProcessLoggerHandler::logSuccess(
+            ProcessLoggerHandler::logInfo(
                 $this->logPrefix .
                     $this->l('Step 3/11 : Customer retrieved from billing address', 'ShoppingfeedOrderImportActions'),
                 'Customer',
@@ -389,7 +388,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 ));
             }
 
-            ProcessLoggerHandler::logSuccess(
+            ProcessLoggerHandler::logInfo(
                 $this->logPrefix .
                     $this->l('Step 4/11 : Billing address created / updated', 'ShoppingfeedOrderImportActions'),
                 'Address',
@@ -435,17 +434,17 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 ));
             }
 
-            ProcessLoggerHandler::logSuccess(
+            ProcessLoggerHandler::logInfo(
                 $this->logPrefix .
                     $this->l('Step 5/11 : Shipping address created / updated', 'ShoppingfeedOrderImportActions'),
                 'Address',
                 $shippingAddress->id
             );
         } catch (Exception $ex) {
-            ProcessLoggerHandler::logError(
-                $this->logPrefix . $ex->getMessage(),
-                'Order'
-            );
+            $this->values['error'] = $ex->getMessage();
+            ProcessLoggerHandler::logError($this->logPrefix . $this->values['error'], 'Order');
+            $this->forward('acknowledgeOrder');
+
             return false;
         }
 
@@ -466,7 +465,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             $this->specificRulesManager->applyRules(
                 'checkProductStock',
                 array(
-                    'is_shop' => $this->conveyor['id_shop'],
+                    'is_shop' => $this->getIdShop(),
                     'apiOrder' => $apiOrder,
                     'orderData' => &$this->conveyor['orderData'],
                     'psProduct' => $psProduct,
@@ -478,14 +477,13 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             if ($useAdvancedStock) {
                 // If there's not enough stock to place the order
                 if (!$this->checkAdvancedStockQty($psProduct, $apiProduct->quantity)) {
-                    ProcessLoggerHandler::logError(
-                        sprintf(
-                            $this->logPrefix .
-                                $this->l('Not enough stock for product %s.', 'ShoppingfeedOrderImportActions'),
-                            $apiProduct->reference
-                        ),
-                        'Order'
-                    );
+                    $this->values['error'] = sprintf(
+                                    $this->l('Not enough stock for product %s.', 'ShoppingfeedOrderImportActions'),
+                                    $apiProduct->reference
+                                );
+                    ProcessLoggerHandler::logError($this->logPrefix . $this->values['error'], 'Order');
+                    $this->forward('acknowledgeOrder');
+
                     return false;
                 }
                 continue;
@@ -498,7 +496,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 $currentStock = StockAvailable::getQuantityAvailableByProduct(
                     $psProduct->id,
                     $psProduct->id_product_attribute,
-                    $this->conveyor['id_shop']
+                    $this->getIdShop()
                 );
                 $stockToAdd = (int)$apiProduct->quantity - (int)$currentStock;
                 ProcessLoggerHandler::logInfo(
@@ -516,12 +514,12 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                     $psProduct->id,
                     $psProduct->id_product_attribute,
                     $stockToAdd,
-                    $this->conveyor['id_shop']
+                    $this->getIdShop()
                 );
             }
         }
 
-        ProcessLoggerHandler::logSuccess(
+        ProcessLoggerHandler::logInfo(
             $this->logPrefix .
                 $this->l('Step 6/11 : Products quantities updated / validated.', 'ShoppingfeedOrderImportActions'),
             'Order'
@@ -545,9 +543,11 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         $cart->secure_key = md5(uniqid(rand(), true));
 
         $cart->id_carrier = $this->conveyor['carrier']->id;
+        $cart->id_shop = $this->getIdShop();
+        $cart->delivery_option = json_encode([$cart->id_address_delivery => $cart->id_carrier.',']);
         $cart->add();
 
-        ProcessLoggerHandler::logSuccess(
+        ProcessLoggerHandler::logInfo(
             $this->logPrefix .
                 $this->l('Step 7/11 : Cart created', 'ShoppingfeedOrderImportActions'),
             'Cart',
@@ -565,29 +565,26 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                     $psProduct->id_product_attribute
                 );
             } catch (Exception $e) {
-                ProcessLoggerHandler::logError(
-                    sprintf(
-                        $this->logPrefix .
-                            $this->l('Could not add product %s to cart : %s', 'ShoppingfeedOrderImportActions'),
+                $this->values['error'] = sprintf(
+                        $this->l('Could not add product %s to cart : %s', 'ShoppingfeedOrderImportActions'),
                         $apiProduct->reference,
                         $e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine()
-                    ),
-                    'Product',
-                    $psProduct->id
-                );
+                    );
+                ProcessLoggerHandler::logError($this->logPrefix . $this->values['error'], 'Order');
+                $this->forward('acknowledgeOrder');
+
                 return false;
             }
 
             if ($addToCartResult < 0 || $addToCartResult === false) {
-                ProcessLoggerHandler::logError(
-                    sprintf(
-                        $this->logPrefix .
-                            $this->l('Could not add product %s to cart.', 'ShoppingfeedOrderImportActions'),
-                        $apiProduct->reference
-                    ),
-                    'Product',
-                    $psProduct->id
-                );
+                $this->values['error'] = sprintf(
+                        $this->l('Could not add product %s to cart : %s', 'ShoppingfeedOrderImportActions'),
+                        $apiProduct->reference,
+                        $e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine()
+                    );
+                ProcessLoggerHandler::logError($this->logPrefix . $this->values['error'], 'Order');
+                $this->forward('acknowledgeOrder');
+
                 return false;
             }
         }
@@ -613,7 +610,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             )
         );
 
-        ProcessLoggerHandler::logSuccess(
+        ProcessLoggerHandler::logInfo(
             $this->logPrefix .
                 $this->l('Step 8/11 : Products added to cart.', 'ShoppingfeedOrderImportActions'),
             'Cart',
@@ -686,21 +683,36 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 array(),
                 $cart->id_currency,
                 false,
-                $cart->secure_key
+                $cart->secure_key,
+                new Shop($this->getIdShop())
             );
         } catch (Exception $e) {
+            if (false === is_int($paymentModule->currentOrder) || $paymentModule->currentOrder === 0) {
+                $order = $this->getOrderByCartId((int)$cart->id);
 
-            ProcessLoggerHandler::logError(
-                $this->logPrefix .
-                    $this->l('Step 9/11 : Order not validated.', 'ShoppingfeedOrderImportActions') . ' ' .$e->getMessage(),
-                'Order',
-                $this->conveyor['id_order']
-            );
+                if (Validate::isLoadedObject($order)) {
+                    $paymentModule->currentOrder = $order->id;
+                    $paymentModule->currentOrderReference = $order->reference;
+                }
+            }
 
-            return false;
+            $log = [
+                'Message: ' . $e->getMessage(),
+                'File: ' . $e->getFile(),
+                'Line: ' . $e->getLine(),
+                'Error type: ' . get_class($e)
+            ];
+            $message = implode(';', $log);
+            $this->values['error'] = $this->l('Order not valid on PrestaShop.', 'ShoppingfeedOrderImportActions') . ' ' .$message;
+            ProcessLoggerHandler::logError($this->logPrefix . $this->values['error'], 'Order');
         }
-        $this->conveyor['id_order'] = $paymentModule->currentOrder;
-        $this->conveyor['order_reference'] = $paymentModule->currentOrderReference;
+
+        if ($paymentModule->currentOrder && $paymentModule->currentOrderReference) {
+            $this->conveyor['id_order'] = $paymentModule->currentOrder;
+            $this->conveyor['order_reference'] = $paymentModule->currentOrderReference;
+        } else {
+            return true;
+        }
 
         // Reset customer mail
         $this->conveyor['customer']->email = $customerEmail;
@@ -734,7 +746,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             )
         );
 
-        ProcessLoggerHandler::logSuccess(
+        ProcessLoggerHandler::logInfo(
             $this->logPrefix .
                 $this->l('Step 9/11 : Order validated.', 'ShoppingfeedOrderImportActions'),
             'Order',
@@ -754,51 +766,41 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         $apiOrder = $this->conveyor['apiOrder'];
         $this->initProcess($apiOrder);
 
-        if (empty($this->conveyor['sfOrder'])) {
-            $this->conveyor['sfOrder'] = ShoppingfeedOrder::getByShoppingfeedInternalId($apiOrder->getId());
-        }
-
-        if (empty($this->conveyor['sfOrder'])) {
-            ProcessLoggerHandler::logError(
-                $this->logPrefix .
-                    $this->l('Could not retrieve associated sfOrder', 'ShoppingfeedOrderSyncActions'),
-                'Order',
-                $this->conveyor['sfOrder']->id_order
-            );
-            return true;
-        }
-
         $shoppingfeedApi = ShoppingfeedApi::getInstanceByToken($this->conveyor['id_token']);
         if ($shoppingfeedApi == false) {
             ProcessLoggerHandler::logError(
                 $this->logPrefix .
                     $this->l('Could not retrieve Shopping Feed API.', 'ShoppingfeedOrderSyncActions'),
                 'Order',
-                $this->conveyor['sfOrder']->id_order
+                empty($this->conveyor['sfOrder']) === false ? $this->conveyor['sfOrder']->id_order : ''
             );
             return true;
         }
 
+        $isSucess = array_key_exists('id_order', $this->conveyor);
+
         $result = $shoppingfeedApi->acknowledgeOrder(
-            $this->conveyor['sfOrder']->id_order_marketplace,
-            $this->conveyor['sfOrder']->name_marketplace,
-            $this->conveyor['sfOrder']->id_order
+            $apiOrder->getReference(),
+            $apiOrder->getChannel()->getName(),
+            $isSucess ? $this->conveyor['id_order'] : null,
+            $isSucess,
+            empty($this->values['error']) ? null : $this->values['error']
         );
         if (!$result || !iterator_count($result->getTickets())) {
             ProcessLoggerHandler::logError(
                 $this->logPrefix .
                     $this->l('Failed to acknowledge order on Shoppingfeed API.', 'ShoppingfeedOrderSyncActions'),
                 'Order',
-                $this->conveyor['sfOrder']->id_order
+                empty($this->conveyor['sfOrder']) === false ? $this->conveyor['sfOrder']->id_order : ''
             );
             return true;
         }
 
-        ProcessLoggerHandler::logSuccess(
+        ProcessLoggerHandler::logInfo(
             $this->logPrefix .
                 $this->l('Step 10/11 : Order acknowledged with SF API.', 'ShoppingfeedOrderImportActions'),
             'Order',
-            $this->conveyor['sfOrder']->id_order
+            empty($this->conveyor['sfOrder']) === false ? $this->conveyor['sfOrder']->id_order : ''
         );
 
         return true;
@@ -828,7 +830,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 ->leftJoin('orders', 'o', 'o.id_order = od.id_order')
                 ->leftJoin('order_detail_tax', 'odt', 'odt.id_order_detail = od.id_order_detail')
                 ->leftJoin('tax', 'tax', 'tax.id_tax = odt.id_tax')
-                ->where('o.reference LIKE "' . pSQL($this->conveyor['order_reference']). '"')
+                ->where('o.id_order = ' . (int)$this->conveyor['id_order'])
                 ->where('product_id = ' . (int)$psProduct->id)
             ;
             if ($psProduct->id_product_attribute) {
@@ -983,7 +985,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         $updatePayment = array('amount' => Tools::ps_round($paymentInformation['totalAmount'], 4));
         Db::getInstance()->update('order_payment', $updatePayment, '`order_reference` = "'.pSQL($this->conveyor['order_reference']).'"');
 
-        ProcessLoggerHandler::logSuccess(
+        ProcessLoggerHandler::logInfo(
             $this->logPrefix .
                 $this->l('Step 11/11 : Order prices updated.', 'ShoppingfeedOrderImportActions'),
             'Order',
@@ -1152,5 +1154,30 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         }
 
         return false;
+    }
+
+    /**
+     * @param $idCart int
+     * @return Order
+     */
+    protected function getOrderByCartId($idCart)
+    {
+        if (version_compare(_PS_VERSION_, '1.7.1', '<')) {
+            return new Order(Order::getOrderByCartId((int)$idCart));
+        } else {
+            return new Order(Order::getIdByCartId((int)$idCart));
+        }
+    }
+
+    /**
+     * @return int
+     */
+    protected function getIdShop()
+    {
+        if (isset($this->conveyor['id_shop']) && (int)$this->conveyor['id_shop']) {
+            return (int) $this->conveyor['id_shop'];
+        }
+
+        return (int) Configuration::get('PS_SHOP_DEFAULT');
     }
 }

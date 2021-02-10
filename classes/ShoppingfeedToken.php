@@ -152,6 +152,7 @@ class ShoppingfeedToken extends ObjectModel
         $query = (new DbQuery())
             ->select('*')
             ->from(self::$definition['table'])
+            ->where('active = 1')
         ;
 
         return  Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($query);
@@ -168,10 +169,10 @@ class ShoppingfeedToken extends ObjectModel
         ;
 
         if (version_compare(_PS_VERSION_, '1.7.6.0', '>=')) {
-            $sql->select('sft.id_shoppingfeed_token, sft.content as token, sft.active, s.name as shop_name, l.name as lang_name, cl.name as currency_name')
+            $sql->select('sft.id_shop, sft.id_shoppingfeed_token, sft.content as token, sft.active, s.name as shop_name, l.name as lang_name, cl.name as currency_name')
                 ->innerJoin(\Currency::$definition['table'] . '_lang', 'cl', 'cl.id_currency = sft.id_currency and cl.id_lang = ' . Context::getContext()->language->id);
         } else {
-            $sql->select('sft.id_shoppingfeed_token, sft.content as token, sft.active, s.name as shop_name, l.name as lang_name, c.name as currency_name');
+            $sql->select('sft.id_shop, sft.id_shoppingfeed_token, sft.content as token, sft.active, s.name as shop_name, l.name as lang_name, c.name as currency_name');
         }
 
         return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql) ;

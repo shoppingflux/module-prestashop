@@ -247,6 +247,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
             /** @var $taskOrder ShoppingfeedTaskOrder */
             $logPrefix = self::getLogPrefix($taskOrder->id_order);
             $order = new Order($taskOrder->id_order);
+
             if (!Validate::isLoadedObject($order)) {
                 ProcessLoggerHandler::logError(
                     $logPrefix . ' ' .
@@ -281,58 +282,68 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
                 continue;
             }
 
+            $orderHistory = $order->getHistory($order->id_lang);
             $taskOrderOperation = null;
             $taskOrderPayload = array();
-            if (in_array($order->current_state, $shipped_status)) {
-                $taskOrderOperation = OrderOperation::TYPE_SHIP;
 
-                // Default values...
-                $taskOrderPayload = array(
-                    'carrier_name' => '',
-                    'tracking_number' => '',
-                    'tracking_url' => '',
-                );
+            foreach ($orderHistory as $state) {
+                $idOrderState = (int)$state['id_order_state'];
+                if (in_array($idOrderState, $shipped_status)) {
+                    $taskOrderOperation = OrderOperation::TYPE_SHIP;
 
-                $carrier = new Carrier((int)$order->id_carrier);
-                if (!Validate::isLoadedObject($carrier)) {
-                    ProcessLoggerHandler::logWarning(
-                        $logPrefix . ' ' .
-                            $this->l('Carrier could not be loaded.', 'ShoppingfeedOrderSyncActions'),
-                        'Order',
-                        $taskOrder->id_order
-                    );
-                }
-
-                // We don't support multi-shipping; use the first shipping method
-                $orderShipping = $order->getShipping();
-                if (!empty($orderShipping[0])) {
-                    // From the old module. Not sure if it's all useful, but
-                    // we'll suppose it knows better.
-                    // Build the tracking url.
-                    $orderTrackingUrl = str_replace('http://http://', 'http://', $carrier->url);
-                    $orderTrackingUrl = str_replace('@', $orderShipping[0]['tracking_number'], $orderTrackingUrl);
-
+                    // Default values...
                     $taskOrderPayload = array(
-                        // "state_name" is indeed the carrier's name...
-                        'carrier_name' => $orderShipping[0]['state_name'],
-                        'tracking_number' => $orderShipping[0]['tracking_number'],
-                        'tracking_url' => $orderTrackingUrl,
+                        'carrier_name' => '',
+                        'tracking_number' => '',
+                        'tracking_url' => '',
                     );
-                }
 
-                Hook::exec('actionShoppingfeedTracking', ['order' => $order, 'taskOrderPayload' => &$taskOrderPayload]);
-            } elseif (in_array($order->current_state, $cancelled_status)) {
-                $taskOrderOperation = OrderOperation::TYPE_CANCEL;
-            // The "reason" field is not supported (at least for now)
-            } elseif (in_array($order->current_state, $refunded_status)) {
-                $taskOrderOperation = OrderOperation::TYPE_REFUND;
-            // No partial refund (at least for now), so no optional
-                // parameters to set.
-            } else {
+                    $carrier = new Carrier((int)$order->id_carrier);
+                    if (!Validate::isLoadedObject($carrier)) {
+                        ProcessLoggerHandler::logWarning(
+                            $logPrefix . ' ' .
+                            $this->l('Carrier could not be loaded.', 'ShoppingfeedOrderSyncActions'),
+                            'Order',
+                            $taskOrder->id_order
+                        );
+                    }
+
+                    // We don't support multi-shipping; use the first shipping method
+                    $orderShipping = $order->getShipping();
+                    if (!empty($orderShipping[0])) {
+                        // From the old module. Not sure if it's all useful, but
+                        // we'll suppose it knows better.
+                        // Build the tracking url.
+                        $orderTrackingUrl = str_replace('http://http://', 'http://', $carrier->url);
+                        $orderTrackingUrl = str_replace('@', $orderShipping[0]['tracking_number'], $orderTrackingUrl);
+
+                        $taskOrderPayload = array(
+                            // "state_name" is indeed the carrier's name...
+                            'carrier_name' => $orderShipping[0]['state_name'],
+                            'tracking_number' => $orderShipping[0]['tracking_number'],
+                            'tracking_url' => $orderTrackingUrl,
+                        );
+                    }
+
+                    Hook::exec('actionShoppingfeedTracking', ['order' => $order, 'taskOrderPayload' => &$taskOrderPayload]);
+                    break;
+                } elseif (in_array($idOrderState, $cancelled_status)) {
+                    $taskOrderOperation = OrderOperation::TYPE_CANCEL;
+                    break;
+                    // The "reason" field is not supported (at least for now)
+                } elseif (in_array($idOrderState, $refunded_status)) {
+                    $taskOrderOperation = OrderOperation::TYPE_REFUND;
+                    break;
+                    // No partial refund (at least for now), so no optional
+                    // parameters to set.
+                }
+            }
+
+            if (is_null($taskOrderOperation)) {
                 ProcessLoggerHandler::logInfo(
                     sprintf(
                         $logPrefix . ' ' .
-                            $this->l('No matching operation for Order State %d. Deleting Task Order.', 'ShoppingfeedOrderSyncActions'),
+                        $this->l('No matching operation for Order State %d. Deleting Task Order.', 'ShoppingfeedOrderSyncActions'),
                         $order->current_state
                     ),
                     'Order'
@@ -589,6 +600,14 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
 
         $id_lang = (int)Configuration::get('PS_LANG_DEFAULT', null, null, $id_shop);
 
+        if (false === $this->isEmailTemplateExists('order-sync-errors', $id_lang, $id_shop)) {
+            $id_lang = (int)Language::getIdByIso('en');
+
+            if ($id_lang == false) {
+                return false;
+            }
+        }
+
         // Get order data
         $failedTaskOrdersMailData = array();
         foreach ($failedTaskOrders as $taskOrder) {
@@ -646,30 +665,13 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
      */
     protected function getEmailTemplateContent($template_name, $id_lang, $id_shop, $var)
     {
-        $isoLang = Language::getIsoById($id_lang);
-        $shop = new Shop($id_shop);
-        if (isset($shop->theme)) {
-            // PS17
-            $themeName = $shop->theme->getName();
-        } else {
-            // PS16
-            $themeName = $shop->theme_name;
+        $shop = new Shop((int)$id_shop);
+
+        if (false === Validate::isLoadedObject($shop)) {
+            return '';
         }
 
-        $pathsToCheck = array(
-            _PS_ALL_THEMES_DIR_ . $themeName . '/shoppingfeed/mails/' . $isoLang . '/' . $template_name,
-            _PS_MODULE_DIR_ . 'shoppingfeed/mails/' . $isoLang . '/' . $template_name,
-            _PS_ALL_THEMES_DIR_ . $themeName . '/shoppingfeed/mails/en/' . $template_name,
-            _PS_MODULE_DIR_ . 'shoppingfeed/mails/en/' . $template_name,
-        );
-
-        $templatePath = '';
-        foreach ($pathsToCheck as $path) {
-            if (Tools::file_exists_cache($path)) {
-                $templatePath = $path;
-                break;
-            }
-        }
+        $templatePath = $this->getEmailTemplatePath($template_name, $id_lang, $id_shop);
 
         if (!$templatePath) {
             return '';
@@ -683,6 +685,14 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
         $scope = $context->smarty->createData($context->smarty);
         $scope->assign($var);
 
+        if (isset($shop->theme)) {
+            // PS17
+            $themeName = $shop->theme->getName();
+        } else {
+            // PS16
+            $themeName = $shop->theme_name;
+        }
+
         $templateContent = $context->smarty->createTemplate(
             $templatePath,
             $scope,
@@ -690,5 +700,67 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
         )->fetch();
 
         return $templateContent;
+    }
+
+    /**
+     * @param string $template_name template name with extension
+     * @param int $id_lang
+     * @param int $id_shop
+     *
+     * @return string the template's path
+     */
+    protected function getEmailTemplatePath($template_name, $id_lang, $id_shop)
+    {
+        $templatePath = '';
+        $isoLang = Language::getIsoById($id_lang);
+        $shop = new Shop($id_shop);
+
+        if (false === Validate::isLoadedObject($shop)) {
+            return $templatePath;
+        }
+
+        if (isset($shop->theme)) {
+            // PS17
+            $themeName = $shop->theme->getName();
+        } else {
+            // PS16
+            $themeName = $shop->theme_name;
+        }
+
+        $pathsToCheck = array(
+            _PS_ALL_THEMES_DIR_ . $themeName . '/shoppingfeed/mails/' . $isoLang . '/' . $template_name,
+            _PS_MODULE_DIR_ . 'shoppingfeed/mails/' . $isoLang . '/' . $template_name
+        );
+
+        foreach ($pathsToCheck as $path) {
+            if (Tools::file_exists_cache($path)) {
+                $templatePath = $path;
+                break;
+            }
+        }
+
+        return $templatePath;
+    }
+
+    /**
+     * @param string $template_name template name with extension
+     * @param int $id_lang
+     * @param int $id_shop
+     *
+     * @return bool
+     */
+    protected function isEmailTemplateExists($template_name, $id_lang, $id_shop)
+    {
+        $mailType = Configuration::get('PS_MAIL_TYPE', null, null, $id_shop);
+
+        if (($mailType == Mail::TYPE_BOTH || $mailType == Mail::TYPE_HTML) && empty($this->getEmailTemplatePath($template_name . '.html', $id_lang, $id_shop))) {
+            return false;
+        }
+
+        if (($mailType == Mail::TYPE_BOTH || $mailType == Mail::TYPE_TEXT) && empty($this->getEmailTemplatePath($template_name . '.txt', $id_lang, $id_shop))) {
+            return false;
+        }
+
+        return true;
     }
 }

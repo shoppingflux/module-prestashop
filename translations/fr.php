@@ -163,6 +163,10 @@ $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_294598238a4
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_779542eb20045c3a9c77372de0f1983d'] = 'Choix de la référence';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_e40ba930b9c7e6d656e463b20a47d816'] = 'Doit valoir : valeur par défaut, référence, référence fournisseur, isbn, ean13, upc ou mpn.';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_5c22d5886dd068b2538e59bf291ab2eb'] = 'Vous devez spécifier un \"Nombre de produits maximum\" entre 1 et 200.';
+$_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_8418bb52f108670fbb6e0acc7d439cf7'] = 'Sélection de produits';
+$_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_32c54267ec80754f2746e922ef335d06'] = 'Envoyer les produits en fonction de leur visibilité';
+$_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_d4f89bc1f5b3b949d8c61bb91fcc6d8a'] = "Envoyer vers Shopping Feed les produits ayant une visibilité à 'Nulle part'";
+$_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_0f500d988373a125295a82293de0ff84'] = 'Choisir les produits envoyés à Shopping Feed';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_cfc532694722abc6458eb3c003404a9c'] = 'Configuration des règles d\'import des commandes';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_c9cc8cce247e49bae79f15173ce97354'] = 'Sauvegarder';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_913bbbcc18c73000eebac72686037496'] = 'Nom de la classe';
@@ -303,6 +307,8 @@ $_MODULE['<{shoppingfeed}prestashop>products_feeds_158fb546775e24c1143c4e1e47328
 $_MODULE['<{shoppingfeed}prestashop>products_feeds_79860b827b95a71c16f13b806f9b0566'] = 'Votre flux produits n\'est pas complètement indexé.';
 $_MODULE['<{shoppingfeed}prestashop>products_feeds_cc77b90992a467fd70ccae2cfb2570ee'] = 'Pour indexer les produits manquants, veuillez lancer manuellement ou mettre en place sur votre serveur la tâche suivante : \"Synchronisation des produits sur Shopping Feed\" disponible sur la';
 $_MODULE['<{shoppingfeed}prestashop>products_feeds_d872b8674f58b7aa564aa10aca184902'] = 'page \"Logs & Crons\"';
+$_MODULE['<{shoppingfeed}prestashop>products_feeds_0ba6288ffcf18262940c255410220f67'] = 'Le filtre appliqué ne va renvoyer aucun produit dans votre flux, veuillez corriger votre filtre.';
+$_MODULE['<{shoppingfeed}prestashop>products_feeds_9c34fbb6d8d4de2ca06bf5d7226f64fd'] = "En raison de l'application d'un filtre, tous les produits de votre catalogue ne sont pas envoyés vers Shopping Feed";
 $_MODULE['<{shoppingfeed}prestashop>process_modal_d95e61c3da448145f029fad6bc342c86'] = 'Tâche cron :';
 $_MODULE['<{shoppingfeed}prestashop>process_modal_8524de963f07201e5c086830d370797f'] = 'Chargement en cours...';
 $_MODULE['<{shoppingfeed}prestashop>process_modal_b6216f9b980414b99e33a19aa098a98c'] = 'La tâche est terminée. Veuillez vérifier les journaux pour plus d\'information.';
@@ -313,11 +319,12 @@ $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_a11762ead4c38
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_0de7fd990e38ad9216de83e95f5446ce'] = 'Commande non importée; Déjà importée.';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_2d507cd78ac89b9255ac05fcbb8ed6df'] = 'Aucun items trouvés sur la commande provenant de Shopping feed.';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_d5f89b597bc30691ef3906dd5d18974d'] = 'Alias de la référence %s remplacé par le produit %s.';
-$_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_cc0e748787a09c3020284971905a263d'] = 'La référence %s correspond pas à un produit.';
-$_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_7ad142231cc36dca7679523ce275ec1a'] = 'Le produit %s est désactivé.';
-$_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_f301cdb0c35e45b0f453caa948de6cce'] = 'Le produit %s n\'est pas disponible à la vente.';
-$_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_ea479e017ac6907eef8eb6f4e818a018'] = 'Aucun transporteur trouvé pour cette commande.';
+$_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_e244f28c5fdddd6a75e4b4ee7d5fc6e7'] = 'La référence produit %s ne correspond pas à un produit PrestaShop.';
+$_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_33f4bd7e530895e12ce86d06e23a2dfe'] = 'La référence produit %s n\'est pas active sur PrestaShop.';
+$_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_1d193d7f9d55135cc874cd57eecaa94b'] = 'La référence produit %s n\'est pas disponible à la vente sur PrestaShop.';
+$_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_582eb1e23f1ac722deee9a4acfe02d21'] = 'Transporteur non trouvé ou non valide. Veuillez configurer au moins un transporteur sur votre PrestaShop dans le module  Shoppingfeed > Parametres > Flux des commandes.';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_4a8402cde5f01d66795cb8cc009ef845'] = 'Étape 1/11 : Récupération du transporteur';
+$_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_72a66a238d1ae82da4e757953280c054'] = 'Impossible d\'ajotuer un transporteur valide. ';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_1f4d41966a2505d93fc50f3c1facfaee'] = 'Étape 2/11 : Vérification de la commande';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_64b95d1703f3d38fa3eadbe24c08cc80'] = 'Étape 3/11 : Création du compte client';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_a831361f130025b2329084b147768588'] = 'Étape 3/11 : Récupération du compte client à partir de l\'adresse de facturation';
@@ -329,13 +336,11 @@ $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_b172d20366077
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_81caed7a8943033a921a122eb571df45'] = 'Étape 6/11 : quantités de produit mis à jour / validé.';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_c6013a8a5471bce31e15f4b198ced87f'] = 'Étape 7/11 : Panier créé';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_01f379608bebf5c33ee474dc2f9663da'] = 'Impossible d\'ajouter le produit %s au panier : %s';
-$_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_9949cc379b6f820dc38113dd68712171'] = 'Impossible d\'ajouter le produit %s au panier.';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_5fe7b0ae10b81ba49c3df7182c65b9db'] = 'Étape 8/11 : Produits ajoutés au panier.';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_8ab9c67bbe8e048cd41809e6c686c185'] = 'Le pays %d du contexte courrant est désactivé.';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_48d713671514081ea184aadd6df7f28d'] = 'Contexte pays réglé sur %d';
-$_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_2d7db575b6f9fe4ceb1fc96394e9e91a'] = 'Étape 9/11 : Commande non validée';
+$_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_658d3d759bad7a53489481eaac6db3ee'] = 'Commandes non valdie sur PrestaShop.';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_ee6ee73bed6c5cc16f24191a6bfe61ec'] = 'Étape 9/11 : Commande validée';
-$_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_492d9a9ff3edb3ff62d128759cd7711b'] = 'Impossible de récupérer l\'objet sfOrder.';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_4930df58c29fc86597530234bec3d755'] = 'Impossible d\'accéder à l\'API Shopping feed.';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_520287c7a5a62cb7f57f700310fbda50'] = 'Échec lors de l\'acquittement de la commande sur l\'API Shopping feed';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_edddef134d67a9a3b81190c2980996e3'] = 'Étape 10/11 : Commande acquittée sur l\'API Shopping feed';
@@ -386,3 +391,4 @@ $_MODULE['<{shoppingfeed}prestashop>shoppingfeedordersyncactions_948b31dd0f66b9e
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedordersyncactions_04a31a2d2c31b9392edec8ed801b01e3'] = 'Aucune tâche de traitement des commandes trouvée.';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedordersyncactions_9a1d463e01520f0f748e12d8b8410ce9'] = 'Statut du ticket : %s';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedordersyncactions_ec79d50bff110cff4702118dd52b525f'] = 'Erreurs de synchronisation de Shopping feed';
+$_MODULE['<{shoppingfeed}prestashop>order_status_syncro_bec154cf96926858240b98c628c9949b'] = 'Sélectionnez votre transporteur';

@@ -155,7 +155,7 @@ class ShoppingfeedProduct extends ObjectModel
         if (empty($reference_format) === true) {
             return $sfReference;
         }
-        if (Combination::isFeatureActive() === true) {
+        if (Combination::isFeatureActive() == true) {
             $sql = new DbQuery();
             $sql->select('p.`id_product`, pa.`id_product_attribute`');
             $sql->from('product', 'p');
