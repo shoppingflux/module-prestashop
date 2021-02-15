@@ -579,8 +579,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             if ($addToCartResult < 0 || $addToCartResult === false) {
                 $this->values['error'] = sprintf(
                         $this->l('Could not add product %s to cart : %s', 'ShoppingfeedOrderImportActions'),
-                        $apiProduct->reference,
-                        $e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine()
+                        $apiProduct->reference
                     );
                 ProcessLoggerHandler::logError($this->logPrefix . $this->values['error'], 'Order');
                 $this->forward('acknowledgeOrder');
