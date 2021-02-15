@@ -47,7 +47,7 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
             $this->module->getPathUri() . 'views/css/shoppingfeed_configuration/form.css',
             $this->module->getPathUri() . 'views/css/font-awesome.min.css'
         ));
-        $this->nbr_products = $this->module->countProductsOnFeed();
+        $this->nbr_products = $this->module->countProductsOnFeed($this->context->shop->id);
         $this->addJS($this->module->getPathUri() . 'views/js/form_config.js');
         $this->addJS($this->module->getPathUri() . 'views/js/form_config_filter.js');
         Media::addJsDef(['url_product_selection_form' => $this->context->link->getAdminLink('AdminShoppingfeedGeneralSettings')]);
@@ -81,17 +81,19 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
         $helper->base_tpl = 'products_feeds.tpl';
         $tokens = (new ShoppingfeedToken())->findAllActive();
         $shoppingfeedPreloading = new ShoppingfeedPreloading();
-        $count_preloading = 0;
+        $countPreloading = 0;
+        $countProductInShops = 0;
 
         foreach ($tokens as $token) {
-            $count_preloading += (int)$shoppingfeedPreloading->getPreloadingCount($token['id_shoppingfeed_token']);
+            $countProductInShops += (int)$this->module->countProductsOnFeed((int)$token['id_shop']);
+            $countPreloading += (int)$shoppingfeedPreloading->getPreloadingCountForSync($token['id_shoppingfeed_token']);
         }
 
-        $count_preloading = $count_preloading/count($tokens);
+        $percentPreloading = ($countPreloading / $countProductInShops) * 100;
 
         $this->context->smarty->assign('count_products', $this->nbr_products);
         $this->context->smarty->assign('hasAFilter', $product_filters !== null);
-        $this->context->smarty->assign('count_preloading', $count_preloading);
+        $this->context->smarty->assign('percent_preloading', round($percentPreloading));
 
         $crons = new ShoppingfeedClasslib\Extensions\ProcessMonitor\Classes\ProcessMonitorObjectModel();
         $syncProduct = $crons->findOneByName('shoppingfeed:syncProduct');

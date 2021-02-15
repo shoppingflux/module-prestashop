@@ -45,7 +45,7 @@
                             <option value="features">{l s='Features' mod='shoppingfeed'}</option>
                         </select>
                         <a id="buttonAddProductRuleGroup" class="btn btn-default ">
-                            <i class="icon-plus-sign"></i> Sélection de produit
+                            <i class="icon-plus-sign"></i>{l s='Product selection' d='Admin.Catalog.Feature'}
                         </a>
                     </div>
                 </div>
@@ -112,7 +112,7 @@
         </div>
         <div class="panel-footer">
             <button type="submit" value="1" name="saveFeedFilterConfig" class="btn btn-default pull-right">
-                <i class="process-icon-save"></i>Sauvegarder
+                <i class="process-icon-save"></i>{l s='Save'}
             </button>
         </div>
     </div>
