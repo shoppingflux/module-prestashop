@@ -246,6 +246,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         'actionObjectSpecificPriceAddAfter',
         'actionObjectSpecificPriceUpdateAfter',
         'actionObjectSpecificPriceDeleteAfter',
+        'deleteProductAttribute',
     );
 
     /**
@@ -1211,5 +1212,10 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     public function hookActionObjectSpecificPriceDeleteAfter($params)
     {
         $this->updateShoppingFeedPreloading([$params['object']->id_product], ShoppingfeedPreloading::ACTION_SYNC_PRICE);
+    }
+
+    public function hookDeleteProductAttribute($params)
+    {
+        $this->updateShoppingFeedPreloading([$params['id_product']], ShoppingfeedPreloading::ACTION_SYNC_ALL);
     }
 }
