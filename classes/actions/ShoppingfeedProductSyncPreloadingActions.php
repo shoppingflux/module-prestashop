@@ -96,9 +96,7 @@ class ShoppingfeedProductSyncPreloadingActions extends DefaultActions
     {
         if (empty($this->conveyor['product_action'])) {
             ProcessLoggerHandler::logInfo(
-                '[Preloading] ' . $this->l('Product not registered for synchronization; no action found', 'ShoppingfeedProductSyncPreloadingActions'),
-                'Product',
-                $product->id
+                '[Preloading] ' . $this->l('Product not registered for synchronization; no action found', 'ShoppingfeedProductSyncPreloadingActions')
             );
             return false;
         }
@@ -109,11 +107,11 @@ class ShoppingfeedProductSyncPreloadingActions extends DefaultActions
         $db = Db::getInstance(_PS_USE_SQL_SLAVE_);
         $sql = $sfModule->sqlProductsOnFeed()
                 ->select('ps.id_product')
-                ->where('ps.id_product in (' . implode(',', $this->conveyor['products_ids']) .  ')');
+                ->where('ps.id_product in (' . implode(',', $this->conveyor['products_id']) .  ')');
         $result = $db->executeS($sql, true, false);
         $productsAvailable = ($result === [])? [] : array_column($result, 'id_product');
 
-        foreach ($this->conveyor['products_ids'] as $product_id) {
+        foreach ($this->conveyor['products_id'] as $product_id) {
             if (in_array($product_id, $productsAvailable)) {
                 foreach ($tokens as $token) {
                     $this->conveyor['id_token'] = $token['id_shoppingfeed_token'];

@@ -163,6 +163,10 @@ $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_294598238a4
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_779542eb20045c3a9c77372de0f1983d'] = 'Choix de la référence';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_e40ba930b9c7e6d656e463b20a47d816'] = 'Doit valoir : valeur par défaut, référence, référence fournisseur, isbn, ean13, upc ou mpn.';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_5c22d5886dd068b2538e59bf291ab2eb'] = 'Vous devez spécifier un \"Nombre de produits maximum\" entre 1 et 200.';
+$_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_8418bb52f108670fbb6e0acc7d439cf7'] = 'Sélection de produits';
+$_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_32c54267ec80754f2746e922ef335d06'] = 'Envoyer les produits en fonction de leur visibilité';
+$_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_d4f89bc1f5b3b949d8c61bb91fcc6d8a'] = "Envoyer vers Shopping Feed les produits ayant une visibilité à 'Nulle part'";
+$_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_0f500d988373a125295a82293de0ff84'] = 'Choisir les produits envoyés à Shopping Feed';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_cfc532694722abc6458eb3c003404a9c'] = 'Configuration des règles d\'import des commandes';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_c9cc8cce247e49bae79f15173ce97354'] = 'Sauvegarder';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_913bbbcc18c73000eebac72686037496'] = 'Nom de la classe';
@@ -303,6 +307,8 @@ $_MODULE['<{shoppingfeed}prestashop>products_feeds_158fb546775e24c1143c4e1e47328
 $_MODULE['<{shoppingfeed}prestashop>products_feeds_79860b827b95a71c16f13b806f9b0566'] = 'Votre flux produits n\'est pas complètement indexé.';
 $_MODULE['<{shoppingfeed}prestashop>products_feeds_cc77b90992a467fd70ccae2cfb2570ee'] = 'Pour indexer les produits manquants, veuillez lancer manuellement ou mettre en place sur votre serveur la tâche suivante : \"Synchronisation des produits sur Shopping Feed\" disponible sur la';
 $_MODULE['<{shoppingfeed}prestashop>products_feeds_d872b8674f58b7aa564aa10aca184902'] = 'page \"Logs & Crons\"';
+$_MODULE['<{shoppingfeed}prestashop>products_feeds_0ba6288ffcf18262940c255410220f67'] = 'Le filtre appliqué ne va renvoyer aucun produit dans votre flux, veuillez corriger votre filtre.';
+$_MODULE['<{shoppingfeed}prestashop>products_feeds_9c34fbb6d8d4de2ca06bf5d7226f64fd'] = "En raison de l'application d'un filtre, tous les produits de votre catalogue ne sont pas envoyés vers Shopping Feed";
 $_MODULE['<{shoppingfeed}prestashop>process_modal_d95e61c3da448145f029fad6bc342c86'] = 'Tâche cron :';
 $_MODULE['<{shoppingfeed}prestashop>process_modal_8524de963f07201e5c086830d370797f'] = 'Chargement en cours...';
 $_MODULE['<{shoppingfeed}prestashop>process_modal_b6216f9b980414b99e33a19aa098a98c'] = 'La tâche est terminée. Veuillez vérifier les journaux pour plus d\'information.';
