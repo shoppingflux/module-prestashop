@@ -293,7 +293,7 @@ class ShoppingfeedSyncOrderModuleFrontController extends CronController
                     $this->processMonitor->getProcessObjectModelName(),
                     $this->processMonitor->getProcessObjectModelId()
                 );
-                return true;
+                continue;
             }
 
             Registry::set('errors', 0);
