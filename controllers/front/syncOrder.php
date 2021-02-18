@@ -235,7 +235,7 @@ class ShoppingfeedSyncOrderModuleFrontController extends CronController
             // Delete all processed task orders
             $processedTaskOrders = array_merge(
                 $successfulTicketsStatusTaskOrders,
-                $failedTaskOrders
+                $failedTicketsStatusTaskOrders
             );
             foreach ($processedTaskOrders as $taskOrder) {
                 $taskOrder->delete();
