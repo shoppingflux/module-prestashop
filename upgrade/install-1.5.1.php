@@ -24,12 +24,26 @@
 
 use ShoppingfeedClasslib\Install\Installer;
 
+require_once '../classes/ShoppingfeedOrder.php';
+
 function upgrade_module_1_5_1($module)
 {
     $installer = new Installer();
     $installer->setModule($module);
 
     $installer->reset($module);
+
+    $isIdTokenExiste = 0 < (int)DB::getInstance()->getValue('SELECT count(*) 
+	    FROM INFORMATION_SCHEMA.COLUMNS
+		WHERE `TABLE_NAME` = "' . _DB_PREFIX_ . ShoppingfeedOrder::$definition['table'] . '"
+		AND `TABLE_SCHEMA` = "' . _DB_NAME_ . '"
+		AND `COLUMN_NAME` = "id_shoppingfeed_token"');
+
+    if ($isIdTokenExiste === false) {
+        $sql = 'ALTER TABLE ' . _DB_PREFIX_ . ShoppingfeedOrder::$definition['table'] . '
+            ADD COLUMN `id_shoppingfeed_token` INT NOT NULL;';
+        Db::getInstance()->execute($sql);
+    }
 
     return true;
 }
