@@ -191,11 +191,13 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
         $query = new DbQuery();
         $query->select('*')
             ->from('shoppingfeed_task_order', 'sto')
+            ->leftJoin('shoppingfeed_order', 'so', 'so.id_order = sto.id_order')
             ->innerJoin('orders', 'o', 'o.id_order = sto.id_order')
             ->where('action = "' . pSQL($action) . '"')
             ->where('update_at IS NOT NULL')
             ->where('update_at <= "' . pSQL(date('Y-m-d H:i:s')) . '"')
             ->where('id_shop = ' . (int) $id_shop)
+            ->where('so.id_shoppingfeed_token IS NULL OR so.id_shoppingfeed_token = ' . (int)$this->conveyor['id_token'])
             ->orderBy('sto.date_upd ASC')
             ->limit((int)Configuration::get(ShoppingFeed::ORDER_STATUS_MAX_ORDERS, null, null, $id_shop));
         $taskOrdersData = DB::getInstance()->executeS($query);
