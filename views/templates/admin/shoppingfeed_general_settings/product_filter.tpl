@@ -25,24 +25,24 @@
     <input type="hidden" name="submitAddconfiguration" value="1">
     <div class="panel">
         <div class="panel-heading">
-            <i class="icon-cog"></i> {l s='Product selection' d='Admin.Catalog.Feature'}
+            <i class="icon-cog"></i> {l s='Products selection' mod='shoppingfeed'}
         </div>
         <div class="form-wrapper">
             <div class="shoppingfeed_form-section">
-                <h2>{l s='Choose the products send to Shopping Feed'}</h2>
+                <h2>{l s='Choose the products send to Shopping Feed' mod='shoppingfeed'}</h2>
                 <div class="form-group">
                     <label class="control-label col-lg-3">
-                        {l s='Add a rule concerning'}
+                        {l s='Add a rule concerning' mod='shoppingfeed'}
                     </label>
                     <div class="col-lg-9">
                         <select class="fixed-width-xl" id="product_rule_type">
-                            <option value="">{l s='-- Choose --'}</option>
-                            <option value="products">{l s='Products'}</option>
-                            <option value="attributes">{l s='Attributes'}</option>
-                            <option value="categories">{l s='Categories'}</option>
-                            <option value="manufacturers">{l s='Manufacturers'}</option>
-                            <option value="suppliers">{l s='Suppliers'}</option>
-                            <option value="features">{l s='Features'}</option>
+                            <option value="">{l s='-- Choose --' mod='shoppingfeed'}</option>
+                            <option value="products">{l s='Products' mod='shoppingfeed'}</option>
+                            <option value="attributes">{l s='Attributes' mod='shoppingfeed'}</option>
+                            <option value="categories">{l s='Categories' mod='shoppingfeed'}</option>
+                            <option value="manufacturers">{l s='Manufacturers' mod='shoppingfeed'}</option>
+                            <option value="suppliers">{l s='Suppliers' mod='shoppingfeed'}</option>
+                            <option value="features">{l s='Features' mod='shoppingfeed'}</option>
                         </select>
                         <a id="buttonAddProductRuleGroup" class="btn btn-default ">
                             <i class="icon-plus-sign"></i>{l s='Product selection' d='Admin.Catalog.Feature'}
@@ -59,17 +59,17 @@
                                 <tr data-type="{$type}">
                                     <td class="type">
                                         {if $type === 'products'}
-                                            {l s='Products'}
+                                            {l s='Products' mod='shoppingfeed'}
                                         {elseif $type === 'attributes'}
-                                            {l s='Attributes'}
+                                            {l s='Attributes' mod='shoppingfeed'}
                                         {elseif $type === 'categories'}
-                                            {l s='Categories'}
+                                            {l s='Categories' mod='shoppingfeed'}
                                         {elseif $type === 'manufacturers'}
-                                            {l s='Manufacturers'}
+                                            {l s='Manufacturers' mod='shoppingfeed'}
                                         {elseif $type === 'suppliers'}
-                                            {l s='Suppliers'}
+                                            {l s='Suppliers' mod='shoppingfeed'}
                                         {elseif $type === 'features'}
-                                            {l s='Features'}
+                                            {l s='Features' mod='shoppingfeed'}
                                         {/if}
                                     </td>
                                     <td class="product_filter">
@@ -94,16 +94,16 @@
                 </div>
             </div>
             <div class="shoppingfeed_form-section">
-                <h2>{l s='Send products depending to their visibility'}</h2>
+                <h2>{l s='Send products depending to their visibility' mod='shoppingfeed'}</h2>
                 <div class="form-group form-check">
                     <label class="control-label col-lg-3">
-                        {l s="Send to Shopping Feed products with visibility 'Nowhere'"}
+                        {l s="Send to Shopping Feed products with visibility 'Nowhere'" mod='shoppingfeed'}
                     </label>
                     <div class="col-lg-9">
                         <div class="checkbox">
                             <label for="product_visibility_nowhere">
                                 <input type="checkbox" name="product_visibility_nowhere" id="product_visibility_nowhere" value="1" {if $product_visibility_nowhere}checked="checked" {/if}>
-                            
+
                             </label>
                         </div>
                     </div>

@@ -5,7 +5,7 @@
     <property name="src-dir" value="${basedir}" />
     <property name="TARGETNAME" value="shoppingfeed" />
     <property name="TARGETBRANCH" value="${env.GIT_BRANCH}" />
-    <property name="TARGETVERSION" value="1.5.0" />
+    <property name="TARGETVERSION" value="1.5.1" />
 
     <target name="build" depends="build-common,package-zip,psvalidator,tot-testing" />
 
@@ -25,7 +25,7 @@
 
     <target name="psvalidator" description="Send Prestashop Validator">
         <echo>Send Prestashop Validator</echo>
-        <exec executable="php" failonerror="true">
+        <exec executable="php" failonerror="false">
             <arg value="${env.TOTBUILDER_PATH}console"/>
             <arg value="psvalidator:validate"/>
             <arg value="${env.WORKSPACE}/202/build/packages/v${TARGETVERSION}-prod-${TARGETNAME}.zip"/>

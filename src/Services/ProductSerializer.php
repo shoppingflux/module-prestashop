@@ -361,7 +361,7 @@ class ProductSerializer
             $combinations[$combinaison['id_product_attribute']]['ean13'] = $combinaison['ean13'];
             $combinations[$combinaison['id_product_attribute']]['upc'] = $combinaison['upc'];
             $combinations[$combinaison['id_product_attribute']]['quantity'] = $combinaison['quantity'];
-            $combinations[$combinaison['id_product_attribute']]['weight'] = $combinaison['weight'] + $this->product->weight;
+            $combinations[$combinaison['id_product_attribute']]['weight'] = $combinaison['weight'];
             $combinations[$combinaison['id_product_attribute']]['reference'] = $combinaison['reference'];
             $combinations[$combinaison['id_product_attribute']]['wholesale_price'] = $combinaison['wholesale_price'];
         }
@@ -390,8 +390,10 @@ class ProductSerializer
             if (empty($combination['upc']) === false) {
                 $variation['attributes']['upc'] = $combination['upc'];
             }
-            if (empty($combination['weight']) === false && $combination['wholesale_price'] != 0) {
+            if (empty($combination['weight']) === false && $combination['weight'] != 0) {
                 $variation['attributes']['weight'] = $combination['weight'];
+                $variation['attributes']['weight'] = (float)$this->product->weight + (float)$combination['weight'];
+
             }
             if (empty($combination['wholesale_price']) === false && $combination['wholesale_price'] != 0) {
                 $variation['attributes']['wholesale_price'] = $combination['wholesale_price'];
