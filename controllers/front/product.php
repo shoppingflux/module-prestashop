@@ -217,5 +217,7 @@ class ShoppingfeedProductModuleFrontController  extends \ModuleFrontController
 
             return (float)$specificPrice['discount'];
         }
+
+        return 0;
     }
 }
