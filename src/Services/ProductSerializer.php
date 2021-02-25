@@ -37,6 +37,7 @@ use DateTime;
 use ProductCore;
 use Shoppingfeed;
 use StockAvailable;
+use SpecificPriceFormatter;
 
 class ProductSerializer
 {
@@ -139,6 +140,8 @@ class ProductSerializer
         $priceWithReduction = $this->sfModule->mapProductPrice($sfp, $this->configurations['PS_SHOP_DEFAULT'], ['price_with_reduction' => true]);
         $contentUpdate['price'] = $priceWithoutReduction;
         $contentUpdate['discounts'] = $this->getDiscounts();
+        $contentUpdate['specificPrices'] = $this->getSpecificPrices();
+
         if ($priceWithoutReduction > $priceWithReduction) {
             $contentUpdate['discounts'][] = $priceWithReduction;
         }
@@ -381,7 +384,8 @@ class ProductSerializer
                     'amount' => $this->_getShipping($carrier, $priceWithReduction, $combination['weight']),
                     'label' => $carrier->delay[$this->id_lang],
                 ],
-                'discounts' => []
+                'discounts' => [],
+                'specificPrices' => $this->getSpecificPrices((int)$id)
             ];
 
             if (empty($combination['ean13']) === false) {
@@ -595,5 +599,54 @@ class ProductSerializer
         $ret = array_reverse($ret);
 
         return $ret;
+    }
+
+    /**
+     * @param int $idProductAttribute
+     *
+     * @return array
+     */
+    protected function getSpecificPrices($idProductAttribute = null)
+    {
+        $return = [];
+
+        if (Validate::isLoadedObject($this->product) === false) {
+            return $return;
+        }
+
+        $specificPrices = SpecificPrice::getByProductId($this->product->id, $idProductAttribute);
+
+        if (empty($specificPrices)) {
+            return $return;
+        }
+
+        foreach ($specificPrices as $specificPrice) {
+            $formatter = new SpecificPriceFormatter(
+                $specificPrice,
+                true,
+                Context::getContext()->currency,
+                true
+            );
+
+            $productPriceWithoutReduction = $this->product->getPrice(
+                true,
+                $idProductAttribute,
+                6,
+                null,
+                false,
+                false
+            );
+
+            $data = $formatter->formatSpecificPrice(
+                $productPriceWithoutReduction,
+                $this->product->tax_rate,
+                $this->product->ecotax
+            );
+
+            $data['discount'] = $productPriceWithoutReduction - (float)$data['real_value'];
+            $return[] = $data;
+        }
+
+        return $return;
     }
 }

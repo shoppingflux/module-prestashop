@@ -96,9 +96,15 @@ class ShoppingfeedProductModuleFrontController  extends \ModuleFrontController
         if (empty($item['category']) !== true) {
             $product->setCategory($item['category']['name'], $item['category']['link']);
         }
-        foreach ($item['discounts'] as $discount) {
-            $product->addDiscount($discount);
+
+        if (false === empty($item['specificPrices'])) {
+            $discount = $this->calculDiscount($item['specificPrices']);
+
+            if ($discount > 0) {
+                $product->addDiscount($discount);
+            }
         }
+
         if (empty($item['images']) !== true && empty($item['images']['main']) !== true) {
             $product->setMainImage($item['images']['main']);
             $product->setAdditionalImages($item['images']['additional']);
@@ -168,5 +174,48 @@ class ShoppingfeedProductModuleFrontController  extends \ModuleFrontController
         );
 
         return true;
+    }
+
+    /**
+     * @param array $specificPrices
+     * @return float
+     */
+    protected function calculDiscount($specificPrices)
+    {
+        if (false === is_iterable($specificPrices)) {
+            return 0;
+        }
+
+        foreach ($specificPrices as $specificPrice) {
+            if (false === isset($specificPrice['from'])) {
+                continue;
+            }
+
+            if (false === isset($specificPrice['to'])) {
+                continue;
+            }
+
+            if (false === isset($specificPrice['discount'])) {
+                continue;
+            }
+
+            $from = DateTime::createFromFormat('Y-m-d H:i:s', $specificPrice['from']);
+            $to = DateTime::createFromFormat('Y-m-d H:i:s', $specificPrice['to']);
+            $now = new DateTime();
+
+            if (!$from || !$to || !$now) {
+                continue;
+            }
+
+            if ($to->diff($now)->invert === 0) {
+                continue;
+            }
+
+            if ($from->diff($now)->invert === 1) {
+                continue;
+            }
+
+            return (float)$specificPrice['discount'];
+        }
     }
 }
