@@ -24,7 +24,7 @@
 
 use ShoppingfeedClasslib\Install\Installer;
 
-require_once '../classes/ShoppingfeedOrder.php';
+require_once _PS_MODULE_DIR_ .'shoppingfeed/classes/ShoppingfeedOrder.php';
 
 function upgrade_module_1_5_1($module)
 {
