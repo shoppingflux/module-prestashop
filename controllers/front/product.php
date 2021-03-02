@@ -97,6 +97,7 @@ class ShoppingfeedProductModuleFrontController  extends \ModuleFrontController
             $product->setCategory($item['category']['name'], $item['category']['link']);
         }
 
+        
         if (false === empty($item['specificPrices'])) {
             $discount = $this->calculDiscount($item['specificPrices']);
 

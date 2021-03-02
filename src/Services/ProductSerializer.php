@@ -646,7 +646,7 @@ class ProductSerializer
                 $this->product->ecotax
             );
 
-            $data['discount'] = str_replace([',', ' '], ['.', ''], $data['discount']);
+            $data['discount'] = preg_replace(['/[^0-9, \., \,]/', '/,/'], ['', '.'], $data['discount']);
             $data['discount'] = floatval($data['discount']);
             $return[] = $data;
         }
