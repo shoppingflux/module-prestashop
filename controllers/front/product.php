@@ -202,16 +202,17 @@ class ShoppingfeedProductModuleFrontController  extends \ModuleFrontController
             $from = DateTime::createFromFormat('Y-m-d H:i:s', $specificPrice['from']);
             $to = DateTime::createFromFormat('Y-m-d H:i:s', $specificPrice['to']);
             $now = new DateTime();
+            $isUnlimited = $specificPrice['from'] == '0000-00-00 00:00:00' && $specificPrice['to'] == '0000-00-00 00:00:00';
 
             if (!$from || !$to || !$now) {
                 continue;
             }
 
-            if ($to->diff($now)->invert === 0) {
+            if ($to->diff($now)->invert === 0 && $isUnlimited === false) {
                 continue;
             }
 
-            if ($from->diff($now)->invert === 1) {
+            if ($from->diff($now)->invert === 1 && $isUnlimited === false) {
                 continue;
             }
 

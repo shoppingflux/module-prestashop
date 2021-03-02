@@ -37,7 +37,10 @@ use DateTime;
 use ProductCore;
 use Shoppingfeed;
 use StockAvailable;
-use SpecificPriceFormatter;
+
+if (version_compare(_PS_VERSION_, '1.7.7', '<')) {
+    require_once _PS_MODULE_DIR_ . 'shoppingfeed/classes/Compatibility/SpecificPriceFormatter.php';
+}
 
 class ProductSerializer
 {
@@ -621,7 +624,7 @@ class ProductSerializer
         }
 
         foreach ($specificPrices as $specificPrice) {
-            $formatter = new SpecificPriceFormatter(
+            $formatter = new \SpecificPriceFormatter(
                 $specificPrice,
                 true,
                 Context::getContext()->currency,
@@ -643,7 +646,8 @@ class ProductSerializer
                 $this->product->ecotax
             );
 
-            $data['discount'] = $productPriceWithoutReduction - (float)$data['real_value'];
+            $data['discount'] = str_replace([',', ' '], ['.', ''], $data['discount']);
+            $data['discount'] = floatval($data['discount']);
             $return[] = $data;
         }
 
