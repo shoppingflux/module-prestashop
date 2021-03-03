@@ -97,7 +97,7 @@ class ShoppingfeedProductModuleFrontController  extends \ModuleFrontController
             $product->setCategory($item['category']['name'], $item['category']['link']);
         }
 
-        
+
         if (false === empty($item['specificPrices'])) {
             $discount = $this->calculDiscount($item['specificPrices']);
 
@@ -133,9 +133,11 @@ class ShoppingfeedProductModuleFrontController  extends \ModuleFrontController
                 $variationProduct->setAdditionalImages($variation['images']);
             }
 
-            if (isset($variation['discounts']) && false === empty($variation['discounts'])) {
-                foreach ($variation['discounts'] as $discount) {
-                    $variationProduct->addDiscount($discount);
+            if (isset($variation['specificPrices']) && false === empty($variation['specificPrices'])) {
+                $discount = $this->calculDiscount($variation['specificPrices']);
+
+                if ($discount > 0) {
+                    $product->addDiscount($discount);
                 }
             }
         }
