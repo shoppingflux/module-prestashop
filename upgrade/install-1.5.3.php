@@ -44,7 +44,7 @@ function upgrade_module_1_5_3($module)
             ->leftJoin('specific_price', 'sp', 'sfp.id_product=sp.id_product')
             ->where('sp.id_specific_price IS NOT NULL')
             ->where('sfp.id_token=' . (int)$token['id_shoppingfeed_token'])
-            ->select('sfp.*');
+            ->select('DISTINCT(sfp.id_product)');
 
         try {
             $products = Db::getInstance()->executeS($query);
@@ -66,27 +66,33 @@ function upgrade_module_1_5_3($module)
             continue;
         }
 
-        foreach ($products as $product) {
-            try {
-                $ids[] = $product['id_product'];
-                $sfp->saveProduct($product['id_product'], $product['id_token'], $token['id_lang'], $token['id_shop']);
-            } catch (Exception $e) {
-                ProcessLoggerHandler::logError(
-                    sprintf(
-                        'Error while update a preloading product. Product ID: %d. Message: %s. File: %s. Line: %d',
-                        (int)$product['id_product'],
-                        $e->getMessage(),
-                        $e->getFile(),
-                        $e->getLine()
-                    ),
-                    null,
-                    null
-                );
-            }
+        $ids = array_map(
+            function($product) {
+                return $product['id_product'];
+            },
+            $products
+        );
+
+        try {
+            Db::getInstance()->delete(
+                ShoppingfeedPreloading::$definition['table'],
+                sprintf('id_product IN (%s)', implode(',', $ids))
+            );
+        } catch (Exception $e) {
+            ProcessLoggerHandler::logError(
+                sprintf(
+                    'Error while delete the preloading products. Message: %s. File: %s. Line: %d',
+                    $e->getMessage(),
+                    $e->getFile(),
+                    $e->getLine()
+                ),
+                null,
+                null
+            );
         }
 
         ProcessLoggerHandler::logInfo(
-            sprintf('products updated: %s', implode(',', $ids)),
+            sprintf('Preloading products deleted: %s', implode(',', $ids)),
             null,
             null
         );
