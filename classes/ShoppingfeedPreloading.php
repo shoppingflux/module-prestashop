@@ -148,6 +148,9 @@ class ShoppingfeedPreloading extends ObjectModel
                             break;
                     }
                 }
+            } else {
+                $this->hydrate($shoppingfeedPreloading);
+                $this->content = Tools::jsonEncode($productSerialize->serialize(), JSON_UNESCAPED_UNICODE);
             }
         }
         $this->actions = null;
@@ -215,13 +218,14 @@ class ShoppingfeedPreloading extends ObjectModel
         return $result;
     }
 
-    public function getPreloadingCountForSync($id_token)
+    public function getPreloadingCountForSync($id_shop)
     {
         $sql = new DbQuery();
         $sql->select('COUNT('.self::$definition['primary'].')')
-            ->from(self::$definition['table'])
-            ->where('actions IS NULL OR actions = ""')
-            ->where('id_token = ' . (int)$id_token);
+            ->from(self::$definition['table'], 'sfp')
+            ->innerJoin(Product::$definition['table'] . '_shop', 'ps', 'sfp.id_product = ps.id_product')
+            ->where('(actions IS NULL OR actions = "") and (sfp.date_upd >= ps.date_upd)')
+            ->where('id_shop = ' . (int)$id_shop);
 
         $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
 

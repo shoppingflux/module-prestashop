@@ -646,31 +646,30 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
      * products in order to manage indexation.
      * @return integer
      */
-    public function countProductsOnFeed($id_shop = null)
+    public function countProductsOnFeed($id_shop)
     {
-        $sql = $this->sqlProductsOnFeed($id_shop);
-        $sql->select('COUNT(p.`id_product`)');
+        $sql = $this->sqlProductsOnFeed();
+        $sql->select('COUNT(p.`id_product`)')
+            ->where('ps.id_shop = ' . (int)$id_shop);
         $countProductsOnFeed = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
 
         return $countProductsOnFeed;
     }
 
+
     /**
      * Returns the
      * @return DbQuery
      */
-    public function sqlProductsOnFeed($id_shop = null)
+    public function sqlProductsOnFeed()
     {
         $sql = new DbQuery();
         $sql->from(Product::$definition['table'] . '_shop', 'ps')
-            ->leftJoin(Product::$definition['table'], 'p', 'p.id_product = ps.id_product')
+            ->innerJoin(Product::$definition['table'], 'p', 'p.id_product = ps.id_product')
+            ->leftJoin(ShoppingfeedPreloading::$definition['table'], 'sfp', 'sfp.id_product = ps.id_product')
             ->where('ps.active = 1')
             ->where('ps.available_for_order = 1');
-
-        if ($id_shop === null) {
-            $id_shop = (int)Configuration::get('PS_SHOP_DEFAULT');
-        }
-        $sql->where('ps.id_shop = ' . (int)$id_shop);
+   
         $product_feed_rule_filters = Configuration::getGlobalValue(Shoppingfeed::PRODUCT_FEED_RULE_FILTERS);
         $product_visibility_nowhere = (bool)Configuration::getGlobalValue(Shoppingfeed::PRODUCT_VISIBILTY_NOWHERE);
         $product_filters = Tools::jsonDecode($product_feed_rule_filters, true);
