@@ -32,6 +32,8 @@ use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 
 class ShoppingfeedProductModuleFrontController  extends \ModuleFrontController
 {
+    protected $sfToken = null;
+
     public function initContent()
     {
         $token = Tools::getValue('token');
@@ -44,6 +46,8 @@ class ShoppingfeedProductModuleFrontController  extends \ModuleFrontController
         if ($token === false) {
             die();
         }
+
+        $this->sfToken = $token;
         $fileXml = sprintf('file-%d.xml', $token['id_shoppingfeed_token']);
         ProcessLoggerHandler::logInfo(sprintf('Generate file %s for token %s:.', $fileXml, $token['content']), null, null, 'ShoppingfeedProductModuleFrontController');
         ProcessLoggerHandler::closeLogger();
@@ -137,7 +141,7 @@ class ShoppingfeedProductModuleFrontController  extends \ModuleFrontController
                 $discount = $this->calculDiscount($variation['specificPrices']);
 
                 if ($discount > 0) {
-                    $product->addDiscount($discount);
+                    $variationProduct->addDiscount($discount);
                 }
             }
         }
@@ -189,6 +193,10 @@ class ShoppingfeedProductModuleFrontController  extends \ModuleFrontController
             return 0;
         }
 
+        if (is_null($this->sfToken)) {
+            return 0;
+        }
+
         foreach ($specificPrices as $specificPrice) {
             if (false === isset($specificPrice['from'])) {
                 continue;
@@ -199,6 +207,26 @@ class ShoppingfeedProductModuleFrontController  extends \ModuleFrontController
             }
 
             if (false === isset($specificPrice['discount'])) {
+                continue;
+            }
+
+            if (false === isset($specificPrice['id_shop']) || $specificPrice['id_shop'] != $this->sfToken['id_shop']) {
+                continue;
+            }
+
+            if (false === isset($specificPrice['id_currency']) || $specificPrice['id_currency'] != $this->sfToken['id_currency']) {
+                continue;
+            }
+
+            if (false === isset($specificPrice['id_group']) || (int)$specificPrice['id_group'] !== 0) {
+                continue;
+            }
+
+            if (false === isset($specificPrice['id_customer']) || (int)$specificPrice['id_customer'] !== 0) {
+                continue;
+            }
+
+            if (false === isset($specificPrice['id_country']) || (int)$specificPrice['id_country'] !== 0) {
                 continue;
             }
 
