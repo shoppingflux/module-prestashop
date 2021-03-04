@@ -230,6 +230,10 @@ class ShoppingfeedProductModuleFrontController  extends \ModuleFrontController
                 continue;
             }
 
+            if (false === isset($specificPrice['from_quantity']) || (int)$specificPrice['from_quantity'] !== 1) {
+                continue;
+            }
+
             $from = DateTime::createFromFormat('Y-m-d H:i:s', $specificPrice['from']);
             $to = DateTime::createFromFormat('Y-m-d H:i:s', $specificPrice['to']);
             $now = new DateTime();
