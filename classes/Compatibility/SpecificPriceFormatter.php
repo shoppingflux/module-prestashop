@@ -52,7 +52,7 @@ class SpecificPriceFormatter
      * @param bool $isTaxIncluded
      * @param Context $context
      */
-    public function __construct(array $specificPrice, bool $isTaxIncluded, Currency $currency, bool $displayDiscountPrice)
+    public function __construct($specificPrice, $isTaxIncluded, Currency $currency, $displayDiscountPrice)
     {
         $this->specificPrice = $specificPrice;
         $this->isTaxIncluded = $isTaxIncluded;
