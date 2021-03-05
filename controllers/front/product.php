@@ -189,7 +189,7 @@ class ShoppingfeedProductModuleFrontController  extends \ModuleFrontController
      */
     protected function calculDiscount($specificPrices)
     {
-        if (false === is_iterable($specificPrices)) {
+        if (false === is_array($specificPrices)) {
             return 0;
         }
 
