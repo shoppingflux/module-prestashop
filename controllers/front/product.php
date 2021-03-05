@@ -210,7 +210,7 @@ class ShoppingfeedProductModuleFrontController  extends \ModuleFrontController
                 continue;
             }
 
-            if (false === isset($specificPrice['id_shop']) || $specificPrice['id_shop'] != $this->sfToken['id_shop']) {
+            if (false === isset($specificPrice['id_shop']) || ((int)$specificPrice['id_shop'] !== 0 && $specificPrice['id_shop'] != $this->sfToken['id_shop'])) {
                 continue;
             }
 
