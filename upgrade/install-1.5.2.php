@@ -26,13 +26,8 @@ use ShoppingfeedClasslib\Install\Installer;
 
 require_once _PS_MODULE_DIR_ .'shoppingfeed/classes/ShoppingfeedOrder.php';
 
-function upgrade_module_1_5_1($module)
+function upgrade_module_1_5_2($module)
 {
-    $installer = new Installer();
-    $installer->setModule($module);
-
-    $installer->reset($module);
-
     $isIdTokenExiste = 0 < (int)DB::getInstance()->getValue('SELECT count(*) 
 	    FROM INFORMATION_SCHEMA.COLUMNS
 		WHERE `TABLE_NAME` = "' . _DB_PREFIX_ . ShoppingfeedOrder::$definition['table'] . '"
