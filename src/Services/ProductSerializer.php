@@ -38,6 +38,10 @@ use ProductCore;
 use Shoppingfeed;
 use StockAvailable;
 
+if (version_compare(_PS_VERSION_, '1.7.7', '<')) {
+    require_once _PS_MODULE_DIR_ . 'shoppingfeed/classes/Compatibility/SpecificPriceFormatter.php';
+}
+
 class ProductSerializer
 {
     private $product;
@@ -138,10 +142,22 @@ class ProductSerializer
         $priceWithoutReduction = $this->sfModule->mapProductPrice($sfp, $this->configurations['PS_SHOP_DEFAULT']);
         $priceWithReduction = $this->sfModule->mapProductPrice($sfp, $this->configurations['PS_SHOP_DEFAULT'], ['price_with_reduction' => true]);
         $contentUpdate['price'] = $priceWithoutReduction;
-        $contentUpdate['discounts'] = $this->getDiscounts();
-        if ($priceWithoutReduction > $priceWithReduction) {
-            $contentUpdate['discounts'][] = $priceWithReduction;
+        $contentUpdate['specificPrices'] = $this->getSpecificPrices();
+
+        if (isset($contentUpdate['variations']) && false === empty($contentUpdate['variations'])) {
+            foreach ($contentUpdate['variations'] as $idProductAttribute => $variation) {
+                $sfp->id_product_attribute = (int)$idProductAttribute;
+                $variationPrice = $this->sfModule->mapProductPrice($sfp, $this->configurations['PS_SHOP_DEFAULT']);
+                $contentUpdate['variations'][$idProductAttribute]['price'] = $variationPrice;
+                $contentUpdate['variations'][$idProductAttribute]['specificPrices'] = $this->getSpecificPrices((int)$idProductAttribute);
+
+                if (isset($contentUpdate['variations'][$idProductAttribute]['shipping'])) {
+                    $weight = @$contentUpdate['variations'][$idProductAttribute]['attributes']['weight'];
+                    $contentUpdate['variations'][$idProductAttribute]['shipping']['amount'] = $this->_getShipping($carrier, $variationPrice, $weight);
+                }
+            }
         }
+
         $contentUpdate['shipping'] = [
             'amount' => $this->_getShipping($carrier, $priceWithReduction),
             'label' => $carrier->delay[$this->id_lang],
@@ -371,17 +387,13 @@ class ProductSerializer
             asort($combination['attributes']);
             $image_child = true;
             $sfp->id_product_attribute = $id;
-            $priceWithoutReduction = $sfModule->mapProductPrice($sfp, $this->configurations['PS_SHOP_DEFAULT']);
-            $priceWithReduction = $this->sfModule->mapProductPrice($sfp, $this->configurations['PS_SHOP_DEFAULT'], ['price_with_reduction' => true]);
+
             $variation = [
                 'reference' => $sfModule->mapReference($sfp),
-                'price' => $priceWithoutReduction,
                 'images' => [],
                 'shipping' => [
-                    'amount' => $this->_getShipping($carrier, $priceWithReduction, $combination['weight']),
                     'label' => $carrier->delay[$this->id_lang],
-                ],
-                'discounts' => []
+                ]
             ];
 
             if (empty($combination['ean13']) === false) {
@@ -404,9 +416,6 @@ class ProductSerializer
 
             $variation['attributes']['link-variation'] = Context::getContext()->link->getProductLink($this->product, null, null, null, null, null, (int)$id);
 
-            if ($priceWithoutReduction > $priceWithReduction) {
-                $variation['discounts'][] = $priceWithReduction;
-            }
             foreach ($this->_getAttributeImageAssociations($id) as $image) {
                 if (empty($image)) {
                     $image_child = false;
@@ -595,5 +604,74 @@ class ProductSerializer
         $ret = array_reverse($ret);
 
         return $ret;
+    }
+
+    /**
+     * @param int $idProductAttribute
+     *
+     * @return array
+     */
+    protected function getSpecificPrices($idProductAttribute = null)
+    {
+        $return = [];
+
+        if (Validate::isLoadedObject($this->product) === false) {
+            return $return;
+        }
+
+        $specificPrices = SpecificPrice::getByProductId($this->product->id);
+
+        if (empty($specificPrices)) {
+            return $return;
+        }
+
+        foreach ($specificPrices as $specificPrice) {
+            $skip = false;
+
+            if ((int)$specificPrice['id_product_attribute'] !== 0) {
+                if ((int)$idProductAttribute !== (int)$specificPrice['id_product_attribute']) {
+                    $skip = true;
+                }
+            }
+
+            // Apply a specific price of a default variation for a product
+            if ((int)$idProductAttribute === 0 && $skip) {
+                if ($this->product->getDefaultIdProductAttribute() === (int)$specificPrice['id_product_attribute']) {
+                    $skip = false;
+                }
+            }
+
+            if ($skip) {
+                continue;
+            }
+
+            $formatter = new \SpecificPriceFormatter(
+                $specificPrice,
+                true,
+                Context::getContext()->currency,
+                true
+            );
+
+            $productPriceWithoutReduction = $this->product->getPrice(
+                true,
+                $idProductAttribute,
+                6,
+                null,
+                false,
+                false
+            );
+
+            $data = $formatter->formatSpecificPrice(
+                $productPriceWithoutReduction,
+                $this->product->tax_rate,
+                $this->product->ecotax
+            );
+
+            $data['discount'] = preg_replace(['/[^0-9, \., \,]/', '/,/'], ['', '.'], $data['discount']);
+            $data['discount'] = floatval($data['discount']);
+            $return[] = $data;
+        }
+
+        return $return;
     }
 }

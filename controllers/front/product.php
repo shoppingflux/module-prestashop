@@ -32,6 +32,8 @@ use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 
 class ShoppingfeedProductModuleFrontController  extends \ModuleFrontController
 {
+    protected $sfToken = null;
+
     public function initContent()
     {
         $token = Tools::getValue('token');
@@ -44,6 +46,8 @@ class ShoppingfeedProductModuleFrontController  extends \ModuleFrontController
         if ($token === false) {
             die();
         }
+
+        $this->sfToken = $token;
         $fileXml = sprintf('file-%d.xml', $token['id_shoppingfeed_token']);
         ProcessLoggerHandler::logInfo(sprintf('Generate file %s for token %s:.', $fileXml, $token['content']), null, null, 'ShoppingfeedProductModuleFrontController');
         ProcessLoggerHandler::closeLogger();
@@ -96,9 +100,16 @@ class ShoppingfeedProductModuleFrontController  extends \ModuleFrontController
         if (empty($item['category']) !== true) {
             $product->setCategory($item['category']['name'], $item['category']['link']);
         }
-        foreach ($item['discounts'] as $discount) {
-            $product->addDiscount($discount);
+
+
+        if (false === empty($item['specificPrices'])) {
+            $discount = $this->calculDiscount($item['specificPrices']);
+
+            if ($discount > 0) {
+                $product->addDiscount($discount);
+            }
         }
+
         if (empty($item['images']) !== true && empty($item['images']['main']) !== true) {
             $product->setMainImage($item['images']['main']);
             $product->setAdditionalImages($item['images']['additional']);
@@ -126,8 +137,10 @@ class ShoppingfeedProductModuleFrontController  extends \ModuleFrontController
                 $variationProduct->setAdditionalImages($variation['images']);
             }
 
-            if (isset($variation['discounts']) && false === empty($variation['discounts'])) {
-                foreach ($variation['discounts'] as $discount) {
+            if (isset($variation['specificPrices']) && false === empty($variation['specificPrices'])) {
+                $discount = $this->calculDiscount($variation['specificPrices']);
+
+                if ($discount > 0) {
                     $variationProduct->addDiscount($discount);
                 }
             }
@@ -168,5 +181,79 @@ class ShoppingfeedProductModuleFrontController  extends \ModuleFrontController
         );
 
         return true;
+    }
+
+    /**
+     * @param array $specificPrices
+     * @return float
+     */
+    protected function calculDiscount($specificPrices)
+    {
+        if (false === is_array($specificPrices)) {
+            return 0;
+        }
+
+        if (is_null($this->sfToken)) {
+            return 0;
+        }
+
+        foreach ($specificPrices as $specificPrice) {
+            if (false === isset($specificPrice['from'])) {
+                continue;
+            }
+
+            if (false === isset($specificPrice['to'])) {
+                continue;
+            }
+
+            if (false === isset($specificPrice['discount'])) {
+                continue;
+            }
+
+            if (false === isset($specificPrice['id_shop']) || ((int)$specificPrice['id_shop'] !== 0 && $specificPrice['id_shop'] != $this->sfToken['id_shop'])) {
+                continue;
+            }
+
+            if (false === isset($specificPrice['id_currency']) || ((int)$specificPrice['id_currency'] !== 0 && $specificPrice['id_currency'] != $this->sfToken['id_currency'])) {
+                continue;
+            }
+
+            if (false === isset($specificPrice['id_group']) || (int)$specificPrice['id_group'] !== 0) {
+                continue;
+            }
+
+            if (false === isset($specificPrice['id_customer']) || (int)$specificPrice['id_customer'] !== 0) {
+                continue;
+            }
+
+            if (false === isset($specificPrice['id_country']) || (int)$specificPrice['id_country'] !== 0) {
+                continue;
+            }
+
+            if (false === isset($specificPrice['from_quantity']) || (int)$specificPrice['from_quantity'] !== 1) {
+                continue;
+            }
+
+            $from = DateTime::createFromFormat('Y-m-d H:i:s', $specificPrice['from']);
+            $to = DateTime::createFromFormat('Y-m-d H:i:s', $specificPrice['to']);
+            $now = new DateTime();
+            $isUnlimited = $specificPrice['from'] == '0000-00-00 00:00:00' && $specificPrice['to'] == '0000-00-00 00:00:00';
+
+            if (!$from || !$to || !$now) {
+                continue;
+            }
+
+            if ($to->diff($now)->invert === 0 && $isUnlimited === false) {
+                continue;
+            }
+
+            if ($from->diff($now)->invert === 1 && $isUnlimited === false) {
+                continue;
+            }
+
+            return (float)$specificPrice['discount'];
+        }
+
+        return 0;
     }
 }
