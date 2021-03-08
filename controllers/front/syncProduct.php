@@ -54,6 +54,7 @@ class ShoppingfeedSyncProductModuleFrontController extends CronController
      */
     protected function processCron($data)
     {
+        $this->addFlagUpdatePreloadingTable();
         $actions = array();
         if (Configuration::get(Shoppingfeed::STOCK_SYNC_ENABLED)) {
             $actions[ShoppingfeedProduct::ACTION_SYNC_STOCK] = array(
@@ -142,5 +143,18 @@ class ShoppingfeedSyncProductModuleFrontController extends CronController
             $this->processMonitor->getProcessObjectModelName(),
             $this->processMonitor->getProcessObjectModelId()
         );
+    }
+
+    private function addFlagUpdatePreloadingTable()
+    {
+        $sql = sprintf("
+            UPDATE %1$s_%2$s sfp
+            INNER JOIN %1$s_%3$s p ON p.id_product = sfp.id_product and sfp.date_upd < p.date_upd
+            SET `actions` = '[SYNC_ALL]'",
+            _DB_PREFIX_,
+            ShoppingfeedPreloading::$definition['table'],
+            \Product::$definition['table']
+        );
+        Db::getInstance()->execute($sql);
     }
 }
