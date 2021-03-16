@@ -54,7 +54,9 @@ class ShoppingfeedSyncProductModuleFrontController extends CronController
      */
     protected function processCron($data)
     {
-        $this->addFlagUpdatePreloadingTable();
+        if ((bool)Configuration::get(Shoppingfeed::PRODUCT_SYNC_BY_DATE_UPD)) {
+            $this->addFlagUpdatePreloadingTable();
+        }
         $actions = array();
         if (Configuration::get(Shoppingfeed::STOCK_SYNC_ENABLED)) {
             $actions[ShoppingfeedProduct::ACTION_SYNC_STOCK] = array(
@@ -147,14 +149,22 @@ class ShoppingfeedSyncProductModuleFrontController extends CronController
 
     private function addFlagUpdatePreloadingTable()
     {
-        $sql = sprintf("
-            UPDATE %1$s_%2$s sfp
-            INNER JOIN %1$s_%3$s p ON p.id_product = sfp.id_product and sfp.date_upd < p.date_upd
-            SET `actions` = '[SYNC_ALL]'",
+        Db::getInstance()->execute($this->getSqlUpdatePreloadingTable(\Product::$definition['table']));
+
+        if (Shop::isFeatureActive()) {
+            Db::getInstance()->execute($this->getSqlUpdatePreloadingTable(\Product::$definition['table'] . '_shop'));
+        }
+    }
+
+    private function getSqlUpdatePreloadingTable($tableProduct) 
+    {
+        return sprintf('
+            UPDATE %1$s%2$s sfp
+            INNER JOIN %1$s%3$s p ON p.id_product = sfp.id_product and sfp.date_upd < p.date_upd
+            SET `actions` = "[\"SYNC_ALL\"]"',
             _DB_PREFIX_,
             ShoppingfeedPreloading::$definition['table'],
-            \Product::$definition['table']
+            $tableProduct
         );
-        Db::getInstance()->execute($sql);
     }
 }
