@@ -451,6 +451,21 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
                     'desc' => $this->module->l('Shoud be: Default shoppingfeed value, reference, supplier reference, isbn, ean13, upc or mpn.', 'AdminShoppingfeedGeneralSettings'),
                     'name' => Shoppingfeed::PRODUCT_FEED_REFERENCE_FORMAT,
                 ),
+                array(
+                    'type' => 'switch',
+                    'is_bool' => true,
+                    'disabled' => (Tools::getValue('with_factory') !== false) ? false : true,
+                    'values' => array(
+                        array(
+                            'value' => 1,
+                        ),
+                        array(
+                            'value' => 0,
+                        )
+                    ),
+                    'label' => $this->module->l("Synchronize the XML feed from the 'ps_product.date_upd' et 'ps_product_shop.date_upd' fields", 'AdminShoppingfeedGeneralSettings'),
+                    'name' => Shoppingfeed::PRODUCT_SYNC_BY_DATE_UPD,
+                ),
             ),
         );
         if (Tools::getValue('with_factory') !== false) {
@@ -466,6 +481,7 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
 
         $fields_value = array(
             Shoppingfeed::PRODUCT_FEED_REFERENCE_FORMAT => Configuration::get(Shoppingfeed::PRODUCT_FEED_REFERENCE_FORMAT),
+            Shoppingfeed::PRODUCT_SYNC_BY_DATE_UPD => (bool)Configuration::get(Shoppingfeed::PRODUCT_SYNC_BY_DATE_UPD),
             'with_factory' => Tools::getValue('with_factory'),
         );
 
@@ -587,8 +603,10 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
     public function saveFactoryConfig()
     {
         $reference_format = Tools::getValue(Shoppingfeed::PRODUCT_FEED_REFERENCE_FORMAT);
+        $sync_by_date = Tools::getValue(Shoppingfeed::PRODUCT_SYNC_BY_DATE_UPD);
 
         Configuration::updateGlobalValue(Shoppingfeed::PRODUCT_FEED_REFERENCE_FORMAT, $reference_format);
+        Configuration::updateGlobalValue(Shoppingfeed::PRODUCT_SYNC_BY_DATE_UPD, $sync_by_date);
 
         return true;
     }
