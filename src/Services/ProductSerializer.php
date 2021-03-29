@@ -444,13 +444,11 @@ class ProductSerializer
 
     protected function _getFilAriane()
     {
-        $category = '';
+        $categoryDefault = new \Category($this->product->id_category_default, $this->id_lang, $this->id_shop);
+        $categoryTree = array_column($categoryDefault->getParentsCategories($this->id_lang), 'name');
+        $categoryTree = array_reverse($categoryTree);
 
-        foreach ($this->_getProductFilAriane($this->product->id, $this->id_lang) as $categories) {
-            $category .= $categories . ' > ';
-        }
-
-        return Tools::substr($category, 0, -3);
+        return implode(' > ', $categoryTree);
     }
 
     protected function _getShipping($carrier, $priceWithReduction, $attribute_weight = null)
@@ -483,13 +481,8 @@ class ProductSerializer
 
     protected function _getCategory()
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue('
-            SELECT cl.`name`
-            FROM `'._DB_PREFIX_.'product` p
-            '.Shop::addSqlAssociation('product', 'p').'
-            LEFT JOIN `'._DB_PREFIX_.'category_lang` cl ON (product_shop.`id_category_default` = cl.`id_category`)
-            WHERE p.`id_product` = '.(int)$this->product->id.'
-            AND cl.`id_lang` = '.(int)$this->id_lang);
+        $category = new \Category($this->product->id_category_default, $this->id_lang, $this->id_shop);
+        return $category->name;
     }
 
     protected function getImagesFromDb($id_lang)
