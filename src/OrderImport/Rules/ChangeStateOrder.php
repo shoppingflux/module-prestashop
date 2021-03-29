@@ -78,11 +78,7 @@ class ChangeStateOrder extends RuleAbstract implements RuleInterface
             $params['sfOrder']->id_order
         );
         $psOrder = new Order($params['sfOrder']->id_order);
-
-        if ((int)$psOrder->current_state == (int)$this->configuration['end_order_state']) {
-            return true;
-        }
-
+        // Set order to CANCELED
         $history = new OrderHistory();
         $history->id_order = $params['sfOrder']->id_order;
         $use_existings_payment = true;
