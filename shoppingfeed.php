@@ -69,6 +69,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     const PRODUCT_FEED_REFERENCE_FORMAT = "SHOPPINGFEED_PRODUCT_FEED_REFERENCE_FORMAT";
     const PRODUCT_FEED_RULE_FILTERS = "SHOPPINGFEED_PRODUCT_FEED_RULE_FILTERS";
     const PRODUCT_VISIBILTY_NOWHERE = "SHOPPINGFEED_PRODUCT_VISIBILTY_NOWHERE";
+    const PRODUCT_SYNC_BY_DATE_UPD = "SHOPPINGFEED_PRODUCT_SYNC_BY_DATE_UPD";
 
     public $extensions = array(
         \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerExtension::class,

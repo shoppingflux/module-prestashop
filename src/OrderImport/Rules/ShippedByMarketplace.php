@@ -89,7 +89,7 @@ class ShippedByMarketplace extends RuleAbstract implements RuleInterface
         $logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
 
         ProcessLoggerHandler::logInfo(
-            $this->logPrefix .
+            $logPrefix .
             sprintf(
                 $this->l('Rule triggered. Order is managed by marketplace %s, increase product %s stock : original %d, add %d.', 'ShippedByMarketplace'),
                 $apiOrder->getChannel()->getName(),
@@ -103,7 +103,7 @@ class ShippedByMarketplace extends RuleAbstract implements RuleInterface
             $psProduct->id,
             $psProduct->id_product_attribute,
             (int) $apiProduct->quantity,
-            $this->conveyor['id_shop']
+            $params['id_shop']
         );
     }
 

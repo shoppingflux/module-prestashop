@@ -161,6 +161,7 @@ $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_c8effe37e0f
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_5bb4529a7441854e00e00f8ed0096756'] = 'Code barre UPC';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_294598238a4d88a9920c7e6fba9bb843'] = 'MPN';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_779542eb20045c3a9c77372de0f1983d'] = 'Choix de la référence';
+$_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_b458f556a83eabcecbdfe32c86cf35f2'] = "Synchroniser le flux XML à partir des champs 'ps_product.date_upd' et 'ps_product_shop.date_upd'";
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_e40ba930b9c7e6d656e463b20a47d816'] = 'Doit valoir : valeur par défaut, référence, référence fournisseur, isbn, ean13, upc ou mpn.';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_5c22d5886dd068b2538e59bf291ab2eb'] = 'Vous devez spécifier un \"Nombre de produits maximum\" entre 1 et 200.';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_8418bb52f108670fbb6e0acc7d439cf7'] = 'Sélection de produits';
