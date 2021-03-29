@@ -465,7 +465,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             $this->specificRulesManager->applyRules(
                 'checkProductStock',
                 array(
-                    'is_shop' => $this->getIdShop(),
+                    'id_shop' => $this->getIdShop(),
                     'apiOrder' => $apiOrder,
                     'orderData' => &$this->conveyor['orderData'],
                     'psProduct' => $psProduct,
