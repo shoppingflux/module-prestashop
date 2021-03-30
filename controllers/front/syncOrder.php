@@ -67,6 +67,7 @@ class ShoppingfeedSyncOrderModuleFrontController extends CronController
 
         $sft = new ShoppingfeedToken();
         $tokens = $sft->findAllActive();
+        $result = [];
         foreach ($tokens as $token) {
             $logPrefix = '[Shop ' . $token['id_shop'] . ']';
 

@@ -322,7 +322,17 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 )
             );
 
-            $customer->add();
+            try {
+                $customer->add();
+            } catch (\Exception $e) {
+                $msgError = sprintf(
+                    $this->l('Fail : %s', 'syncOrder'),
+                    $e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine()
+                );
+                ProcessLoggerHandler::logError($msgError);
+                $this->values['error'] = $msgError;
+                return $this->forward('acknowledgeOrder');
+            }
 
             ProcessLoggerHandler::logInfo(
                 $this->logPrefix .
