@@ -360,6 +360,12 @@ class ProductSerializer
                 $attributes[$feature['name']] = $feature['value'];
             }
         }
+        $fileNumber = 0;
+        foreach ($this->product->getAttachments($this->id_lang) as $attachment) {
+            $link = Context::getContext()->link->getPageLink('attachment', true, null, 'id_attachment=' . $attachment['id_attachment']);
+            $attributes['file-' . ++$fileNumber] = $link;
+        }
+
 
         return $attributes;
     }
