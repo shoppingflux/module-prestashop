@@ -331,7 +331,9 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 );
                 ProcessLoggerHandler::logError($msgError);
                 $this->values['error'] = $msgError;
-                return $this->forward('acknowledgeOrder');
+                $this->forward('acknowledgeOrder');
+
+                return false;
             }
 
             ProcessLoggerHandler::logInfo(
