@@ -49,8 +49,9 @@ class ChangeStateOrder extends RuleAbstract implements RuleInterface
 {
     public function isApplicable(OrderResource $apiOrder)
     {
-        if (empty($this->configuration['end_order_state'])) {
-            return false;
+        if (empty($this->configuration['end_order_state'])
+            || $this->configuration['end_order_state'] === Configuration::get('PS_OS_PAYMENT')) {
+            return true;
         }
 
         return true;

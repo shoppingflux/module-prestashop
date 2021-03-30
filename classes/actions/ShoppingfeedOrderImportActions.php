@@ -675,7 +675,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         try {
             $paymentModule->validateOrder(
                 (int)$cart->id,
-                2,
+                Configuration::get('PS_OS_PAYMENT'),
                 $amount_paid,
                 Tools::strtolower($apiOrder->getChannel()->getName()),
                 null,
