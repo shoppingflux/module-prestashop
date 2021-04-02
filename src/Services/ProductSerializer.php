@@ -438,7 +438,7 @@ class ProductSerializer
             }
             foreach ($combination['attributes'] as $attributeName => $attributeValue) {
                 $attributeName = $this->_clean($attributeName);
-                if (empty($attributeName) === false && empty($attributeValue) === false) {
+                if ( empty($attributeName) === false && ( empty($attributeValue) === false || $attributeValue === '0' ) ) {
                     $variation['attributes'][$attributeName] = $attributeValue;
                 }
             }
