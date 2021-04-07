@@ -77,8 +77,8 @@ class RueducommerceMondialrelay extends RuleAbstract implements RuleInterface
         );
         $logPrefix .= '[' . $params['apiOrder']->getReference() . '] ' . self::class . ' | ';
 
-        $len = strlen('livraison en point de proximité avec ');
-        $orderData->shipment['carrier'] = substr($orderData->shipment['carrier'], $len);
+        $len = Tools::strlen('livraison en point de proximité avec ');
+        $orderData->shipment['carrier'] = Tools::substr($orderData->shipment['carrier'], $len);
 
         // Split the carrier name
         $explodedCarrier = explode(' ', $orderData->shipment['carrier']);
