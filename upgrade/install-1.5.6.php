@@ -24,8 +24,5 @@
 
 function upgrade_module_1_5_6($module)
 {
-    return Db::getInstance()->delete(
-        ShoppingfeedPreloading::$definition['table'],
-        sprintf('id_product IN (select id_product from %s)', _DB_PREFIX_ . 'product_attachment')
-    );
+    return Db::getInstance()->execute('TRUNCATE ' . _DB_PREFIX_ . ShoppingfeedPreloading::$definition['table']);
 }
