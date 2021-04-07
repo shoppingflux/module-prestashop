@@ -360,6 +360,12 @@ class ProductSerializer
                 $attributes[$feature['name']] = $feature['value'];
             }
         }
+        $fileNumber = 0;
+        foreach ($this->product->getAttachments($this->id_lang) as $attachment) {
+            $link = Context::getContext()->link->getPageLink('attachment', true, null, 'id_attachment=' . $attachment['id_attachment']);
+            $attributes['file-' . ++$fileNumber] = $link;
+        }
+
 
         return $attributes;
     }
@@ -432,7 +438,7 @@ class ProductSerializer
             }
             foreach ($combination['attributes'] as $attributeName => $attributeValue) {
                 $attributeName = $this->_clean($attributeName);
-                if (empty($attributeName) === false && empty($attributeValue) === false) {
+                if ( empty($attributeName) === false && ( empty($attributeValue) === false || $attributeValue === '0' ) ) {
                     $variation['attributes'][$attributeName] = $attributeValue;
                 }
             }
@@ -444,9 +450,26 @@ class ProductSerializer
 
     protected function _getFilAriane()
     {
-        $categoryDefault = new \Category($this->product->id_category_default, $this->id_lang, $this->id_shop);
-        $categoryTree = array_column($categoryDefault->getParentsCategories($this->id_lang), 'name');
-        $categoryTree = array_reverse($categoryTree);
+        $categories = [];
+        $sqlAppend = 'FROM ' . _DB_PREFIX_ . 'category c
+			JOIN ' . _DB_PREFIX_ . 'category_lang cl ON (c.id_category = cl.id_category
+            AND `id_lang` = ' . (int) $this->id_lang . Shop::addSqlRestrictionOnLang('cl', $this->id_shop) . ')';
+        $category_default = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+            'SELECT c.nleft, c.nright ' . $sqlAppend . ' WHERE c.id_category = ' . (int) $this->product->id_category_default
+        );
+
+        if (empty($category_default)) {
+            return '';
+        }
+        $categories = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            sprintf(
+                'SELECT cl.name %s WHERE c.nleft <= %d AND c.nright >= %d ORDER BY c.nleft ASC',
+                $sqlAppend,
+                (int) $category_default['nleft'],
+                (int) $category_default['nright']
+            )
+        );
+        $categoryTree = array_column($categories, 'name');
 
         return implode(' > ', $categoryTree);
     }

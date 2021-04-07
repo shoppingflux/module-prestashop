@@ -51,7 +51,7 @@ class ChangeStateOrder extends RuleAbstract implements RuleInterface
     {
         if (empty($this->configuration['end_order_state'])
             || $this->configuration['end_order_state'] === Configuration::get('PS_OS_PAYMENT')) {
-            return true;
+            return false;
         }
 
         return true;

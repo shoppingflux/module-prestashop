@@ -37,7 +37,7 @@ use Address;
 use Country;
 use Carrier;
 use SoapClient;
-
+use Order;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
@@ -268,7 +268,8 @@ class Mondialrelay extends RuleAbstract implements RuleInterface
      * @param string $relayId
      * @param string $countryIso
      */
-    public function getRelayData(ShoppingFeed\Sdk\Api\Order\OrderResource $apiOrder, $relayId, $countryIso)
+
+    public function getRelayData(OrderResource $apiOrder, $relayId, $countryIso)
     {
         $urlWebService = 'http://www.mondialrelay.fr/webservice/Web_Services.asmx?WSDL';
         $logPrefix = sprintf(

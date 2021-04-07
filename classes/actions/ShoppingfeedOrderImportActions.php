@@ -322,7 +322,19 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 )
             );
 
-            $customer->add();
+            try {
+                $customer->add();
+            } catch (\Exception $e) {
+                $msgError = sprintf(
+                    $this->l('Fail : %s', 'syncOrder'),
+                    $e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine()
+                );
+                ProcessLoggerHandler::logError($msgError);
+                $this->values['error'] = $msgError;
+                $this->forward('acknowledgeOrder');
+
+                return false;
+            }
 
             ProcessLoggerHandler::logInfo(
                 $this->logPrefix .
@@ -671,7 +683,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         $this->conveyor['customer']->email = 'do-not-send@alerts-shopping-flux.com';
         $this->conveyor['customer']->update();
 
-        $amount_paid = (float)Tools::ps_round((float)$cart->getOrderTotal(true, Cart::BOTH), 2);
+        $amount_paid = $this->conveyor['apiOrder']->getPaymentInformation()['totalAmount'];
         try {
             $paymentModule->validateOrder(
                 (int)$cart->id,

@@ -379,7 +379,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         $this->setConfigurationDefault(self::ORDER_IMPORT_SHIPPED, false);
         $this->setConfigurationDefault(self::PRODUCT_FEED_CARRIER_REFERENCE, Configuration::getGlobalValue('PS_CARRIER_DEFAULT'));
         $this->setConfigurationDefault(self::ORDER_DEFAULT_CARRIER_REFERENCE, Configuration::getGlobalValue('PS_CARRIER_DEFAULT'));
-        $this->setConfigurationDefault(self::PRODUCT_FEED_IMAGE_FORMAT, 'large_default');
+        $this->setConfigurationDefault(self::PRODUCT_FEED_IMAGE_FORMAT, ImageType::getFormattedName('large'));
         $this->saveToken();
 
         return $res;
