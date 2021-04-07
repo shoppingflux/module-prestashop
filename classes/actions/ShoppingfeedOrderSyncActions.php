@@ -551,8 +551,9 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
                     ProcessLoggerHandler::logError(
                         sprintf(
                             static::getLogPrefix($taskOrder->id_order) . ' ' .
-                                $this->l('Ticket status : %s', 'ShoppingfeedOrderSyncActions'),
-                            $ticket->getStatus()
+                            $this->l('Ticket status : %s. Ticket details: %s', 'ShoppingfeedOrderSyncActions'),
+                            $ticket->getStatus(),
+                            json_encode($ticket)
                         ),
                         'Order',
                         $taskOrder->id_order
