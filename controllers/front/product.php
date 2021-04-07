@@ -63,9 +63,12 @@ class ShoppingfeedProductModuleFrontController  extends \ModuleFrontController
         }
         $productGenerator->write($products);
 
-
-        header('HTTP/1.1 302 Moved Temporarily');
-        Tools::redirect(__PS_BASE_URI__ . $fileXml);
+        Tools::redirect(
+            Configuration::get('PS_SHOP_DOMAIN_SSL') . '/' . $fileXml,
+            __PS_BASE_URI__,
+            null,
+            array('HTTP/1.1 302 Moved Temporarily')
+        );
         exit;
     }
 
