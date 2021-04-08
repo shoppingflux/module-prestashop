@@ -64,12 +64,21 @@ class ShoppingfeedProductModuleFrontController  extends \ModuleFrontController
         $productGenerator->write($products);
 
         Tools::redirect(
-            Context::getContext()->link->getBaseLink($token['id_shop'], true). $fileXml,
+            $this->getBaseLink($token['id_shop']). $fileXml,
             __PS_BASE_URI__,
             null,
             array('HTTP/1.1 302 Moved Temporarily')
         );
         exit;
+    }
+
+    private function getBaseLink($id_shop)
+    {
+        $ssl_enable = (bool)Configuration::get('PS_SSL_ENABLED');
+        $shop = new Shop($id_shop);
+        $base = (($ssl_enable) ? 'https://'.$shop->domain_ssl : 'http://'.$shop->domain);
+
+        return $base . $shop->getBaseURI();
     }
 
     public function mapper(array $item, Product $product)
