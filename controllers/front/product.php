@@ -64,7 +64,7 @@ class ShoppingfeedProductModuleFrontController  extends \ModuleFrontController
         $productGenerator->write($products);
 
         Tools::redirect(
-            Configuration::get('PS_SHOP_DOMAIN_SSL') . '/' . $fileXml,
+            Context::getContext()->link->getBaseLink($token['id_shop'], true). $fileXml,
             __PS_BASE_URI__,
             null,
             array('HTTP/1.1 302 Moved Temporarily')
