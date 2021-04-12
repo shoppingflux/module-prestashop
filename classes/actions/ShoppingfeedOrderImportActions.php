@@ -683,7 +683,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         $this->conveyor['customer']->email = 'do-not-send@alerts-shopping-flux.com';
         $this->conveyor['customer']->update();
 
-        $amount_paid = $this->conveyor['apiOrder']->getPaymentInformation()['totalAmount'];
+        $amount_paid = (float)Tools::ps_round((float)$cart->getOrderTotal(true, Cart::BOTH), 2);
         try {
             $paymentModule->validateOrder(
                 (int)$cart->id,
