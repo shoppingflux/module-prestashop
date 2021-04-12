@@ -996,6 +996,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
 
         $updatePayment = array('amount' => Tools::ps_round($paymentInformation['totalAmount'], 4));
         Db::getInstance()->update('order_payment', $updatePayment, '`order_reference` = "'.pSQL($this->conveyor['order_reference']).'"');
+        Cache::clean('order_invoice_paid_*');
 
         ProcessLoggerHandler::logInfo(
             $this->logPrefix .
