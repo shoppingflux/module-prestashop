@@ -683,7 +683,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         $this->conveyor['customer']->email = 'do-not-send@alerts-shopping-flux.com';
         $this->conveyor['customer']->update();
 
-        $amount_paid = $this->conveyor['apiOrder']->getPaymentInformation()['totalAmount'];
+        $amount_paid = (float)Tools::ps_round((float)$cart->getOrderTotal(true, Cart::BOTH), 2);
         try {
             $paymentModule->validateOrder(
                 (int)$cart->id,
@@ -996,6 +996,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
 
         $updatePayment = array('amount' => Tools::ps_round($paymentInformation['totalAmount'], 4));
         Db::getInstance()->update('order_payment', $updatePayment, '`order_reference` = "'.pSQL($this->conveyor['order_reference']).'"');
+        Cache::clean('order_invoice_paid_*');
 
         ProcessLoggerHandler::logInfo(
             $this->logPrefix .
