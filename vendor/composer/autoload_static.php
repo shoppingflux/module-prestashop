@@ -80,6 +80,7 @@ class ComposerStaticInit3fe85f86ff701f6bd7fd7d7a118b5533
         'ShoppingfeedOrderSyncActions' => __DIR__ . '/../..' . '/classes/actions/ShoppingfeedOrderSyncActions.php',
         'ShoppingfeedPaymentModule' => __DIR__ . '/../..' . '/classes/ShoppingfeedPaymentModule.php',
         'ShoppingfeedPreloading' => __DIR__ . '/../..' . '/classes/ShoppingfeedPreloading.php',
+        'ShoppingfeedStockAndPrices' => __DIR__ . '/../..' . '/classes/ShoppingfeedStockAndPrices.php',
         'ShoppingfeedProduct' => __DIR__ . '/../..' . '/classes/ShoppingfeedProduct.php',
         'ShoppingfeedProductModuleFrontController' => __DIR__ . '/../..' . '/controllers/front/product.php',
         'ShoppingfeedProductSyncActions' => __DIR__ . '/../..' . '/classes/actions/ShoppingfeedProductSyncActions.php',

@@ -86,6 +86,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         ShoppingfeedOrder::class,
         ShoppingfeedCarrier::class,
         ShoppingfeedPreloading::class,
+        ShoppingfeedStockAndPrices::class,
         ShoppingfeedToken::class,
     );
 
@@ -702,7 +703,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
                         $sqlFilter[] = 'ps.id_product IN (select id_product from '._DB_PREFIX_. 'feature_product where id_feature IN (' . $product_filter . '))';
                         break;
                     default:
-                        continue;
+                    break;
                 }
             }
         }

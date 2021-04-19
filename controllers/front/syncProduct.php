@@ -54,6 +54,7 @@ class ShoppingfeedSyncProductModuleFrontController extends CronController
      */
     protected function processCron($data)
     {
+        $this->syncTableStockAndPrices();
         if ((bool)Configuration::get(Shoppingfeed::PRODUCT_SYNC_BY_DATE_UPD)) {
             $this->addFlagUpdatePreloadingTable();
         }
@@ -166,5 +167,70 @@ class ShoppingfeedSyncProductModuleFrontController extends CronController
             ShoppingfeedPreloading::$definition['table'],
             $tableProduct
         );
+    }
+
+    private function syncTableStockAndPrices()
+    {
+        $sft = new ShoppingfeedToken();
+        $sfModule = \Module::getInstanceByName('shoppingfeed');
+        $tokens = $sft->findAllActive();
+        $db = Db::getInstance(_PS_USE_SQL_SLAVE_);
+
+        foreach ($tokens as $token) {
+            $sql = $sfModule->sqlProductsOnFeed($token['id_shop'])
+                            ->leftJoin(\Combination::$definition['table'], 'c', 'p.id_product = c.id_product')
+                            ->select('ps.id_product, c.id_product_attribute');
+
+            $products = $db->executeS($sql, true, false);
+            foreach ($products as $product) {
+                $sfpsp = new ShoppingfeedStockAndPrices();
+                $sfProduct = new ShoppingfeedProduct();
+                $sfProduct->id_product = $product['id_product'];
+                $sfProduct->id_product_attribute = (int)$product['id_product_attribute'];
+                $price = $sfModule->mapProductPrice($sfProduct, $token['id_shop']);
+                $quantity = StockAvailable::getQuantityAvailableByProduct(
+                    $sfProduct->id_product,
+                    (empty($sfProduct->id_product_attribute) === false) ? $sfProduct->id_product_attribute : null,
+                    $token['id_shop']
+                );
+                $stpResult = $sfpsp->findProduct($sfProduct->id_product, $sfProduct->id_product_attribute, $token['id_shoppingfeed_token']);
+                if ($stpResult === null) {
+                    $sfpsp->id_product = $sfProduct->id_product;
+                    $sfpsp->id_product_attribute = $sfProduct->id_product_attribute;
+                    $sfpsp->id_token = $token['id_shoppingfeed_token'];
+                    $sfpsp->stock = $quantity;
+                    $sfpsp->price = $price;
+                    $sfpsp->add();
+                } else {
+                    if ($sfpsp->stock != $quantity) {
+                        $this->addActionProduct(ShoppingfeedProduct::ACTION_SYNC_STOCK, $sfpsp->id_product, $sfpsp->id_product_attribute, $sfpsp->id_token);
+                    }
+                    if ($sfpsp->price != $price) {
+                        $this->addActionProduct(ShoppingfeedProduct::ACTION_SYNC_PRICE, $sfpsp->id_product, $sfpsp->id_product_attribute, $sfpsp->id_token);
+                    }
+                    $sfpsp->stock = $quantity;
+                    $sfpsp->price = $price;
+                    $sfpsp->update();
+                }
+            }
+        }
+    }
+
+    private function addActionProduct($action, $id_product, $id_product_attribute, $id_token) {
+        $sfProduct = ShoppingfeedProduct::getFromUniqueKey(
+            $action,
+            $id_product,
+            $id_product_attribute,
+            $id_token
+        );
+        if (false === $sfProduct || !Validate::isLoadedObject($sfProduct)) {
+            $sfProduct = new ShoppingfeedProduct();
+            $sfProduct->action = $action;
+            $sfProduct->id_product = (int)$id_product;
+            $sfProduct->id_product_attribute = (int)$id_product_attribute;
+            $sfProduct->id_token = $id_token;
+        }
+        $sfProduct->update_at = date('Y-m-d H:i:s');
+        $sfProduct->save();
     }
 }
