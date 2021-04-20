@@ -44,8 +44,6 @@ use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 
-include_once _PS_MODULE_DIR_ . '/mondialrelay/classes/MondialrelaySelectedRelay.php';
-
 class Mondialrelay extends RuleAbstract implements RuleInterface
 {
     public function isApplicable(OrderResource $apiOrder)
@@ -228,22 +226,28 @@ class Mondialrelay extends RuleAbstract implements RuleInterface
         // We force a 6 digits string required by Mondial Relay
         $formattedRelayId = str_pad($relayId, 6, '0', STR_PAD_LEFT);
         $cart = new Cart((int)$order->id_cart);
-        $selectedRelay = new \MondialrelaySelectedRelay();
-        $selectedRelay->id_customer = (int)$order->id_customer;
-        $selectedRelay->id_mondialrelay_carrier_method = (int)$mondialRelayCarrierMethodId;
-        $selectedRelay->id_cart = (int)$order->id_cart;
-        $selectedRelay->id_order = $order->id;
-        $selectedRelay->selected_relay_num = pSQL($formattedRelayId);
-        $selectedRelay->selected_relay_adr1 = pSQL($relayData->LgAdr1);
-        $selectedRelay->selected_relay_adr2 = pSQL($relayData->LgAdr2);
-        $selectedRelay->selected_relay_adr3 = pSQL($relayData->LgAdr3);
-        $selectedRelay->selected_relay_adr4 = pSQL($relayData->LgAdr4);
-        $selectedRelay->selected_relay_postcode = pSQL($relayData->CP);
-        $selectedRelay->selected_relay_city = pSQL($relayData->Ville);
-        $selectedRelay->selected_relay_country_iso = pSQL($countryIso);
-        $selectedRelay->package_weight = $cart->getTotalWeight() * Configuration::get('MONDIALRELAY_WEIGHT_COEFF');
+        $insertResult = Db::getInstance()->insert(
+            'mondialrelay_selected_relay',
+            array(
+                'id_customer' => (int)$order->id_customer,
+                'id_mondialrelay_carrier_method' => (int)$mondialRelayCarrierMethodId,
+                'id_cart' => (int)$order->id_cart,
+                'id_order' => (int)$order->id,
+                'selected_relay_num' => pSQL($formattedRelayId),
+                'selected_relay_adr1' => pSQL($relayData->LgAdr1),
+                'selected_relay_adr2' => pSQL($relayData->LgAdr2),
+                'selected_relay_adr3' => pSQL($relayData->LgAdr3),
+                'selected_relay_adr4' => pSQL($relayData->LgAdr4),
+                'selected_relay_postcode' => pSQL($relayData->CP),
+                'selected_relay_city' => pSQL($relayData->Ville),
+                'selected_relay_country_iso' => pSQL($countryIso),
+                'package_weight' => $cart->getTotalWeight() * (float)Configuration::get('MONDIALRELAY_WEIGHT_COEFF'),
+                'date_add' => date('Y-m-d H:i:s'),
+                'date_upd' => date('Y-m-d H:i:s'),
+            )
+        );
 
-        if ($selectedRelay->save()) {
+        if ($insertResult) {
             ProcessLoggerHandler::logSuccess(
                 $logPrefix .
                     $this->l('Successfully added relay information', 'Mondialrelay'),
