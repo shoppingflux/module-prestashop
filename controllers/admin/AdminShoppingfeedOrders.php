@@ -177,10 +177,29 @@ class AdminShoppingfeedOrdersController extends ModuleAdminController
         parent::initProcess();
         if ($this->action == 'view') {
             $sfOrder = new ShoppingfeedOrder(Tools::getValue('id_shoppingfeed_order'));
-            Tools::redirect(
+            $this->redirectToOrder((int)$sfOrder->id_order);
+        }
+    }
+
+    protected function redirectToOrder($idOrder)
+    {
+        if (version_compare(_PS_VERSION_, '1.7', '<')) {
+            Tools::redirectAdmin(
                 $this->context->link->getAdminLink('AdminOrders') . '&' .
-                implode('&', array('id_order=' . (int)$sfOrder->id_order, 'vieworder'))
+                implode('&', array('id_order=' . (int)$idOrder, 'vieworder'))
             );
         }
+
+        Tools::redirectAdmin(
+            $this->context->link->getAdminLink(
+                'AdminOrders',
+                true,
+                [],
+                [
+                    'id_order' => (int)$idOrder,
+                    'vieworder' => true
+                ]
+            )
+        );
     }
 }
