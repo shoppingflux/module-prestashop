@@ -65,7 +65,7 @@ class ShoppingfeedStockAndPrices extends ObjectModel
             ),
             'stock' => array(
                 'type' => ObjectModel::TYPE_INT,
-                'validate' => 'isUnsignedInt',
+                'validate' => 'isInt',
                 'required' => true,
             ),
             'price' => array(
