@@ -56,6 +56,7 @@ class ShoppingfeedSyncProductModuleFrontController extends CronController
     {
         if ((bool)Configuration::get(Shoppingfeed::PRODUCT_SYNC_BY_DATE_UPD)) {
             $this->addFlagUpdatePreloadingTable();
+            $this->addTaskSyncProduct();
         }
         $actions = array();
         if (Configuration::get(Shoppingfeed::STOCK_SYNC_ENABLED)) {
@@ -165,6 +166,32 @@ class ShoppingfeedSyncProductModuleFrontController extends CronController
             _DB_PREFIX_,
             ShoppingfeedPreloading::$definition['table'],
             $tableProduct
+        );
+    }
+
+    private function addTaskSyncProduct()
+    {
+        return Db::getInstance()->execute($this->getSqlAddTaskSyncProduct('SYNC_PRICE'))
+            && Db::getInstance()->execute($this->getSqlAddTaskSyncProduct('SYNC_STOCK'))
+        ;
+    }
+
+    private function getSqlAddTaskSyncProduct($task)
+    {
+        return sprintf(
+        '
+            INSERT IGNORE INTO %1$sshoppingfeed_product
+            (action, id_product, id_product_attribute, id_token, update_at, date_add, date_upd)
+            select "%2$s", sp.id_product, IFNULL(sa.id_product_attribute, 0), sp.id_token, now(), now(), now()
+            from %1$sshoppingfeed_preloading sp
+            LEFT JOIN %1$sproduct_attribute sa on sp.id_product = sa.id_product
+            JOIN %1$sproduct p on p.id_product = sp.id_product
+            join %1$sshoppingfeed_token st on st.id_shoppingfeed_token = sp.id_token
+            JOIN %1$sproduct_shop ps on ps.id_product = sp.id_product and ps.id_shop = st.id_shop
+            where sp.date_upd < p.date_upd or sp.date_upd < ps.date_upd;
+            ',
+            _DB_PREFIX_,
+            $task
         );
     }
 }
