@@ -138,7 +138,7 @@ class ShoppingfeedSyncProductModuleFrontController extends CronController
 
         ProcessLoggerHandler::logInfo(
             sprintf(
-                $logPrefix . ' ' . $this->module->l('%d products updated - %d not in catalog - %d errors', 'syncProduct'),
+                $this->module->l('%d products updated - %d not in catalog - %d errors', 'syncProduct'),
                 (int)Registry::get('updatedProducts'),
                 (int)Registry::get('not-in-catalog'),
                 (int)Registry::get('errors')
