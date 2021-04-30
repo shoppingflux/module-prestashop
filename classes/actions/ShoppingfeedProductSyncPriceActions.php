@@ -98,40 +98,44 @@ class ShoppingfeedProductSyncPriceActions extends ShoppingfeedProductSyncActions
             Registry::increment('errors');
             return false;
         }
-        $res = $shoppingfeedApi->updateMainStorePrices($this->conveyor['preparedBatch']);
+        $limit = Configuration::getGlobalValue(Shoppingfeed::STOCK_SYNC_MAX_PRODUCTS);
+        $preparedBatch = $this->conveyor['preparedBatch'];
 
-        /**
-         * If we send a product reference that isn't in SF's catalog, the API
-         * doesn't send a confirmation for this product.
-         * This means we must make a diff between what we sent and what we
-         * received to know which product wasn't updated.
-         */
-        $preparedBatchShop = $this->conveyor['preparedBatch'];
-        /** @var ShoppingFeed\Sdk\Api\Catalog\InventoryResource $inventoryResource */
-        foreach ($res as $pricingResource) {
-            $reference = $pricingResource->getReference();
-            $sfProduct = $preparedBatchShop[$reference]['sfProduct'];
+        foreach (array_chunk($preparedBatch, $limit, true) as $products) {
+            $res = $shoppingfeedApi->updateMainStorePrices($products);
+            /**
+             * If we send a product reference that isn't in SF's catalog, the API
+             * doesn't send a confirmation for this product.
+             * This means we must make a diff between what we sent and what we
+             * received to know which product wasn't updated.
+             */
+            /** @var ShoppingFeed\Sdk\Api\Catalog\InventoryResource $inventoryResource */
+            foreach ($res as $pricingResource) {
+                $reference = $pricingResource->getReference();
+                $sfProduct = $products[$reference]['sfProduct'];
 
-            ProcessLoggerHandler::logInfo(
-                sprintf(
-                    static::getLogPrefix($this->conveyor['id_token']) . ' ' .
-                        $this->l('Updated %s price: %s', 'ShoppingfeedProductSyncPriceActions'),
-                    $reference,
-                    $preparedBatchShop[$reference]['price']
-                ),
-                'Product',
-                $sfProduct->id_product
-            );
+                ProcessLoggerHandler::logInfo(
+                    sprintf(
+                        static::getLogPrefix($this->conveyor['id_token']) . ' ' .
+                            $this->l('Updated %s price: %s', 'ShoppingfeedProductSyncPriceActions'),
+                        $reference,
+                        $products[$reference]['price']
+                    ),
+                    'Product',
+                    $sfProduct->id_product
+                );
 
-            Registry::increment('updatedProducts');
+                Registry::increment('updatedProducts');
 
-            unset($preparedBatchShop[$reference]);
+                unset($products[$reference]);
 
-            $sfProduct->delete();
-        }
+                $sfProduct->delete();
+            }
 
-        if (!empty($preparedBatchShop)) {
-            foreach ($preparedBatchShop as $data) {
+            if (empty($products)) {
+                continue;
+            }
+            foreach ($products as $data) {
                 $sfProduct = $data['sfProduct'];
 
                 ProcessLoggerHandler::logInfo(

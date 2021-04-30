@@ -129,7 +129,6 @@ abstract class ShoppingfeedProductSyncActions extends DefaultActions
             ->where('update_at IS NOT NULL')
             ->where('id_token ='. (int) $this->conveyor['id_token'])
             ->where("update_at <= '" . date('Y-m-d H:i:s') . "'")
-            ->limit(Configuration::getGlobalValue(Shoppingfeed::STOCK_SYNC_MAX_PRODUCTS))
             ->orderBy('date_add ASC');
         $sfProductsRows = Db::getInstance()->executeS($query);
 

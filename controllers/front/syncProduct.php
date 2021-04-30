@@ -93,7 +93,7 @@ class ShoppingfeedSyncProductModuleFrontController extends CronController
     {
         $actionClassname = 'ShoppingfeedProductSync' . $actions_suffix . 'Actions';
         ProcessLoggerHandler::logInfo(
-            $this->module->l('Process start', 'syncProduct'),
+            '[' . $actionClassname  . '] ' . $this->module->l('Process start', 'syncProduct'),
             $this->processMonitor->getProcessObjectModelName(),
             $this->processMonitor->getProcessObjectModelId()
         );
@@ -138,7 +138,7 @@ class ShoppingfeedSyncProductModuleFrontController extends CronController
 
         ProcessLoggerHandler::logInfo(
             sprintf(
-                $this->module->l('%d products updated - %d not in catalog - %d errors', 'syncProduct'),
+                '[' . $actionClassname  . '] ' . $this->module->l('%d products updated - %d not in catalog - %d errors', 'syncProduct'),
                 (int)Registry::get('updatedProducts'),
                 (int)Registry::get('not-in-catalog'),
                 (int)Registry::get('errors')
