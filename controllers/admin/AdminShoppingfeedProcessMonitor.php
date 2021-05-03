@@ -34,6 +34,19 @@ use ShoppingfeedClasslib\Extensions\ProcessMonitor\Controllers\Admin\AdminProces
  */
 class AdminShoppingfeedProcessMonitorController extends AdminProcessMonitorController
 {
+    public function __construct()
+    {
+        parent::__construct();
+        $select = [
+            'id_shoppingfeed_processmonitor',
+            'name',
+            'IFNULL(pid,"") as pid',
+            'duration',
+            'last_update'
+        ];
+        $this->_select = implode(',', $select);
+    }
+
     public function initContent()
     {
         $this->module->setBreakingChangesNotices();
