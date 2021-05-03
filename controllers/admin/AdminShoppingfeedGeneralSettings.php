@@ -623,7 +623,7 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
         Configuration::updateGlobalValue(Shoppingfeed::REAL_TIME_SYNCHRONIZATION, ($realtime_sync ? true : false));
 
         if (!is_numeric($stock_sync_max_products) || $stock_sync_max_products > 2000 || $stock_sync_max_products <= 0) {
-            $this->errors[] = $this->module->l('You must specify a \'Max. product update per request\' number (between 1 and 200 included).', 'AdminShoppingfeedGeneralSettings');
+            $this->errors[] = $this->module->l('You must specify a \'Max. product update per request\' number (between 1 and 2000 included).', 'AdminShoppingfeedGeneralSettings');
         } else {
             Configuration::updateGlobalValue(Shoppingfeed::STOCK_SYNC_MAX_PRODUCTS, $stock_sync_max_products);
         }
