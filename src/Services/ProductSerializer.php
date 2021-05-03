@@ -421,7 +421,7 @@ class ProductSerializer
                 $variation['attributes']['ref-constructeur'] = $combination['reference'];
             }
 
-            $variation['attributes']['link-variation'] = Context::getContext()->link->getProductLink($this->product, null, null, null, null, null, (int)$id);
+            $variation['attributes']['link-variation'] = Context::getContext()->link->getProductLink($this->product, null, null, null, null, null, (int)$id, false, false, true);
 
             foreach ($this->_getAttributeImageAssociations($id) as $image) {
                 if (empty($image)) {
