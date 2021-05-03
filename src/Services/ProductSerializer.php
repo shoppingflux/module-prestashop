@@ -21,6 +21,7 @@ namespace ShoppingfeedAddon\Services;
 
 use Context;
 use Configuration;
+use DbQuery;
 use ShoppingfeedProduct;
 use Tools;
 use Carrier;
@@ -623,6 +624,26 @@ class ProductSerializer
     }
 
     /**
+     * Can not use SpecificPrice::getByProductId() because that method does not take into
+     * account specific price for all product (id_product=0)
+     *
+     * @return array
+     */
+    protected function getSpecificPriceInfo($id_product_attribute = false, $id_cart = false)
+    {
+        $query = (new DbQuery())
+            ->from('specific_price')
+            ->where(sprintf('id_product IN (%d, 0)', (int)$this->product->id))
+            ->where('id_cart = ' . (int)$id_cart);
+
+        if ($id_product_attribute) {
+            $query->where('id_product_attribute = ' . (int)$id_product_attribute);
+        }
+
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($query);
+    }
+
+    /**
      * @param int $idProductAttribute
      *
      * @return array
@@ -635,7 +656,7 @@ class ProductSerializer
             return $return;
         }
 
-        $specificPrices = SpecificPrice::getByProductId($this->product->id);
+        $specificPrices = $this->getSpecificPriceInfo();
 
         if (empty($specificPrices)) {
             return $return;
