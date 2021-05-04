@@ -38,6 +38,7 @@ use Country;
 use Carrier;
 use SoapClient;
 use Order;
+use Cart;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
@@ -224,7 +225,7 @@ class Mondialrelay extends RuleAbstract implements RuleInterface
         // Depending of the marketplace, the length of the relay ID is not the same. (5 digits, 6 digits).
         // We force a 6 digits string required by Mondial Relay
         $formattedRelayId = str_pad($relayId, 6, '0', STR_PAD_LEFT);
-
+        $cart = new Cart((int)$order->id_cart);
         $insertResult = Db::getInstance()->insert(
             'mondialrelay_selected_relay',
             array(
@@ -240,6 +241,9 @@ class Mondialrelay extends RuleAbstract implements RuleInterface
                 'selected_relay_postcode' => pSQL($relayData->CP),
                 'selected_relay_city' => pSQL($relayData->Ville),
                 'selected_relay_country_iso' => pSQL($countryIso),
+                'package_weight' => $cart->getTotalWeight() * (float)Configuration::get('MONDIALRELAY_WEIGHT_COEFF'),
+                'date_add' => date('Y-m-d H:i:s'),
+                'date_upd' => date('Y-m-d H:i:s'),
             )
         );
 

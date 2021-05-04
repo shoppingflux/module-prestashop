@@ -22,35 +22,7 @@
  * @license   Commercial license
  */
 
-if (!defined('_PS_VERSION_')) {
-    exit;
-}
-require_once _PS_MODULE_DIR_ . 'shoppingfeed/vendor/autoload.php';
-
-use ShoppingfeedClasslib\Extensions\ProcessMonitor\Controllers\Admin\AdminProcessMonitorController;
-
-/**
- * @inheritdoc
- */
-class AdminShoppingfeedProcessMonitorController extends AdminProcessMonitorController
+function upgrade_module_1_5_11($module)
 {
-    public function __construct()
-    {
-        parent::__construct();
-        $select = [
-            'id_shoppingfeed_processmonitor',
-            'name',
-            'IFNULL(pid,"") as pid',
-            'duration',
-            'last_update'
-        ];
-        $this->_select = implode(',', $select);
-    }
-
-    public function initContent()
-    {
-        $this->module->setBreakingChangesNotices();
-
-        return parent::initContent();
-    }
+    return Db::getInstance()->execute('DROP TABLE IF EXISTS ' . _DB_PREFIX_ . 'shoppingfeed_stock_and_prices;');
 }
