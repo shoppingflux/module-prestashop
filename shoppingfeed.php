@@ -248,6 +248,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         'actionObjectSpecificPriceUpdateAfter',
         'actionObjectSpecificPriceDeleteAfter',
         'deleteProductAttribute',
+        'actionAdminSpecificPriceRuleControllerDeleteBefore'
     );
 
     /**
@@ -1223,5 +1224,22 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     public function hookDeleteProductAttribute($params)
     {
         $this->updateShoppingFeedPreloading([$params['id_product']], ShoppingfeedPreloading::ACTION_SYNC_ALL);
+    }
+
+    public function hookActionAdminSpecificPriceRuleControllerDeleteBefore($params)
+    {
+        $productIds = $this
+            ->getSpecificPriceService()
+            ->getProductIdsByRule((int)Tools::getValue('id_specific_price_rule'));
+
+        $this->updateShoppingFeedPreloading($productIds, ShoppingfeedPreloading::ACTION_SYNC_PRICE);
+    }
+
+    /**
+     * @return \ShoppingfeedAddon\Services\SpecificPriceService
+     */
+    public function getSpecificPriceService()
+    {
+        return new \ShoppingfeedAddon\Services\SpecificPriceService();
     }
 }
