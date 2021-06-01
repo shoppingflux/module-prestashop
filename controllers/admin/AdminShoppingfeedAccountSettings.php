@@ -274,6 +274,10 @@ class AdminShoppingfeedAccountSettingsController extends ModuleAdminController
         return $helper->generateForm(array(array('form' => $fields_form)));
     }
 
+    /**
+     * Method is added for compatibility with PS 1.6
+     * @return array
+     */
     public function getTemplateFormVars()
     {
         return $this->tpl_form_vars;
