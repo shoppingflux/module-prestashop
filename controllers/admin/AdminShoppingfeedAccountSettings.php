@@ -274,6 +274,11 @@ class AdminShoppingfeedAccountSettingsController extends ModuleAdminController
         return $helper->generateForm(array(array('form' => $fields_form)));
     }
 
+    public function getTemplateFormVars()
+    {
+        return $this->tpl_form_vars;
+    }
+
     /**
      * @inheritdoc
      */
