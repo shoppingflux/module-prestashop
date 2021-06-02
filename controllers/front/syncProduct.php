@@ -26,6 +26,8 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
+require_once _PS_MODULE_DIR_ . 'shoppingfeed/vendor/autoload.php';
+
 use ShoppingfeedClasslib\Extensions\ProcessMonitor\Controllers\Front\CronController;
 use ShoppingfeedClasslib\Actions\ActionsHandler;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
@@ -36,7 +38,7 @@ use ShoppingfeedClasslib\Registry;
  * synchronize the ShoppingfeedProduct's stocks and prices.
  * @see ShoppingfeedClasslib\Extensions\ProcessMonitor\CronController
  */
-class ShoppingfeedSyncProductModuleFrontController extends CronController
+class ShoppingfeedSyncProductModuleFrontController extends ShoppingfeedCronController
 {
     public $taskDefinition = array(
         'name' => 'shoppingfeed:syncProduct',
@@ -157,7 +159,7 @@ class ShoppingfeedSyncProductModuleFrontController extends CronController
         }
     }
 
-    private function getSqlUpdatePreloadingTable($tableProduct) 
+    private function getSqlUpdatePreloadingTable($tableProduct)
     {
         return sprintf('
             UPDATE %1$s%2$s sfp

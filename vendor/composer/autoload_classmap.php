@@ -17,6 +17,7 @@ return array(
     'ShoppingfeedAdminController' => $baseDir . '/classes/ShoppingfeedAdminController.php',
     'ShoppingfeedApi' => $baseDir . '/classes/ShoppingfeedApi.php',
     'ShoppingfeedCarrier' => $baseDir . '/classes/ShoppingfeedCarrier.php',
+    'ShoppingfeedCronController' => $baseDir . '/classes/ShoppingfeedCronController.php',
     'ShoppingfeedOrder' => $baseDir . '/classes/ShoppingfeedOrder.php',
     'ShoppingfeedOrderImportActions' => $baseDir . '/classes/actions/ShoppingfeedOrderImportActions.php',
     'ShoppingfeedOrderSyncActions' => $baseDir . '/classes/actions/ShoppingfeedOrderSyncActions.php',

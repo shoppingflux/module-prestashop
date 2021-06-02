@@ -77,6 +77,7 @@ class ComposerStaticInit3fe85f86ff701f6bd7fd7d7a118b5533
         'ShoppingfeedAdminController' => __DIR__ . '/../..' . '/classes/ShoppingfeedAdminController.php',
         'ShoppingfeedApi' => __DIR__ . '/../..' . '/classes/ShoppingfeedApi.php',
         'ShoppingfeedCarrier' => __DIR__ . '/../..' . '/classes/ShoppingfeedCarrier.php',
+        'ShoppingfeedCronController' => __DIR__ . '/../..' . '/classes/ShoppingfeedCronController.php',
         'ShoppingfeedOrder' => __DIR__ . '/../..' . '/classes/ShoppingfeedOrder.php',
         'ShoppingfeedOrderImportActions' => __DIR__ . '/../..' . '/classes/actions/ShoppingfeedOrderImportActions.php',
         'ShoppingfeedOrderSyncActions' => __DIR__ . '/../..' . '/classes/actions/ShoppingfeedOrderSyncActions.php',
