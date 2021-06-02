@@ -21,12 +21,14 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
+require_once _PS_MODULE_DIR_ . 'shoppingfeed/vendor/autoload.php';
+
 use ShoppingfeedClasslib\Actions\ActionsHandler;
 
 /**
  * This admin controller displays the module's general configuration forms
  */
-class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
+class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminController
 {
     public $bootstrap = true;
 
@@ -570,7 +572,7 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
 
         return true;
     }
-    
+
 
     public function purgePrealoading()
     {
@@ -699,7 +701,7 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
             $selected = explode(',', $selected);
         }
         $products = [
-            'selected' => [], 
+            'selected' => [],
             'unselected' => []
         ];
         switch ($product_rule_type) {

@@ -21,10 +21,12 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
+require_once _PS_MODULE_DIR_ . 'shoppingfeed/vendor/autoload.php';
+
 /**
  * This admin controller displays the module's general configuration forms
  */
-class AdminShoppingfeedAccountSettingsController extends ModuleAdminController
+class AdminShoppingfeedAccountSettingsController extends ShoppingfeedAdminController
 {
     public $bootstrap = true;
 
@@ -272,15 +274,6 @@ class AdminShoppingfeedAccountSettingsController extends ModuleAdminController
         $helper->base_tpl = 'form_login.tpl';
 
         return $helper->generateForm(array(array('form' => $fields_form)));
-    }
-
-    /**
-     * Method is added for compatibility with PS 1.6
-     * @return array
-     */
-    public function getTemplateFormVars()
-    {
-        return $this->tpl_form_vars;
     }
 
     /**

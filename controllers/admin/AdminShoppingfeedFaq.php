@@ -26,10 +26,12 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
+require_once _PS_MODULE_DIR_ . 'shoppingfeed/vendor/autoload.php';
+
 /**
  * This admin controller displays the module's general configuration forms
  */
-class AdminShoppingfeedFaqController extends ModuleAdminController
+class AdminShoppingfeedFaqController extends ShoppingfeedAdminController
 {
     public $bootstrap = true;
 

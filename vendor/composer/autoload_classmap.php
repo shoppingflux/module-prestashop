@@ -13,6 +13,8 @@ return array(
     'AdminShoppingfeedOrdersController' => $baseDir . '/controllers/admin/AdminShoppingfeedOrders.php',
     'AdminShoppingfeedProcessLoggerController' => $baseDir . '/controllers/admin/AdminShoppingfeedProcessLogger.php',
     'AdminShoppingfeedProcessMonitorController' => $baseDir . '/controllers/admin/AdminShoppingfeedProcessMonitor.php',
+    'PriceFormatter' => $baseDir . '/classes/Compatibility/PriceFormatter.php',
+    'ShoppingfeedAdminController' => $baseDir . '/classes/ShoppingfeedAdminController.php',
     'ShoppingfeedApi' => $baseDir . '/classes/ShoppingfeedApi.php',
     'ShoppingfeedCarrier' => $baseDir . '/classes/ShoppingfeedCarrier.php',
     'ShoppingfeedOrder' => $baseDir . '/classes/ShoppingfeedOrder.php',
@@ -31,4 +33,5 @@ return array(
     'ShoppingfeedSyncProductModuleFrontController' => $baseDir . '/controllers/front/syncProduct.php',
     'ShoppingfeedTaskOrder' => $baseDir . '/classes/ShoppingfeedTaskOrder.php',
     'ShoppingfeedToken' => $baseDir . '/classes/ShoppingfeedToken.php',
+    'SpecificPriceFormatter' => $baseDir . '/classes/Compatibility/SpecificPriceFormatter.php',
 );
