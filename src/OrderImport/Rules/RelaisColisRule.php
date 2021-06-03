@@ -29,6 +29,7 @@ if (!defined('_PS_VERSION_')) {
 }
 
 use Module;
+use Symfony\Component\VarDumper\VarDumper;
 use Tools;
 use Configuration;
 use DbQuery;
@@ -40,6 +41,7 @@ use SoapClient;
 use Order;
 use Cart;
 use Validate;
+use Exception;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
@@ -74,7 +76,7 @@ class RelaisColisRule extends RuleAbstract implements RuleInterface
     {
         $apiOrder = $params['apiOrder'];
         $order = new Order($params['sfOrder']->id_order);
-        $relayId = $params['orderData']->shippingAddress['other'];
+        $idRelais = $params['orderData']->shippingAddress['other'];
 
         $logPrefix = sprintf(
             $this->l('[Order: %s]', 'Mondialrelay'),
@@ -89,7 +91,7 @@ class RelaisColisRule extends RuleAbstract implements RuleInterface
             $order->id
         );
 
-        if (empty($relayId)) {
+        if (empty($idRelais)) {
             ProcessLoggerHandler::logError(
                 $logPrefix .
                     $this->l('Rule triggered. No relay ID found in shipping address \'Other\' field', 'Mondialrelay'),
@@ -99,56 +101,39 @@ class RelaisColisRule extends RuleAbstract implements RuleInterface
             return false;
         }
 
-        $carrier = new Carrier((int)$order->id_carrier);
-        $address = new Address($order->id_address_delivery);
-        $countryIso = Country::getIsoById($address->id_country);
-
         ProcessLoggerHandler::logInfo(
             sprintf(
                 $logPrefix .
-                    $this->l('Rule triggered. Id Relay : %s / id_address_delivery : %s / isoCountry : %s', 'Mondialrelay'),
-                $relayId,
-                $order->id_address_delivery,
-                $countryIso
+                    $this->l('Rule triggered. Id Relay : %s / id_address_delivery : %s', 'RelaisColisRule'),
+                $idRelais,
+                $order->id_address_delivery
             ),
             'Order',
             $order->id
         );
 
-        // Get relay data
-        $relayData = $this->getRelayData($apiOrder, $relayId, $countryIso);
-        if (!$relayData) {
+        $relaisColisInfo = $this->createRelaisColisInfo($order, $idRelais);
+
+        if (false == Validate::isLoadedObject($relaisColisInfo)) {
             ProcessLoggerHandler::logError(
                 $logPrefix .
-                    $this->l('Failed to get relay data', 'Mondialrelay'),
+                    $this->l('Failed to create a relais colis info object', 'RelaisColisRule'),
                 'Order',
                 $order->id
             );
             return false;
         }
 
-        ProcessLoggerHandler::logInfo(
-            sprintf(
-                $logPrefix .
-                    $this->l('Id Carrier : %s', 'Mondialrelay'),
-                $carrier->id
-            ),
-            'Order',
-            $order->id
-        );
-
-        // todo: implement a link with the module relaiscolis
+        return $this->updateRelaisColisOrder($order, $relaisColisInfo);
     }
 
     /**
      * Gets relay info from the Mondial Relay API
      *
-     * @param ShoppingFeed\Sdk\Api\Order\OrderResource $apiOrder
-     * @param string $relayId
-     * @param string $countryIso
+     * @param string $idRelais
      */
 
-    public function getRelayData(OrderResource $apiOrder, $relayId, $countryIso)
+    public function getRelaisData($idRelais)
     {
         // todo: to implement
         return [];
@@ -168,5 +153,55 @@ class RelaisColisRule extends RuleAbstract implements RuleInterface
     public function getConditions()
     {
         return $this->l('If the order has \'Relais Colis\' in its carrier name.', 'RelaisColisRule');
+    }
+
+    /**
+     * @return \RelaisColisInfo
+     */
+    protected function createRelaisColisInfo(Order $order, $idRelais)
+    {
+        $relaiData = $this->getRelaisData($idRelais);
+        $relaisColisInfo = new \RelaisColisInfo();
+        $relaisColisInfo->id_cart = $order->id_cart;
+        $relaisColisInfo->id_customer = $order->id_customer;
+        $relaisColisInfo->selected_date = date('Y-m-d');
+
+        if (false == empty($relayData)) {
+            // todo: set other properties
+        }
+
+        try {
+            $relaisColisInfo->save();
+        } catch (Exception $e) {
+            throw $e;
+        }
+
+        return $relaisColisInfo;
+    }
+
+    /**
+     * @param Order $order
+     * @param \RelaisColisInfo $relaisColisInfo
+     * @return bool
+     */
+    protected function updateRelaisColisOrder(Order $order, \RelaisColisInfo $relaisColisInfo)
+    {
+        $relaisColisOrder = $this->getRelaisColisOrder($order);
+        $relaisColisOrder->id_relais_colis_info = $relaisColisInfo->id;
+
+        try {
+            $relaisColisOrder->save();
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+
+    protected function getRelaisColisOrder(Order $order)
+    {
+        try {
+            return new \RelaisColisOrder(\RelaisColisOrder::getRelaisColisOrderId($order->id));
+        } catch (Exception $e) {
+            return new \RelaisColisOrder();
+        }
     }
 }
