@@ -78,6 +78,10 @@ class RelaisColisRule extends RuleAbstract implements RuleInterface
         $order = new Order($params['sfOrder']->id_order);
         $idRelais = $params['orderData']->shippingAddress['other'];
 
+        if (false == $this->isRelayColisOrder($order)) {
+            return false;
+        }
+
         $logPrefix = sprintf(
             $this->l('[Order: %s]', 'Mondialrelay'),
             $apiOrder->getId()
@@ -164,6 +168,7 @@ class RelaisColisRule extends RuleAbstract implements RuleInterface
         $relaisColisInfo = new \RelaisColisInfo();
         $relaisColisInfo->id_cart = $order->id_cart;
         $relaisColisInfo->id_customer = $order->id_customer;
+        $relaisColisInfo->rel = $idRelais;
         $relaisColisInfo->selected_date = date('Y-m-d');
 
         if (false == empty($relayData)) {
@@ -202,6 +207,23 @@ class RelaisColisRule extends RuleAbstract implements RuleInterface
             return new \RelaisColisOrder(\RelaisColisOrder::getRelaisColisOrderId($order->id));
         } catch (Exception $e) {
             return new \RelaisColisOrder();
+        }
+    }
+
+    /**
+     * @return bool
+     */
+    protected function isRelayColisOrder(Order $order)
+    {
+        $query = (new DbQuery())
+            ->select('id_relais_colis_order')
+            ->from('relaiscolis_order')
+            ->where('id_order = ' . (int)$order->id);
+
+        try {
+            return (bool)Db::getInstance()->getValue($query);
+        } catch (Exception $e) {
+            return false;
         }
     }
 }
