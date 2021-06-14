@@ -838,10 +838,13 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         // Combinations hook are not called when saving the product on 1.6
         if (version_compare(_PS_VERSION_, '1.7', '<')) {
             $attributes = $product->getAttributesResume(Context::getContext()->language->id);
-            foreach ($attributes as $attribute) {
-                $this->hookActionObjectCombinationUpdateBefore(array(
-                    'object' => new Combination($attribute['id_product_attribute'])
-                ));
+
+            if (is_array($attributes) && false == empty($attributes)) {
+                foreach ($attributes as $attribute) {
+                    $this->hookActionObjectCombinationUpdateBefore(array(
+                        'object' => new Combination($attribute['id_product_attribute'])
+                    ));
+                }
             }
         }
     }
