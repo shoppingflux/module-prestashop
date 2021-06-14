@@ -783,7 +783,12 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         $apiOrder = $this->conveyor['apiOrder'];
         $this->initProcess($apiOrder);
 
-        $shoppingfeedApi = ShoppingfeedApi::getInstanceByToken($this->conveyor['id_token']);
+        try {
+            $shoppingfeedApi = ShoppingfeedApi::getInstanceByToken($this->conveyor['id_token']);
+        } catch (Exception $e) {
+            $shoppingfeedApi = false;
+        }
+
         if ($shoppingfeedApi == false) {
             ProcessLoggerHandler::logError(
                 $this->logPrefix .
@@ -796,13 +801,28 @@ class ShoppingfeedOrderImportActions extends DefaultActions
 
         $isSucess = array_key_exists('id_order', $this->conveyor);
 
-        $result = $shoppingfeedApi->acknowledgeOrder(
-            $apiOrder->getReference(),
-            $apiOrder->getChannel()->getName(),
-            $isSucess ? $this->conveyor['id_order'] : null,
-            $isSucess,
-            empty($this->values['error']) ? null : $this->values['error']
-        );
+        try {
+            $result = $shoppingfeedApi->acknowledgeOrder(
+                $apiOrder->getReference(),
+                $apiOrder->getChannel()->getName(),
+                $isSucess ? $this->conveyor['id_order'] : null,
+                $isSucess,
+                empty($this->values['error']) ? null : $this->values['error']
+            );
+        } catch (Exception $e) {
+            ProcessLoggerHandler::logError(
+                $this->logPrefix .
+                sprintf(
+                    $this->l('An error while to acknowledge order. Error Message: %s.', 'ShoppingfeedOrderSyncActions'),
+                    $e->getMessage()
+                ),
+                'Order',
+                empty($this->conveyor['sfOrder']) === false ? $this->conveyor['sfOrder']->id_order : ''
+            );
+
+            return true;
+        }
+
         if (!$result || !iterator_count($result->getTickets())) {
             ProcessLoggerHandler::logError(
                 $this->logPrefix .
