@@ -626,6 +626,17 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             )
         );
 
+        if ($cart->nbProducts() === 0) {
+            $this->values['error'] = sprintf(
+                    $this->l('Could not add product to cart : %s', 'ShoppingfeedOrderImportActions'),
+                    $cart->id
+                );
+            ProcessLoggerHandler::logError($this->logPrefix . $this->values['error'], 'Order');
+            $this->forward('acknowledgeOrder');
+
+            return false;
+        }
+
         ProcessLoggerHandler::logInfo(
             $this->logPrefix .
                 $this->l('Step 8/11 : Products added to cart.', 'ShoppingfeedOrderImportActions'),
