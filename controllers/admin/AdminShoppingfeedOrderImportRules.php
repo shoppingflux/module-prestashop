@@ -21,12 +21,14 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
+require_once _PS_MODULE_DIR_ . 'shoppingfeed/vendor/autoload.php';
+
 use ShoppingfeedAddon\OrderImport\RulesManager;
 
 /**
  * This admin controller displays the module's general configuration forms
  */
-class AdminShoppingfeedOrderImportRulesController extends ModuleAdminController
+class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminController
 {
     public $bootstrap = true;
 

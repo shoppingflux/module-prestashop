@@ -21,12 +21,14 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
+require_once _PS_MODULE_DIR_ . 'shoppingfeed/vendor/autoload.php';
+
 use ShoppingfeedClasslib\Actions\ActionsHandler;
 
 /**
  * This admin controller displays the module's general configuration forms
  */
-class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
+class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminController
 {
     public $bootstrap = true;
 
@@ -398,6 +400,10 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
      */
     public function renderFactoryConfigForm()
     {
+        $syncByDateUpdate = (bool)Configuration::get(Shoppingfeed::PRODUCT_SYNC_BY_DATE_UPD);
+        $time_full_update = (int)Configuration::get(Shoppingfeed::PRODUCT_FEED_TIME_FULL_UPDATE);
+        $interval_cron = (int)Configuration::get(Shoppingfeed::PRODUCT_FEED_INTERVAL_CRON);
+
         $fields_form = array(
             'legend' => array(
                 'title' => $this->module->l('Factory settings', 'AdminShoppingfeedGeneralSettings'),
@@ -454,7 +460,7 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
                 array(
                     'type' => 'switch',
                     'is_bool' => true,
-                    'disabled' => (Tools::getValue('with_factory') !== false) ? false : true,
+                    'disabled' => (Tools::getValue('with_factory') !== false) ? ($time_full_update > 0 || $interval_cron > 0) : true,
                     'values' => array(
                         array(
                             'value' => 1,
@@ -465,6 +471,20 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
                     ),
                     'label' => $this->module->l("Synchronize the XML feed from the 'ps_product.date_upd' et 'ps_product_shop.date_upd' fields", 'AdminShoppingfeedGeneralSettings'),
                     'name' => Shoppingfeed::PRODUCT_SYNC_BY_DATE_UPD,
+                ),
+                array(
+                    'type' => 'number',
+                    'label' => $this->module->l('Update products in XML feed every X hours', 'AdminShoppingfeedGeneralSettings'),
+                    'name' => Shoppingfeed::PRODUCT_FEED_TIME_FULL_UPDATE,
+                    'disabled' => (Tools::getValue('with_factory') !== false) ? $syncByDateUpdate : true,
+                    'class' => 'for_real'
+                ),
+                array(
+                    'type' => 'number',
+                    'label' => $this->module->l('Cron update time every X minutes', 'AdminShoppingfeedGeneralSettings'),
+                    'name' => Shoppingfeed::PRODUCT_FEED_INTERVAL_CRON,
+                    'disabled' => (Tools::getValue('with_factory') !== false) ? $syncByDateUpdate : true,
+                    'class' => 'for_real'
                 ),
             ),
         );
@@ -481,7 +501,9 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
 
         $fields_value = array(
             Shoppingfeed::PRODUCT_FEED_REFERENCE_FORMAT => Configuration::get(Shoppingfeed::PRODUCT_FEED_REFERENCE_FORMAT),
-            Shoppingfeed::PRODUCT_SYNC_BY_DATE_UPD => (bool)Configuration::get(Shoppingfeed::PRODUCT_SYNC_BY_DATE_UPD),
+            Shoppingfeed::PRODUCT_SYNC_BY_DATE_UPD => $syncByDateUpdate,
+            Shoppingfeed::PRODUCT_FEED_TIME_FULL_UPDATE => $time_full_update,
+            Shoppingfeed::PRODUCT_FEED_INTERVAL_CRON =>  $interval_cron,
             'with_factory' => Tools::getValue('with_factory'),
         );
 
@@ -489,6 +511,8 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
         $this->setHelperDisplay($helper);
         $helper->fields_value = $fields_value;
         $helper->tpl_vars = $this->getTemplateFormVars();
+        $helper->base_folder = $this->getTemplatePath();
+        $helper->base_tpl = 'shoppingfeed_general_settings/factory_form.tpl';
 
         return $helper->generateForm(array(array('form' => $fields_form)));
     }
@@ -570,7 +594,7 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
 
         return true;
     }
-    
+
 
     public function purgePrealoading()
     {
@@ -604,9 +628,13 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
     {
         $reference_format = Tools::getValue(Shoppingfeed::PRODUCT_FEED_REFERENCE_FORMAT);
         $sync_by_date = Tools::getValue(Shoppingfeed::PRODUCT_SYNC_BY_DATE_UPD);
+        $time_full_update  = Tools::getValue(Shoppingfeed::PRODUCT_FEED_TIME_FULL_UPDATE);
+        $interval_cron = Tools::getValue(Shoppingfeed::PRODUCT_FEED_INTERVAL_CRON);
 
         Configuration::updateGlobalValue(Shoppingfeed::PRODUCT_FEED_REFERENCE_FORMAT, $reference_format);
         Configuration::updateGlobalValue(Shoppingfeed::PRODUCT_SYNC_BY_DATE_UPD, $sync_by_date);
+        Configuration::updateGlobalValue(Shoppingfeed::PRODUCT_FEED_TIME_FULL_UPDATE, $time_full_update);
+        Configuration::updateGlobalValue(Shoppingfeed::PRODUCT_FEED_INTERVAL_CRON, $interval_cron);
 
         return true;
     }
@@ -699,7 +727,7 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
             $selected = explode(',', $selected);
         }
         $products = [
-            'selected' => [], 
+            'selected' => [],
             'unselected' => []
         ];
         switch ($product_rule_type) {
@@ -769,5 +797,14 @@ class AdminShoppingfeedGeneralSettingsController extends ModuleAdminController
         ]);
 
         return $tpl->display();
+    }
+
+    public function setMedia($isNewTheme = false)
+    {
+        parent::setMedia($isNewTheme);
+
+        if ((Tools::getValue('with_factory') !== false)) {
+            $this->addJS(_PS_MODULE_DIR_ . 'shoppingfeed/views/js/general_settings/general_settings.js');
+        }
     }
 }

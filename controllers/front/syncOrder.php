@@ -26,12 +26,14 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
+require_once _PS_MODULE_DIR_ . 'shoppingfeed/vendor/autoload.php';
+
 use ShoppingfeedClasslib\Actions\ActionsHandler;
 use ShoppingfeedClasslib\Extensions\ProcessMonitor\Controllers\Front\CronController;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 use ShoppingfeedClasslib\Registry;
 
-class ShoppingfeedSyncOrderModuleFrontController extends CronController
+class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronController
 {
     public $taskDefinition = array(
         'name' => 'shoppingfeed:syncOrder',

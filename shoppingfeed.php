@@ -70,6 +70,9 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     const PRODUCT_FEED_RULE_FILTERS = "SHOPPINGFEED_PRODUCT_FEED_RULE_FILTERS";
     const PRODUCT_VISIBILTY_NOWHERE = "SHOPPINGFEED_PRODUCT_VISIBILTY_NOWHERE";
     const PRODUCT_SYNC_BY_DATE_UPD = "SHOPPINGFEED_PRODUCT_SYNC_BY_DATE_UPD";
+    const PRODUCT_FEED_TIME_FULL_UPDATE = "SHOPPINGFEED_PRODUCT_FEED_TIME_FULL_UPDATE";
+    const PRODUCT_FEED_INTERVAL_CRON = "SHOPPINGFEED_PRODUCT_FEED_INTERVAL_CRON";
+
 
     public $extensions = array(
         \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerExtension::class,
@@ -248,6 +251,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         'actionObjectSpecificPriceUpdateAfter',
         'actionObjectSpecificPriceDeleteAfter',
         'deleteProductAttribute',
+        'actionAdminSpecificPriceRuleControllerDeleteBefore'
     );
 
     /**
@@ -835,10 +839,13 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         // Combinations hook are not called when saving the product on 1.6
         if (version_compare(_PS_VERSION_, '1.7', '<')) {
             $attributes = $product->getAttributesResume(Context::getContext()->language->id);
-            foreach ($attributes as $attribute) {
-                $this->hookActionObjectCombinationUpdateBefore(array(
-                    'object' => new Combination($attribute['id_product_attribute'])
-                ));
+
+            if (is_array($attributes) && false == empty($attributes)) {
+                foreach ($attributes as $attribute) {
+                    $this->hookActionObjectCombinationUpdateBefore(array(
+                        'object' => new Combination($attribute['id_product_attribute'])
+                    ));
+                }
             }
         }
     }
@@ -1223,5 +1230,22 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     public function hookDeleteProductAttribute($params)
     {
         $this->updateShoppingFeedPreloading([$params['id_product']], ShoppingfeedPreloading::ACTION_SYNC_ALL);
+    }
+
+    public function hookActionAdminSpecificPriceRuleControllerDeleteBefore($params)
+    {
+        $productIds = $this
+            ->getSpecificPriceService()
+            ->getProductIdsByRule((int)Tools::getValue('id_specific_price_rule'));
+
+        $this->updateShoppingFeedPreloading($productIds, ShoppingfeedPreloading::ACTION_SYNC_PRICE);
+    }
+
+    /**
+     * @return \ShoppingfeedAddon\Services\SpecificPriceService
+     */
+    public function getSpecificPriceService()
+    {
+        return new \ShoppingfeedAddon\Services\SpecificPriceService();
     }
 }

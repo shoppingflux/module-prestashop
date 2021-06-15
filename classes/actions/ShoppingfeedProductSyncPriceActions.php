@@ -63,7 +63,13 @@ class ShoppingfeedProductSyncPriceActions extends ShoppingfeedProductSyncActions
             // The developer can skip products to sync by overriding
             // ShoppingFeed::mapProductPrice and have it return false (strict
             // comparison)
-            $price = $sfModule->mapProductPrice($sfProduct, $token->id_shop);
+            $price = $sfModule->mapProductPrice(
+                $sfProduct,
+                $token->id_shop,
+                [
+                    'price_with_reduction' => true
+                ]
+            );
             if (false === $price) {
                 $sfProduct->delete();
                 continue;

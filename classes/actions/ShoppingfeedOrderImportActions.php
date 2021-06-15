@@ -556,7 +556,11 @@ class ShoppingfeedOrderImportActions extends DefaultActions
 
         $cart->id_carrier = $this->conveyor['carrier']->id;
         $cart->id_shop = $this->getIdShop();
-        $cart->delivery_option = json_encode([$cart->id_address_delivery => $cart->id_carrier.',']);
+        if (version_compare(_PS_VERSION_, '1.7.2.5', '>=')) {
+            $cart->delivery_option = Tools::jsonEncode([$cart->id_address_delivery => $cart->id_carrier.',']);
+        } else {
+            $cart->delivery_option = @serialize([$cart->id_address_delivery => $cart->id_carrier.',']);
+        }
         $cart->add();
 
         ProcessLoggerHandler::logInfo(
@@ -591,7 +595,8 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             if ($addToCartResult < 0 || $addToCartResult === false) {
                 $this->values['error'] = sprintf(
                         $this->l('Could not add product %s to cart : %s', 'ShoppingfeedOrderImportActions'),
-                        $apiProduct->reference
+                        $apiProduct->reference,
+                        $cart->id
                     );
                 ProcessLoggerHandler::logError($this->logPrefix . $this->values['error'], 'Order');
                 $this->forward('acknowledgeOrder');
@@ -620,6 +625,17 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 'cart' => &$cart,
             )
         );
+
+        if ($cart->nbProducts() === 0) {
+            $this->values['error'] = sprintf(
+                    $this->l('Could not add product to cart : %s', 'ShoppingfeedOrderImportActions'),
+                    $cart->id
+                );
+            ProcessLoggerHandler::logError($this->logPrefix . $this->values['error'], 'Order');
+            $this->forward('acknowledgeOrder');
+
+            return false;
+        }
 
         ProcessLoggerHandler::logInfo(
             $this->logPrefix .
@@ -778,7 +794,12 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         $apiOrder = $this->conveyor['apiOrder'];
         $this->initProcess($apiOrder);
 
-        $shoppingfeedApi = ShoppingfeedApi::getInstanceByToken($this->conveyor['id_token']);
+        try {
+            $shoppingfeedApi = ShoppingfeedApi::getInstanceByToken($this->conveyor['id_token']);
+        } catch (Exception $e) {
+            $shoppingfeedApi = false;
+        }
+
         if ($shoppingfeedApi == false) {
             ProcessLoggerHandler::logError(
                 $this->logPrefix .
@@ -791,13 +812,28 @@ class ShoppingfeedOrderImportActions extends DefaultActions
 
         $isSucess = array_key_exists('id_order', $this->conveyor);
 
-        $result = $shoppingfeedApi->acknowledgeOrder(
-            $apiOrder->getReference(),
-            $apiOrder->getChannel()->getName(),
-            $isSucess ? $this->conveyor['id_order'] : null,
-            $isSucess,
-            empty($this->values['error']) ? null : $this->values['error']
-        );
+        try {
+            $result = $shoppingfeedApi->acknowledgeOrder(
+                $apiOrder->getReference(),
+                $apiOrder->getChannel()->getName(),
+                $isSucess ? $this->conveyor['id_order'] : null,
+                $isSucess,
+                empty($this->values['error']) ? null : $this->values['error']
+            );
+        } catch (Exception $e) {
+            ProcessLoggerHandler::logError(
+                $this->logPrefix .
+                sprintf(
+                    $this->l('An error while to acknowledge order. Error Message: %s.', 'ShoppingfeedOrderSyncActions'),
+                    $e->getMessage()
+                ),
+                'Order',
+                empty($this->conveyor['sfOrder']) === false ? $this->conveyor['sfOrder']->id_order : ''
+            );
+
+            return true;
+        }
+
         if (!$result || !iterator_count($result->getTickets())) {
             ProcessLoggerHandler::logError(
                 $this->logPrefix .

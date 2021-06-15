@@ -26,6 +26,8 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
+require_once _PS_MODULE_DIR_ . 'shoppingfeed/vendor/autoload.php';
+
 use ShoppingfeedClasslib\Extensions\ProcessMonitor\Controllers\Front\CronController;
 use ShoppingfeedClasslib\Actions\ActionsHandler;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
@@ -36,7 +38,7 @@ use ShoppingfeedClasslib\Registry;
  * synchronize the ShoppingfeedProduct's stocks and prices.
  * @see ShoppingfeedClasslib\Extensions\ProcessMonitor\CronController
  */
-class ShoppingfeedSyncProductModuleFrontController extends CronController
+class ShoppingfeedSyncProductModuleFrontController extends ShoppingfeedCronController
 {
     public $taskDefinition = array(
         'name' => 'shoppingfeed:syncProduct',
@@ -55,9 +57,12 @@ class ShoppingfeedSyncProductModuleFrontController extends CronController
     protected function processCron($data)
     {
         if ((bool)Configuration::get(Shoppingfeed::PRODUCT_SYNC_BY_DATE_UPD)) {
-            $this->addFlagUpdatePreloadingTable();
+            $this->addFlagUpdatePreloadingTableByDateUpdate();
             $this->addTaskSyncProduct();
+        } else if ($this->ifPreloadingTableNeedToBeUpdateAllTime()) {
+            $this->addFlagUpdatePreloadingTableByLastUpdate();
         }
+
         $actions = array();
         if (Configuration::get(Shoppingfeed::STOCK_SYNC_ENABLED)) {
             $actions[ShoppingfeedProduct::ACTION_SYNC_STOCK] = array(
@@ -148,7 +153,7 @@ class ShoppingfeedSyncProductModuleFrontController extends CronController
         );
     }
 
-    private function addFlagUpdatePreloadingTable()
+    private function addFlagUpdatePreloadingTableByDateUpdate()
     {
         Db::getInstance()->execute($this->getSqlUpdatePreloadingTable(\Product::$definition['table']));
 
@@ -157,7 +162,7 @@ class ShoppingfeedSyncProductModuleFrontController extends CronController
         }
     }
 
-    private function getSqlUpdatePreloadingTable($tableProduct) 
+    private function getSqlUpdatePreloadingTable($tableProduct)
     {
         return sprintf('
             UPDATE %1$s%2$s sfp
@@ -193,5 +198,36 @@ class ShoppingfeedSyncProductModuleFrontController extends CronController
             _DB_PREFIX_,
             $task
         );
+    }
+
+    private function ifPreloadingTableNeedToBeUpdateAllTime()
+    {
+        $interval_full_update  = (int)Configuration::getGlobalValue(Shoppingfeed::PRODUCT_FEED_TIME_FULL_UPDATE);
+        $interval_cron = (int)Configuration::getGlobalValue(Shoppingfeed::PRODUCT_FEED_INTERVAL_CRON);
+
+        return (bool)Configuration::get(Shoppingfeed::PRODUCT_SYNC_BY_DATE_UPD) === false
+               && $interval_full_update > 0 && $interval_cron > 0;
+    }
+
+    private function addFlagUpdatePreloadingTableByLastUpdate()
+    {
+        $tokens = (new ShoppingfeedToken())->findAllActive();
+        $interval_full_update  = (int)Configuration::getGlobalValue(Shoppingfeed::PRODUCT_FEED_TIME_FULL_UPDATE);
+        $interval_cron = (int)Configuration::getGlobalValue(Shoppingfeed::PRODUCT_FEED_INTERVAL_CRON);
+        $shoppingfeedPreloading = new ShoppingfeedPreloading();
+
+        foreach ($tokens as $token) {
+            $countPreloading = (int)$shoppingfeedPreloading->getPreloadingCountForSync($token['id_shoppingfeed_token']);
+
+            $sql = sprintf('
+                UPDATE %s%s SET actions = "[\"SYNC_ALL\"]" where id_token = %d order by date_upd, id_product ASC limit 1',
+                _DB_PREFIX_,
+                ShoppingfeedPreloading::$definition['table'],
+                $token['id_shoppingfeed_token'],
+                ceil($countPreloading * $interval_cron / ($interval_full_update * 60))
+            );
+
+            Db::getInstance()->execute($sql);
+        }
     }
 }

@@ -26,6 +26,8 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
+require_once _PS_MODULE_DIR_ . 'shoppingfeed/vendor/autoload.php';
+
 use ShoppingfeedAddon\Exception\ProcessLockedException;
 use ShoppingfeedClasslib\Extensions\ProcessMonitor\Controllers\Front\CronController;
 use ShoppingfeedClasslib\Actions\ActionsHandler;
@@ -38,7 +40,7 @@ use ShoppingfeedClasslib\Extensions\ProcessMonitor\ProcessMonitorHandler;
  * synchronize the ShoppingfeedProduct's stocks and prices.
  * @see ShoppingfeedClasslib\Extensions\ProcessMonitor\CronController
  */
-class ShoppingfeedSyncAllModuleFrontController extends CronController
+class ShoppingfeedSyncAllModuleFrontController extends ShoppingfeedCronController
 {
     /** @var ShoppingfeedSyncProductModuleFrontController*/
     protected $syncProductCron;

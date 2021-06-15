@@ -106,12 +106,16 @@ class ShoppingfeedProductSyncPreloadingActions extends DefaultActions
         $sfModule = Module::getInstanceByName('shoppingfeed');
         $db = Db::getInstance(_PS_USE_SQL_SLAVE_);
         $sql = $sfModule->sqlProductsOnFeed()
-                ->select('ps.id_product')
-                ->where('ps.id_product in (' . implode(',', $this->conveyor['products_id']) .  ')');
+                ->select('ps.id_product');
+
+        if (false === in_array(0, $this->conveyor['products_id'], true)) {
+            $sql->where('ps.id_product in (' . implode(',', $this->conveyor['products_id']) .  ')');
+        }
+
         $result = $db->executeS($sql, true, false);
         $productsAvailable = ($result === [])? [] : array_column($result, 'id_product');
 
-        foreach ($this->conveyor['products_id'] as $product_id) {
+        foreach ($productsAvailable as $product_id) {
             if (in_array($product_id, $productsAvailable)) {
                 foreach ($tokens as $token) {
                     $this->conveyor['id_token'] = $token['id_shoppingfeed_token'];

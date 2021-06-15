@@ -51,6 +51,15 @@ class AdminShoppingfeedProcessMonitorController extends AdminProcessMonitorContr
     {
         $this->module->setBreakingChangesNotices();
 
-        return parent::initContent();
+        parent::initContent();
+
+        // For compatibility with PS version < 1.6.0.11
+        if (version_compare(_PS_VERSION_, '1.6.0.11', '<')) {
+            $this->context->smarty->assign('js_def', Media::getJsDef());
+            $this->context->smarty->assign(
+                'content',
+                $this->context->smarty->fetch(_PS_ALL_THEMES_DIR_.'javascript.tpl') . $this->content
+            );
+        }
     }
 }

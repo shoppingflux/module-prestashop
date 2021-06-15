@@ -302,7 +302,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
 
                     $carrier = new Carrier((int)$order->id_carrier);
                     if (!Validate::isLoadedObject($carrier)) {
-                        ProcessLoggerHandler::logWarning(
+                        ProcessLoggerHandler::logError(
                             $logPrefix . ' ' .
                             $this->l('Carrier could not be loaded.', 'ShoppingfeedOrderSyncActions'),
                             'Order',
