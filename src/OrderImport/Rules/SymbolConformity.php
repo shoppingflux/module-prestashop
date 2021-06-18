@@ -28,15 +28,28 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
+use ShoppingfeedAddon\Services\SymbolValidator;
 use Tools;
 use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
 
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
+use Validate;
+use Address;
 
 class SymbolConformity extends RuleAbstract implements RuleInterface
 {
+    /** @var SymbolValidator*/
+    protected $validator;
+
+    public function __construct($configuration = array())
+    {
+        parent::__construct($configuration);
+
+        $this->validator = new SymbolValidator();
+    }
+
     public function isApplicable(OrderResource $apiOrder)
     {
         if ($this->configuration['enabled']) {
@@ -44,6 +57,34 @@ class SymbolConformity extends RuleAbstract implements RuleInterface
         }
 
         return false;
+    }
+
+    /**
+     * We have to do this on preprocess, as the fields may be used in various
+     * steps
+     *
+     * @param array $params
+     */
+    public function onPreProcess($params)
+    {
+        /** @var \ShoppingfeedAddon\OrderImport\OrderData $orderData */
+        $orderData = $params['orderData'];
+        $apiOrder = $params['apiOrder'];
+
+        $logPrefix = sprintf(
+            $this->l('[Order: %s]', 'SymbolConformity'),
+            $apiOrder->getId()
+        );
+        $logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
+
+        $this->updateAddress($orderData->shippingAddress);
+        $this->updateAddress($orderData->billingAddress);
+
+        ProcessLoggerHandler::logSuccess(
+            $logPrefix .
+            $this->l('Rule triggered. Addresses updated.', 'SymbolConformity'),
+            'Order'
+        );
     }
 
     /**
@@ -94,5 +135,72 @@ class SymbolConformity extends RuleAbstract implements RuleInterface
     public function getDefaultConfiguration()
     {
         return array('enabled' => false);
+    }
+
+    protected function updateAddress(&$address)
+    {
+        $this->validator->validate(
+            $address['firstName'],
+            [
+                'Validate',
+                Address::$definition['fields']['firstname']['validate']
+            ]
+        );
+        $this->validator->validate(
+            $address['lastName'],
+            [
+                'Validate',
+                Address::$definition['fields']['lastname']['validate']
+            ]
+        );
+        $this->validator->validate(
+            $address['company'],
+            [
+                'Validate',
+                Address::$definition['fields']['company']['validate']
+            ]
+        );
+        $this->validator->validate(
+            $address['street'],
+            [
+                'Validate',
+                Address::$definition['fields']['address1']['validate']
+            ]
+        );
+        $this->validator->validate(
+            $address['street2'],
+            [
+                'Validate',
+                Address::$definition['fields']['address2']['validate']
+            ]
+        );
+        $this->validator->validate(
+            $address['postalCode'],
+            [
+                'Validate',
+                Address::$definition['fields']['postcode']['validate']
+            ]
+        );
+        $this->validator->validate(
+            $address['city'],
+            [
+                'Validate',
+                Address::$definition['fields']['city']['validate']
+            ]
+        );
+        $this->validator->validate(
+            $address['phone'],
+            [
+                'Validate',
+                Address::$definition['fields']['phone']['validate']
+            ]
+        );
+        $this->validator->validate(
+            $address['mobilePhone'],
+            [
+                'Validate',
+                Address::$definition['fields']['phone_mobile']['validate']
+            ]
+        );
     }
 }
