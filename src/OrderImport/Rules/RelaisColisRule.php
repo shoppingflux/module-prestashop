@@ -29,6 +29,7 @@ if (!defined('_PS_VERSION_')) {
 }
 
 use Module;
+use ShoppingfeedAddon\Services\IsoConvertor;
 use Symfony\Component\VarDumper\VarDumper;
 use Tools;
 use Configuration;
@@ -165,11 +166,17 @@ class RelaisColisRule extends RuleAbstract implements RuleInterface
     protected function createRelaisColisInfo(Order $order, $idRelais)
     {
         $relaiData = $this->getRelaisData($idRelais);
+        $address = new Address($order->id_address_delivery);
+        $isoCountry = $this->getIsoConvertor()->toISO3(Country::getIsoById($address->id_country));
         $relaisColisInfo = new \RelaisColisInfo();
         $relaisColisInfo->id_cart = $order->id_cart;
         $relaisColisInfo->id_customer = $order->id_customer;
         $relaisColisInfo->rel = $idRelais;
         $relaisColisInfo->selected_date = date('Y-m-d');
+        $relaisColisInfo->rel_adr = $address->address1;
+        $relaisColisInfo->rel_cp = $address->postcode;
+        $relaisColisInfo->rel_vil = $address->city;
+        $relaisColisInfo->fcod_pays = $isoCountry;
 
         if (false == empty($relayData)) {
             // todo: set other properties
@@ -225,5 +232,10 @@ class RelaisColisRule extends RuleAbstract implements RuleInterface
         } catch (Exception $e) {
             return false;
         }
+    }
+
+    protected function getIsoConvertor()
+    {
+        return new IsoConvertor();
     }
 }
