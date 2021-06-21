@@ -220,7 +220,7 @@ class ShoppingfeedSyncProductModuleFrontController extends ShoppingfeedCronContr
             $countPreloading = (int)$shoppingfeedPreloading->getPreloadingCountForSync($token['id_shoppingfeed_token']);
 
             $sql = sprintf('
-                UPDATE %s%s SET actions = "[\"SYNC_ALL\"]" where id_token = %d order by date_upd, id_product ASC limit 1',
+                UPDATE %s%s SET actions = "[\"SYNC_ALL\"]" where id_token = %d order by date_upd, id_product ASC limit %d',
                 _DB_PREFIX_,
                 ShoppingfeedPreloading::$definition['table'],
                 $token['id_shoppingfeed_token'],
