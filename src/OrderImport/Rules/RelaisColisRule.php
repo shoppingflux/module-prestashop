@@ -177,6 +177,7 @@ class RelaisColisRule extends RuleAbstract implements RuleInterface
         $relaisColisInfo->rel_cp = $address->postcode;
         $relaisColisInfo->rel_vil = $address->city;
         $relaisColisInfo->fcod_pays = $isoCountry;
+        $relaisColisInfo->rel_name = $address->lastname;
 
         if (false == empty($relayData)) {
             // todo: set other properties
