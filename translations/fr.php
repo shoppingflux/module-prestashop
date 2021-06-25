@@ -393,3 +393,13 @@ $_MODULE['<{shoppingfeed}prestashop>shoppingfeedordersyncactions_04a31a2d2c31b93
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedordersyncactions_9a1d463e01520f0f748e12d8b8410ce9'] = 'Statut du ticket : %s';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedordersyncactions_ec79d50bff110cff4702118dd52b525f'] = 'Erreurs de synchronisation de Shopping feed';
 $_MODULE['<{shoppingfeed}prestashop>order_status_syncro_bec154cf96926858240b98c628c9949b'] = 'Sélectionnez votre transporteur';
+$_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimport_dc8d604aec1f3ff0ccf7f947cfa17ccc'] = "Le module shoppingfluxexport n'est pas installé, il est impossible d'importer les commandes Shopping Feed depuis ce module";
+$_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimport_25bc0282c5da38ad274b66f46d5ad543'] = "Le module shoppingfluxexport n'est pas activé, il est impossible d'importer les commandes Shopping Feed depuis ce module";
+$_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimport_d234c5528b2025ccd04c75d046305bcb'] = 'Le token %s est inexistant sur Shopping Feed';
+$_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimport_1387b4808de027b304c8515faa9ab2f8'] = "Impossible de récupérer l'API Shopping Feed pour le token %s";
+$_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimport_f4636801e58ad3bf4def82b2d10e88f7'] = 'Impossible de récupérer les commandes à importer : %s';
+$_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimport_579c774c9e8c7f1f496bf9b5e5cb1587'] = 'Commande %s non importée : déjà présente';
+$_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimport_4fbde26b16b0e968e4c17a1b20ee01bb'] = 'Commande %s non importée : commande non présent';
+$_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimport_36d50da08ad712b3556a30b3f7f1781b'] = 'Commande %s non importée : %s';
+$_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimport_ff75f5ba57ad6a43a637e6552f708bd7'] = 'Token %s : %d commandes à importer : %d succès, %d erreurs';
+

@@ -150,6 +150,15 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         ),
         array(
             'name' => array(
+                'en' => 'Shopping Feed',
+                'fr' => 'Shopping Feed'
+            ),
+            'class_name' => 'AdminShoppingfeedOrderImport',
+            'parent_class_name' => 'shoppingfeed',
+            'visible' => false,
+        ),
+        array(
+            'name' => array(
                 'en' => 'Settings',
                 'fr' => 'Paramètres'
             ),
@@ -302,6 +311,15 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
                     'class_name' => 'AdminShoppingfeedOrders',
                     'parent_class_name' => 'shoppingfeed',
                     'visible' => true,
+                ),
+                array(
+                    'name' => array(
+                        'en' => 'Shopping Feed',
+                        'fr' => 'Shopping Feed'
+                    ),
+                    'class_name' => 'AdminShoppingfeedOrderImport',
+                    'parent_class_name' => 'shoppingfeed',
+                    'visible' => false,
                 ),
                 array(
                     'name' => array(
