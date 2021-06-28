@@ -274,11 +274,11 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
                     );
                     return false;
                 }
-
-                $result = $shoppingfeedApi->getUnacknowledgedOrders();
-                if (Configuration::get(\Shoppingfeed::ORDER_IMPORT_SHIPPED) == true) {
-                    $result = array_merge($result, $shoppingfeedApi->getUnacknowledgedOrders(true));
-                }
+                $result = $shoppingfeedApi->getOrdersFromSf([
+                    'acknowledgment' => 'unacknowledged',
+                    'status' => (Configuration::get(\Shoppingfeed::ORDER_IMPORT_SHIPPED) == true)? 'waiting_shipment,shipped' : 'waiting_shipment',
+                    'since' => date('Y-m-d\TH:m:s', strtotime('-7 days'))
+                ]);
             } catch (Exception $e) {
                 ProcessLoggerHandler::logError(
                     sprintf(
