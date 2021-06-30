@@ -368,6 +368,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     public function install()
     {
         $res = parent::install();
+        $res &= $this->addDateIndexToLogs();
 
         $this->setConfigurationDefault(self::STOCK_SYNC_ENABLED, true);
         $this->setConfigurationDefault(self::PRICE_SYNC_ENABLED, true);
@@ -1247,5 +1248,19 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     public function getSpecificPriceService()
     {
         return new \ShoppingfeedAddon\Services\SpecificPriceService();
+    }
+
+    public function addDateIndexToLogs()
+    {
+        $s_index = 'SHOW INDEX
+                FROM '._DB_PREFIX_.'shoppingfeed_processlogger
+                WHERE Key_name = "date_log"';
+
+        if (empty(Db::getInstance()->executeS($s_index))) {
+            $cr_index = "CREATE INDEX date_log ON " . _DB_PREFIX_ . "shoppingfeed_processlogger(date_add)";
+            return DB::getInstance()->execute($cr_index);
+        }
+
+        return true;
     }
 }
