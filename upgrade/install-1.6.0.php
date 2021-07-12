@@ -22,7 +22,7 @@
  * @license   Commercial license
  */
 
-function upgrade_module_1_5_13($module)
+function upgrade_module_1_6_0($module)
 {
     $module->addDateIndexToLogs();
 
