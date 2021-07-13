@@ -59,7 +59,6 @@ class RelaisColisRule extends RuleAbstract implements RuleInterface
      */
     public function isApplicable(OrderResource $apiOrder)
     {
-        $apiOrderShipment = $apiOrder->getShipment();
         $this->relaisColis = Module::getInstanceByName('relaiscolis');
 
         if (Validate::isLoadedObject($this->relaisColis) == false) {
@@ -129,18 +128,6 @@ class RelaisColisRule extends RuleAbstract implements RuleInterface
     }
 
     /**
-     * Gets relay info from the Mondial Relay API
-     *
-     * @param string $idRelais
-     */
-
-    public function getRelaisData($idRelais)
-    {
-        // todo: to implement
-        return [];
-    }
-
-    /**
      * @inheritdoc
      */
     public function getDescription()
@@ -161,7 +148,6 @@ class RelaisColisRule extends RuleAbstract implements RuleInterface
      */
     protected function createRelaisColisInfo(Order $order, $idRelais)
     {
-        $relaiData = $this->getRelaisData($idRelais);
         $address = new Address($order->id_address_delivery);
         $isoCountry = $this->getIsoConvertor()->toISO3(Country::getIsoById($address->id_country));
         $relaisColisInfo = new \RelaisColisInfo();
@@ -174,10 +160,6 @@ class RelaisColisRule extends RuleAbstract implements RuleInterface
         $relaisColisInfo->rel_vil = $address->city;
         $relaisColisInfo->fcod_pays = $isoCountry;
         $relaisColisInfo->rel_name = $address->lastname;
-
-        if (false == empty($relayData)) {
-            // todo: set other properties
-        }
 
         try {
             $relaisColisInfo->save();
