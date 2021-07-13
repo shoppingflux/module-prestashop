@@ -66,11 +66,7 @@ class RelaisColisRule extends RuleAbstract implements RuleInterface
             return false;
         }
 
-        if (Tools::strtolower($apiOrderShipment['carrier']) != 'relais') {
-            return false;
-        }
-
-        return true;
+        return 'laredoute' == Tools::strtolower(trim($apiOrder->getChannel()->getName()));
     }
 
     public function onPostProcess($params)
