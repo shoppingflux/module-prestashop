@@ -66,6 +66,10 @@ abstract class ShoppingfeedProductSyncActions extends DefaultActions
             );
             return false;
         }
+        if ($this->isProductAvailabeForSync($id_product) === false) {
+            return true;
+        }
+
         $action = $this->conveyor['product_action'];
 
         // Save the product for each token
@@ -187,5 +191,16 @@ abstract class ShoppingfeedProductSyncActions extends DefaultActions
             Translate::getModuleTranslation('shoppingfeed', '[Product token:%s]', 'ShoppingfeedProductSyncActions'),
             $id_token
         );
+    }
+
+    private function isProductAvailabeForSync($id_product)
+    {
+        /** @var Shoppingfeed */
+        $sfModule = Module::getInstanceByName('shoppingfeed');
+        $sql = $sfModule->sqlProductsOnFeed()
+                ->select('count(*)')
+                ->where('ps.id_product = ' . $id_product);
+
+        return (int) Db::getInstance()->getValue($sql) > 0;
     }
 }
