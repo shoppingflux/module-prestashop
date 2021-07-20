@@ -68,15 +68,33 @@ class RelaisColisRule extends RuleAbstract implements RuleInterface
         return 'laredoute' == Tools::strtolower(trim($apiOrder->getChannel()->getName()));
     }
 
-    public function onPostProcess($params)
+    public function afterCartCreation($params)
     {
-        $apiOrder = $params['apiOrder'];
-        $order = new Order($params['sfOrder']->id_order);
-        $idRelais = $params['orderData']->shippingAddress['other'];
-
-        if (false == $this->isRelayColisOrder($order)) {
+        if (false == isset($params['cart'])) {
             return false;
         }
+
+        /** @var Cart $cart*/
+        $cart = $params['cart'];
+
+        if (false == $cart instanceof Cart) {
+            return false;
+        }
+
+        $relaisColisCarriers = [
+            (int)Configuration::getGlobalValue('RELAISCOLIS_ID'),
+            (int)Configuration::getGlobalValue('RELAISCOLIS_ID_HOME'),
+            (int)Configuration::getGlobalValue('RELAISCOLIS_ID_MAX'),
+            (int)Configuration::getGlobalValue('RELAISCOLIS_ID_HOME_PLUS')
+        ];
+
+        // Return if not Relais Colis
+        if (false == in_array($cart->id_carrier, $relaisColisCarriers)) {
+            return false;
+        }
+
+        $apiOrder = $params['apiOrder'];
+        $idRelais = $params['orderData']->shippingAddress['other'];
 
         $logPrefix = sprintf(
             $this->l('[Order: %s]', 'Mondialrelay'),
@@ -84,47 +102,34 @@ class RelaisColisRule extends RuleAbstract implements RuleInterface
         );
         $logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
 
-        ProcessLoggerHandler::logInfo(
-            $logPrefix .
-                $this->l('[Order: %s]', 'Mondialrelay'),
-            'Order',
-            $order->id
-        );
-
         if (empty($idRelais)) {
             ProcessLoggerHandler::logError(
                 $logPrefix .
-                    $this->l('Rule triggered. No relay ID found in shipping address \'Other\' field', 'Mondialrelay'),
-                'Order',
-                $order->id
+                $this->l('Rule triggered. No relay ID found in shipping address \'Other\' field', 'Mondialrelay')
             );
+
             return false;
         }
 
         ProcessLoggerHandler::logInfo(
             sprintf(
                 $logPrefix .
-                    $this->l('Rule triggered. Id Relay : %s / id_address_delivery : %s', 'RelaisColisRule'),
-                $idRelais,
-                $order->id_address_delivery
-            ),
-            'Order',
-            $order->id
+                $this->l('Rule triggered. Id Relay : %s', 'RelaisColisRule'),
+                $idRelais
+            )
         );
 
-        $relaisColisInfo = $this->createRelaisColisInfo($order, $idRelais);
+        $relaisColisInfo = $this->createRelaisColisInfo($cart, $idRelais);
 
         if (false == Validate::isLoadedObject($relaisColisInfo)) {
             ProcessLoggerHandler::logError(
                 $logPrefix .
-                    $this->l('Failed to create a relais colis info object', 'RelaisColisRule'),
-                'Order',
-                $order->id
+                $this->l('Failed to create a relais colis info object', 'RelaisColisRule')
             );
             return false;
         }
 
-        return $this->updateRelaisColisOrder($order, $relaisColisInfo);
+        return true;
     }
 
     /**
@@ -140,19 +145,32 @@ class RelaisColisRule extends RuleAbstract implements RuleInterface
      */
     public function getConditions()
     {
-        return $this->l('If the order has \'Relais Colis\' in its carrier name.', 'RelaisColisRule');
+        return $this->l('If the order has \'Laredoute\' in its marketplace name.', 'RelaisColisRule');
     }
 
     /**
      * @return \RelaisColisInfo
      */
-    protected function createRelaisColisInfo(Order $order, $idRelais)
+    protected function createRelaisColisInfo(Cart $cart, $idRelais)
     {
-        $address = new Address($order->id_address_delivery);
+        if (version_compare(_PS_VERSION_, '1.7.2.5', '>=')) {
+            $deliveryOption = json_decode($cart->delivery_option, true);
+        } else {
+            $deliveryOption = unserialize($cart->delivery_option);
+        }
+
+        if (false == is_array($deliveryOption) || empty($deliveryOption)) {
+            return new \RelaisColisInfo();
+        }
+
+        $addresses = array_keys($deliveryOption);
+        $idDeliveryAddress = (int)array_pop($addresses);
+        $address = new Address($idDeliveryAddress);
         $isoCountry = $this->getIsoConvertor()->toISO3(Country::getIsoById($address->id_country));
+
         $relaisColisInfo = new \RelaisColisInfo();
-        $relaisColisInfo->id_cart = $order->id_cart;
-        $relaisColisInfo->id_customer = $order->id_customer;
+        $relaisColisInfo->id_cart = $cart->id;
+        $relaisColisInfo->id_customer = $cart->id_customer;
         $relaisColisInfo->rel = $idRelais;
         $relaisColisInfo->selected_date = date('Y-m-d');
         $relaisColisInfo->rel_adr = $address->address1;
@@ -164,53 +182,10 @@ class RelaisColisRule extends RuleAbstract implements RuleInterface
         try {
             $relaisColisInfo->save();
         } catch (Exception $e) {
-            throw $e;
+            return new \RelaisColisInfo();
         }
 
         return $relaisColisInfo;
-    }
-
-    /**
-     * @param Order $order
-     * @param \RelaisColisInfo $relaisColisInfo
-     * @return bool
-     */
-    protected function updateRelaisColisOrder(Order $order, \RelaisColisInfo $relaisColisInfo)
-    {
-        $relaisColisOrder = $this->getRelaisColisOrder($order);
-        $relaisColisOrder->id_relais_colis_info = $relaisColisInfo->id;
-
-        try {
-            $relaisColisOrder->save();
-        } catch (Exception $e) {
-            return false;
-        }
-    }
-
-    protected function getRelaisColisOrder(Order $order)
-    {
-        try {
-            return new \RelaisColisOrder(\RelaisColisOrder::getRelaisColisOrderId($order->id));
-        } catch (Exception $e) {
-            return new \RelaisColisOrder();
-        }
-    }
-
-    /**
-     * @return bool
-     */
-    protected function isRelayColisOrder(Order $order)
-    {
-        $query = (new DbQuery())
-            ->select('id_relais_colis_order')
-            ->from('relaiscolis_order')
-            ->where('id_order = ' . (int)$order->id);
-
-        try {
-            return (bool)Db::getInstance()->getValue($query);
-        } catch (Exception $e) {
-            return false;
-        }
     }
 
     protected function getIsoConvertor()
