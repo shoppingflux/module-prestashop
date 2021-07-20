@@ -138,8 +138,9 @@ class ShoppingfeedProduct extends ObjectModel
                 ' AND pa.`id_product` = ' . (int) $this->id_product;
         }
         $sql->where($where);
+        $reference = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
 
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
+        return is_string($reference) ? trim($reference) : '';
     }
 
 

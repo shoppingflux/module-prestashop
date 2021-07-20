@@ -89,6 +89,7 @@ class ShoppingfeedProductSyncPreloadingActions extends DefaultActions
             );
         }
 
+        $this->removeProductFeed();
         return true;
     }
 
@@ -106,16 +107,13 @@ class ShoppingfeedProductSyncPreloadingActions extends DefaultActions
         $sfModule = Module::getInstanceByName('shoppingfeed');
         $db = Db::getInstance(_PS_USE_SQL_SLAVE_);
         $sql = $sfModule->sqlProductsOnFeed()
-                ->select('ps.id_product');
-
-        if (false === in_array(0, $this->conveyor['products_id'], true)) {
-            $sql->where('ps.id_product in (' . implode(',', $this->conveyor['products_id']) .  ')');
-        }
+                ->select('ps.id_product')
+                ->where('ps.id_product in (' . implode(',', $this->conveyor['products_id']) .  ')');
 
         $result = $db->executeS($sql, true, false);
         $productsAvailable = ($result === [])? [] : array_column($result, 'id_product');
 
-        foreach ($productsAvailable as $product_id) {
+        foreach ($this->conveyor['products_id'] as $product_id) {
             if (in_array($product_id, $productsAvailable)) {
                 foreach ($tokens as $token) {
                     $this->conveyor['id_token'] = $token['id_shoppingfeed_token'];
@@ -139,6 +137,44 @@ class ShoppingfeedProductSyncPreloadingActions extends DefaultActions
         return true;
     }
 
+    public function purge()
+    {
+        $preloading = new ShoppingfeedPreloading();
+        $preloading->purge();
+        $tokens = (new ShoppingfeedToken())->findAllActive();
+
+        foreach ($tokens as $token) {
+            $this->conveyor['id_token'] = $token['id_shoppingfeed_token'];
+            if (Configuration::get(Shoppingfeed::REAL_TIME_SYNCHRONIZATION)) {
+
+                $this->forward('getBatch');
+            }
+        }
+    }
+
+    public function removeProductFeed()
+    {
+        $tokens = (new ShoppingfeedToken())->findAllActive();
+        $sfModule = Module::getInstanceByName('shoppingfeed');
+        $db = Db::getInstance(_PS_USE_SQL_SLAVE_);
+
+        foreach ($tokens as $token) {
+            $sql = $sfModule->sqlProductsOnFeed($token['id_shop'])
+                             ->select('ps.id_product');
+            $result = $db->executeS($sql, true, false);
+            if ($result === []) {
+                continue;
+            }
+            $db->delete(
+                ShoppingfeedPreloading::$definition['table'],
+                sprintf(
+                    'id_token = %s and id_product not in (%s)',
+                    $token['id_shoppingfeed_token'],
+                    implode(',',  array_column($result, 'id_product'))
+                )
+            );
+        }
+    }
 
     public function deleteProduct()
     {
