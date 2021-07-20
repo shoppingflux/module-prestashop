@@ -1034,9 +1034,15 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     public function updateShoppingFeedPreloading($products_id, $action)
     {
         $handler = new \ShoppingfeedClasslib\Actions\ActionsHandler();
+        if (in_array(0, $products_id, true)) {
+            $action = 'purge';
+        } else {
+            $action = 'saveProduct';
+        }
+
         try {
             $processResult = $handler
-                        ->addActions('saveProduct')
+                        ->addActions($action)
                         ->setConveyor(
                             array(
                                 'products_id' => $products_id,
