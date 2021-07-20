@@ -66,9 +66,7 @@ abstract class ShoppingfeedProductSyncActions extends DefaultActions
             );
             return false;
         }
-        if ($this->isProductAvailabeForSync($id_product) === false) {
-            return true;
-        }
+
 
         $action = $this->conveyor['product_action'];
 
@@ -76,6 +74,9 @@ abstract class ShoppingfeedProductSyncActions extends DefaultActions
         $sft = new ShoppingfeedToken();
         $tokens = $sft->findAllActive();
         foreach ($tokens as $token) {
+            if ($this->isProductAvailabeForSync($id_product, $token['id_shop']) === false) {
+                continue;
+            }
             $this->conveyor['id_token'] = $token['id_shoppingfeed_token'];
             $sfProduct = ShoppingfeedProduct::getFromUniqueKey(
                 $action,
@@ -193,11 +194,11 @@ abstract class ShoppingfeedProductSyncActions extends DefaultActions
         );
     }
 
-    private function isProductAvailabeForSync($id_product)
+    private function isProductAvailabeForSync($id_product, $id_shop)
     {
         /** @var Shoppingfeed */
         $sfModule = Module::getInstanceByName('shoppingfeed');
-        $sql = $sfModule->sqlProductsOnFeed()
+        $sql = $sfModule->sqlProductsOnFeed($id_shop)
                 ->select('count(*)')
                 ->where('ps.id_product = ' . $id_product);
 
