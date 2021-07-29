@@ -59,13 +59,18 @@ class RelaisColisRule extends RuleAbstract implements RuleInterface
      */
     public function isApplicable(OrderResource $apiOrder)
     {
+        $apiOrderShipment = $apiOrder->getShipment();
         $this->relaisColis = Module::getInstanceByName('relaiscolis');
 
         if (Validate::isLoadedObject($this->relaisColis) == false) {
             return false;
         }
 
-        return 'laredoute' == Tools::strtolower(trim($apiOrder->getChannel()->getName()));
+        if (Tools::strtolower($apiOrderShipment['carrier']) != 'relais') {
+            return false;
+        }
+
+        return true;
     }
 
     public function afterCartCreation($params)
@@ -97,7 +102,7 @@ class RelaisColisRule extends RuleAbstract implements RuleInterface
         $idRelais = $params['orderData']->shippingAddress['other'];
 
         $logPrefix = sprintf(
-            $this->l('[Order: %s]', 'Mondialrelay'),
+            $this->l('[Order: %s]', 'Shoppingfeed.Rule'),
             $apiOrder->getId()
         );
         $logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
@@ -105,7 +110,7 @@ class RelaisColisRule extends RuleAbstract implements RuleInterface
         if (empty($idRelais)) {
             ProcessLoggerHandler::logError(
                 $logPrefix .
-                $this->l('Rule triggered. No relay ID found in shipping address \'Other\' field', 'Mondialrelay')
+                $this->l('Rule triggered. No relay ID found in shipping address \'Other\' field', 'Shoppingfeed.Rule')
             );
 
             return false;
@@ -114,7 +119,7 @@ class RelaisColisRule extends RuleAbstract implements RuleInterface
         ProcessLoggerHandler::logInfo(
             sprintf(
                 $logPrefix .
-                $this->l('Rule triggered. Id Relay : %s', 'RelaisColisRule'),
+                $this->l('Rule triggered. Id Relay : %s', 'Shoppingfeed.Rule'),
                 $idRelais
             )
         );
@@ -124,12 +129,59 @@ class RelaisColisRule extends RuleAbstract implements RuleInterface
         if (false == Validate::isLoadedObject($relaisColisInfo)) {
             ProcessLoggerHandler::logError(
                 $logPrefix .
-                $this->l('Failed to create a relais colis info object', 'RelaisColisRule')
+                $this->l('Failed to create a relais colis info object', 'Shoppingfeed.Rule')
             );
             return false;
         }
 
         return true;
+    }
+
+    public function onPostProcess($params)
+    {
+        if (false == isset($params['apiOrder'])) {
+            return false;
+        }
+
+        if (false == isset($params['sfOrder'])) {
+            return false;
+        }
+
+        /**
+         * @var OrderResource $apiOrder
+         * @var \ShoppingfeedOrder $sfOrder
+         */
+        $apiOrder = $params['apiOrder'];
+        $sfOrder = $params['sfOrder'];
+        $psOrder = new Order($sfOrder->id_order);
+        $addressShipping = new Address($psOrder->id_address_delivery);
+        $logPrefix = sprintf(
+            $this->l('[Order: %s]', 'Shoppingfeed.Rule'),
+            $apiOrder->getId()
+        );
+        $logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
+
+        if (false == Validate::isLoadedObject($addressShipping)) {
+            ProcessLoggerHandler::logError(
+                $logPrefix .
+                $this->l('Rule triggered. Invalid a shipping address', 'Shoppingfeed.Rule')
+            );
+
+            return false;
+        }
+
+        ProcessLoggerHandler::logInfo(
+            $logPrefix .
+            $this->l('Rule triggered. Updating a shipping address', 'Shoppingfeed.Rule')
+        );
+
+        $sfAddressShipping = $apiOrder->getShippingAddress();
+        $sfAddressBilling = $apiOrder->getBillingAddress();
+        $addressShipping->lastname = $sfAddressShipping['lastName'];
+        $addressShipping->address1 = $sfAddressBilling['lastName'].' '.$sfAddressBilling['firstName'];
+        $addressShipping->address2 = Tools::substr($sfAddressShipping['street'], 0, 128);
+
+        return $addressShipping->save();
     }
 
     /**

@@ -1194,7 +1194,6 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     public function hookActionShoppingfeedOrderImportRegisterSpecificRules($params)
     {
         $defaultRulesClassNames = array(
-            ShoppingfeedAddon\OrderImport\Rules\LaredoutePreimportRule::class, // This rule should be executed before AmazonEbay rule, because AmazonEbay can change a necessary for Laredoute info (for example a lastname)
             ShoppingfeedAddon\OrderImport\Rules\AmazonB2B::class,
             ShoppingfeedAddon\OrderImport\Rules\AmazonEbay::class,
             ShoppingfeedAddon\OrderImport\Rules\AmazonPrime::class,
