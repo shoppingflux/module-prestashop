@@ -243,6 +243,20 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
             foreach ($processedTaskOrders as $taskOrder) {
                 $taskOrder->delete();
             }
+
+            //Resend failed tickets.
+            $handler = new ActionsHandler();
+
+            foreach ($failedTicketsStatusTaskOrders as $failedTicket) {
+                /** @var ShoppingfeedTaskOrder $failedTicket*/
+                $handler
+                    ->setConveyor(array(
+                        'id_order' => $failedTicket->id_order,
+                        'order_action' => ShoppingfeedTaskOrder::ACTION_SYNC_STATUS,
+                    ))
+                    ->addActions('saveTaskOrder');
+                $handler->process('shoppingfeedOrderSync');
+            }
         }
     }
 
