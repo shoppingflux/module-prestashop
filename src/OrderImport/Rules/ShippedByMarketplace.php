@@ -28,6 +28,7 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
+use Exception;
 use Module;
 use Db;
 use Address;
@@ -65,8 +66,24 @@ class ShippedByMarketplace extends RuleAbstract implements RuleInterface
             'epmm',
             'clogistique'
         ];
-        $orderRawData = $apiOrder->toArray();
-        return in_array(Tools::strtolower($apiOrder->getChannel()->getName()), $shippedByMarketplace);
+
+        if (in_array(Tools::strtolower($apiOrder->getChannel()->getName()), $shippedByMarketplace)) {
+            return true;
+        }
+
+        if ($this->isShippedAmazon($apiOrder)) {
+            return true;
+        }
+
+        if ($this->isShippedCdiscount($apiOrder)) {
+            return true;
+        }
+
+        if ($this->isShippedManomano($apiOrder)) {
+            return true;
+        }
+
+        return false;
     }
 
     public function checkProductStock($params)
@@ -184,5 +201,44 @@ class ShippedByMarketplace extends RuleAbstract implements RuleInterface
         ];
 
         return $states;
+    }
+
+    /**
+     * @param OrderResource $apiOrder
+     * @return bool
+     */
+    protected function isShippedAmazon(OrderResource $apiOrder)
+    {
+        try {
+            return strpos(strtolower($apiOrder->getPaymentInformation()['method']), 'afn') !== false;
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+
+    /**
+     * @param OrderResource $apiOrder
+     * @return bool
+     */
+    protected function isShippedCdiscount(OrderResource $apiOrder)
+    {
+        try {
+            return strpos(strtolower($apiOrder->getPaymentInformation()['method']), 'clogistique') !== false;
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+
+    /**
+     * @param OrderResource $apiOrder
+     * @return bool
+     */
+    protected function isShippedManomano(OrderResource $apiOrder)
+    {
+        try {
+            return strtolower($apiOrder->toArray()['additionalFields']['env']) == 'epmm';
+        } catch (Exception $e) {
+            return false;
+        }
     }
 }
