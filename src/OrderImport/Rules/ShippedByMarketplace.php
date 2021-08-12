@@ -76,6 +76,25 @@ class ShippedByMarketplace extends RuleAbstract implements RuleInterface
         return false;
     }
 
+    public function onVerifyOrder($params)
+    {
+        if (Configuration::get(\Shoppingfeed::ORDER_IMPORT_SHIPPED) == false) {
+            $apiOrder = $params['apiOrder'];
+            $logPrefix = sprintf(
+                $this->l('[Order: %s]', 'ShippedByMarketplace'),
+                $apiOrder->getId()
+            );
+            $logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
+
+            ProcessLoggerHandler::logInfo(
+                $logPrefix . $this->l('Rule triggered. Import should be skipped.', 'Shoppingfeed.Rule'),
+                'Order'
+            );
+
+            $params['isSkipImport'] = true;
+        }
+    }
+
     public function checkProductStock($params)
     {
         $psProduct = $params['psProduct'];

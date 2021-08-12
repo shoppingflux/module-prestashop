@@ -255,12 +255,23 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         }
 
         // Specific rules validation
+        $isSkipImport = false;
         $this->specificRulesManager->applyRules(
             'onVerifyOrder',
             array(
-                'apiOrder' => $this->conveyor['apiOrder']
+                'apiOrder' => $this->conveyor['apiOrder'],
+                'isSkipImport' => &$isSkipImport
             )
         );
+
+        if ($isSkipImport) {
+            ProcessLoggerHandler::logInfo(
+                $this->logPrefix . $this->l('Skip an order import', 'ShoppingfeedOrderImportActions'),
+                'Order'
+            );
+            $this->forward('acknowledgeOrder');
+            return false;
+        }
 
         ProcessLoggerHandler::logInfo(
             $this->logPrefix .
