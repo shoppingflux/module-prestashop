@@ -61,16 +61,6 @@ class ShippedByMarketplace extends RuleAbstract implements RuleInterface
             return true;
         }
 
-        $shippedByMarketplace = [
-            'amazon fba',
-            'epmm',
-            'clogistique'
-        ];
-
-        if (in_array(Tools::strtolower($apiOrder->getChannel()->getName()), $shippedByMarketplace)) {
-            return true;
-        }
-
         if ($this->isShippedAmazon($apiOrder)) {
             return true;
         }
