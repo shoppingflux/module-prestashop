@@ -313,16 +313,29 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
                     // We don't support multi-shipping; use the first shipping method
                     $orderShipping = $order->getShipping();
                     if (!empty($orderShipping[0])) {
+                        $trackingNumber = $orderShipping[0]['tracking_number'];
+                        // Getting a tracking number for relaiscolis carrier
+                        if ($carrier->external_module_name == 'relaiscolis') {
+                            //import the necessary classes
+                            Module::getInstanceByName('relaiscolis');
+                            $order = new Order($order->id);
+                            $idRelaisColisOrder = (int)RelaisColisOrder::getRelaisColisOrderId((int)$order->id);
+                            $relaisColisOrder = new RelaisColisOrder($idRelaisColisOrder);
+
+                            if (Validate::isLoadedObject($relaisColisOrder)) {
+                                $trackingNumber = Tools::substr($relaisColisOrder->pdf_number, 2, 10);
+                            }
+                        }
                         // From the old module. Not sure if it's all useful, but
                         // we'll suppose it knows better.
                         // Build the tracking url.
                         $orderTrackingUrl = str_replace('http://http://', 'http://', $carrier->url);
-                        $orderTrackingUrl = str_replace('@', $orderShipping[0]['tracking_number'], $orderTrackingUrl);
+                        $orderTrackingUrl = str_replace('@', $trackingNumber, $orderTrackingUrl);
 
                         $taskOrderPayload = array(
                             // "state_name" is indeed the carrier's name...
                             'carrier_name' => $orderShipping[0]['state_name'],
-                            'tracking_number' => $orderShipping[0]['tracking_number'],
+                            'tracking_number' => $trackingNumber,
                             'tracking_url' => $orderTrackingUrl,
                         );
                     }
