@@ -686,7 +686,7 @@ class ProductSerializer
                 $specificPrice,
                 true,
                 Context::getContext()->currency,
-                true
+                false
             );
 
             $productPriceWithoutReduction = $this->product->getPrice(
