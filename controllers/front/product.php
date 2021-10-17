@@ -172,7 +172,7 @@ class ShoppingfeedProductModuleFrontController  extends \ModuleFrontController
         try {
             foreach ($products as $product) {
                 $ids[] = $product['id_product'];
-                $sfp->saveProduct($product['id_product'], $product['id_token'], $token['id_lang'], $token['id_shop']);
+                $sfp->saveProduct($product['id_product'], $product['id_token'], $token['id_lang'], $token['id_shop'], $token->id_currency);
             }
         } catch (Exception $e) {
             ProcessLoggerHandler::logError(
@@ -242,25 +242,18 @@ class ShoppingfeedProductModuleFrontController  extends \ModuleFrontController
                 continue;
             }
 
-            if (false === isset($specificPrice['from_quantity']) || (int)$specificPrice['from_quantity'] !== 1) {
-                continue;
-            }
-
-            $from = DateTime::createFromFormat('Y-m-d H:i:s', $specificPrice['from']);
-            $to = DateTime::createFromFormat('Y-m-d H:i:s', $specificPrice['to']);
             $now = new DateTime();
-            $isUnlimited = $specificPrice['from'] == '0000-00-00 00:00:00' && $specificPrice['to'] == '0000-00-00 00:00:00';
-
-            if (!$from || !$to || !$now) {
-                continue;
+            if ($specificPrice['to'] !== '0000-00-00 00:00:00') {
+                $to = DateTime::createFromFormat('Y-m-d H:i:s', $specificPrice['to']);
+                if ($to->diff($now)->invert === 0) {
+                    continue;
+                }
             }
-
-            if ($to->diff($now)->invert === 0 && $isUnlimited === false) {
-                continue;
-            }
-
-            if ($from->diff($now)->invert === 1 && $isUnlimited === false) {
-                continue;
+            if ($specificPrice['from'] !== '0000-00-00 00:00:00') {
+                $from = DateTime::createFromFormat('Y-m-d H:i:s', $specificPrice['from']);
+                if ($from->diff($now)->invert === 1) {
+                    continue;
+                }
             }
 
             return (float)$specificPrice['discount'];
