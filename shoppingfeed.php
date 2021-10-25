@@ -1035,9 +1035,15 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     public function updateShoppingFeedPreloading($products_id, $action)
     {
         $handler = new \ShoppingfeedClasslib\Actions\ActionsHandler();
+        if (in_array(0, $products_id, true)) {
+            $action = 'purge';
+        } else {
+            $action = 'saveProduct';
+        }
+
         try {
             $processResult = $handler
-                        ->addActions('saveProduct')
+                        ->addActions($action)
                         ->setConveyor(
                             array(
                                 'products_id' => $products_id,
@@ -1205,7 +1211,9 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             ShoppingfeedAddon\OrderImport\Rules\Socolissimo::class,
             ShoppingfeedAddon\OrderImport\Rules\ChangeStateOrder::class,
             ShoppingfeedAddon\OrderImport\Rules\ShippedByMarketplace::class,
+            ShoppingfeedAddon\OrderImport\Rules\RelaisColisRule::class,
             ShoppingfeedAddon\OrderImport\Rules\TestingOrder::class,
+            ShoppingfeedAddon\OrderImport\Rules\SymbolConformity::class
         );
 
         foreach($defaultRulesClassNames as $ruleClassName) {
