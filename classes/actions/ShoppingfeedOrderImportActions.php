@@ -1030,8 +1030,20 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             Db::getInstance()->update('order_carrier', $updateOrderTracking, '`id_order` = '.(int)$id_order);
         }
 
-        $updatePayment = array('amount' => Tools::ps_round($paymentInformation['totalAmount'], 4));
-        Db::getInstance()->update('order_payment', $updatePayment, '`order_reference` = "'.pSQL($this->conveyor['order_reference']).'"');
+        $queryUpdateOrderPayment = sprintf(
+            '
+                UPDATE 
+                    %s as o
+                LEFT JOIN %s op ON o.reference = op.order_reference
+                SET op.amount = %f 
+                WHERE o.id_order = %d
+            ',
+            _DB_PREFIX_ . 'orders',
+            _DB_PREFIX_ . 'order_payment',
+            Tools::ps_round($paymentInformation['totalAmount'], 4),
+            (int)$id_order
+        );
+        Db::getInstance()->execute($queryUpdateOrderPayment);
         Cache::clean('order_invoice_paid_*');
 
         ProcessLoggerHandler::logInfo(
