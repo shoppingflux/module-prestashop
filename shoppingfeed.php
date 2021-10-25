@@ -1271,4 +1271,13 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
 
         return true;
     }
+
+    public function truncatePrelodingWhenProductSyncByDateUpdDisabled()
+    {
+        if ((bool)Configuration::get(Shoppingfeed::PRODUCT_SYNC_BY_DATE_UPD)) {
+            return true;
+        }
+
+        return Db::getInstance()->execute('TRUNCATE ' . _DB_PREFIX_ . ShoppingfeedPreloading::$definition['table']);
+    }
 }
