@@ -29,6 +29,7 @@ if (!defined('_PS_VERSION_')) {
 use ShoppingFeed\Feed\ProductGenerator;
 use ShoppingFeed\Feed\Product\Product;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
+use ShoppingfeedAddon\Services\SfProductGenerator;
 
 class ShoppingfeedProductModuleFrontController  extends \ModuleFrontController
 {
@@ -51,17 +52,20 @@ class ShoppingfeedProductModuleFrontController  extends \ModuleFrontController
         $fileXml = sprintf('file-%d.xml', $token['id_shoppingfeed_token']);
         ProcessLoggerHandler::logInfo(sprintf('Generate file %s for token %s:.', $fileXml, $token['content']), null, null, 'ShoppingfeedProductModuleFrontController');
         ProcessLoggerHandler::closeLogger();
-        $productGenerator = new ProductGenerator($fileXml, 'xml');
+        $productGenerator = new SfProductGenerator($fileXml, 'xml');
         $productGenerator->setPlatform('Prestashop', _PS_VERSION_)
-                ->addMapper([$this, 'mapper']);
+            ->addMapper([$this, 'mapper']);
 
         $limit = 100;
-        $products = [];
-        $nb_iteration = ceil((new ShoppingfeedPreloading)->getPreloadingCount($token['id_shoppingfeed_token']) / 100);
+        $nb_iteration = ceil((new ShoppingfeedPreloading)->getPreloadingCount($token['id_shoppingfeed_token']) / $limit);
+        $productGenerator->open();
+
         for ($i = 0; $i < $nb_iteration; ++$i) {
-            $products = array_merge($products, (new ShoppingfeedPreloading)->findAllByTokenId($token['id_shoppingfeed_token'], $i * $limit, $limit));
+            $products = (new ShoppingfeedPreloading)->findAllByTokenId($token['id_shoppingfeed_token'], $i * $limit, $limit);
+            $productGenerator->appendProduct($products);
         }
-        $productGenerator->write($products);
+
+        $productGenerator->close();
 
         Tools::redirect(
             $this->getBaseLink($token['id_shop']). $fileXml,
