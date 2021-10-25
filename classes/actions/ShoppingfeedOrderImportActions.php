@@ -1112,11 +1112,11 @@ class ShoppingfeedOrderImportActions extends DefaultActions
 
         // get phone on an other address
         if (empty($address->phone) && empty($address->phone_mobile)) {
-            if (empty($otherAddress) !== false && empty($otherAddress->phone) !== false) {
-                $address->phone = $otherAddress->phone;
+            if (empty($otherAddress['phone']) == false) {
+                $address->phone = Tools::substr($otherAddress['phone'], 0, 32);
             }
-            if (empty($otherAddress) !== false && empty($otherAddress->phone_mobile) !== false) {
-                $address->phone_mobile = $otherAddress->phone_mobile;
+            if (empty($otherAddress['mobilePhone']) == false) {
+                $address->phone_mobile = Tools::substr($otherAddress['mobilePhone'], 0, 32);
             }
         }
         if (empty($address->phone) && empty($address->phone_mobile)) {
