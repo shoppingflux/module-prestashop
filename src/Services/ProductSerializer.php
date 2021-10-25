@@ -30,6 +30,7 @@ use Db;
 use Link;
 use Product;
 use Country;
+use Cart;
 use Tax;
 use Tag;
 use SpecificPrice;
@@ -147,7 +148,6 @@ class ProductSerializer
         $tax_manager = \TaxManagerFactory::getManager($address, Product::getIdTaxRulesGroupByIdProduct((int) $this->product->id, Context::getContext()));
         $product_tax_calculator = $tax_manager->getTaxCalculator();
         $priceWithoutReduction = $this->sfModule->mapProductPrice($sfp, $this->configurations['PS_SHOP_DEFAULT']);
-        $priceWithReduction = $this->sfModule->mapProductPrice($sfp, $this->configurations['PS_SHOP_DEFAULT'], ['price_with_reduction' => true]);
         $contentUpdate['price'] = $priceWithoutReduction;
         $contentUpdate['specificPrices'] = $this->getSpecificPrices($address, $product_tax_calculator, $id_group, $priceWithoutReduction);
 
@@ -160,13 +160,13 @@ class ProductSerializer
 
                 if (isset($contentUpdate['variations'][$idProductAttribute]['shipping'])) {
                     $weight = @$contentUpdate['variations'][$idProductAttribute]['attributes']['weight'];
-                    $contentUpdate['variations'][$idProductAttribute]['shipping']['amount'] = $this->_getShipping($carrier, $variationPrice, $weight);
+                    $contentUpdate['variations'][$idProductAttribute]['shipping']['amount'] = $this->getShippingCost($carrier, $address, $idProductAttribute);
                 }
             }
         }
 
         $contentUpdate['shipping'] = [
-            'amount' => $this->_getShipping($carrier, $priceWithReduction),
+            'amount' => $this->getShippingCost($carrier, $address, null),
             'label' => $carrier->delay[$this->id_lang],
         ];
 
@@ -481,32 +481,29 @@ class ProductSerializer
         return implode(' > ', $categoryTree);
     }
 
-    protected function _getShipping($carrier, $priceWithReduction, $attribute_weight = null)
+    protected function getShippingCost($carrier, $address, $id_product_attribute)
     {
-        $default_country = new Country($this->configurations['PS_COUNTRY_DEFAULT'], $this->id_lang);
-        $id_zone = (int)$default_country->id_zone;
-        $carrier_tax = Tax::getCarrierTaxRate((int)$carrier->id);
-        $shipping = 0;
-        $shipping_free_price = $this->configurations['PS_SHIPPING_FREE_PRICE'];
-        $shipping_free_weight = isset($this->configurations['PS_SHIPPING_FREE_WEIGHT']) ? $this->configurations['PS_SHIPPING_FREE_WEIGHT'] : 0;
+        $cart = new Cart();
+        $country = new Country($address->id_country);
+        $product = [
+            'id_address_delivery' => $address->id,
+            'id_product' => $this->product->id,
+            'id_product_attribute' => $id_product_attribute,
+            'cart_quantity' => 1,
+            'id_shop' => $this->id_shop,
+            'id_customization' => 0,
+            'is_virtual' => $this->product->is_virtual,
+            'weight' => $this->product->weight,
+            'additional_shipping_cost' => $this->product->additional_shipping_cost,
+        ];
 
-        if (!(((float)$shipping_free_price > 0) && ($priceWithReduction >= (float)$shipping_free_price)) &&
-            !(((float)$shipping_free_weight > 0) && ($this->product->weight + $attribute_weight >= (float)$shipping_free_weight))) {
-            if (isset($this->configurations['PS_SHIPPING_HANDLING']) && $carrier->shipping_handling) {
-                $shipping = (float)($this->configurations['PS_SHIPPING_HANDLING']);
-            }
-
-            if ($carrier->getShippingMethod() == Carrier::SHIPPING_METHOD_WEIGHT) {
-                $shipping += $carrier->getDeliveryPriceByWeight($this->product->weight, $id_zone);
-            } else {
-                $shipping += $carrier->getDeliveryPriceByPrice($priceWithReduction, $id_zone);
-            }
-
-            $shipping *= 1 + ($carrier_tax / 100);
-            $shipping = (float)(Tools::ps_round((float)($shipping), 2));
-        }
-
-        return (float)$shipping + (float)$this->product->additional_shipping_cost;
+        return $cart->getPackageShippingCost(
+            (int)$carrier->id,
+            true,
+            $country,
+            [$product],
+            $country->id_zone
+        );
     }
 
     protected function _getCategory()
