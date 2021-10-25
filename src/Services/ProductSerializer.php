@@ -688,7 +688,7 @@ class ProductSerializer
         if (Validate::isLoadedObject($this->product) === false) {
             return $return;
         }
-        $specificPrices = $this->getSpecificPriceInfo($id_group, $address->id, $id_product_attribute);
+        $specificPrices = $this->getSpecificPriceInfo($id_group, $address->id_country, $id_product_attribute);
 
         if (empty($specificPrices)) {
             return $return;
