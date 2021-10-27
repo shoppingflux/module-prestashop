@@ -29,6 +29,7 @@ if (!defined('_PS_VERSION_')) {
 use ShoppingFeed\Feed\ProductGenerator;
 use ShoppingFeed\Feed\Product\Product;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
+use ShoppingfeedAddon\Services\SfProductGenerator;
 
 class ShoppingfeedProductModuleFrontController  extends \ModuleFrontController
 {
@@ -51,17 +52,20 @@ class ShoppingfeedProductModuleFrontController  extends \ModuleFrontController
         $fileXml = sprintf('file-%d.xml', $token['id_shoppingfeed_token']);
         ProcessLoggerHandler::logInfo(sprintf('Generate file %s for token %s:.', $fileXml, $token['content']), null, null, 'ShoppingfeedProductModuleFrontController');
         ProcessLoggerHandler::closeLogger();
-        $productGenerator = new ProductGenerator($fileXml, 'xml');
+        $productGenerator = new SfProductGenerator($fileXml, 'xml');
         $productGenerator->setPlatform('Prestashop', _PS_VERSION_)
-                ->addMapper([$this, 'mapper']);
+            ->addMapper([$this, 'mapper']);
 
         $limit = 100;
-        $products = [];
-        $nb_iteration = ceil((new ShoppingfeedPreloading)->getPreloadingCount($token['id_shoppingfeed_token']) / 100);
+        $nb_iteration = ceil((new ShoppingfeedPreloading)->getPreloadingCount($token['id_shoppingfeed_token']) / $limit);
+        $productGenerator->open();
+
         for ($i = 0; $i < $nb_iteration; ++$i) {
-            $products = array_merge($products, (new ShoppingfeedPreloading)->findAllByTokenId($token['id_shoppingfeed_token'], $i * $limit, $limit));
+            $products = (new ShoppingfeedPreloading)->findAllByTokenId($token['id_shoppingfeed_token'], $i * $limit, $limit);
+            $productGenerator->appendProduct($products);
         }
-        $productGenerator->write($products);
+
+        $productGenerator->close();
 
         Tools::redirect(
             $this->getBaseLink($token['id_shop']). $fileXml,
@@ -172,7 +176,7 @@ class ShoppingfeedProductModuleFrontController  extends \ModuleFrontController
         try {
             foreach ($products as $product) {
                 $ids[] = $product['id_product'];
-                $sfp->saveProduct($product['id_product'], $product['id_token'], $token['id_lang'], $token['id_shop']);
+                $sfp->saveProduct($product['id_product'], $product['id_token'], $token['id_lang'], $token['id_shop'], $token->id_currency);
             }
         } catch (Exception $e) {
             ProcessLoggerHandler::logError(
@@ -242,25 +246,18 @@ class ShoppingfeedProductModuleFrontController  extends \ModuleFrontController
                 continue;
             }
 
-            if (false === isset($specificPrice['from_quantity']) || (int)$specificPrice['from_quantity'] !== 1) {
-                continue;
-            }
-
-            $from = DateTime::createFromFormat('Y-m-d H:i:s', $specificPrice['from']);
-            $to = DateTime::createFromFormat('Y-m-d H:i:s', $specificPrice['to']);
             $now = new DateTime();
-            $isUnlimited = $specificPrice['from'] == '0000-00-00 00:00:00' && $specificPrice['to'] == '0000-00-00 00:00:00';
-
-            if (!$from || !$to || !$now) {
-                continue;
+            if ($specificPrice['to'] !== '0000-00-00 00:00:00') {
+                $to = DateTime::createFromFormat('Y-m-d H:i:s', $specificPrice['to']);
+                if ($to->diff($now)->invert === 0) {
+                    continue;
+                }
             }
-
-            if ($to->diff($now)->invert === 0 && $isUnlimited === false) {
-                continue;
-            }
-
-            if ($from->diff($now)->invert === 1 && $isUnlimited === false) {
-                continue;
+            if ($specificPrice['from'] !== '0000-00-00 00:00:00') {
+                $from = DateTime::createFromFormat('Y-m-d H:i:s', $specificPrice['from']);
+                if ($from->diff($now)->invert === 1) {
+                    continue;
+                }
             }
 
             return (float)$specificPrice['discount'];

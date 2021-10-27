@@ -30,6 +30,7 @@ use Db;
 use Link;
 use Product;
 use Country;
+use Cart;
 use Tax;
 use Tag;
 use SpecificPrice;
@@ -51,13 +52,15 @@ class ProductSerializer
     private $sfModule;
     private $id_shop;
     private $id_lang;
+    private $id_currency;
 
-    public function __construct($id_product, $id_lang, $id_shop)
+    public function __construct($id_product, $id_lang, $id_shop, $id_currency)
     {
         $this->sfModule = \Module::getInstanceByName('shoppingfeed');
         $this->product = new Product($id_product, true, $id_lang, $id_shop);
         $this->id_shop = $id_shop;
         $this->id_lang = $id_lang;
+        $this->id_currency = $id_currency;
         if (Validate::isLoadedObject($this->product) === false) {
 
             throw new \Exception('product must be a valid product');
@@ -136,31 +139,34 @@ class ProductSerializer
 
     public function serializePrice($content)
     {
+        $id_group = \Group::getCurrent()->id;
         $contentUpdate = $content;
         $carrier = $this->getCarrier();
         $sfp = new ShoppingfeedProduct();
         $sfp->id_product = $this->product->id;
+        $address = \Address::initialize(null, true);
+        $tax_manager = \TaxManagerFactory::getManager($address, Product::getIdTaxRulesGroupByIdProduct((int) $this->product->id, Context::getContext()));
+        $product_tax_calculator = $tax_manager->getTaxCalculator();
         $priceWithoutReduction = $this->sfModule->mapProductPrice($sfp, $this->configurations['PS_SHOP_DEFAULT']);
-        $priceWithReduction = $this->sfModule->mapProductPrice($sfp, $this->configurations['PS_SHOP_DEFAULT'], ['price_with_reduction' => true]);
         $contentUpdate['price'] = $priceWithoutReduction;
-        $contentUpdate['specificPrices'] = $this->getSpecificPrices();
+        $contentUpdate['specificPrices'] = $this->getSpecificPrices($address, $product_tax_calculator, $id_group, $priceWithoutReduction);
 
         if (isset($contentUpdate['variations']) && false === empty($contentUpdate['variations'])) {
             foreach ($contentUpdate['variations'] as $idProductAttribute => $variation) {
                 $sfp->id_product_attribute = (int)$idProductAttribute;
                 $variationPrice = $this->sfModule->mapProductPrice($sfp, $this->configurations['PS_SHOP_DEFAULT']);
                 $contentUpdate['variations'][$idProductAttribute]['price'] = $variationPrice;
-                $contentUpdate['variations'][$idProductAttribute]['specificPrices'] = $this->getSpecificPrices((int)$idProductAttribute);
+                $contentUpdate['variations'][$idProductAttribute]['specificPrices'] = $this->getSpecificPrices($address, $product_tax_calculator, $id_group,  $variationPrice, (int)$idProductAttribute);
 
                 if (isset($contentUpdate['variations'][$idProductAttribute]['shipping'])) {
                     $weight = @$contentUpdate['variations'][$idProductAttribute]['attributes']['weight'];
-                    $contentUpdate['variations'][$idProductAttribute]['shipping']['amount'] = $this->_getShipping($carrier, $variationPrice, $weight);
+                    $contentUpdate['variations'][$idProductAttribute]['shipping']['amount'] = $this->getShippingCost($carrier, $address, $idProductAttribute);
                 }
             }
         }
 
         $contentUpdate['shipping'] = [
-            'amount' => $this->_getShipping($carrier, $priceWithReduction),
+            'amount' => $this->getShippingCost($carrier, $address, null),
             'label' => $carrier->delay[$this->id_lang],
         ];
 
@@ -475,32 +481,29 @@ class ProductSerializer
         return implode(' > ', $categoryTree);
     }
 
-    protected function _getShipping($carrier, $priceWithReduction, $attribute_weight = null)
+    protected function getShippingCost($carrier, $address, $id_product_attribute)
     {
-        $default_country = new Country($this->configurations['PS_COUNTRY_DEFAULT'], $this->id_lang);
-        $id_zone = (int)$default_country->id_zone;
-        $carrier_tax = Tax::getCarrierTaxRate((int)$carrier->id);
-        $shipping = 0;
-        $shipping_free_price = $this->configurations['PS_SHIPPING_FREE_PRICE'];
-        $shipping_free_weight = isset($this->configurations['PS_SHIPPING_FREE_WEIGHT']) ? $this->configurations['PS_SHIPPING_FREE_WEIGHT'] : 0;
+        $cart = new Cart();
+        $country = new Country($address->id_country);
+        $product = [
+            'id_address_delivery' => $address->id,
+            'id_product' => $this->product->id,
+            'id_product_attribute' => $id_product_attribute,
+            'cart_quantity' => 1,
+            'id_shop' => $this->id_shop,
+            'id_customization' => 0,
+            'is_virtual' => $this->product->is_virtual,
+            'weight' => $this->product->weight,
+            'additional_shipping_cost' => $this->product->additional_shipping_cost,
+        ];
 
-        if (!(((float)$shipping_free_price > 0) && ($priceWithReduction >= (float)$shipping_free_price)) &&
-            !(((float)$shipping_free_weight > 0) && ($this->product->weight + $attribute_weight >= (float)$shipping_free_weight))) {
-            if (isset($this->configurations['PS_SHIPPING_HANDLING']) && $carrier->shipping_handling) {
-                $shipping = (float)($this->configurations['PS_SHIPPING_HANDLING']);
-            }
-
-            if ($carrier->getShippingMethod() == Carrier::SHIPPING_METHOD_WEIGHT) {
-                $shipping += $carrier->getDeliveryPriceByWeight($this->product->weight, $id_zone);
-            } else {
-                $shipping += $carrier->getDeliveryPriceByPrice($priceWithReduction, $id_zone);
-            }
-
-            $shipping *= 1 + ($carrier_tax / 100);
-            $shipping = (float)(Tools::ps_round((float)($shipping), 2));
-        }
-
-        return (float)$shipping + (float)$this->product->additional_shipping_cost;
+        return $cart->getPackageShippingCost(
+            (int)$carrier->id,
+            true,
+            $country,
+            [$product],
+            $country->id_zone
+        );
     }
 
     protected function _getCategory()
@@ -623,18 +626,45 @@ class ProductSerializer
         return $ret;
     }
 
+
+	protected static function _getScoreQuery($id_product, $id_shop, $id_currency, $id_country, $id_group, $id_customer)
+	{
+		$select = '(';
+
+		$priority = SpecificPrice::getPriority($id_product);
+		foreach (array_reverse($priority) as $k => $field) {
+			if (!empty($field)) { 
+				$select .= ' IF (`'.bqSQL($field).'` = '.(int)$$field.', '.pow(2, $k + 1).', 0) + ';
+            }
+        }
+
+		return rtrim($select, ' +').') AS `score`';
+	}
+
     /**
      * Can not use SpecificPrice::getByProductId() because that method does not take into
      * account specific price for all product (id_product=0)
      *
      * @return array
      */
-    protected function getSpecificPriceInfo($id_product_attribute = false, $id_cart = false)
+    protected function getSpecificPriceInfo($id_group, $id_country, $id_product_attribute = false)
     {
         $query = (new DbQuery())
+            ->select('*, ' . self::_getScoreQuery($this->product->id, $this->id_shop, $this->id_currency, $id_country, $id_group, null))
             ->from('specific_price')
             ->where(sprintf('id_product IN (%d, 0)', (int)$this->product->id))
-            ->where('id_cart = ' . (int)$id_cart);
+            ->where(sprintf('id_shop IN (%d, 0)', (int)$this->id_shop))
+            ->where(sprintf('id_currency IN (%d, 0)', (int)$this->id_currency))
+            ->where(sprintf('id_country IN (%d, 0)', (int)$id_country))
+            ->where(sprintf('id_group IN (%d, 0)', (int)$id_group))
+            ->where(sprintf('IF(from_quantity > 1, from_quantity, 0) <= %d', 1))
+            ->orderBy('`id_product_attribute` DESC')
+            ->orderBy('`id_cart` DESC')
+            ->orderBy('`from_quantity` DESC')
+            ->orderBy('`id_specific_price_rule` ASC')
+            ->orderBy('`score` DESC')
+            ->orderBy('`to` DESC')
+            ->orderBy('`from` DESC');
 
         if ($id_product_attribute) {
             $query->where('id_product_attribute = ' . (int)$id_product_attribute);
@@ -648,15 +678,14 @@ class ProductSerializer
      *
      * @return array
      */
-    protected function getSpecificPrices($idProductAttribute = null)
+    protected function getSpecificPrices($address, $product_tax_calculator, $id_group, $priceWithoutReduction, $id_product_attribute = null)
     {
         $return = [];
 
         if (Validate::isLoadedObject($this->product) === false) {
             return $return;
         }
-
-        $specificPrices = $this->getSpecificPriceInfo();
+        $specificPrices = $this->getSpecificPriceInfo($id_group, $address->id_country, $id_product_attribute);
 
         if (empty($specificPrices)) {
             return $return;
@@ -666,13 +695,13 @@ class ProductSerializer
             $skip = false;
 
             if ((int)$specificPrice['id_product_attribute'] !== 0) {
-                if ((int)$idProductAttribute !== (int)$specificPrice['id_product_attribute']) {
+                if ((int)$id_product_attribute !== (int)$specificPrice['id_product_attribute']) {
                     $skip = true;
                 }
             }
 
             // Apply a specific price of a default variation for a product
-            if ((int)$idProductAttribute === 0 && $skip) {
+            if ((int)$id_product_attribute === 0 && $skip) {
                 if ($this->product->getDefaultIdProductAttribute() === (int)$specificPrice['id_product_attribute']) {
                     $skip = false;
                 }
@@ -682,31 +711,25 @@ class ProductSerializer
                 continue;
             }
 
-            $formatter = new \SpecificPriceFormatter(
-                $specificPrice,
-                true,
-                Context::getContext()->currency,
-                true
-            );
-
-            $productPriceWithoutReduction = $this->product->getPrice(
-                true,
-                $idProductAttribute,
-                6,
-                null,
-                false,
-                false
-            );
-
-            $data = $formatter->formatSpecificPrice(
-                $productPriceWithoutReduction,
-                $this->product->tax_rate,
-                $this->product->ecotax
-            );
-
-            $data['discount'] = preg_replace(['/[^0-9.,]/', '/,/'], ['', '.'], $data['discount']);
-            $data['discount'] = floatval($data['discount']);
-            $return[] = $data;
+            if ($specificPrice['reduction_type'] == 'amount') {
+                $reduction_amount = $specificPrice['reduction'];
+                if (!$specificPrice['id_currency']) {
+                    $reduction_amount = Tools::convertPrice($reduction_amount, $this->id_currency);
+                }
+                $specific_price_reduction = $reduction_amount;
+                if (!$specificPrice['reduction_tax']) {
+                    $specific_price_reduction = $product_tax_calculator->addTaxes($specific_price_reduction);
+                }
+            } else {
+                $specific_price_reduction = $priceWithoutReduction * $specificPrice['reduction'];
+            }
+            $price = $priceWithoutReduction - $specific_price_reduction;
+            $price = Tools::ps_round($price, 2);
+            if ($price < 0) {
+                $price = 0;
+            }
+            $specificPrice['discount'] = $price;
+            $return[] = $specificPrice;
         }
 
         return $return;

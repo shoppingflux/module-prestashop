@@ -1030,8 +1030,20 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             Db::getInstance()->update('order_carrier', $updateOrderTracking, '`id_order` = '.(int)$id_order);
         }
 
-        $updatePayment = array('amount' => Tools::ps_round($paymentInformation['totalAmount'], 4));
-        Db::getInstance()->update('order_payment', $updatePayment, '`order_reference` = "'.pSQL($this->conveyor['order_reference']).'"');
+        $queryUpdateOrderPayment = sprintf(
+            '
+                UPDATE 
+                    %s as o
+                LEFT JOIN %s op ON o.reference = op.order_reference
+                SET op.amount = %f 
+                WHERE o.id_order = %d
+            ',
+            _DB_PREFIX_ . 'orders',
+            _DB_PREFIX_ . 'order_payment',
+            Tools::ps_round($paymentInformation['totalAmount'], 4),
+            (int)$id_order
+        );
+        Db::getInstance()->execute($queryUpdateOrderPayment);
         Cache::clean('order_invoice_paid_*');
 
         ProcessLoggerHandler::logInfo(
@@ -1112,11 +1124,11 @@ class ShoppingfeedOrderImportActions extends DefaultActions
 
         // get phone on an other address
         if (empty($address->phone) && empty($address->phone_mobile)) {
-            if (empty($otherAddress) !== false && empty($otherAddress->phone) !== false) {
-                $address->phone = $otherAddress->phone;
+            if (empty($otherAddress['phone']) == false) {
+                $address->phone = Tools::substr($otherAddress['phone'], 0, 32);
             }
-            if (empty($otherAddress) !== false && empty($otherAddress->phone_mobile) !== false) {
-                $address->phone_mobile = $otherAddress->phone_mobile;
+            if (empty($otherAddress['mobilePhone']) == false) {
+                $address->phone_mobile = Tools::substr($otherAddress['mobilePhone'], 0, 32);
             }
         }
         if (empty($address->phone) && empty($address->phone_mobile)) {
