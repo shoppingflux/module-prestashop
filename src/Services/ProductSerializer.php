@@ -100,7 +100,7 @@ class ProductSerializer
         $sfp->id_product = $this->product->id;
         $link = new Link();
         $carrier = $this->getCarrier();
-        $productLink = $link->getProductLink($this->product, null, null, null, $this->id_lang);
+        $productLink = $link->getProductLink($this->product, null, null, null, $this->id_lang, $this->id_shop);
 
         $content = [
             'reference' => $this->sfModule->mapReference($sfp),
@@ -427,7 +427,7 @@ class ProductSerializer
                 $variation['attributes']['ref-constructeur'] = $combination['reference'];
             }
 
-            $variation['attributes']['link-variation'] = Context::getContext()->link->getProductLink($this->product, null, null, null, null, null, (int)$id, false, false, true);
+            $variation['attributes']['link-variation'] = Context::getContext()->link->getProductLink($this->product, null, null, null, $this->id_lang, $this->id_shop, (int)$id, false, false, true);
 
             foreach ($this->_getAttributeImageAssociations($id) as $image) {
                 if (empty($image)) {
@@ -633,7 +633,7 @@ class ProductSerializer
 
 		$priority = SpecificPrice::getPriority($id_product);
 		foreach (array_reverse($priority) as $k => $field) {
-			if (!empty($field)) { 
+			if (!empty($field)) {
 				$select .= ' IF (`'.bqSQL($field).'` = '.(int)$$field.', '.pow(2, $k + 1).', 0) + ';
             }
         }
