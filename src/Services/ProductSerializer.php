@@ -226,7 +226,7 @@ class ProductSerializer
 
     private function getImages()
     {
-        $imagesFromDb = $this->getImagesFromDb($this->product->id, $this->id_lang);
+        $imagesFromDb = $this->getImagesFromDb($this->id_lang);
         $images = [
             'main' => null,
             'additional' => [],
@@ -235,7 +235,7 @@ class ProductSerializer
         if ($imagesFromDb != false) {
             foreach ($imagesFromDb as $image) {
                 $ids = $this->product->id . '-' . $image['id_image'];
-                $img_url = $this->link->getImageLink($this->product->link_rewrite, $ids, $this->configurations[Shoppingfeed::PRODUCT_FEED_IMAGE_FORMAT]);
+                $img_url = $this->getImageLink()->getImageLink($this->product->link_rewrite, $ids, $this->configurations[Shoppingfeed::PRODUCT_FEED_IMAGE_FORMAT], $this->id_shop);
                 if (!substr_count($img_url, Tools::getCurrentUrlProtocolPrefix())) {
                     $img_url = Tools::getCurrentUrlProtocolPrefix() . $img_url;
                 }
@@ -733,5 +733,10 @@ class ProductSerializer
         }
 
         return $return;
+    }
+
+    protected function getImageLink()
+    {
+        return new ImageLink();
     }
 }
