@@ -633,7 +633,7 @@ class ProductSerializer
 
 		$priority = SpecificPrice::getPriority($id_product);
 		foreach (array_reverse($priority) as $k => $field) {
-			if (!empty($field)) { 
+			if (!empty($field)) {
 				$select .= ' IF (`'.bqSQL($field).'` = '.(int)$$field.', '.pow(2, $k + 1).', 0) + ';
             }
         }
@@ -685,7 +685,7 @@ class ProductSerializer
         if (Validate::isLoadedObject($this->product) === false) {
             return $return;
         }
-        $specificPrices = $this->getSpecificPriceInfo($id_group, $address->id_country, $id_product_attribute);
+        $specificPrices = $this->getSpecificPriceInfo($id_group, $address->id_country);
 
         if (empty($specificPrices)) {
             return $return;
