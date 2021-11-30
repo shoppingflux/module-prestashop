@@ -308,7 +308,7 @@ class ProductSerializer
             'ecotax' => $this->product->ecotax,
             'vat' => $this->product->tax_rate,
             'on_sale' => (int)$this->product->on_sale,
-            'hierararchy' => count($combination) > 0 ? 'parent' : 'child',
+            'hierararchy' => 'parent',
         ];
         if (empty($this->product->meta_title) === false) {
             $attributes['meta_title'] = $this->product->meta_title;
@@ -406,6 +406,9 @@ class ProductSerializer
                 'images' => [],
                 'shipping' => [
                     'label' => $carrier->delay[$this->id_lang],
+                ],
+                'attributes' => [
+                    'hierararchy' => 'child'
                 ]
             ];
 
@@ -633,7 +636,7 @@ class ProductSerializer
 
 		$priority = SpecificPrice::getPriority($id_product);
 		foreach (array_reverse($priority) as $k => $field) {
-			if (!empty($field)) { 
+			if (!empty($field)) {
 				$select .= ' IF (`'.bqSQL($field).'` = '.(int)$$field.', '.pow(2, $k + 1).', 0) + ';
             }
         }
