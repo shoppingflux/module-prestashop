@@ -44,6 +44,6 @@ class SinceDate
 
     protected function getDefaultInterval()
     {
-        return new DateInterval('P1D');
+        return new DateInterval('P7D');
     }
 }
