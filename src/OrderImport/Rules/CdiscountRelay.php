@@ -68,7 +68,7 @@ class CdiscountRelay extends RuleAbstract implements RuleInterface
 
         $this->updateAddress($orderData->shippingAddress);
 
-        ProcessLoggerHandler::logSuccess(
+        ProcessLoggerHandler::logInfo(
             $logPrefix .
                 $this->l('Rule triggered. Shipping address updated to set relay ID.', 'CdiscountRelay'),
             'Order'

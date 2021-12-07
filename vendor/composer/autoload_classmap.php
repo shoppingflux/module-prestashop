@@ -13,6 +13,7 @@ return array(
     'AdminShoppingfeedOrdersController' => $baseDir . '/controllers/admin/AdminShoppingfeedOrders.php',
     'AdminShoppingfeedProcessLoggerController' => $baseDir . '/controllers/admin/AdminShoppingfeedProcessLogger.php',
     'AdminShoppingfeedProcessMonitorController' => $baseDir . '/controllers/admin/AdminShoppingfeedProcessMonitor.php',
+    'Composer\\InstalledVersions' => $vendorDir . '/composer/InstalledVersions.php',
     'ShoppingfeedAdminController' => $baseDir . '/classes/ShoppingfeedAdminController.php',
     'ShoppingfeedApi' => $baseDir . '/classes/ShoppingfeedApi.php',
     'ShoppingfeedCarrier' => $baseDir . '/classes/ShoppingfeedCarrier.php',

@@ -93,7 +93,7 @@ class RueducommerceMondialrelay extends RuleAbstract implements RuleInterface
         // See ShoppingfeedAddon\OrderImport\Rules\Mondialrelay
         $orderData->shippingAddress['other'] = $mondialRelayID;
 
-        ProcessLoggerHandler::logSuccess(
+        ProcessLoggerHandler::logInfo(
             $logPrefix .
                 $this->l('Rule triggered. Shipping address updated to set MR relay ID.', 'RueducommerceMondialrelay'),
             'Order'

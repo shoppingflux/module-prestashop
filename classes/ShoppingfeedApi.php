@@ -84,7 +84,7 @@ class ShoppingfeedApi
             static::$instance = new ShoppingfeedApi($session);
             return static::$instance;
         } catch (Exception $e) {
-            ProcessLoggerHandler::logInfo(
+            ProcessLoggerHandler::logError(
                 sprintf(
                     'API error: %s',
                     $e->getMessage()
@@ -117,7 +117,7 @@ class ShoppingfeedApi
 
             return static::$instance;
         } catch (Exception $e) {
-            ProcessLoggerHandler::logInfo(
+            ProcessLoggerHandler::logError(
                 sprintf(
                     'API error: %s',
                     $e->getMessage()

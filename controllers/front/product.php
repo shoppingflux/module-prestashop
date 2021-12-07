@@ -50,7 +50,7 @@ class ShoppingfeedProductModuleFrontController  extends \ModuleFrontController
 
         $this->sfToken = $token;
         $fileXml = sprintf('file-%d.xml', $token['id_shoppingfeed_token']);
-        ProcessLoggerHandler::logInfo(sprintf('Generate file %s for token %s:.', $fileXml, $token['content']), null, null, 'ShoppingfeedProductModuleFrontController');
+        ProcessLoggerHandler::logSuccess(sprintf('Generate file %s for token %s:.', $fileXml, $token['content']), null, null, 'ShoppingfeedProductModuleFrontController');
         ProcessLoggerHandler::closeLogger();
         $productGenerator = new SfProductGenerator($fileXml, 'xml');
         $productGenerator->setPlatform('Prestashop', _PS_VERSION_)

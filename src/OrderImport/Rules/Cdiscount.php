@@ -180,7 +180,7 @@ class Cdiscount extends RuleAbstract implements RuleInterface
         }
         Db::getInstance()->update('order_invoice', $orderInvoiceFieldsToIncrease, '`id_order` = '.(int)$psOrder->id);
 
-        ProcessLoggerHandler::logSuccess(
+        ProcessLoggerHandler::logInfo(
             $logPrefix .
                 $this->l('Fees added to order.', 'Cdiscount'),
             'Order'

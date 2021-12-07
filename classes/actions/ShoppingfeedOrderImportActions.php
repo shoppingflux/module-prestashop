@@ -64,7 +64,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
     public function registerSpecificRules()
     {
         if (empty($this->conveyor['apiOrder'])) {
-            ProcessLoggerHandler::logError(
+            ProcessLoggerHandler::logInfo(
                 $this->l('No apiOrder found', 'ShoppingfeedOrderImportActions'),
                 'Order'
             );
@@ -92,7 +92,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
     public function verifyOrder()
     {
         if (empty($this->conveyor['apiOrder'])) {
-            ProcessLoggerHandler::logError(
+            ProcessLoggerHandler::logInfo(
                 $this->l('No apiOrder found', 'ShoppingfeedOrderImportActions'),
                 'Order'
             );
@@ -107,7 +107,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         // Check if order already exists
         if (ShoppingfeedOrder::existsInternalId($apiOrder->getId())) {
             $this->values['error'] = $this->l('Order not imported; already present.', 'ShoppingfeedOrderImportActions');
-            ProcessLoggerHandler::logError($this->logPrefix . $this->values['error'], 'Order');
+            ProcessLoggerHandler::logInfo($this->logPrefix . $this->values['error'], 'Order');
             $this->forward('acknowledgeOrder');
 
             return false;
@@ -117,7 +117,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         $this->conveyor['prestashopProducts'] = array();
         $sfModule = Module::getInstanceByName('shoppingfeed');
         if (count($this->conveyor['orderData']->items) === 0) {
-            ProcessLoggerHandler::logError(
+            ProcessLoggerHandler::logInfo(
                 sprintf(
                     $this->logPrefix .
                         $this->l('No items found on the Shopping feed order.', 'ShoppingfeedOrderImportActions')
@@ -154,7 +154,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                         $this->l('Product reference %s does not match a product on PrestaShop.', 'ShoppingfeedOrderImportActions'),
                         $apiProduct->reference
                     );
-                ProcessLoggerHandler::logError($this->logPrefix . $this->values['error'], 'Order');
+                ProcessLoggerHandler::logInfo($this->logPrefix . $this->values['error'], 'Order');
                 $this->forward('acknowledgeOrder');
 
                 return false;
@@ -166,7 +166,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                         $this->l('Product %s on PrestaShop is inactive.', 'ShoppingfeedOrderImportActions'),
                         $psProduct->reference
                     );
-                ProcessLoggerHandler::logError($this->logPrefix . $this->values['error'], 'Order');
+                ProcessLoggerHandler::logInfo($this->logPrefix . $this->values['error'], 'Order');
                 $this->forward('acknowledgeOrder');
 
                 return false;
@@ -178,7 +178,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                         $this->l('Product %s on PrestaShop is not available for order.', 'ShoppingfeedOrderImportActions'),
                         $psProduct->reference
                     );
-                ProcessLoggerHandler::logError($this->logPrefix . $this->values['error'], 'Order');
+                ProcessLoggerHandler::logInfo($this->logPrefix . $this->values['error'], 'Order');
                 $this->forward('acknowledgeOrder');
 
                 return false;
@@ -225,7 +225,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         if (!Validate::isLoadedObject($carrier)) {
             $this->values['error'] =
                 $this->l('Could not find a valid carrier for order. Please configure a default carrier on PrestaShop module Shoppingfeed > Parameters > Order feed', 'ShoppingfeedOrderImportActions');
-            ProcessLoggerHandler::logError($this->logPrefix . $this->values['error'], 'Order');
+            ProcessLoggerHandler::logInfo($this->logPrefix . $this->values['error'], 'Order');
             $this->forward('acknowledgeOrder');
 
             return false;
@@ -250,7 +250,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 $sfCarrier->save();
             } catch (Exception $e) {
                 $errorMessage = $this->l('Could not add a valid carrier on PrestaShop for this order.', 'ShoppingfeedOrderImportActions') . $e->getMessage();
-                ProcessLoggerHandler::logError($this->logPrefix . $errorMessage, 'Order');
+                ProcessLoggerHandler::logInfo($this->logPrefix . $errorMessage, 'Order');
             }
         }
 
@@ -275,7 +275,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
     {
         if (empty($this->conveyor['apiOrder'])) {
             $this->values['error'] = $this->l('No apiOrder found', 'ShoppingfeedOrderImportActions');
-            ProcessLoggerHandler::logError($this->logPrefix . $this->values['error'], 'Order');
+            ProcessLoggerHandler::logInfo($this->logPrefix . $this->values['error'], 'Order');
             $this->forward('acknowledgeOrder');
 
             return false;
@@ -493,7 +493,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                                     $this->l('Not enough stock for product %s.', 'ShoppingfeedOrderImportActions'),
                                     $apiProduct->reference
                                 );
-                    ProcessLoggerHandler::logError($this->logPrefix . $this->values['error'], 'Order');
+                    ProcessLoggerHandler::logInfo($this->logPrefix . $this->values['error'], 'Order');
                     $this->forward('acknowledgeOrder');
 
                     return false;
@@ -586,7 +586,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                         $apiProduct->reference,
                         $e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine()
                     );
-                ProcessLoggerHandler::logError($this->logPrefix . $this->values['error'], 'Order');
+                ProcessLoggerHandler::logInfo($this->logPrefix . $this->values['error'], 'Order');
                 $this->forward('acknowledgeOrder');
 
                 return false;
@@ -598,7 +598,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                         $apiProduct->reference,
                         $cart->id
                     );
-                ProcessLoggerHandler::logError($this->logPrefix . $this->values['error'], 'Order');
+                ProcessLoggerHandler::logInfo($this->logPrefix . $this->values['error'], 'Order');
                 $this->forward('acknowledgeOrder');
 
                 return false;
@@ -631,7 +631,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                     $this->l('Could not add product to cart : %s', 'ShoppingfeedOrderImportActions'),
                     $cart->id
                 );
-            ProcessLoggerHandler::logError($this->logPrefix . $this->values['error'], 'Order');
+            ProcessLoggerHandler::logInfo($this->logPrefix . $this->values['error'], 'Order');
             $this->forward('acknowledgeOrder');
 
             return false;
@@ -731,7 +731,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             ];
             $message = implode(';', $log);
             $this->values['error'] = $this->l('Order not valid on PrestaShop.', 'ShoppingfeedOrderImportActions') . ' ' .$message;
-            ProcessLoggerHandler::logError($this->logPrefix . $this->values['error'], 'Order');
+            ProcessLoggerHandler::logInfo($this->logPrefix . $this->values['error'], 'Order');
         }
 
         if ($paymentModule->currentOrder && $paymentModule->currentOrderReference) {
@@ -887,7 +887,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             $productOrderDetail = Db::getInstance()->getRow($query);
 
             if (!$productOrderDetail) {
-                ProcessLoggerHandler::logError(
+                ProcessLoggerHandler::logInfo(
                     $this->logPrefix .
                         $this->l('Failed to get OrderDetail object.', 'ShoppingfeedOrderImportActions'),
                     'Product',

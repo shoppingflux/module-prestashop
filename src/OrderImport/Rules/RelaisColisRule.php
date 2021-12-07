@@ -108,7 +108,7 @@ class RelaisColisRule extends RuleAbstract implements RuleInterface
         $logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
 
         if (empty($idRelais)) {
-            ProcessLoggerHandler::logError(
+            ProcessLoggerHandler::logInfo(
                 $logPrefix .
                 $this->l('Rule triggered. No relay ID found in shipping address \'Other\' field', 'Shoppingfeed.Rule')
             );
@@ -127,7 +127,7 @@ class RelaisColisRule extends RuleAbstract implements RuleInterface
         $relaisColisInfo = $this->createRelaisColisInfo($cart, $idRelais);
 
         if (false == Validate::isLoadedObject($relaisColisInfo)) {
-            ProcessLoggerHandler::logError(
+            ProcessLoggerHandler::logInfo(
                 $logPrefix .
                 $this->l('Failed to create a relais colis info object', 'Shoppingfeed.Rule')
             );
@@ -162,7 +162,7 @@ class RelaisColisRule extends RuleAbstract implements RuleInterface
         $logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
 
         if (false == Validate::isLoadedObject($addressShipping)) {
-            ProcessLoggerHandler::logError(
+            ProcessLoggerHandler::logInfo(
                 $logPrefix .
                 $this->l('Rule triggered. Invalid a shipping address', 'Shoppingfeed.Rule')
             );

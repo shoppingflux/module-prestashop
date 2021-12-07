@@ -100,7 +100,7 @@ class Mondialrelay extends RuleAbstract implements RuleInterface
         );
 
         if (empty($relayId)) {
-            ProcessLoggerHandler::logError(
+            ProcessLoggerHandler::logInfo(
                 $logPrefix .
                     $this->l('Rule triggered. No relay ID found in shipping address \'Other\' field', 'Mondialrelay'),
                 'Order',
@@ -128,7 +128,7 @@ class Mondialrelay extends RuleAbstract implements RuleInterface
         // Get relay data
         $relayData = $this->getRelayData($apiOrder, $relayId, $countryIso);
         if (!$relayData) {
-            ProcessLoggerHandler::logError(
+            ProcessLoggerHandler::logInfo(
                 $logPrefix .
                     $this->l('Failed to get relay data', 'Mondialrelay'),
                 'Order',
@@ -167,7 +167,7 @@ class Mondialrelay extends RuleAbstract implements RuleInterface
         $mondialRelayMethod = Db::getInstance()->getValue($queryGetMondialRelayMethod);
 
         if (!$mondialRelayMethod) {
-            ProcessLoggerHandler::logError(
+            ProcessLoggerHandler::logInfo(
                 sprintf(
                     $logPrefix .
                         $this->l('Could not find mondial relay method for carrier ID %s', 'Mondialrelay'),
@@ -202,7 +202,7 @@ class Mondialrelay extends RuleAbstract implements RuleInterface
         );
 
         if ($insertResult) {
-            ProcessLoggerHandler::logSuccess(
+            ProcessLoggerHandler::logInfo(
                 $logPrefix .
                     $this->l('Successfully added relay information', 'Mondialrelay'),
                 'Order',
@@ -211,7 +211,7 @@ class Mondialrelay extends RuleAbstract implements RuleInterface
             return;
         }
 
-        ProcessLoggerHandler::logError(
+        ProcessLoggerHandler::logInfo(
             $logPrefix .
                 $this->l('Could not add relay information', 'Mondialrelay'),
             'Order',
@@ -230,7 +230,7 @@ class Mondialrelay extends RuleAbstract implements RuleInterface
         $mondialRelayCarrierMethodId = Db::getInstance()->getValue($queryGetMondialRelayMethod);
 
         if (!$mondialRelayCarrierMethodId) {
-            ProcessLoggerHandler::logError(
+            ProcessLoggerHandler::logInfo(
                 sprintf(
                     $logPrefix .
                         $this->l('Could not find mondial relay method for carrier ID %s', 'Mondialrelay'),
@@ -268,7 +268,7 @@ class Mondialrelay extends RuleAbstract implements RuleInterface
         );
 
         if ($insertResult) {
-            ProcessLoggerHandler::logSuccess(
+            ProcessLoggerHandler::logInfo(
                 $logPrefix .
                     $this->l('Successfully added relay information', 'Mondialrelay'),
                 'Order',
@@ -277,7 +277,7 @@ class Mondialrelay extends RuleAbstract implements RuleInterface
             return;
         }
 
-        ProcessLoggerHandler::logError(
+        ProcessLoggerHandler::logInfo(
             $logPrefix .
                 $this->l('Could not add relay information', 'Mondialrelay'),
             'Order',
@@ -311,7 +311,7 @@ class Mondialrelay extends RuleAbstract implements RuleInterface
         $client = new SoapClient($urlWebService);
         if (!is_object($client)) {
             // Error connecting to webservice
-            ProcessLoggerHandler::logError(
+            ProcessLoggerHandler::logInfo(
                 sprintf(
                     $logPrefix .
                         $this->l('Could not create SOAP client for URL %s', 'Mondialrelay'),
@@ -338,7 +338,7 @@ class Mondialrelay extends RuleAbstract implements RuleInterface
         if (!isset($result->WSI2_AdressePointRelaisResult->STAT)
             || $result->WSI2_AdressePointRelaisResult->STAT != 0) {
             // Web service did not return expected data
-            ProcessLoggerHandler::logError(
+            ProcessLoggerHandler::logInfo(
                 sprintf(
                     $logPrefix .
                         $this->l('Error getting relay %s data : code %s', 'Mondialrelay'),
