@@ -28,7 +28,7 @@ function upgrade_module_1_6_0($module)
 {
     $installer = new Installer();
     $installer->setModule($module);
-    if (!$installer->installObjectModels()) {
+    if (!$installer->reset($module)) {
         return false;
     }
 
