@@ -288,7 +288,7 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
                     );
                     return false;
                 }
-
+                
                 $result = $shoppingfeedApi->getUnacknowledgedOrders();
                 if (Configuration::get(\Shoppingfeed::ORDER_IMPORT_SHIPPED) == true) {
                     $result = array_merge($result, $shoppingfeedApi->getUnacknowledgedOrders(true));
