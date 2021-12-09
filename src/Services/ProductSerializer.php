@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright since 2019 Shopping Feed
+ * Copyright since 2021 Shopping Feed
  *
  * NOTICE OF LICENSE
  *
@@ -13,7 +13,7 @@
  * to tech@202-ecommerce.com so we can send you a copy immediately.
  *
  * @author    202 ecommerce <tech@202-ecommerce.com>
- * @copyright Since 2019 Shopping Feed
+ * @copyright Since 2021 Shopping Feed
  * @license   https://opensource.org/licenses/AFL-3.0  Academic Free License (AFL 3.0)
  */
 
@@ -299,7 +299,7 @@ class ProductSerializer
 
     protected function getAttributes()
     {
-        $combination = $this->product->getAttributeCombinations($this->id_lang);
+        $combination = $this->getAttributeCombinationService()->get($this->product, $this->id_lang, $this->id_shop);
 
         $attributes = [
             'state' => $this->product->condition,
@@ -385,7 +385,7 @@ class ProductSerializer
         $sfp = new ShoppingfeedProduct();
         $sfp->id_product = $this->product->id;
 
-        foreach ($this->product->getAttributeCombinations($this->id_lang) as $combinaison) {
+        foreach ($this->getAttributeCombinationService()->get($this->product, $this->id_lang, $this->id_shop) as $combinaison) {
             $combinations[$combinaison['id_product_attribute']]['attributes'][$combinaison['group_name']] = $combinaison['attribute_name'];
             $combinations[$combinaison['id_product_attribute']]['ean13'] = $combinaison['ean13'];
             $combinations[$combinaison['id_product_attribute']]['upc'] = $combinaison['upc'];
@@ -751,6 +751,11 @@ class ProductSerializer
         }
 
         return $return;
+    }
+
+    public function getAttributeCombinationService()
+    {
+        return new ProductAttributeCombination();
     }
 
     protected function getImageLink()
