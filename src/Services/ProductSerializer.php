@@ -100,7 +100,7 @@ class ProductSerializer
         $sfp->id_product = $this->product->id;
         $link = new Link();
         $carrier = $this->getCarrier();
-        $productLink = $link->getProductLink($this->product, null, null, null, $this->id_lang);
+        $productLink = $link->getProductLink($this->product, null, null, null, $this->id_lang, $this->id_shop);
 
         $content = [
             'reference' => $this->sfModule->mapReference($sfp),
@@ -226,7 +226,7 @@ class ProductSerializer
 
     private function getImages()
     {
-        $imagesFromDb = $this->getImagesFromDb($this->product->id, $this->id_lang);
+        $imagesFromDb = $this->getImagesFromDb($this->id_lang);
         $images = [
             'main' => null,
             'additional' => [],
@@ -235,7 +235,7 @@ class ProductSerializer
         if ($imagesFromDb != false) {
             foreach ($imagesFromDb as $image) {
                 $ids = $this->product->id . '-' . $image['id_image'];
-                $img_url = $this->link->getImageLink($this->product->link_rewrite, $ids, $this->configurations[Shoppingfeed::PRODUCT_FEED_IMAGE_FORMAT]);
+                $img_url = $this->getImageLink()->getImageLink($this->product->link_rewrite, $ids, $this->configurations[Shoppingfeed::PRODUCT_FEED_IMAGE_FORMAT], $this->id_shop);
                 if (!substr_count($img_url, Tools::getCurrentUrlProtocolPrefix())) {
                     $img_url = Tools::getCurrentUrlProtocolPrefix() . $img_url;
                 }
@@ -430,7 +430,7 @@ class ProductSerializer
                 $variation['attributes']['ref-constructeur'] = $combination['reference'];
             }
 
-            $variation['attributes']['link-variation'] = Context::getContext()->link->getProductLink($this->product, null, null, null, null, null, (int)$id, false, false, true);
+            $variation['attributes']['link-variation'] = Context::getContext()->link->getProductLink($this->product, null, null, null, $this->id_lang, $this->id_shop, (int)$id, false, false, true);
 
             foreach ($this->_getAttributeImageAssociations($id) as $image) {
                 if (empty($image)) {
@@ -751,5 +751,10 @@ class ProductSerializer
         }
 
         return $return;
+    }
+
+    protected function getImageLink()
+    {
+        return new ImageLink();
     }
 }
