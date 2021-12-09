@@ -1214,7 +1214,8 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             ShoppingfeedAddon\OrderImport\Rules\RelaisColisRule::class,
             ShoppingfeedAddon\OrderImport\Rules\TestingOrder::class,
             ShoppingfeedAddon\OrderImport\Rules\SymbolConformity::class,
-            \ShoppingfeedAddon\OrderImport\Rules\ManomanoDpdRelais::class
+            ShoppingfeedAddon\OrderImport\Rules\ManomanoDpdRelais::class,
+            ShoppingfeedAddon\OrderImport\Rules\Colissimo::class,
         );
 
         foreach($defaultRulesClassNames as $ruleClassName) {
