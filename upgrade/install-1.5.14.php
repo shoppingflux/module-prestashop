@@ -22,15 +22,11 @@
  * @license   Commercial license
  */
 
-use ShoppingfeedClasslib\Install\Installer;
-
-function upgrade_module_1_6_0($module)
+function upgrade_module_1_5_14($module)
 {
-    $installer = new Installer();
-    $installer->setModule($module);
-    if (!$installer->reset($module)) {
-        return false;
-    }
+    $module->addDateIndexToLogs();
+
+    $module->truncatePrelodingWhenProductSyncByDateUpdDisabled();
 
     return true;
 }

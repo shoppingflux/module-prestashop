@@ -72,6 +72,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     const PRODUCT_SYNC_BY_DATE_UPD = "SHOPPINGFEED_PRODUCT_SYNC_BY_DATE_UPD";
     const PRODUCT_FEED_TIME_FULL_UPDATE = "SHOPPINGFEED_PRODUCT_FEED_TIME_FULL_UPDATE";
     const PRODUCT_FEED_INTERVAL_CRON = "SHOPPINGFEED_PRODUCT_FEED_INTERVAL_CRON";
+    const ORDER_IMPORT_PERMANENT_SINCE_DATE = "SHOPPINGFEED_ORDER_IMPORT_PERMANENT_SINCE_DATE";
 
 
     public $extensions = array(
@@ -386,6 +387,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     public function install()
     {
         $res = parent::install();
+        $res &= $this->addDateIndexToLogs();
 
         $this->setConfigurationDefault(self::STOCK_SYNC_ENABLED, true);
         $this->setConfigurationDefault(self::PRICE_SYNC_ENABLED, true);
@@ -1052,9 +1054,15 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     public function updateShoppingFeedPreloading($products_id, $action)
     {
         $handler = new \ShoppingfeedClasslib\Actions\ActionsHandler();
+        if (in_array(0, $products_id, true)) {
+            $action = 'purge';
+        } else {
+            $action = 'saveProduct';
+        }
+
         try {
             $processResult = $handler
-                        ->addActions('saveProduct')
+                        ->addActions($action)
                         ->setConveyor(
                             array(
                                 'products_id' => $products_id,
@@ -1222,7 +1230,11 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             ShoppingfeedAddon\OrderImport\Rules\Socolissimo::class,
             ShoppingfeedAddon\OrderImport\Rules\ChangeStateOrder::class,
             ShoppingfeedAddon\OrderImport\Rules\ShippedByMarketplace::class,
+            ShoppingfeedAddon\OrderImport\Rules\RelaisColisRule::class,
             ShoppingfeedAddon\OrderImport\Rules\TestingOrder::class,
+            ShoppingfeedAddon\OrderImport\Rules\SymbolConformity::class,
+            ShoppingfeedAddon\OrderImport\Rules\ManomanoDpdRelais::class,
+            ShoppingfeedAddon\OrderImport\Rules\Colissimo::class,
         );
 
         foreach($defaultRulesClassNames as $ruleClassName) {
@@ -1265,5 +1277,28 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     public function getSpecificPriceService()
     {
         return new \ShoppingfeedAddon\Services\SpecificPriceService();
+    }
+
+    public function addDateIndexToLogs()
+    {
+        $s_index = 'SHOW INDEX
+                FROM '._DB_PREFIX_.'shoppingfeed_processlogger
+                WHERE Key_name = "date_log"';
+
+        if (empty(Db::getInstance()->executeS($s_index))) {
+            $cr_index = "CREATE INDEX date_log ON " . _DB_PREFIX_ . "shoppingfeed_processlogger(date_add)";
+            return DB::getInstance()->execute($cr_index);
+        }
+
+        return true;
+    }
+
+    public function truncatePrelodingWhenProductSyncByDateUpdDisabled()
+    {
+        if ((bool)Configuration::get(Shoppingfeed::PRODUCT_SYNC_BY_DATE_UPD)) {
+            return true;
+        }
+
+        return Db::getInstance()->execute('TRUNCATE ' . _DB_PREFIX_ . ShoppingfeedPreloading::$definition['table']);
     }
 }

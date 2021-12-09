@@ -114,7 +114,7 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
                     $failedTicketsStatusTaskOrders = isset($processData['failedTaskOrders']) ? $processData['failedTaskOrders'] : array();
                     $successfulTicketsStatusTaskOrders = isset($processData['successfulTaskOrders']) ? $processData['successfulTaskOrders'] : array();
 
-                    ProcessLoggerHandler::logInfo(
+                    ProcessLoggerHandler::logSuccess(
                         sprintf(
                             $logPrefix . ' ' . $this->module->l('%d tickets with success; %d tickets with failure; %d errors', 'syncOrder'),
                             count($successfulTicketsStatusTaskOrders),
@@ -126,7 +126,7 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
                     );
                 }
 
-                ProcessLoggerHandler::logInfo(
+                ProcessLoggerHandler::logSuccess(
                     $logPrefix . ' ' .
                         $this->module->l('Process finished : check order status tickets', 'syncOrder'),
                     $this->processMonitor->getProcessObjectModelName(),
@@ -172,7 +172,7 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
                     $failedSyncStatusTaskOrders = isset($processData['failedTaskOrders']) ? $processData['failedTaskOrders'] : array();
                     $successfulSyncTaskOrders = isset($processData['successfulTaskOrders']) ? $processData['successfulTaskOrders'] : array();
 
-                    ProcessLoggerHandler::logInfo(
+                    ProcessLoggerHandler::logSuccess(
                         sprintf(
                             $logPrefix . ' ' . $this->module->l('%d tickets created; %d tickets not created; %d errors', 'syncOrder'),
                             count($successfulSyncTaskOrders),
@@ -242,6 +242,20 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
             );
             foreach ($processedTaskOrders as $taskOrder) {
                 $taskOrder->delete();
+            }
+
+            //Resend failed tickets.
+            $handler = new ActionsHandler();
+
+            foreach ($failedTicketsStatusTaskOrders as $failedTicket) {
+                /** @var ShoppingfeedTaskOrder $failedTicket*/
+                $handler
+                    ->setConveyor(array(
+                        'id_order' => $failedTicket->id_order,
+                        'order_action' => ShoppingfeedTaskOrder::ACTION_SYNC_STATUS,
+                    ))
+                    ->addActions('saveTaskOrder');
+                $handler->process('shoppingfeedOrderSync');
             }
         }
     }
@@ -364,7 +378,7 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
             }
         }
 
-        ProcessLoggerHandler::logInfo(
+        ProcessLoggerHandler::logSuccess(
             sprintf(
                 $this->module->l('%d orders to import; %d success; %d errors', 'ShoppingfeedOrderImportActions'),
                 count($result),

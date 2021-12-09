@@ -6,7 +6,6 @@
     <property name="TARGETNAME" value="shoppingfeed" />
     <property name="TARGETBRANCH" value="${env.GIT_BRANCH}" />
     <property name="TARGETVERSION" value="1.6.0" />
-
     <target name="build" depends="build-common,package-zip,psvalidator,tot-testing" />
 
     <target name="build-common" depends="lint,prepare,npm,doc" />

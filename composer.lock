@@ -1,7 +1,7 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
     "content-hash": "04dacb3a473935797d560b58e28f25e1",
@@ -54,6 +54,9 @@
                 "request",
                 "response"
             ],
+            "support": {
+                "source": "https://github.com/php-fig/http-message/tree/master"
+            },
             "time": "2016-08-06T14:39:51+00:00"
         },
         {
@@ -93,6 +96,10 @@
                 "Apache-2.0"
             ],
             "description": "ShoppingFeed Feed manager",
+            "support": {
+                "issues": "https://github.com/shoppingflux/php-feed-generator/issues",
+                "source": "https://github.com/shoppingflux/php-feed-generator/tree/develop"
+            },
             "time": "2019-05-08T17:57:15+00:00"
         }
     ],
@@ -103,5 +110,6 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],
-    "platform-dev": []
+    "platform-dev": [],
+    "plugin-api-version": "2.1.0"
 }
