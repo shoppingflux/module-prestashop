@@ -295,17 +295,29 @@ class ShoppingfeedApi
         return $tickets;
     }
 
-    public function getOrdersFromSf($filters)
+    public function getUnacknowledgedOrders($iShipped = false)
     {
+        $status = 'waiting_shipment';
+        if ($iShipped === true) {
+            $status = 'shipped';
+        }
         // Criteria used to query order API
         $criteria = [
-            'filters' => $filters,
+            'filters' => [
+                // Only retrieve unacknowleged (non-imported) orders
+                'acknowledgment' => 'unacknowledged',
+                // Available Shoppingfeed status:
+                // created, waiting_store_acceptance, refused, waiting_shipment, shipped,
+                // cancelled, refunded, partially_refunded, partially_shipped
+                'status' => $status,
+            ],
         ];
 
         Hook::exec(
             'ShoppingfeedOrderImportCriteria', // hook_name
             [
                 'criteria' => &$criteria,
+                'iShipped' => &$iShipped,
             ] // hook_args
         );
 
