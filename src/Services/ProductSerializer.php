@@ -299,7 +299,7 @@ class ProductSerializer
 
     protected function getAttributes()
     {
-        $combination = $this->product->getAttributeCombinations($this->id_lang);
+        $combination = $this->getAttributeCombinationService()->get($this->product, $this->id_lang, $this->id_shop);
 
         $attributes = [
             'state' => $this->product->condition,
@@ -385,7 +385,7 @@ class ProductSerializer
         $sfp = new ShoppingfeedProduct();
         $sfp->id_product = $this->product->id;
 
-        foreach ($this->product->getAttributeCombinations($this->id_lang) as $combinaison) {
+        foreach ($this->getAttributeCombinationService()->get($this->product, $this->id_lang, $this->id_shop) as $combinaison) {
             $combinations[$combinaison['id_product_attribute']]['attributes'][$combinaison['group_name']] = $combinaison['attribute_name'];
             $combinations[$combinaison['id_product_attribute']]['ean13'] = $combinaison['ean13'];
             $combinations[$combinaison['id_product_attribute']]['upc'] = $combinaison['upc'];
@@ -633,7 +633,7 @@ class ProductSerializer
 
 		$priority = SpecificPrice::getPriority($id_product);
 		foreach (array_reverse($priority) as $k => $field) {
-			if (!empty($field)) { 
+			if (!empty($field)) {
 				$select .= ' IF (`'.bqSQL($field).'` = '.(int)$$field.', '.pow(2, $k + 1).', 0) + ';
             }
         }
@@ -733,5 +733,10 @@ class ProductSerializer
         }
 
         return $return;
+    }
+
+    public function getAttributeCombinationService()
+    {
+        return new ProductAttributeCombination();
     }
 }
