@@ -24,6 +24,7 @@ if (!defined('_PS_VERSION_')) {
 require_once _PS_MODULE_DIR_ . 'shoppingfeed/vendor/autoload.php';
 
 use ShoppingfeedAddon\OrderImport\RulesManager;
+use ShoppingfeedAddon\OrderImport\SinceDate;
 
 /**
  * This admin controller displays the module's general configuration forms
@@ -439,6 +440,11 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
                             'class' => 'number_require',
                         ),
                         array(
+                            'type' => 'date',
+                            'label' => $this->module->l('Import the orders since', 'AdminShoppingfeedOrderImportRules'),
+                            'name' => Shoppingfeed::ORDER_IMPORT_PERMANENT_SINCE_DATE,
+                        ),
+                        array(
                             'type' => 'shoppingfeed_close-section',
                         ),
                     ),
@@ -459,6 +465,7 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
             Shoppingfeed::ORDER_DEFAULT_CARRIER_REFERENCE => Configuration::get(Shoppingfeed::ORDER_DEFAULT_CARRIER_REFERENCE),
             'tracking_timeshift' => Configuration::get(Shoppingfeed::ORDER_STATUS_TIME_SHIFT),
             'max_order_update' => Configuration::get(Shoppingfeed::ORDER_STATUS_MAX_ORDERS),
+            Shoppingfeed::ORDER_IMPORT_PERMANENT_SINCE_DATE => $this->getSinceDateService()->get()
         );
 
         $helper->base_folder = $this->getTemplatePath() . $this->override_folder;
@@ -570,6 +577,22 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
             }
         }
 
+        if (Tools::isSubmit(Shoppingfeed::ORDER_IMPORT_PERMANENT_SINCE_DATE)) {
+            $sinceDate = DateTime::createFromFormat(
+                SinceDate::DATE_FORMAT_PS,
+                Tools::getValue(Shoppingfeed::ORDER_IMPORT_PERMANENT_SINCE_DATE)
+            );
+
+            if ($sinceDate instanceof DateTime) {
+                $this->getSinceDateService()->set($sinceDate);
+            }
+        }
+
         return true;
+    }
+
+    protected function getSinceDateService()
+    {
+        return new SinceDate();
     }
 }
