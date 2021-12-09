@@ -514,12 +514,20 @@ class ProductSerializer
 
     protected function getImagesFromDb($id_lang)
     {
-        return Db::getInstance()->ExecuteS('
-            SELECT i.`cover`, i.`id_image`, il.`legend`, i.`position`
-            FROM `'._DB_PREFIX_.'image` i
-            LEFT JOIN `'._DB_PREFIX_.'image_lang` il ON (i.`id_image` = il.`id_image` AND il.`id_lang` = '.(int)($id_lang).')
-            WHERE i.`id_product` = '.(int) $this->product->id .'
-            ORDER BY i.cover DESC, i.`position` ASC ');
+        $sql = (new DbQuery())
+            ->from('image', 'i')
+            ->leftJoin('image_lang', 'il', 'il.id_image = i.id_image AND il.id_lang = ' . (int)$id_lang)
+            ->where('i.id_product = ' . $this->product->id)
+            ->orderBy('i.cover DESC, i.`position` ASC')
+            ->select('i.cover, i.id_image, il.legend, i.position');
+
+        if ($this->id_shop) {
+            $sql
+                ->leftJoin('image_shop', 'is', 'i.id_image = is.id_image')
+                ->where('is.id_shop = ' . (int)$this->id_shop);
+        }
+
+        return Db::getInstance()->executeS($sql);
     }
 
     protected function _clean($string)
@@ -550,13 +558,20 @@ class ProductSerializer
     protected function _getAttributeImageAssociations($id_product_attribute)
     {
         $combinationImages = array();
-        $data = Db::getInstance()->ExecuteS('
-            SELECT pai.`id_image`
-            FROM `'._DB_PREFIX_.'product_attribute_image` pai
-            LEFT JOIN `'._DB_PREFIX_.'image` i ON pai.id_image = i.id_image
-            WHERE pai.`id_product_attribute` = '.(int)($id_product_attribute).'
-            ORDER BY i.cover DESC, i.position ASC
-        ');
+        $sql = (new DbQuery())
+            ->select('pai.id_image')
+            ->from('product_attribute_image', 'pai')
+            ->leftJoin('image', 'i', 'pai.id_image = i.id_image')
+            ->where('pai.id_product_attribute =' . (int)$id_product_attribute)
+            ->orderBy('i.cover DESC, i.position ASC');
+
+        if ($this->id_shop) {
+            $sql
+                ->leftJoin('image_shop', 'is', 'i.id_image = is.id_image')
+                ->where('is.id_shop = ' . (int)$this->id_shop);
+        }
+
+        $data = Db::getInstance()->executeS($sql);
 
         foreach ($data as $row) {
             $combinationImages[] = (int)($row['id_image']);
