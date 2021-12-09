@@ -1065,6 +1065,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 'apiOrder' => $this->conveyor['apiOrder'],
                 'orderData' => $this->conveyor['orderData'],
                 'sfOrder' => $this->conveyor['sfOrder'],
+                'id_order' => (int)$this->conveyor['id_order']
             )
         );
 

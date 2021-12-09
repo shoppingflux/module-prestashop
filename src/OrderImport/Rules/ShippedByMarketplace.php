@@ -39,6 +39,7 @@ use OrderHistory;
 use OrderState;
 use Tools;
 use StockAvailable;
+use Validate;
 use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
@@ -110,31 +111,46 @@ class ShippedByMarketplace extends RuleAbstract implements RuleInterface
     public function onPostProcess($params)
     {
         $apiOrder = $params['apiOrder'];
+        $idOrder = $params['id_order'];
 
         $logPrefix = sprintf(
             $this->l('[Order: %s]', 'TestingOrder'),
             $apiOrder->getId()
         );
         $logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
+        $psOrder = new Order($idOrder);
+
+        if (false === Validate::isLoadedObject($psOrder)) {
+            ProcessLoggerHandler::logError(
+                $logPrefix .
+                sprintf(
+                    $this->l('Can not retrieve a prestashop order. Id Order: %d', 'ChangeStateOrder'),
+                    $idOrder
+                ),
+                'Order',
+                (int)$params['sfOrder']->id_order
+            );
+            return;
+        }
 
         ProcessLoggerHandler::logInfo(
             $logPrefix .
             sprintf(
                 $this->l('Rule triggered. Set order %s to DELIVERED', 'ShippedByMarketplace'),
-                $params['sfOrder']->id_order
+                $idOrder
             ),
             'Order',
-            $params['sfOrder']->id_order
+            $idOrder
         );
         if (empty($this->configuration['end_order_state_shipped']) === false) {
             $changeStateId = $this->configuration['end_order_state_shipped'];
         } else {
             $changeStateId = (int) Configuration::get('PS_OS_DELIVERED');
         }
-        $psOrder = new Order($params['sfOrder']->id_order);
+
         // Set order to DELIVERED
         $history = new OrderHistory();
-        $history->id_order = $params['sfOrder']->id_order;
+        $history->id_order = $idOrder;
         $use_existings_payment = true;
         $history->changeIdOrderState($changeStateId, $psOrder, $use_existings_payment);
         // Save all changes
