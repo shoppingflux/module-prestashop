@@ -119,9 +119,11 @@ class SymbolConformity extends RuleAbstract implements RuleInterface
                 'is_bool' => true,
                 'values' => array(
                     array(
+                        'id' => 'ok',
                         'value' => 1,
                     ),
                     array(
+                        'id' => 'ko',
                         'value' => 0,
                     )
                 ),

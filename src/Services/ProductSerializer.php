@@ -111,10 +111,15 @@ class ProductSerializer
                 'full' => $this->product->description,
                 'short' => $this->product->description_short,
             ],
+            'ecotax' => $this->product->ecotax,
+            'vat' => $this->product->tax_rate,
             'images' => $this->getImages(),
             'attributes' => $this->getAttributes(),
             'variations' => $this->getVariations($carrier, $productLink),
         ];
+        if (empty($this->product->weight) === false && $this->product->weight != 0) {
+            $content['weight'] = $this->product->weight;
+        }
         if (empty($this->product->manufacturer_name) === false) {
             $manufacturerLink = $this->link->getManufacturerLink($this->product->id_manufacturer, null, $this->id_lang);
             $content['brand'] = [

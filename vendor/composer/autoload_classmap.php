@@ -9,6 +9,7 @@ return array(
     'AdminShoppingfeedAccountSettingsController' => $baseDir . '/controllers/admin/AdminShoppingfeedAccountSettings.php',
     'AdminShoppingfeedFaqController' => $baseDir . '/controllers/admin/AdminShoppingfeedFaq.php',
     'AdminShoppingfeedGeneralSettingsController' => $baseDir . '/controllers/admin/AdminShoppingfeedGeneralSettings.php',
+    'AdminShoppingfeedOrderImportController' => $baseDir . '/controllers/admin/AdminShoppingfeedOrderImport.php',
     'AdminShoppingfeedOrderImportRulesController' => $baseDir . '/controllers/admin/AdminShoppingfeedOrderImportRules.php',
     'AdminShoppingfeedOrdersController' => $baseDir . '/controllers/admin/AdminShoppingfeedOrders.php',
     'AdminShoppingfeedProcessLoggerController' => $baseDir . '/controllers/admin/AdminShoppingfeedProcessLogger.php',

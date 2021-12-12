@@ -232,9 +232,11 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
                             'disabled' => !$order_import_available,
                             'values' => array(
                                 array(
+                                    'id' => 'ok',
                                     'value' => 1,
                                 ),
                                 array(
+                                    'id' => 'ko',
                                     'value' => 0,
                                 )
                             ),
@@ -266,9 +268,11 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
                             'disabled' => !Configuration::get(Shoppingfeed::ORDER_IMPORT_ENABLED),
                             'values' => array(
                                 array(
+                                    'id' => 'ok',
                                     'value' => 1,
                                 ),
                                 array(
+                                    'id' => 'ko',
                                     'value' => 0,
                                 )
                             ),
@@ -329,9 +333,11 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
                             'hint' => $this->module->l('The order post-import synchronization allows you to manage the following order statuses : shipped, cancelled, refunded.', 'AdminShoppingfeedOrderImportRules'),
                             'values' => array(
                                 array(
+                                    'id' => 'ok',
                                     'value' => 1,
                                 ),
                                 array(
+                                    'id' => 'ko',
                                     'value' => 0,
                                 )
                             ),

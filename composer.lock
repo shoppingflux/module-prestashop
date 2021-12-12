@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "04dacb3a473935797d560b58e28f25e1",
+    "content-hash": "a8b857a9e75135e4f6092cfc0a9fbc79",
     "packages": [
         {
             "name": "psr/http-message",
@@ -61,16 +61,16 @@
         },
         {
             "name": "shoppingfeed/php-feed-generator",
-            "version": "1.2.0",
+            "version": "dev-develop",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shoppingflux/php-feed-generator.git",
-                "reference": "a72f08eba70e5652a90cf46b06a2e3f1c1e94051"
+                "reference": "125e14bccd9c6a6e0722781f091d08bcd78bbfe8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shoppingflux/php-feed-generator/zipball/a72f08eba70e5652a90cf46b06a2e3f1c1e94051",
-                "reference": "a72f08eba70e5652a90cf46b06a2e3f1c1e94051",
+                "url": "https://api.github.com/repos/shoppingflux/php-feed-generator/zipball/125e14bccd9c6a6e0722781f091d08bcd78bbfe8",
+                "reference": "125e14bccd9c6a6e0722781f091d08bcd78bbfe8",
                 "shasum": ""
             },
             "require": {
@@ -82,6 +82,7 @@
                 "psr/log": "^1.0",
                 "shoppingfeed/feed-xml": "1.*"
             },
+            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -100,13 +101,15 @@
                 "issues": "https://github.com/shoppingflux/php-feed-generator/issues",
                 "source": "https://github.com/shoppingflux/php-feed-generator/tree/develop"
             },
-            "time": "2019-05-08T17:57:15+00:00"
+            "time": "2021-12-10T12:30:24+00:00"
         }
     ],
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "shoppingfeed/php-feed-generator": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],

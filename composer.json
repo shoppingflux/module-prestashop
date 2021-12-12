@@ -1,6 +1,6 @@
 {
   "require": {
-    "shoppingfeed/php-feed-generator": "1.2.0",
+    "shoppingfeed/php-feed-generator": "@dev",
     "psr/http-message": "~1.0"
   },
   "config": {
