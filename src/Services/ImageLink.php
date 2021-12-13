@@ -28,7 +28,7 @@ namespace ShoppingfeedAddon\Services;
 use Configuration;
 use Context;
 use Image;
-use PrestaShop\PrestaShop\Core\Addon\Module\ModuleManagerBuilder;
+use Module;
 use Shop;
 use Tools;
 
@@ -49,8 +49,6 @@ class ImageLink
     public function getImageLink($name, $ids, $type = null, $idShop = null)
     {
         $notDefault = false;
-        $moduleManagerBuilder = ModuleManagerBuilder::getInstance();
-        $moduleManager = $moduleManagerBuilder->build();
 
         if ($idShop) {
             $shop = new Shop($idShop);
@@ -69,7 +67,7 @@ class ImageLink
 
         // Check if module is installed, enabled, customer is logged in and watermark logged option is on
         if (!empty($type) && $watermarkLogged &&
-            ($moduleManager->isInstalled('watermark') && $moduleManager->isEnabled('watermark')) &&
+            (Module::isInstalled('watermark') && Module::isEnabled('watermark')) &&
             isset(Context::getContext()->customer->id)
         ) {
             $type .= '-' . $watermarkHash;
