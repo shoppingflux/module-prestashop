@@ -152,14 +152,14 @@ class ProductSerializer
         $address = \Address::initialize(null, true);
         $tax_manager = \TaxManagerFactory::getManager($address, Product::getIdTaxRulesGroupByIdProduct((int) $this->product->id, Context::getContext()));
         $product_tax_calculator = $tax_manager->getTaxCalculator();
-        $priceWithoutReduction = $this->sfModule->mapProductPrice($sfp, $this->configurations['PS_SHOP_DEFAULT']);
+        $priceWithoutReduction = $this->sfModule->mapProductPrice($sfp, $this->id_shop);
         $contentUpdate['price'] = $priceWithoutReduction;
         $contentUpdate['specificPrices'] = $this->getSpecificPrices($address, $product_tax_calculator, $id_group, $priceWithoutReduction);
 
         if (isset($contentUpdate['variations']) && false === empty($contentUpdate['variations'])) {
             foreach ($contentUpdate['variations'] as $idProductAttribute => $variation) {
                 $sfp->id_product_attribute = (int)$idProductAttribute;
-                $variationPrice = $this->sfModule->mapProductPrice($sfp, $this->configurations['PS_SHOP_DEFAULT']);
+                $variationPrice = $this->sfModule->mapProductPrice($sfp, $this->id_shop);
                 $contentUpdate['variations'][$idProductAttribute]['price'] = $variationPrice;
                 $contentUpdate['variations'][$idProductAttribute]['specificPrices'] = $this->getSpecificPrices($address, $product_tax_calculator, $id_group,  $variationPrice, (int)$idProductAttribute);
 
