@@ -30,8 +30,6 @@ if (!defined('_PS_VERSION_')) {
 
 use Tools;
 use Module;
-use Db;
-use Configuration;
 use Carrier;
 use Validate;
 use Country;
@@ -207,7 +205,6 @@ class Colissimo extends RuleAbstract implements RuleInterface
         list($productCode, $colissimoPickupPointId) = explode(':', $apiOrderData['additionalFields']['service_point_id']);
 
         $shippingAddress = $apiOrder->getShippingAddress();
-        $destinationType = ColissimoTools::getDestinationTypeByIsoCountry($shippingAddress['country']);
 
         // Save/update Colissimo pickup point
         $pickupPointData = [
@@ -215,14 +212,13 @@ class Colissimo extends RuleAbstract implements RuleInterface
             'company_name' => $apiOrderData['additionalFields']['service_point_name'],
             'address1' => $shippingAddress['street'],
             'address2' => $shippingAddress['street2'],
-            // TODO : does this line exist in the API ?
-            'address3' => !empty($shippingAddress['street3']) ? $shippingAddress['street3'] : '',
+            'address3' => '',
             'city' => $shippingAddress['city'],
             'zipcode' => $shippingAddress['postalCode'],
             'country' => Tools::strtoupper(Country::getNameById($params['cart']->id_lang, Country::getByIso($shippingAddress['country']))),
             'iso_country' => $shippingAddress['country'],
             'product_code' => $productCode,
-            'network' => '' //TODO; how do we get this field ? It's not in the data sent by SF. Ask Colissimo directly ? Then again, it's not required.
+            'network' => '',
         ];
         $pickupPoint = ColissimoPickupPoint::getPickupPointByIdColissimo($colissimoPickupPointId);
         $pickupPoint->hydrate(array_map('pSQL', $pickupPointData));
