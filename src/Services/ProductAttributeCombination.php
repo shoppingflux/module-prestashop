@@ -77,11 +77,10 @@ class ProductAttributeCombination
             ->leftJoin('attribute_group', 'ag', 'ag.`id_attribute_group` = a.`id_attribute_group`')
             ->leftJoin('attribute_lang', 'al', 'a.`id_attribute` = al.`id_attribute`')
             ->leftJoin('attribute_group_lang', 'agl', 'ag.`id_attribute_group` = agl.`id_attribute_group`')
-            ->where('pas.id_shop = ' . (int) $idShop)
-            ->where('al.id_lang = ' . (int) $idLang)
-            ->where('agl.id_lang = ' . (int) $idLang)
-            ->where('pa.id_product = ' . (int) $product->id)
-            ->groupBy('pa.`id_product_attribute`')
+            ->where('pas.id_shop = ' . (int)$idShop)
+            ->where('al.id_lang = ' . (int)$idLang)
+            ->where('agl.id_lang = ' . (int)$idLang)
+            ->where('pa.id_product = ' . (int)$product->id)
             ->orderBy('pa.`id_product_attribute`')
         ;
 
@@ -95,20 +94,30 @@ class ProductAttributeCombination
             return [];
         }
 
-        //Get quantity of each variations
-        foreach ($res as $key => $row) {
-            $cache_key = $row['id_product'] . '_' . $row['id_product_attribute'] . '_quantity';
+        $combinations = [];
 
-            if (!Cache::isStored($cache_key)) {
-                Cache::store(
-                    $cache_key,
-                    StockAvailable::getQuantityAvailableByProduct($row['id_product'], $row['id_product_attribute'])
-                );
+        foreach ($res as $key => $row) {
+            $idProductAttribute = $row['id_product_attribute'];
+            if (empty($combinations[$row['id_product_attribute']])) {
+                $cache_key = $row['id_product'] . '_' . $row['id_product_attribute'] . '_quantity';
+                if (!Cache::isStored($cache_key)) {
+                    Cache::store(
+                        $cache_key,
+                        StockAvailable::getQuantityAvailableByProduct($row['id_product'], $row['id_product_attribute'])
+                    );
+                }
+                $combinations[$idProductAttribute]['id_product_attribute'] = $idProductAttribute;
+                $combinations[$idProductAttribute]['ean13'] = $row['ean13'];
+                $combinations[$idProductAttribute]['upc'] = $row['upc'];
+                $combinations[$idProductAttribute]['quantity'] = \Cache::retrieve($cache_key);
+                $combinations[$idProductAttribute]['weight'] = $row['weight'];
+                $combinations[$idProductAttribute]['reference'] = $row['reference'];
+                $combinations[$idProductAttribute]['wholesale_price'] = $row['wholesale_price'];
             }
 
-            $res[$key]['quantity'] = Cache::retrieve($cache_key);
+            $combinations[$idProductAttribute]['attributes'][$row['group_name']] = $row['attribute_name'];
         }
 
-        return $res;
+        return $combinations;
     }
 }
