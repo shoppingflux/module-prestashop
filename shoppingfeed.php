@@ -72,6 +72,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     const PRODUCT_SYNC_BY_DATE_UPD = "SHOPPINGFEED_PRODUCT_SYNC_BY_DATE_UPD";
     const PRODUCT_FEED_TIME_FULL_UPDATE = "SHOPPINGFEED_PRODUCT_FEED_TIME_FULL_UPDATE";
     const PRODUCT_FEED_INTERVAL_CRON = "SHOPPINGFEED_PRODUCT_FEED_INTERVAL_CRON";
+    const ORDER_IMPORT_PERMANENT_SINCE_DATE = "SHOPPINGFEED_ORDER_IMPORT_PERMANENT_SINCE_DATE";
 
 
     public $extensions = array(
@@ -147,6 +148,15 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             'class_name' => 'AdminShoppingfeedOrders',
             'parent_class_name' => 'shoppingfeed',
             'visible' => true,
+        ),
+        array(
+            'name' => array(
+                'en' => 'Shopping Feed',
+                'fr' => 'Shopping Feed'
+            ),
+            'class_name' => 'AdminShoppingfeedOrderImport',
+            'parent_class_name' => 'shoppingfeed',
+            'visible' => false,
         ),
         array(
             'name' => array(
@@ -302,6 +312,15 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
                     'class_name' => 'AdminShoppingfeedOrders',
                     'parent_class_name' => 'shoppingfeed',
                     'visible' => true,
+                ),
+                array(
+                    'name' => array(
+                        'en' => 'Shopping Feed',
+                        'fr' => 'Shopping Feed'
+                    ),
+                    'class_name' => 'AdminShoppingfeedOrderImport',
+                    'parent_class_name' => 'shoppingfeed',
+                    'visible' => false,
                 ),
                 array(
                     'name' => array(
@@ -1213,7 +1232,9 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             ShoppingfeedAddon\OrderImport\Rules\ShippedByMarketplace::class,
             ShoppingfeedAddon\OrderImport\Rules\RelaisColisRule::class,
             ShoppingfeedAddon\OrderImport\Rules\TestingOrder::class,
-            ShoppingfeedAddon\OrderImport\Rules\SymbolConformity::class
+            ShoppingfeedAddon\OrderImport\Rules\SymbolConformity::class,
+            ShoppingfeedAddon\OrderImport\Rules\ManomanoDpdRelais::class,
+            ShoppingfeedAddon\OrderImport\Rules\Colissimo::class,
         );
 
         foreach($defaultRulesClassNames as $ruleClassName) {

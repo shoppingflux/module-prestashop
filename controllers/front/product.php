@@ -48,9 +48,11 @@ class ShoppingfeedProductModuleFrontController  extends \ModuleFrontController
             die();
         }
 
+        $this->preparePreloading($token);
+
         $this->sfToken = $token;
         $fileXml = sprintf('file-%d.xml', $token['id_shoppingfeed_token']);
-        ProcessLoggerHandler::logInfo(sprintf('Generate file %s for token %s:.', $fileXml, $token['content']), null, null, 'ShoppingfeedProductModuleFrontController');
+        ProcessLoggerHandler::logSuccess(sprintf('Generate file %s for token %s:.', $fileXml, $token['content']), null, null, 'ShoppingfeedProductModuleFrontController');
         ProcessLoggerHandler::closeLogger();
         $productGenerator = new SfProductGenerator($fileXml, 'xml');
         $productGenerator->setPlatform('Prestashop', _PS_VERSION_)
@@ -94,6 +96,15 @@ class ShoppingfeedProductModuleFrontController  extends \ModuleFrontController
         ;
         if (isset($item['quantity']) === true) {
             $product->setQuantity($item['quantity']);
+        }
+        if (isset($item['ecotax']) === true) {
+            $product->setEcotax($item['ecotax']);
+        }
+        if (isset($item['vat']) === true) {
+            $product->setVat($item['vat']);
+        }
+        if (isset($item['weight']) === true) {
+            $product->setWeight($item['weight']);
         }
         if (empty($item['description']) !== true) {
             $product->setDescription($item['description']['full'], $item['description']['short']);
@@ -176,7 +187,7 @@ class ShoppingfeedProductModuleFrontController  extends \ModuleFrontController
         try {
             foreach ($products as $product) {
                 $ids[] = $product['id_product'];
-                $sfp->saveProduct($product['id_product'], $product['id_token'], $token['id_lang'], $token['id_shop'], $token->id_currency);
+                $sfp->saveProduct($product['id_product'], $product['id_token'], $token['id_lang'], $token['id_shop'], $token['id_currency']);
             }
         } catch (Exception $e) {
             ProcessLoggerHandler::logError(

@@ -88,13 +88,13 @@ class Socolissimo extends RuleAbstract implements RuleInterface
             $result = $this->insertSoLiberteData($params['cart']);
 
             if ($result) {
-                ProcessLoggerHandler::logSuccess(
+                ProcessLoggerHandler::logInfo(
                     $logPrefix .
                         $this->l('Data inserted in soliberte module.', 'Socolissimo'),
                     'Order'
                 );
             } else {
-                ProcessLoggerHandler::logError(
+                ProcessLoggerHandler::logInfo(
                     $logPrefix .
                         $this->l('Failed to insert data in soliberte module.', 'Socolissimo'),
                     'Order'
@@ -114,13 +114,13 @@ class Socolissimo extends RuleAbstract implements RuleInterface
             $result = $this->insertSoFlexibiliteData($params['cart']);
 
             if ($result) {
-                ProcessLoggerHandler::logSuccess(
+                ProcessLoggerHandler::logInfo(
                     $logPrefix .
                         $this->l('Data inserted in soflexibilite module.', 'Socolissimo'),
                     'Order'
                 );
             } else {
-                ProcessLoggerHandler::logError(
+                ProcessLoggerHandler::logInfo(
                     $logPrefix .
                         $this->l('Failed to insert data in soflexibilite module.', 'Socolissimo'),
                     'Order'
