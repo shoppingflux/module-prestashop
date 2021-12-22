@@ -384,7 +384,6 @@ class ProductSerializer
     {
         $variations = [];
         $combinations = $this->getAttributeCombinationService()->get($this->product, $this->id_lang, $this->id_shop);
-        $combinations = [];
         $sfModule = \Module::getInstanceByName('shoppingfeed');
         $sfp = new ShoppingfeedProduct();
         $sfp->id_product = $this->product->id;
