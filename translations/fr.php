@@ -134,6 +134,9 @@ $_MODULE['<{shoppingfeed}prestashop>amazonb2b_127e6425040a88b2d26f83cbd00f1e1f']
 $_MODULE['<{shoppingfeed}prestashop>amazonb2b_dc0cdac822400fd5475bc594741c6f2d'] = 'Appliquer la méthode de paiement ”amazon b2b” afin de l\'afficher dans ”Récapitulatif Marketplaces”';
 $_MODULE['<{shoppingfeed}prestashop>cdiscountrelay_0cc1e925b5703e8da52b7c3e91829499'] = '[Commande %s]';
 $_MODULE['<{shoppingfeed}prestashop>cdiscountrelay_1705267a14f0d6133019291dcf8b03ed'] = 'Règle déclenchée. Adresse de livraison mise à jour avec l\'ID du point relais.';
+$_MODULE['<{shoppingfeed}prestashop>cdiscountrelay_41f5dcd4934461ef96d60874b28e7d79'] = 'Enregistrement du point relais Colissimo.';
+$_MODULE['<{shoppingfeed}prestashop>cdiscountrelay_e171f8d9131e522e3a3e9b5f86c29fbc'] = 'Echec de la liaison avec le point relais Colissimo %s pour le panier %s. Le point relais n\'a pas été trouvé dans le module Colissimo.';
+$_MODULE['<{shoppingfeed}prestashop>cdiscountrelay_d9890e80eb0fbd2d38063d000211b999'] = 'Liaison avec le point relais Colissimo %s pour le panier %s.';
 $_MODULE['<{shoppingfeed}prestashop>cdiscountrelay_dec006e857c0ad54d3aadd8f00064519'] = 'Si la commande provient de CDiscount ET le transporteur est ”SO1”, ”REL” or ”RCO”.';
 $_MODULE['<{shoppingfeed}prestashop>cdiscountrelay_fdbfb223195e682147665bce34d7f680'] = 'Récupération de l\'ID point relais à partir du champs ”nom” et transfert dans le champs ”company”. Si la ”company” est déjà rempli, transfert dans le champs ”address (2)”. Compléter le nom avec le contenu du prénom après le premier espace.';
 $_MODULE['<{shoppingfeed}prestashop>symbolconformity_0cc1e925b5703e8da52b7c3e91829499'] = '[Commande %s]';
