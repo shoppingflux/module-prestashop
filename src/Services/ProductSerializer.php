@@ -304,8 +304,6 @@ class ProductSerializer
 
     protected function getAttributes()
     {
-        $combination = $this->getAttributeCombinationService()->get($this->product, $this->id_lang, $this->id_shop);
-
         $attributes = [
             'state' => $this->product->condition,
             'available_for_order' => $this->product->available_for_order,
@@ -385,20 +383,11 @@ class ProductSerializer
     protected function getVariations($carrier, $productLink)
     {
         $variations = [];
+        $combinations = $this->getAttributeCombinationService()->get($this->product, $this->id_lang, $this->id_shop);
         $combinations = [];
         $sfModule = \Module::getInstanceByName('shoppingfeed');
         $sfp = new ShoppingfeedProduct();
         $sfp->id_product = $this->product->id;
-
-        foreach ($this->getAttributeCombinationService()->get($this->product, $this->id_lang, $this->id_shop) as $combinaison) {
-            $combinations[$combinaison['id_product_attribute']]['attributes'][$combinaison['group_name']] = $combinaison['attribute_name'];
-            $combinations[$combinaison['id_product_attribute']]['ean13'] = $combinaison['ean13'];
-            $combinations[$combinaison['id_product_attribute']]['upc'] = $combinaison['upc'];
-            $combinations[$combinaison['id_product_attribute']]['quantity'] = $combinaison['quantity'];
-            $combinations[$combinaison['id_product_attribute']]['weight'] = $combinaison['weight'];
-            $combinations[$combinaison['id_product_attribute']]['reference'] = $combinaison['reference'];
-            $combinations[$combinaison['id_product_attribute']]['wholesale_price'] = $combinaison['wholesale_price'];
-        }
 
         foreach ($combinations as $id => $combination) {
             set_time_limit(600);
