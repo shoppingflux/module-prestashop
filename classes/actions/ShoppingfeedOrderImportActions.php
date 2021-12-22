@@ -1004,7 +1004,10 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 'total_shipping_tax_incl' => Tools::ps_round($orderPrices['total_shipping_tax_incl'], 4),
                 'total_shipping_tax_excl' => Tools::ps_round($orderPrices['total_shipping_tax_excl'], 4),
                 'carrier_tax_rate'        => $carrier_tax_rate,
-                'id_carrier'              => $carrier->id
+                'id_carrier'              => $carrier->id,
+                'total_discounts' => 0,
+                'total_discounts_tax_incl' => 0,
+                'total_discounts_tax_excl' => 0
             );
 
             $updateOrderInvoice = array(
@@ -1028,6 +1031,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             $psOrder->save(true);
             Db::getInstance()->update('order_invoice', $updateOrderInvoice, '`id_order` = '.(int)$id_order);
             Db::getInstance()->update('order_carrier', $updateOrderTracking, '`id_order` = '.(int)$id_order);
+            Db::getInstance()->delete('order_cart_rule', 'id_order = ' . $psOrder->id);
         }
 
         $queryUpdateOrderPayment = sprintf(
