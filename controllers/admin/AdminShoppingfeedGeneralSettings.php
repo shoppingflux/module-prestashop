@@ -95,7 +95,7 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
 
         $this->context->smarty->assign('count_products', $this->nbr_products);
         $this->context->smarty->assign('hasAFilter', $product_filters !== null);
-        $this->context->smarty->assign('percent_preloading', round($percentPreloading));
+        $this->context->smarty->assign('percent_preloading', floor($percentPreloading));
 
         $crons = new ShoppingfeedClasslib\Extensions\ProcessMonitor\Classes\ProcessMonitorObjectModel();
         $syncProduct = $crons->findOneByName('shoppingfeed:syncProduct');
