@@ -284,6 +284,35 @@ class ShoppingfeedApi
                         $e->getMessage()
                     )
                 );
+
+                if (false == $e instanceof \SfGuzzle\GuzzleHttp\Exception\ClientException) {
+                    return false;
+                }
+
+                $body = $e->getResponse()->getBody();
+                $status = $e->getResponse()->getStatusCode();
+
+                if ($status != 404) {
+                    return false;
+                }
+
+                try {
+                    $responseArray = json_decode($body->getContents(), true);
+                } catch (Throwable $e) {
+                    return false;
+                }
+
+                if (empty($responseArray['id'])) {
+                    return false;
+                }
+
+                $orderTask = ShoppingfeedTaskOrder::getFromTicketNumber($responseArray['id']);
+
+                if (false == Validate::isLoadedObject($orderTask)) {
+                    return false;
+                }
+
+                $orderTask->delete();
                 return false;
             }
 
