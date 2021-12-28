@@ -633,8 +633,8 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         Product::flushPriceCache();
 
         // Tax depends on a country. We use country configured as default one for shop.
-        $id_country = Configuration::get('PS_COUNTRY_DEFAULT', null, null, $id_shop);
-        $id_currency = Validate::isLoadedObject($this->context->currency) ? (int) $this->context->currency->id : (int) Configuration::get('PS_CURRENCY_DEFAULT', null, null, $id_shop);
+        $id_country = (int)Configuration::get('PS_COUNTRY_DEFAULT', null, null, $id_shop);
+        $id_currency = (int) Configuration::get('PS_CURRENCY_DEFAULT', null, null, $id_shop);
         $id_group = (int) Group::getCurrent()->id;
 
         $price = Product::priceCalculation(
