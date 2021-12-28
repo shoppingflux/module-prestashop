@@ -643,23 +643,23 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             $sfProduct->id_product_attribute ? // id_product_attribute
                 $sfProduct->id_product_attribute : null,
             $id_country,
-            0,
-            0,
-            $id_currency,
-            $id_group,
-            1,
-            true,
-            2,
-            false,
+            0,// id_state
+            0,// postcode
+            $id_currency,// id_currency
+            $id_group,// id_group
+            1,// quantity
+            true,// use_tax
+            2,// decimals
+            false,// only_reduc
             is_array($arguments) && array_key_exists('price_with_reduction', $arguments) && $arguments['price_with_reduction'] === true, // usereduc
-            true,
-            $specific_price_output,
-            true,
-            0,
-            true,
-            0,
-            0,
-            0
+            true,// with_ecotax
+            $specific_price_output,// specific_price_output
+            true,// use_group_reduction
+            0,// id_customer
+            true,// use_customer_price
+            0,// id_cart
+            0,// real_quantity
+            0//id_customization
         );
 
         Hook::exec(
