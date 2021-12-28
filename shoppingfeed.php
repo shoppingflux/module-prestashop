@@ -629,31 +629,37 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
      */
     public function mapProductPrice(ShoppingfeedProduct $sfProduct, $id_shop, $arguments = [])
     {
-        $cloneContext = Context::getContext()->cloneContext();
-        $cloneContext->shop = new Shop($id_shop);
-
         $specific_price_output = null;
         Product::flushPriceCache();
-        $price = Product::getPriceStatic(
-            $sfProduct->id_product, // id_product
-            true, // usetax
+
+        // Tax depends on a country. We use country configured as default one for shop.
+        $id_country = Configuration::get('PS_COUNTRY_DEFAULT', null, null, $id_shop);
+        $id_currency = Validate::isLoadedObject($this->context->currency) ? (int) $this->context->currency->id : (int) Configuration::get('PS_CURRENCY_DEFAULT', null, null, $id_shop);
+        $id_group = (int) Group::getCurrent()->id;
+
+        $price = Product::priceCalculation(
+            $id_shop,
+            $sfProduct->id_product,
             $sfProduct->id_product_attribute ? // id_product_attribute
                 $sfProduct->id_product_attribute : null,
-            2, // decimals
-            null, // divisor
-            false, // only_reduc
+            $id_country,
+            0,
+            0,
+            $id_currency,
+            $id_group,
+            1,
+            true,
+            2,
+            false,
             is_array($arguments) && array_key_exists('price_with_reduction', $arguments) && $arguments['price_with_reduction'] === true, // usereduc
-            1, // quantity
-            false, // force_associated_tax
-            null, // id_customer
-            null, // id_cart
-            null, // id_address
-            $specific_price_output, // specific_price_output; reference
-            true, // with_ecotax
-            true, // use_group_reduction
-            $cloneContext, // context; get the price for the specified shop
-            true, // use_customer_price
-            null // id_customization
+            true,
+            $specific_price_output,
+            true,
+            0,
+            true,
+            0,
+            0,
+            0
         );
 
         Hook::exec(
