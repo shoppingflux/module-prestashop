@@ -22,7 +22,7 @@ $_MODULE['<{shoppingfeed}prestashop>shippedbymarketplace_9e8b433ca751ff0b5ed9761
 $_MODULE['<{shoppingfeed}prestashop>shippedbymarketplace_bf6268797ddbc9e9333d906763b31069'] = 'Règle déclenchée. Configuration dela commande sur LIVRÉ.';
 $_MODULE['<{shoppingfeed}prestashop>shippedbymarketplace_b54bf972c4560b820f51e3e33a9c7d47'] = 'Si une commande est expédiée par la marketplace OU le statut d\'import de commande est Expédié.';
 $_MODULE['<{shoppingfeed}prestashop>shippedbymarketplace_07172e18fb8d0ded766f9851a25aab96'] = 'Ne décrémente pas de stock pour cette commande. Affecte le statut LIVRÉ après le processus d\'import ou le statut configuré ci-dessus.';
-$_MODULE['<{shoppingfeed}prestashop>shippedbymarketplace_6d37db035b07261b99e9fc78a4413361'] = 'Après import d\'une commande EXPEDIÉE par une marketplace, passer celle-ci au statut suivant';
+$_MODULE['<{shoppingfeed}prestashop>shippedbymarketplace_6d37db035b07261b99e9fc78a4413361'] = 'Après import d\'une commande au statut ”expédiée” ou expédiée par Amazon, CDiscount ou Manomano, passer celle-ci au statut suivant"';
 $_MODULE['<{shoppingfeed}prestashop>shippedbymarketplace_8c1e740f41b7a8fea37e5643874fcf77'] = 'Par défaut : Livré';
 $_MODULE['<{shoppingfeed}prestashop>cdiscountrelay_0cc1e925b5703e8da52b7c3e91829499'] = '[Commande %s]';
 $_MODULE['<{shoppingfeed}prestashop>cdiscountrelay_1705267a14f0d6133019291dcf8b03ed'] = 'Règle déclenchée. Adresse de livraison mise à jour avec l\'ID du point relais.';
@@ -177,7 +177,7 @@ $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_d8169ca55c
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_425ba278d4f2f2cb1502c8d7aef88357'] = 'Le module Shopping Flux Officiel (shoppingfluxexport) est installé sur votre boutique pour permettre d\'importer les commandes. L\'option “Importer les commandes“ doit être désactivées sur le module Shopping Flux Officiel. Si vous désactivez cette option sur le module Shopping Flux Officiel puis la ré-activez à nouveau plus tard, la l\'import des commandes via \"15 min Marketplace Updates - Shopping\" sera suspendu.';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_5af9a55b484dd6b5c85a1c36b9ccccce'] = 'Importer les nouvelles commandes';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_4d6c83f9b9c479537912e766636000cb'] = 'Importer les commandes de test';
-$_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_248c4a7ae1cc25f78743b92635aafa91'] = 'Importer les commandes déjà en statut ”expédié” sur Shoppignfeed ou la marketplace';
+$_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_90726be22080856d46c7f4f8620de279'] = 'Importer les commandes déjà au statut "expédié" sur Shopping Feed, sauf les commandes déjà expédiées par les market places';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_6dbfa8cd9d1f3e4310f714be1780936f'] = 'Permet d\'importer une commande avec un statut ”expédié” sur Shoppingfeed. Votre stock ne sera pas décrémenté pour ces commandes.';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_791cb4d0c9bd529dc79bfc1ab07da553'] = 'Par défaut, une commande importée avec un statut ”expédiée” sera créée avec un statut ”livré”. Cette règle d\'import peut-être configuré ci-dessous.';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_0c097c8d2f2d519cf7bf6fd1f8476e3d'] = 'Correspondance des transporteurs';

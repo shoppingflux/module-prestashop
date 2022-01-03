@@ -43,8 +43,6 @@ use StockAvailable;
 use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
-
-use ShoppingfeedClasslib\Registry;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 
 /**
@@ -61,15 +59,7 @@ class ShippedByMarketplace extends RuleAbstract implements RuleInterface
             return true;
         }
 
-        if ($this->isShippedAmazon($apiOrder)) {
-            return true;
-        }
-
-        if ($this->isShippedCdiscount($apiOrder)) {
-            return true;
-        }
-
-        if ($this->isShippedManomano($apiOrder)) {
+        if ($this->isShippedByMarketplace($apiOrder)) {
             return true;
         }
 
@@ -78,19 +68,14 @@ class ShippedByMarketplace extends RuleAbstract implements RuleInterface
 
     public function onVerifyOrder($params)
     {
-        if (Configuration::get(\Shoppingfeed::ORDER_IMPORT_SHIPPED) == false) {
-            $apiOrder = $params['apiOrder'];
-            $logPrefix = sprintf(
-                $this->l('[Order: %s]', 'ShippedByMarketplace'),
-                $apiOrder->getId()
-            );
-            $logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
-
-            ProcessLoggerHandler::logInfo(
-                $logPrefix . $this->l('Rule triggered. Import should be skipped.', 'Shoppingfeed.Rule'),
-                'Order'
-            );
-
+        $apiOrder = $params['apiOrder'];
+        if ($this->isShippedByMarketplace($apiOrder)) {
+            if (Configuration::get(\Shoppingfeed::ORDER_IMPORT_SHIPPED_MARKETPLACE) === false) {
+                $this->logSkipImport($apiOrder);
+                $params['isSkipImport'] = true;
+            }
+        } else if ($apiOrder->getStatus() == 'shipped' && Configuration::get(\Shoppingfeed::ORDER_IMPORT_SHIPPED) === false) {
+            $this->logSkipImport($apiOrder);
             $params['isSkipImport'] = true;
         }
     }
@@ -197,9 +182,9 @@ class ShippedByMarketplace extends RuleAbstract implements RuleInterface
         $states[] = [
             'type' => 'select',
             'label' =>
-                $this->l('After a SHIPPED by marketplace order import, turn this order status into', 'ShippedByMarketplace'),
+                $this->l('After a shipped order or an order shipped by Amazon, CDiscount or Manomano import, turn this order status into', 'ShippedByMarketplace'),
             'desc' =>
-                $this->l('By default: Delivered', 'ShippedByMarketplace'),
+                $this->l('By default: Delivered &', 'ShippedByMarketplace'),
             'name' => 'end_order_state_shipped',
             'options' => [
                 'query' => $statuses,
@@ -249,5 +234,36 @@ class ShippedByMarketplace extends RuleAbstract implements RuleInterface
         } catch (Exception $e) {
             return false;
         }
+    }
+
+    protected function isShippedByMarketplace(OrderResource $apiOrder)
+    {
+        if ($this->isShippedAmazon($apiOrder)) {
+            return true;
+        }
+
+        if ($this->isShippedCdiscount($apiOrder)) {
+            return true;
+        }
+
+        if ($this->isShippedManomano($apiOrder)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    protected function logSkipImport($apiOrder)
+    {
+        $logPrefix = sprintf(
+            $this->l('[Order: %s]', 'ShippedByMarketplace'),
+            $apiOrder->getId()
+        );
+        $logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
+
+        ProcessLoggerHandler::logInfo(
+            $logPrefix . $this->l('Rule triggered. Import should be skipped.', 'Shoppingfeed.Rule'),
+            'Order'
+        );
     }
 }

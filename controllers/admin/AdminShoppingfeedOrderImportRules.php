@@ -256,8 +256,26 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
                         ),
                         array(
                             'type' => 'switch',
-                            'label' => $this->module->l('Allow import already shipped order', 'AdminShoppingfeedOrderImportRules'),
+                            'label' => $this->module->l('Import orders already in "shipped" status on Shopping Feed, except orders shipped by market places', 'AdminShoppingfeedOrderImportRules'),
                             'name' => Shoppingfeed::ORDER_IMPORT_SHIPPED,
+                            'id' => 'shoppingfeed_order-import-switch',
+                            'desc' => $this->module->l('Let\'s import order with status ”shipped” order on Shopping feed. Your stock won\'t decrease for these orders.', 'AdminShoppingfeedOrderImportRules'),
+                            'hint' => $this->module->l('By default, a ”shipped” order will be imported as ”delivered” on PrestaShop. This can be configured.', 'AdminShoppingfeedOrderImportRules'),
+                            'is_bool' => true,
+                            'disabled' => !Configuration::get(Shoppingfeed::ORDER_IMPORT_ENABLED),
+                            'values' => array(
+                                array(
+                                    'value' => 1,
+                                ),
+                                array(
+                                    'value' => 0,
+                                )
+                            ),
+                        ),
+                        array(
+                            'type' => 'switch',
+                            'label' => $this->module->l('Allow import already shipped order', 'AdminShoppingfeedOrderImportRules'),
+                            'name' => Shoppingfeed::ORDER_IMPORT_SHIPPED_MARKETPLACE,
                             'id' => 'shoppingfeed_order-import-switch',
                             'desc' => $this->module->l('Let\'s import order with status ”shipped” order on Shopping feed. Your stock won\'t decrease for these orders.', 'AdminShoppingfeedOrderImportRules'),
                             'hint' => $this->module->l('By default, a ”shipped” order will be imported as ”delivered” on PrestaShop. This can be configured.', 'AdminShoppingfeedOrderImportRules'),
@@ -455,6 +473,7 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
             Shoppingfeed::ORDER_IMPORT_ENABLED => !$order_import_available ? false : Configuration::get(Shoppingfeed::ORDER_IMPORT_ENABLED),
             Shoppingfeed::ORDER_IMPORT_TEST => !$order_import_test ? false : Configuration::get(Shoppingfeed::ORDER_IMPORT_TEST),
             Shoppingfeed::ORDER_IMPORT_SHIPPED => !$order_import_shipped ? false : Configuration::get(Shoppingfeed::ORDER_IMPORT_SHIPPED),
+            Shoppingfeed::ORDER_IMPORT_SHIPPED_MARKETPLACE => !$order_import_shipped ? false : Configuration::get(Shoppingfeed::ORDER_IMPORT_SHIPPED_MARKETPLACE),
             Shoppingfeed::ORDER_SYNC_ENABLED => !$order_sync_available ? false : Configuration::get(Shoppingfeed::ORDER_SYNC_ENABLED),
             Shoppingfeed::ORDER_DEFAULT_CARRIER_REFERENCE => Configuration::get(Shoppingfeed::ORDER_DEFAULT_CARRIER_REFERENCE),
             'tracking_timeshift' => Configuration::get(Shoppingfeed::ORDER_STATUS_TIME_SHIFT),
