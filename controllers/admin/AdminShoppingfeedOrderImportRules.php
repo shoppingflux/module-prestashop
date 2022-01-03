@@ -274,11 +274,10 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
                         ),
                         array(
                             'type' => 'switch',
-                            'label' => $this->module->l('Allow import already shipped order', 'AdminShoppingfeedOrderImportRules'),
+                            'label' => $this->module->l('Allow import orders shipped by Marketplaces Amazon, CDiscount and Manomano', 'AdminShoppingfeedOrderImportRules'),
                             'name' => Shoppingfeed::ORDER_IMPORT_SHIPPED_MARKETPLACE,
                             'id' => 'shoppingfeed_order-import-switch',
-                            'desc' => $this->module->l('Let\'s import order with status ”shipped” order on Shopping feed. Your stock won\'t decrease for these orders.', 'AdminShoppingfeedOrderImportRules'),
-                            'hint' => $this->module->l('By default, a ”shipped” order will be imported as ”delivered” on PrestaShop. This can be configured.', 'AdminShoppingfeedOrderImportRules'),
+                            'hint' => $this->module->l('Order will be imported regardless of its status on Shopping Feed side', 'AdminShoppingfeedOrderImportRules'),
                             'is_bool' => true,
                             'disabled' => !Configuration::get(Shoppingfeed::ORDER_IMPORT_ENABLED),
                             'values' => array(
