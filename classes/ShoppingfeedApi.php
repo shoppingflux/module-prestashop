@@ -21,6 +21,7 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
+use ShoppingfeedAddon\OrderImport\SinceDate;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 
 use ShoppingFeed\Sdk\Http\Adapter\Guzzle6Adapter;
@@ -84,7 +85,7 @@ class ShoppingfeedApi
             static::$instance = new ShoppingfeedApi($session);
             return static::$instance;
         } catch (Exception $e) {
-            ProcessLoggerHandler::logInfo(
+            ProcessLoggerHandler::logError(
                 sprintf(
                     'API error: %s',
                     $e->getMessage()
@@ -117,7 +118,7 @@ class ShoppingfeedApi
 
             return static::$instance;
         } catch (Exception $e) {
-            ProcessLoggerHandler::logInfo(
+            ProcessLoggerHandler::logError(
                 sprintf(
                     'API error: %s',
                     $e->getMessage()
@@ -283,6 +284,35 @@ class ShoppingfeedApi
                         $e->getMessage()
                     )
                 );
+
+                if (false == $e instanceof \SfGuzzle\GuzzleHttp\Exception\ClientException) {
+                    return false;
+                }
+
+                $body = $e->getResponse()->getBody();
+                $status = $e->getResponse()->getStatusCode();
+
+                if ($status != 404) {
+                    return false;
+                }
+
+                try {
+                    $responseArray = json_decode($body->getContents(), true);
+                } catch (Throwable $e) {
+                    return false;
+                }
+
+                if (empty($responseArray['id'])) {
+                    return false;
+                }
+
+                $orderTask = ShoppingfeedTaskOrder::getFromTicketNumber($responseArray['id']);
+
+                if (false == Validate::isLoadedObject($orderTask)) {
+                    return false;
+                }
+
+                $orderTask->delete();
                 return false;
             }
 
@@ -310,6 +340,7 @@ class ShoppingfeedApi
                 // created, waiting_store_acceptance, refused, waiting_shipment, shipped,
                 // cancelled, refunded, partially_refunded, partially_shipped
                 'status' => $status,
+                'since' => $this->getSinceDateService()->get(SinceDate::DATE_FORMAT_SF)
             ],
         ];
 
@@ -398,5 +429,10 @@ class ShoppingfeedApi
         $clientOptions->setHttpAdapter(new Guzzle6Adapter());
         $client = new Client($clientOptions);
         return $client->ping();
+    }
+
+    protected function getSinceDateService()
+    {
+        return new SinceDate();
     }
 }

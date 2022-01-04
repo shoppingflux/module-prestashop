@@ -69,11 +69,12 @@ class ComposerStaticInit3fe85f86ff701f6bd7fd7d7a118b5533
         'AdminShoppingfeedAccountSettingsController' => __DIR__ . '/../..' . '/controllers/admin/AdminShoppingfeedAccountSettings.php',
         'AdminShoppingfeedFaqController' => __DIR__ . '/../..' . '/controllers/admin/AdminShoppingfeedFaq.php',
         'AdminShoppingfeedGeneralSettingsController' => __DIR__ . '/../..' . '/controllers/admin/AdminShoppingfeedGeneralSettings.php',
+        'AdminShoppingfeedOrderImportController' => __DIR__ . '/../..' . '/controllers/admin/AdminShoppingfeedOrderImport.php',
         'AdminShoppingfeedOrderImportRulesController' => __DIR__ . '/../..' . '/controllers/admin/AdminShoppingfeedOrderImportRules.php',
         'AdminShoppingfeedOrdersController' => __DIR__ . '/../..' . '/controllers/admin/AdminShoppingfeedOrders.php',
         'AdminShoppingfeedProcessLoggerController' => __DIR__ . '/../..' . '/controllers/admin/AdminShoppingfeedProcessLogger.php',
         'AdminShoppingfeedProcessMonitorController' => __DIR__ . '/../..' . '/controllers/admin/AdminShoppingfeedProcessMonitor.php',
-        'PriceFormatter' => __DIR__ . '/../..' . '/classes/Compatibility/PriceFormatter.php',
+        'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
         'ShoppingfeedAdminController' => __DIR__ . '/../..' . '/classes/ShoppingfeedAdminController.php',
         'ShoppingfeedApi' => __DIR__ . '/../..' . '/classes/ShoppingfeedApi.php',
         'ShoppingfeedCarrier' => __DIR__ . '/../..' . '/classes/ShoppingfeedCarrier.php',
@@ -94,7 +95,6 @@ class ComposerStaticInit3fe85f86ff701f6bd7fd7d7a118b5533
         'ShoppingfeedSyncProductModuleFrontController' => __DIR__ . '/../..' . '/controllers/front/syncProduct.php',
         'ShoppingfeedTaskOrder' => __DIR__ . '/../..' . '/classes/ShoppingfeedTaskOrder.php',
         'ShoppingfeedToken' => __DIR__ . '/../..' . '/classes/ShoppingfeedToken.php',
-        'SpecificPriceFormatter' => __DIR__ . '/../..' . '/classes/Compatibility/SpecificPriceFormatter.php',
     );
 
     public static function getInitializer(ClassLoader $loader)

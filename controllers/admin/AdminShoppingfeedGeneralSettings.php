@@ -95,7 +95,7 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
 
         $this->context->smarty->assign('count_products', $this->nbr_products);
         $this->context->smarty->assign('hasAFilter', $product_filters !== null);
-        $this->context->smarty->assign('percent_preloading', round($percentPreloading));
+        $this->context->smarty->assign('percent_preloading', floor($percentPreloading));
 
         $crons = new ShoppingfeedClasslib\Extensions\ProcessMonitor\Classes\ProcessMonitorObjectModel();
         $syncProduct = $crons->findOneByName('shoppingfeed:syncProduct');
@@ -127,9 +127,11 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
                     'is_bool' => true,
                     'values' => array(
                         array(
+                            'id' => 'ok',
                             'value' => 1,
                         ),
                         array(
+                            'id' => 'ko',
                             'value' => 0,
                         )
                     ),
@@ -141,9 +143,11 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
                     'is_bool' => true,
                     'values' => array(
                         array(
+                            'id' => 'ok',
                             'value' => 1,
                         ),
                         array(
+                            'id' => 'ko',
                             'value' => 0,
                         )
                     ),
@@ -193,9 +197,11 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
                     'is_bool' => true,
                     'values' => array(
                         array(
+                            'id' => 'ok',
                             'value' => 1,
                         ),
                         array(
+                            'id' => 'ko',
                             'value' => 0,
                         )
                     ),
@@ -352,9 +358,11 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
                     'is_bool' => true,
                     'values' => array(
                         array(
+                            'id' => 'ok',
                             'value' => 1,
                         ),
                         array(
+                            'id' => 'ko',
                             'value' => 0,
                         )
                     ),
@@ -463,9 +471,11 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
                     'disabled' => (Tools::getValue('with_factory') !== false) ? ($time_full_update > 0 || $interval_cron > 0) : true,
                     'values' => array(
                         array(
+                            'id' => 'ok',
                             'value' => 1,
                         ),
                         array(
+                            'id' => 'ko',
                             'value' => 0,
                         )
                     ),

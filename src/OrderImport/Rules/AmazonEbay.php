@@ -76,7 +76,7 @@ class AmazonEbay extends RuleAbstract implements RuleInterface
         $this->updateAddress($orderData->shippingAddress);
         $this->updateAddress($orderData->billingAddress);
 
-        ProcessLoggerHandler::logSuccess(
+        ProcessLoggerHandler::logInfo(
             $logPrefix .
                 $this->l('Rule triggered. Addresses updated.', 'AmazonEbay'),
             'Order'
@@ -131,9 +131,11 @@ class AmazonEbay extends RuleAbstract implements RuleInterface
                 'is_bool' => true,
                 'values' => array(
                     array(
+                        'id' => 'ok',
                         'value' => 1,
                     ),
                     array(
+                        'id' => 'ko',
                         'value' => 0,
                     )
                 ),

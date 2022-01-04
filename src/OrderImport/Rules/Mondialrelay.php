@@ -43,19 +43,40 @@ use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
+use Validate;
 
 class Mondialrelay extends RuleAbstract implements RuleInterface
 {
+    /** @var Module*/
+    protected $module_mondialRelay;
+
     public function isApplicable(OrderResource $apiOrder)
     {
         $apiOrderShipment = $apiOrder->getShipment();
-        $module_mondialRelay = Module::getInstanceByName('mondialrelay');
+        $this->module_mondialRelay = Module::getInstanceByName('mondialrelay');
+
+        if (Validate::isLoadedObject($this->module_mondialRelay) == false) {
+            return false;
+        }
 
         // Check only for name presence in the string; the relay ID could be appended
         // to the field (see ShoppingfeedAddon\OrderImport\Rules\RueducommerceMondialrelay)
-        if ($module_mondialRelay && preg_match('#mondial relay#', Tools::strtolower($apiOrderShipment['carrier']))) {
+        if (preg_match('#mondial relay#', Tools::strtolower($apiOrderShipment['carrier']))) {
             return true;
         }
+
+        if (preg_match('#Livraison Magasin produit jusqu\'à 30 kg#i', $apiOrderShipment['carrier'])) {
+            return true;
+        }
+
+        if (preg_match('#Livraison Point MR 24R#i', $apiOrderShipment['carrier'])) {
+            return true;
+        }
+
+        if (preg_match('#^rel$#i', trim($apiOrderShipment['carrier']))) {
+            return true;
+        }
+
         return false;
     }
 
@@ -79,7 +100,7 @@ class Mondialrelay extends RuleAbstract implements RuleInterface
         );
 
         if (empty($relayId)) {
-            ProcessLoggerHandler::logError(
+            ProcessLoggerHandler::logInfo(
                 $logPrefix .
                     $this->l('Rule triggered. No relay ID found in shipping address \'Other\' field', 'Mondialrelay'),
                 'Order',
@@ -107,7 +128,7 @@ class Mondialrelay extends RuleAbstract implements RuleInterface
         // Get relay data
         $relayData = $this->getRelayData($apiOrder, $relayId, $countryIso);
         if (!$relayData) {
-            ProcessLoggerHandler::logError(
+            ProcessLoggerHandler::logInfo(
                 $logPrefix .
                     $this->l('Failed to get relay data', 'Mondialrelay'),
                 'Order',
@@ -127,8 +148,7 @@ class Mondialrelay extends RuleAbstract implements RuleInterface
         );
 
         // Insertion in the module is dependent on module version.
-        $module_mondialRelay = Module::getInstanceByName('mondialrelay');
-        if (version_compare($module_mondialRelay->version, '3', '<')) {
+        if (version_compare($this->module_mondialRelay->version, '3', '<')) {
             $this->addOrderBeforeV3($relayId, $countryIso, $relayData, $carrier, $order, $logPrefix);
             return;
         }
@@ -147,7 +167,7 @@ class Mondialrelay extends RuleAbstract implements RuleInterface
         $mondialRelayMethod = Db::getInstance()->getValue($queryGetMondialRelayMethod);
 
         if (!$mondialRelayMethod) {
-            ProcessLoggerHandler::logError(
+            ProcessLoggerHandler::logInfo(
                 sprintf(
                     $logPrefix .
                         $this->l('Could not find mondial relay method for carrier ID %s', 'Mondialrelay'),
@@ -182,7 +202,7 @@ class Mondialrelay extends RuleAbstract implements RuleInterface
         );
 
         if ($insertResult) {
-            ProcessLoggerHandler::logSuccess(
+            ProcessLoggerHandler::logInfo(
                 $logPrefix .
                     $this->l('Successfully added relay information', 'Mondialrelay'),
                 'Order',
@@ -191,7 +211,7 @@ class Mondialrelay extends RuleAbstract implements RuleInterface
             return;
         }
 
-        ProcessLoggerHandler::logError(
+        ProcessLoggerHandler::logInfo(
             $logPrefix .
                 $this->l('Could not add relay information', 'Mondialrelay'),
             'Order',
@@ -210,7 +230,7 @@ class Mondialrelay extends RuleAbstract implements RuleInterface
         $mondialRelayCarrierMethodId = Db::getInstance()->getValue($queryGetMondialRelayMethod);
 
         if (!$mondialRelayCarrierMethodId) {
-            ProcessLoggerHandler::logError(
+            ProcessLoggerHandler::logInfo(
                 sprintf(
                     $logPrefix .
                         $this->l('Could not find mondial relay method for carrier ID %s', 'Mondialrelay'),
@@ -248,7 +268,7 @@ class Mondialrelay extends RuleAbstract implements RuleInterface
         );
 
         if ($insertResult) {
-            ProcessLoggerHandler::logSuccess(
+            ProcessLoggerHandler::logInfo(
                 $logPrefix .
                     $this->l('Successfully added relay information', 'Mondialrelay'),
                 'Order',
@@ -257,7 +277,7 @@ class Mondialrelay extends RuleAbstract implements RuleInterface
             return;
         }
 
-        ProcessLoggerHandler::logError(
+        ProcessLoggerHandler::logInfo(
             $logPrefix .
                 $this->l('Could not add relay information', 'Mondialrelay'),
             'Order',
@@ -291,7 +311,7 @@ class Mondialrelay extends RuleAbstract implements RuleInterface
         $client = new SoapClient($urlWebService);
         if (!is_object($client)) {
             // Error connecting to webservice
-            ProcessLoggerHandler::logError(
+            ProcessLoggerHandler::logInfo(
                 sprintf(
                     $logPrefix .
                         $this->l('Could not create SOAP client for URL %s', 'Mondialrelay'),
@@ -318,7 +338,7 @@ class Mondialrelay extends RuleAbstract implements RuleInterface
         if (!isset($result->WSI2_AdressePointRelaisResult->STAT)
             || $result->WSI2_AdressePointRelaisResult->STAT != 0) {
             // Web service did not return expected data
-            ProcessLoggerHandler::logError(
+            ProcessLoggerHandler::logInfo(
                 sprintf(
                     $logPrefix .
                         $this->l('Error getting relay %s data : code %s', 'Mondialrelay'),
@@ -335,8 +355,7 @@ class Mondialrelay extends RuleAbstract implements RuleInterface
     protected function getMondialRelayConfig()
     {
         // Module configuration is dependent on version.
-        $module_mondialRelay = Module::getInstanceByName('mondialrelay');
-        if (version_compare($module_mondialRelay->version, '3', '<')) {
+        if (version_compare($this->module_mondialRelay->version, '3', '<')) {
             $mondialRelayConfig = Configuration::get('MR_ACCOUNT_DETAIL');
             // Mondial relay module not configured
             if (!$mondialRelayConfig) {

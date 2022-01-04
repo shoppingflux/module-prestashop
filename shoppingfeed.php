@@ -73,6 +73,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     const PRODUCT_SYNC_BY_DATE_UPD = "SHOPPINGFEED_PRODUCT_SYNC_BY_DATE_UPD";
     const PRODUCT_FEED_TIME_FULL_UPDATE = "SHOPPINGFEED_PRODUCT_FEED_TIME_FULL_UPDATE";
     const PRODUCT_FEED_INTERVAL_CRON = "SHOPPINGFEED_PRODUCT_FEED_INTERVAL_CRON";
+    const ORDER_IMPORT_PERMANENT_SINCE_DATE = "SHOPPINGFEED_ORDER_IMPORT_PERMANENT_SINCE_DATE";
 
 
     public $extensions = array(
@@ -148,6 +149,15 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             'class_name' => 'AdminShoppingfeedOrders',
             'parent_class_name' => 'shoppingfeed',
             'visible' => true,
+        ),
+        array(
+            'name' => array(
+                'en' => 'Shopping Feed',
+                'fr' => 'Shopping Feed'
+            ),
+            'class_name' => 'AdminShoppingfeedOrderImport',
+            'parent_class_name' => 'shoppingfeed',
+            'visible' => false,
         ),
         array(
             'name' => array(
@@ -306,6 +316,15 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
                 ),
                 array(
                     'name' => array(
+                        'en' => 'Shopping Feed',
+                        'fr' => 'Shopping Feed'
+                    ),
+                    'class_name' => 'AdminShoppingfeedOrderImport',
+                    'parent_class_name' => 'shoppingfeed',
+                    'visible' => false,
+                ),
+                array(
+                    'name' => array(
                         'en' => 'Account settings',
                         'fr' => 'Paramètres du compte'
                     ),
@@ -369,6 +388,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     public function install()
     {
         $res = parent::install();
+        $res &= $this->addDateIndexToLogs();
 
         $this->setConfigurationDefault(self::STOCK_SYNC_ENABLED, true);
         $this->setConfigurationDefault(self::PRICE_SYNC_ENABLED, true);
@@ -610,31 +630,37 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
      */
     public function mapProductPrice(ShoppingfeedProduct $sfProduct, $id_shop, $arguments = [])
     {
-        $cloneContext = Context::getContext()->cloneContext();
-        $cloneContext->shop = new Shop($id_shop);
-
         $specific_price_output = null;
         Product::flushPriceCache();
-        $price = Product::getPriceStatic(
-            $sfProduct->id_product, // id_product
-            true, // usetax
+
+        // Tax depends on a country. We use country configured as default one for shop.
+        $id_country = (int)Configuration::get('PS_COUNTRY_DEFAULT', null, null, $id_shop);
+        $id_currency = (int) Configuration::get('PS_CURRENCY_DEFAULT', null, null, $id_shop);
+        $id_group = (int) Group::getCurrent()->id;
+
+        $price = Product::priceCalculation(
+            $id_shop,
+            $sfProduct->id_product,
             $sfProduct->id_product_attribute ? // id_product_attribute
                 $sfProduct->id_product_attribute : null,
-            2, // decimals
-            null, // divisor
-            false, // only_reduc
+            $id_country,
+            0,// id_state
+            0,// postcode
+            $id_currency,// id_currency
+            $id_group,// id_group
+            1,// quantity
+            true,// use_tax
+            2,// decimals
+            false,// only_reduc
             is_array($arguments) && array_key_exists('price_with_reduction', $arguments) && $arguments['price_with_reduction'] === true, // usereduc
-            1, // quantity
-            false, // force_associated_tax
-            null, // id_customer
-            null, // id_cart
-            null, // id_address
-            $specific_price_output, // specific_price_output; reference
-            true, // with_ecotax
-            true, // use_group_reduction
-            $cloneContext, // context; get the price for the specified shop
-            true, // use_customer_price
-            null // id_customization
+            true,// with_ecotax
+            $specific_price_output,// specific_price_output
+            true,// use_group_reduction
+            0,// id_customer
+            true,// use_customer_price
+            0,// id_cart
+            0,// real_quantity
+            0//id_customization
         );
 
         Hook::exec(
@@ -1213,7 +1239,9 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             ShoppingfeedAddon\OrderImport\Rules\ShippedByMarketplace::class,
             ShoppingfeedAddon\OrderImport\Rules\RelaisColisRule::class,
             ShoppingfeedAddon\OrderImport\Rules\TestingOrder::class,
-            ShoppingfeedAddon\OrderImport\Rules\SymbolConformity::class
+            ShoppingfeedAddon\OrderImport\Rules\SymbolConformity::class,
+            ShoppingfeedAddon\OrderImport\Rules\ManomanoDpdRelais::class,
+            ShoppingfeedAddon\OrderImport\Rules\Colissimo::class,
         );
 
         foreach($defaultRulesClassNames as $ruleClassName) {
@@ -1256,5 +1284,28 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     public function getSpecificPriceService()
     {
         return new \ShoppingfeedAddon\Services\SpecificPriceService();
+    }
+
+    public function addDateIndexToLogs()
+    {
+        $s_index = 'SHOW INDEX
+                FROM '._DB_PREFIX_.'shoppingfeed_processlogger
+                WHERE Key_name = "date_log"';
+
+        if (empty(Db::getInstance()->executeS($s_index))) {
+            $cr_index = "CREATE INDEX date_log ON " . _DB_PREFIX_ . "shoppingfeed_processlogger(date_add)";
+            return DB::getInstance()->execute($cr_index);
+        }
+
+        return true;
+    }
+
+    public function truncatePrelodingWhenProductSyncByDateUpdDisabled()
+    {
+        if ((bool)Configuration::get(Shoppingfeed::PRODUCT_SYNC_BY_DATE_UPD)) {
+            return true;
+        }
+
+        return Db::getInstance()->execute('TRUNCATE ' . _DB_PREFIX_ . ShoppingfeedPreloading::$definition['table']);
     }
 }

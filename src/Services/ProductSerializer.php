@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright since 2019 Shopping Feed
+ * Copyright since 2021 Shopping Feed
  *
  * NOTICE OF LICENSE
  *
@@ -13,7 +13,7 @@
  * to tech@202-ecommerce.com so we can send you a copy immediately.
  *
  * @author    202 ecommerce <tech@202-ecommerce.com>
- * @copyright Since 2019 Shopping Feed
+ * @copyright Since 2021 Shopping Feed
  * @license   https://opensource.org/licenses/AFL-3.0  Academic Free License (AFL 3.0)
  */
 
@@ -30,6 +30,7 @@ use Db;
 use Link;
 use Product;
 use Country;
+use Cart;
 use Tax;
 use Tag;
 use SpecificPrice;
@@ -51,13 +52,15 @@ class ProductSerializer
     private $sfModule;
     private $id_shop;
     private $id_lang;
+    private $id_currency;
 
-    public function __construct($id_product, $id_lang, $id_shop)
+    public function __construct($id_product, $id_lang, $id_shop, $id_currency)
     {
         $this->sfModule = \Module::getInstanceByName('shoppingfeed');
         $this->product = new Product($id_product, true, $id_lang, $id_shop);
         $this->id_shop = $id_shop;
         $this->id_lang = $id_lang;
+        $this->id_currency = $id_currency;
         if (Validate::isLoadedObject($this->product) === false) {
 
             throw new \Exception('product must be a valid product');
@@ -97,7 +100,7 @@ class ProductSerializer
         $sfp->id_product = $this->product->id;
         $link = new Link();
         $carrier = $this->getCarrier();
-        $productLink = $link->getProductLink($this->product, null, null, null, $this->id_lang);
+        $productLink = $link->getProductLink($this->product, null, null, null, $this->id_lang, $this->id_shop);
 
         $content = [
             'reference' => $this->sfModule->mapReference($sfp),
@@ -108,10 +111,15 @@ class ProductSerializer
                 'full' => $this->product->description,
                 'short' => $this->product->description_short,
             ],
+            'ecotax' => $this->product->ecotax,
+            'vat' => $this->product->tax_rate,
             'images' => $this->getImages(),
             'attributes' => $this->getAttributes(),
             'variations' => $this->getVariations($carrier, $productLink),
         ];
+        if (empty($this->product->weight) === false && $this->product->weight != 0) {
+            $content['weight'] = $this->product->weight;
+        }
         if (empty($this->product->manufacturer_name) === false) {
             $manufacturerLink = $this->link->getManufacturerLink($this->product->id_manufacturer, null, $this->id_lang);
             $content['brand'] = [
@@ -136,31 +144,34 @@ class ProductSerializer
 
     public function serializePrice($content)
     {
+        $id_group = \Group::getCurrent()->id;
         $contentUpdate = $content;
         $carrier = $this->getCarrier();
         $sfp = new ShoppingfeedProduct();
         $sfp->id_product = $this->product->id;
-        $priceWithoutReduction = $this->sfModule->mapProductPrice($sfp, $this->configurations['PS_SHOP_DEFAULT']);
-        $priceWithReduction = $this->sfModule->mapProductPrice($sfp, $this->configurations['PS_SHOP_DEFAULT'], ['price_with_reduction' => true]);
+        $address = \Address::initialize(null, true);
+        $tax_manager = \TaxManagerFactory::getManager($address, Product::getIdTaxRulesGroupByIdProduct((int) $this->product->id, Context::getContext()));
+        $product_tax_calculator = $tax_manager->getTaxCalculator();
+        $priceWithoutReduction = $this->sfModule->mapProductPrice($sfp, $this->id_shop);
         $contentUpdate['price'] = $priceWithoutReduction;
-        $contentUpdate['specificPrices'] = $this->getSpecificPrices();
+        $contentUpdate['specificPrices'] = $this->getSpecificPrices($address, $product_tax_calculator, $id_group, $priceWithoutReduction);
 
         if (isset($contentUpdate['variations']) && false === empty($contentUpdate['variations'])) {
             foreach ($contentUpdate['variations'] as $idProductAttribute => $variation) {
                 $sfp->id_product_attribute = (int)$idProductAttribute;
-                $variationPrice = $this->sfModule->mapProductPrice($sfp, $this->configurations['PS_SHOP_DEFAULT']);
+                $variationPrice = $this->sfModule->mapProductPrice($sfp, $this->id_shop);
                 $contentUpdate['variations'][$idProductAttribute]['price'] = $variationPrice;
-                $contentUpdate['variations'][$idProductAttribute]['specificPrices'] = $this->getSpecificPrices((int)$idProductAttribute);
+                $contentUpdate['variations'][$idProductAttribute]['specificPrices'] = $this->getSpecificPrices($address, $product_tax_calculator, $id_group,  $variationPrice, (int)$idProductAttribute);
 
                 if (isset($contentUpdate['variations'][$idProductAttribute]['shipping'])) {
                     $weight = @$contentUpdate['variations'][$idProductAttribute]['attributes']['weight'];
-                    $contentUpdate['variations'][$idProductAttribute]['shipping']['amount'] = $this->_getShipping($carrier, $variationPrice, $weight);
+                    $contentUpdate['variations'][$idProductAttribute]['shipping']['amount'] = $this->getShippingCost($carrier, $address, $idProductAttribute);
                 }
             }
         }
 
         $contentUpdate['shipping'] = [
-            'amount' => $this->_getShipping($carrier, $priceWithReduction),
+            'amount' => $this->getShippingCost($carrier, $address, null),
             'label' => $carrier->delay[$this->id_lang],
         ];
 
@@ -220,7 +231,7 @@ class ProductSerializer
 
     private function getImages()
     {
-        $imagesFromDb = $this->getImagesFromDb($this->product->id, $this->id_lang);
+        $imagesFromDb = $this->getImagesFromDb($this->id_lang);
         $images = [
             'main' => null,
             'additional' => [],
@@ -229,7 +240,7 @@ class ProductSerializer
         if ($imagesFromDb != false) {
             foreach ($imagesFromDb as $image) {
                 $ids = $this->product->id . '-' . $image['id_image'];
-                $img_url = $this->link->getImageLink($this->product->link_rewrite, $ids, $this->configurations[Shoppingfeed::PRODUCT_FEED_IMAGE_FORMAT]);
+                $img_url = $this->getImageLink()->getImageLink($this->product->link_rewrite, $ids, $this->configurations[Shoppingfeed::PRODUCT_FEED_IMAGE_FORMAT], $this->id_shop);
                 if (!substr_count($img_url, Tools::getCurrentUrlProtocolPrefix())) {
                     $img_url = Tools::getCurrentUrlProtocolPrefix() . $img_url;
                 }
@@ -293,8 +304,6 @@ class ProductSerializer
 
     protected function getAttributes()
     {
-        $combination = $this->product->getAttributeCombinations($this->id_lang);
-
         $attributes = [
             'state' => $this->product->condition,
             'available_for_order' => $this->product->available_for_order,
@@ -302,7 +311,7 @@ class ProductSerializer
             'ecotax' => $this->product->ecotax,
             'vat' => $this->product->tax_rate,
             'on_sale' => (int)$this->product->on_sale,
-            'hierararchy' => count($combination) > 0 ? 'parent' : 'child',
+            'hierararchy' => 'parent',
         ];
         if (empty($this->product->meta_title) === false) {
             $attributes['meta_title'] = $this->product->meta_title;
@@ -374,20 +383,10 @@ class ProductSerializer
     protected function getVariations($carrier, $productLink)
     {
         $variations = [];
-        $combinations = [];
+        $combinations = $this->getAttributeCombinationService()->get($this->product, $this->id_lang, $this->id_shop);
         $sfModule = \Module::getInstanceByName('shoppingfeed');
         $sfp = new ShoppingfeedProduct();
         $sfp->id_product = $this->product->id;
-
-        foreach ($this->product->getAttributeCombinations($this->id_lang) as $combinaison) {
-            $combinations[$combinaison['id_product_attribute']]['attributes'][$combinaison['group_name']] = $combinaison['attribute_name'];
-            $combinations[$combinaison['id_product_attribute']]['ean13'] = $combinaison['ean13'];
-            $combinations[$combinaison['id_product_attribute']]['upc'] = $combinaison['upc'];
-            $combinations[$combinaison['id_product_attribute']]['quantity'] = $combinaison['quantity'];
-            $combinations[$combinaison['id_product_attribute']]['weight'] = $combinaison['weight'];
-            $combinations[$combinaison['id_product_attribute']]['reference'] = $combinaison['reference'];
-            $combinations[$combinaison['id_product_attribute']]['wholesale_price'] = $combinaison['wholesale_price'];
-        }
 
         foreach ($combinations as $id => $combination) {
             set_time_limit(600);
@@ -400,6 +399,9 @@ class ProductSerializer
                 'images' => [],
                 'shipping' => [
                     'label' => $carrier->delay[$this->id_lang],
+                ],
+                'attributes' => [
+                    'hierararchy' => 'child'
                 ]
             ];
 
@@ -421,7 +423,7 @@ class ProductSerializer
                 $variation['attributes']['ref-constructeur'] = $combination['reference'];
             }
 
-            $variation['attributes']['link-variation'] = Context::getContext()->link->getProductLink($this->product, null, null, null, null, null, (int)$id, false, false, true);
+            $variation['attributes']['link-variation'] = Context::getContext()->link->getProductLink($this->product, null, null, null, $this->id_lang, $this->id_shop, (int)$id, false, false, true);
 
             foreach ($this->_getAttributeImageAssociations($id) as $image) {
                 if (empty($image)) {
@@ -475,32 +477,29 @@ class ProductSerializer
         return implode(' > ', $categoryTree);
     }
 
-    protected function _getShipping($carrier, $priceWithReduction, $attribute_weight = null)
+    protected function getShippingCost($carrier, $address, $id_product_attribute)
     {
-        $default_country = new Country($this->configurations['PS_COUNTRY_DEFAULT'], $this->id_lang);
-        $id_zone = (int)$default_country->id_zone;
-        $carrier_tax = Tax::getCarrierTaxRate((int)$carrier->id);
-        $shipping = 0;
-        $shipping_free_price = $this->configurations['PS_SHIPPING_FREE_PRICE'];
-        $shipping_free_weight = isset($this->configurations['PS_SHIPPING_FREE_WEIGHT']) ? $this->configurations['PS_SHIPPING_FREE_WEIGHT'] : 0;
+        $cart = new Cart();
+        $country = new Country($address->id_country);
+        $product = [
+            'id_address_delivery' => $address->id,
+            'id_product' => $this->product->id,
+            'id_product_attribute' => $id_product_attribute,
+            'cart_quantity' => 1,
+            'id_shop' => $this->id_shop,
+            'id_customization' => 0,
+            'is_virtual' => $this->product->is_virtual,
+            'weight' => $this->product->weight,
+            'additional_shipping_cost' => $this->product->additional_shipping_cost,
+        ];
 
-        if (!(((float)$shipping_free_price > 0) && ($priceWithReduction >= (float)$shipping_free_price)) &&
-            !(((float)$shipping_free_weight > 0) && ($this->product->weight + $attribute_weight >= (float)$shipping_free_weight))) {
-            if (isset($this->configurations['PS_SHIPPING_HANDLING']) && $carrier->shipping_handling) {
-                $shipping = (float)($this->configurations['PS_SHIPPING_HANDLING']);
-            }
-
-            if ($carrier->getShippingMethod() == Carrier::SHIPPING_METHOD_WEIGHT) {
-                $shipping += $carrier->getDeliveryPriceByWeight($this->product->weight, $id_zone);
-            } else {
-                $shipping += $carrier->getDeliveryPriceByPrice($priceWithReduction, $id_zone);
-            }
-
-            $shipping *= 1 + ($carrier_tax / 100);
-            $shipping = (float)(Tools::ps_round((float)($shipping), 2));
-        }
-
-        return (float)$shipping + (float)$this->product->additional_shipping_cost;
+        return $cart->getPackageShippingCost(
+            (int)$carrier->id,
+            true,
+            $country,
+            [$product],
+            $country->id_zone
+        );
     }
 
     protected function _getCategory()
@@ -511,12 +510,20 @@ class ProductSerializer
 
     protected function getImagesFromDb($id_lang)
     {
-        return Db::getInstance()->ExecuteS('
-            SELECT i.`cover`, i.`id_image`, il.`legend`, i.`position`
-            FROM `'._DB_PREFIX_.'image` i
-            LEFT JOIN `'._DB_PREFIX_.'image_lang` il ON (i.`id_image` = il.`id_image` AND il.`id_lang` = '.(int)($id_lang).')
-            WHERE i.`id_product` = '.(int) $this->product->id .'
-            ORDER BY i.cover DESC, i.`position` ASC ');
+        $sql = (new DbQuery())
+            ->from('image', 'i')
+            ->leftJoin('image_lang', 'il', 'il.id_image = i.id_image AND il.id_lang = ' . (int)$id_lang)
+            ->where('i.id_product = ' . $this->product->id)
+            ->orderBy('i.cover DESC, i.`position` ASC')
+            ->select('i.cover, i.id_image, il.legend, i.position');
+
+        if ($this->id_shop) {
+            $sql
+                ->leftJoin('image_shop', 'is', 'i.id_image = is.id_image')
+                ->where('is.id_shop = ' . (int)$this->id_shop);
+        }
+
+        return Db::getInstance()->executeS($sql);
     }
 
     protected function _clean($string)
@@ -547,13 +554,20 @@ class ProductSerializer
     protected function _getAttributeImageAssociations($id_product_attribute)
     {
         $combinationImages = array();
-        $data = Db::getInstance()->ExecuteS('
-            SELECT pai.`id_image`
-            FROM `'._DB_PREFIX_.'product_attribute_image` pai
-            LEFT JOIN `'._DB_PREFIX_.'image` i ON pai.id_image = i.id_image
-            WHERE pai.`id_product_attribute` = '.(int)($id_product_attribute).'
-            ORDER BY i.cover DESC, i.position ASC
-        ');
+        $sql = (new DbQuery())
+            ->select('pai.id_image')
+            ->from('product_attribute_image', 'pai')
+            ->leftJoin('image', 'i', 'pai.id_image = i.id_image')
+            ->where('pai.id_product_attribute =' . (int)$id_product_attribute)
+            ->orderBy('i.cover DESC, i.position ASC');
+
+        if ($this->id_shop) {
+            $sql
+                ->leftJoin('image_shop', 'is', 'i.id_image = is.id_image')
+                ->where('is.id_shop = ' . (int)$this->id_shop);
+        }
+
+        $data = Db::getInstance()->executeS($sql);
 
         foreach ($data as $row) {
             $combinationImages[] = (int)($row['id_image']);
@@ -623,18 +637,45 @@ class ProductSerializer
         return $ret;
     }
 
+
+	protected static function _getScoreQuery($id_product, $id_shop, $id_currency, $id_country, $id_group, $id_customer)
+	{
+		$select = '(';
+
+		$priority = SpecificPrice::getPriority($id_product);
+		foreach (array_reverse($priority) as $k => $field) {
+			if (!empty($field)) {
+				$select .= ' IF (`'.bqSQL($field).'` = '.(int)$$field.', '.pow(2, $k + 1).', 0) + ';
+            }
+        }
+
+		return rtrim($select, ' +').') AS `score`';
+	}
+
     /**
      * Can not use SpecificPrice::getByProductId() because that method does not take into
      * account specific price for all product (id_product=0)
      *
      * @return array
      */
-    protected function getSpecificPriceInfo($id_product_attribute = false, $id_cart = false)
+    protected function getSpecificPriceInfo($id_group, $id_country, $id_product_attribute = false)
     {
         $query = (new DbQuery())
+            ->select('*, ' . self::_getScoreQuery($this->product->id, $this->id_shop, $this->id_currency, $id_country, $id_group, null))
             ->from('specific_price')
             ->where(sprintf('id_product IN (%d, 0)', (int)$this->product->id))
-            ->where('id_cart = ' . (int)$id_cart);
+            ->where(sprintf('id_shop IN (%d, 0)', (int)$this->id_shop))
+            ->where(sprintf('id_currency IN (%d, 0)', (int)$this->id_currency))
+            ->where(sprintf('id_country IN (%d, 0)', (int)$id_country))
+            ->where(sprintf('id_group IN (%d, 0)', (int)$id_group))
+            ->where(sprintf('IF(from_quantity > 1, from_quantity, 0) <= %d', 1))
+            ->orderBy('`id_product_attribute` DESC')
+            ->orderBy('`id_cart` DESC')
+            ->orderBy('`from_quantity` DESC')
+            ->orderBy('`id_specific_price_rule` ASC')
+            ->orderBy('`score` DESC')
+            ->orderBy('`to` DESC')
+            ->orderBy('`from` DESC');
 
         if ($id_product_attribute) {
             $query->where('id_product_attribute = ' . (int)$id_product_attribute);
@@ -648,15 +689,14 @@ class ProductSerializer
      *
      * @return array
      */
-    protected function getSpecificPrices($idProductAttribute = null)
+    protected function getSpecificPrices($address, $product_tax_calculator, $id_group, $priceWithoutReduction, $id_product_attribute = null)
     {
         $return = [];
 
         if (Validate::isLoadedObject($this->product) === false) {
             return $return;
         }
-
-        $specificPrices = $this->getSpecificPriceInfo();
+        $specificPrices = $this->getSpecificPriceInfo($id_group, $address->id_country);
 
         if (empty($specificPrices)) {
             return $return;
@@ -666,13 +706,13 @@ class ProductSerializer
             $skip = false;
 
             if ((int)$specificPrice['id_product_attribute'] !== 0) {
-                if ((int)$idProductAttribute !== (int)$specificPrice['id_product_attribute']) {
+                if ((int)$id_product_attribute !== (int)$specificPrice['id_product_attribute']) {
                     $skip = true;
                 }
             }
 
             // Apply a specific price of a default variation for a product
-            if ((int)$idProductAttribute === 0 && $skip) {
+            if ((int)$id_product_attribute === 0 && $skip) {
                 if ($this->product->getDefaultIdProductAttribute() === (int)$specificPrice['id_product_attribute']) {
                     $skip = false;
                 }
@@ -682,33 +722,37 @@ class ProductSerializer
                 continue;
             }
 
-            $formatter = new \SpecificPriceFormatter(
-                $specificPrice,
-                true,
-                Context::getContext()->currency,
-                true
-            );
-
-            $productPriceWithoutReduction = $this->product->getPrice(
-                true,
-                $idProductAttribute,
-                6,
-                null,
-                false,
-                false
-            );
-
-            $data = $formatter->formatSpecificPrice(
-                $productPriceWithoutReduction,
-                $this->product->tax_rate,
-                $this->product->ecotax
-            );
-
-            $data['discount'] = preg_replace(['/[^0-9.,]/', '/,/'], ['', '.'], $data['discount']);
-            $data['discount'] = floatval($data['discount']);
-            $return[] = $data;
+            if ($specificPrice['reduction_type'] == 'amount') {
+                $reduction_amount = $specificPrice['reduction'];
+                if (!$specificPrice['id_currency']) {
+                    $reduction_amount = Tools::convertPrice($reduction_amount, $this->id_currency);
+                }
+                $specific_price_reduction = $reduction_amount;
+                if (!$specificPrice['reduction_tax']) {
+                    $specific_price_reduction = $product_tax_calculator->addTaxes($specific_price_reduction);
+                }
+            } else {
+                $specific_price_reduction = $priceWithoutReduction * $specificPrice['reduction'];
+            }
+            $price = $priceWithoutReduction - $specific_price_reduction;
+            $price = Tools::ps_round($price, 2);
+            if ($price < 0) {
+                $price = 0;
+            }
+            $specificPrice['discount'] = $price;
+            $return[] = $specificPrice;
         }
 
         return $return;
+    }
+
+    public function getAttributeCombinationService()
+    {
+        return new ProductAttributeCombination();
+    }
+
+    protected function getImageLink()
+    {
+        return new ImageLink();
     }
 }

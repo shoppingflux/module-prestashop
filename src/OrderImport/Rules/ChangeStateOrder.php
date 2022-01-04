@@ -38,6 +38,7 @@ use Carrier;
 use Order;
 use OrderHistory;
 use OrderState;
+use Validate;
 use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
@@ -62,26 +63,54 @@ class ChangeStateOrder extends RuleAbstract implements RuleInterface
         /** @var \ShoppingfeedAddon\OrderImport\OrderData $orderData */
         $orderData = $params['orderData'];
         $apiOrder = $params['apiOrder'];
+        $idOrder = $params['id_order'];
 
         $logPrefix = sprintf(
             $this->l('[Order: %s]', 'ChangeStateOrder'),
             $apiOrder->getId()
         );
         $logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
+        $psOrder = new Order($idOrder);
+
+        if (false === Validate::isLoadedObject($psOrder)) {
+            ProcessLoggerHandler::logError(
+                $logPrefix .
+                sprintf(
+                    $this->l('Can not retrieve a prestashop order. Id Order: %d', 'ChangeStateOrder'),
+                    $idOrder
+                ),
+                'Order',
+                $idOrder
+            );
+            return;
+        }
+
+        if (false == $this->isOrderStateValid($this->configuration['end_order_state'])) {
+            ProcessLoggerHandler::logError(
+                $logPrefix .
+                sprintf(
+                    $this->l('Invalid order state. ID: %d', 'ChangeStateOrder'),
+                    (int)$this->configuration['end_order_state']
+                ),
+                'Order',
+                $idOrder
+            );
+            return;
+        }
 
         ProcessLoggerHandler::logInfo(
             $logPrefix .
             sprintf(
                 $this->l('Rule triggered. Set order %s to specified status.', 'ChangeStateOrder'),
-                $params['sfOrder']->id_order
+                $idOrder
             ),
             'Order',
-            $params['sfOrder']->id_order
+            $idOrder
         );
-        $psOrder = new Order($params['sfOrder']->id_order);
+
         // Set order to CANCELED
         $history = new OrderHistory();
-        $history->id_order = $params['sfOrder']->id_order;
+        $history->id_order = $idOrder;
         $use_existings_payment = true;
         $history->changeIdOrderState((int) $this->configuration['end_order_state'], $psOrder, $use_existings_payment);
         // Save all changes

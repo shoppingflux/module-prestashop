@@ -110,9 +110,9 @@ class ShoppingfeedPreloading extends ObjectModel
      * @return bool
      * @throws Exception
      */
-    public function saveProduct($id_product, $id_token, $id_lang, $id_shop)
+    public function saveProduct($id_product, $id_token, $id_lang, $id_shop, $id_currency)
     {
-        $productSerialize = new ProductSerializer((int)$id_product, $id_lang, $id_shop);
+        $productSerialize = new ProductSerializer((int)$id_product, $id_lang, $id_shop, $id_currency);
         $query = (new DbQuery())
             ->select('*')
             ->from(self::$definition['table'])
