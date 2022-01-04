@@ -61,6 +61,7 @@ class TestingOrder extends RuleAbstract implements RuleInterface
         /** @var \ShoppingfeedAddon\OrderImport\OrderData $orderData */
         $orderData = $params['orderData'];
         $apiOrder = $params['apiOrder'];
+        $idOrderState = (int)Configuration::get('PS_OS_CANCELED');
 
         $logPrefix = sprintf(
             $this->l('[Order: %s]', 'TestingOrder'),
@@ -68,10 +69,23 @@ class TestingOrder extends RuleAbstract implements RuleInterface
         );
         $logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
 
+        if (false == $this->isOrderStateValid($idOrderState)) {
+            ProcessLoggerHandler::logError(
+                $logPrefix .
+                sprintf(
+                    $this->l('Invalid order state. ID: %d', 'TestingOrder'),
+                    $idOrderState
+                ),
+                'Order',
+                $params['sfOrder']->id_order
+            );
+            return;
+        }
+
         ProcessLoggerHandler::logInfo(
             $logPrefix .
             sprintf(
-                $this->l('Rule triggered. Set order %s to CANCELED', 'ShippedByMarketplace'),
+                $this->l('Rule triggered. Set order %s to CANCELED', 'TestingOrder'),
                 $params['sfOrder']->id_order
             ),
             'Order',
@@ -82,7 +96,7 @@ class TestingOrder extends RuleAbstract implements RuleInterface
         $history = new OrderHistory();
         $history->id_order = $params['sfOrder']->id_order;
         $use_existings_payment = true;
-        $history->changeIdOrderState((int) Configuration::get('PS_OS_CANCELED'), $psOrder, $use_existings_payment);
+        $history->changeIdOrderState((int) $idOrderState, $psOrder, $use_existings_payment);
         // Save all changes
         $history->addWithemail();
     }

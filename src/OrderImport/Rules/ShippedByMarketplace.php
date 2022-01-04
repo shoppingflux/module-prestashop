@@ -133,6 +133,25 @@ class ShippedByMarketplace extends RuleAbstract implements RuleInterface
             return;
         }
 
+        if (empty($this->configuration['end_order_state_shipped']) === false) {
+            $changeStateId = $this->configuration['end_order_state_shipped'];
+        } else {
+            $changeStateId = (int) Configuration::get('PS_OS_DELIVERED');
+        }
+
+        if (false == $this->isOrderStateValid($changeStateId)) {
+            ProcessLoggerHandler::logError(
+                $logPrefix .
+                sprintf(
+                    $this->l('Invalid order state. ID: %d', 'ShippedByMarketplace'),
+                    (int)$changeStateId
+                ),
+                'Order',
+                $idOrder
+            );
+            return;
+        }
+
         ProcessLoggerHandler::logInfo(
             $logPrefix .
             sprintf(
@@ -142,11 +161,6 @@ class ShippedByMarketplace extends RuleAbstract implements RuleInterface
             'Order',
             $idOrder
         );
-        if (empty($this->configuration['end_order_state_shipped']) === false) {
-            $changeStateId = $this->configuration['end_order_state_shipped'];
-        } else {
-            $changeStateId = (int) Configuration::get('PS_OS_DELIVERED');
-        }
 
         // Set order to DELIVERED
         $history = new OrderHistory();

@@ -85,6 +85,19 @@ class ChangeStateOrder extends RuleAbstract implements RuleInterface
             return;
         }
 
+        if (false == $this->isOrderStateValid($this->configuration['end_order_state'])) {
+            ProcessLoggerHandler::logError(
+                $logPrefix .
+                sprintf(
+                    $this->l('Invalid order state. ID: %d', 'ChangeStateOrder'),
+                    (int)$this->configuration['end_order_state']
+                ),
+                'Order',
+                $idOrder
+            );
+            return;
+        }
+
         ProcessLoggerHandler::logInfo(
             $logPrefix .
             sprintf(
