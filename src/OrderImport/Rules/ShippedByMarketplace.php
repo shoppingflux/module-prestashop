@@ -143,7 +143,7 @@ class ShippedByMarketplace extends RuleAbstract implements RuleInterface
             ProcessLoggerHandler::logError(
                 $logPrefix .
                 sprintf(
-                    $this->l('Invalid order state. ID: %d', 'Shoppingfeed.Rule'),
+                    $this->l('Invalid order state. ID: %d', 'ShippedByMarketplace'),
                     (int)$changeStateId
                 ),
                 'Order',

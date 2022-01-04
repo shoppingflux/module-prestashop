@@ -73,7 +73,7 @@ class TestingOrder extends RuleAbstract implements RuleInterface
             ProcessLoggerHandler::logError(
                 $logPrefix .
                 sprintf(
-                    $this->l('Invalid order state. ID: %d', 'Shoppingfeed.Rule'),
+                    $this->l('Invalid order state. ID: %d', 'TestingOrder'),
                     $idOrderState
                 ),
                 'Order',
@@ -85,7 +85,7 @@ class TestingOrder extends RuleAbstract implements RuleInterface
         ProcessLoggerHandler::logInfo(
             $logPrefix .
             sprintf(
-                $this->l('Rule triggered. Set order %s to CANCELED', 'ShippedByMarketplace'),
+                $this->l('Rule triggered. Set order %s to CANCELED', 'TestingOrder'),
                 $params['sfOrder']->id_order
             ),
             'Order',

@@ -89,7 +89,7 @@ class ChangeStateOrder extends RuleAbstract implements RuleInterface
             ProcessLoggerHandler::logError(
                 $logPrefix .
                 sprintf(
-                    $this->l('Invalid order state. ID: %d', 'Shoppingfeed.Rule'),
+                    $this->l('Invalid order state. ID: %d', 'ChangeStateOrder'),
                     (int)$this->configuration['end_order_state']
                 ),
                 'Order',
