@@ -43,7 +43,7 @@ trait TranslateTrait
         if (empty($class) === true) {
             $class = $this->getClassShortName();
         }
-        return Translate::getModuleTranslation('tomrewardseditor', $textToTranslate, $class);
+        return Translate::getModuleTranslation('shoppingfeed', $textToTranslate, $class);
     }
 
     /**

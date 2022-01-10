@@ -24,7 +24,9 @@
 
 namespace ShoppingfeedAddon\OrderImport;
 
+use OrderState;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
+use Validate;
 
 if (!defined('_PS_VERSION_')) {
     exit;
@@ -84,6 +86,17 @@ abstract class RuleAbstract implements RuleInterface
     protected function l($msg, $domain)
     {
         return \Translate::getModuleTranslation('shoppingfeed', $msg, $domain);
+    }
+
+    protected function isOrderStateValid($idOrderState)
+    {
+        try {
+            $orderState = new OrderState((int)$idOrderState);
+        } catch (\Throwable $e) {
+            return false;
+        }
+
+        return Validate::isLoadedObject($orderState);
     }
 
     /**

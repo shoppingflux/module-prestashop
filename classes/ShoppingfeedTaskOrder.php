@@ -133,4 +133,26 @@ class ShoppingfeedTaskOrder extends ObjectModel
 
         return false;
     }
+
+    /**
+     * @param string $ticket
+     * @return self
+     */
+    public static function getFromTicketNumber($ticket)
+    {
+        $sql = (new DbQuery())
+            ->from(self::$definition['table'])
+            ->where(sprintf('ticket_number LIKE "%s"', pSQL($ticket)));
+
+        $result = Db::getInstance()->getRow($sql);
+
+        if (empty($result)) {
+            return new self();
+        }
+
+        $obj = new self();
+        $obj->hydrate($result);
+
+        return $obj;
+    }
 }

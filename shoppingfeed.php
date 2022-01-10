@@ -59,6 +59,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     const ORDER_IMPORT_ENABLED = "SHOPPINGFEED_ORDER_IMPORT_ENABLED";
     const ORDER_IMPORT_TEST = "SHOPPINGFEED_ORDER_IMPORT_TEST";
     const ORDER_IMPORT_SHIPPED = "SHOPPINGFEED_ORDER_IMPORT_SHIPPED";
+    const ORDER_IMPORT_SHIPPED_MARKETPLACE = "SHOPPINGFEED_ORDER_IMPORT_SHIPPED_MARKETPLACE";
     const ORDER_IMPORT_SPECIFIC_RULES_CONFIGURATION = "SHOPPINGFEED_ORDER_IMPORT_SPECIFIC_RULES_CONFIGURATION";
     const ORDER_DEFAULT_CARRIER_REFERENCE = "SHOPPINGFEED_ORDER_DEFAULT_CARRIER_REFERENCE";
     const PRODUCT_FEED_CARRIER_REFERENCE = "SHOPPINGFEED_PRODUCT_FEED_CARRIER_REFERENCE";
@@ -629,31 +630,37 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
      */
     public function mapProductPrice(ShoppingfeedProduct $sfProduct, $id_shop, $arguments = [])
     {
-        $cloneContext = Context::getContext()->cloneContext();
-        $cloneContext->shop = new Shop($id_shop);
-
         $specific_price_output = null;
         Product::flushPriceCache();
-        $price = Product::getPriceStatic(
-            $sfProduct->id_product, // id_product
-            true, // usetax
+
+        // Tax depends on a country. We use country configured as default one for shop.
+        $id_country = (int)Configuration::get('PS_COUNTRY_DEFAULT', null, null, $id_shop);
+        $id_currency = (int) Configuration::get('PS_CURRENCY_DEFAULT', null, null, $id_shop);
+        $id_group = (int) Group::getCurrent()->id;
+
+        $price = Product::priceCalculation(
+            $id_shop,
+            $sfProduct->id_product,
             $sfProduct->id_product_attribute ? // id_product_attribute
                 $sfProduct->id_product_attribute : null,
-            2, // decimals
-            null, // divisor
-            false, // only_reduc
+            $id_country,
+            0,// id_state
+            0,// postcode
+            $id_currency,// id_currency
+            $id_group,// id_group
+            1,// quantity
+            true,// use_tax
+            2,// decimals
+            false,// only_reduc
             is_array($arguments) && array_key_exists('price_with_reduction', $arguments) && $arguments['price_with_reduction'] === true, // usereduc
-            1, // quantity
-            false, // force_associated_tax
-            null, // id_customer
-            null, // id_cart
-            null, // id_address
-            $specific_price_output, // specific_price_output; reference
-            true, // with_ecotax
-            true, // use_group_reduction
-            $cloneContext, // context; get the price for the specified shop
-            true, // use_customer_price
-            null // id_customization
+            true,// with_ecotax
+            $specific_price_output,// specific_price_output
+            true,// use_group_reduction
+            0,// id_customer
+            true,// use_customer_price
+            0,// id_cart
+            0,// real_quantity
+            0//id_customization
         );
 
         Hook::exec(

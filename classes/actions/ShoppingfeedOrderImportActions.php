@@ -255,12 +255,23 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         }
 
         // Specific rules validation
+        $this->conveyor['isSkipImport'] = false;
         $this->specificRulesManager->applyRules(
             'onVerifyOrder',
             array(
-                'apiOrder' => $this->conveyor['apiOrder']
+                'apiOrder' => $this->conveyor['apiOrder'],
+                'isSkipImport' => &$this->conveyor['isSkipImport']
             )
         );
+
+        if ($this->conveyor['isSkipImport']) {
+            ProcessLoggerHandler::logInfo(
+                $this->logPrefix . $this->l('Skip an order import', 'ShoppingfeedOrderImportActions'),
+                'Order'
+            );
+            $this->forward('acknowledgeOrder');
+            return false;
+        }
 
         ProcessLoggerHandler::logInfo(
             $this->logPrefix .
@@ -812,11 +823,15 @@ class ShoppingfeedOrderImportActions extends DefaultActions
 
         $isSucess = array_key_exists('id_order', $this->conveyor);
 
+        if ($this->conveyor['isSkipImport']) {
+            $isSucess = true;
+        }
+
         try {
             $result = $shoppingfeedApi->acknowledgeOrder(
                 $apiOrder->getReference(),
                 $apiOrder->getChannel()->getName(),
-                $isSucess ? $this->conveyor['id_order'] : null,
+                isset($this->conveyor['id_order']) ? $this->conveyor['id_order'] : null,
                 $isSucess,
                 empty($this->values['error']) ? null : $this->values['error']
             );
@@ -1004,7 +1019,10 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 'total_shipping_tax_incl' => Tools::ps_round($orderPrices['total_shipping_tax_incl'], 4),
                 'total_shipping_tax_excl' => Tools::ps_round($orderPrices['total_shipping_tax_excl'], 4),
                 'carrier_tax_rate'        => $carrier_tax_rate,
-                'id_carrier'              => $carrier->id
+                'id_carrier'              => $carrier->id,
+                'total_discounts' => 0,
+                'total_discounts_tax_incl' => 0,
+                'total_discounts_tax_excl' => 0
             );
 
             $updateOrderInvoice = array(
@@ -1028,6 +1046,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             $psOrder->save(true);
             Db::getInstance()->update('order_invoice', $updateOrderInvoice, '`id_order` = '.(int)$id_order);
             Db::getInstance()->update('order_carrier', $updateOrderTracking, '`id_order` = '.(int)$id_order);
+            Db::getInstance()->delete('order_cart_rule', 'id_order = ' . $psOrder->id);
         }
 
         $queryUpdateOrderPayment = sprintf(

@@ -36,7 +36,7 @@ class ManomanoDpdRelais extends RuleAbstract implements RuleInterface
             return false;
         }
 
-        if (empty($apiOrder->getShippingAddress()['relayID'])) {
+        if (empty($this->getRelayIdFromOrder($apiOrder))) {
             return false;
         }
 
@@ -73,7 +73,7 @@ class ManomanoDpdRelais extends RuleAbstract implements RuleInterface
         }
 
         $apiOrder = $params['apiOrder'];
-        $relayID = $apiOrder->getShippingAddress()['relayID'];
+        $relayID = $this->getRelayIdFromOrder($apiOrder);
 
         $logPrefix = sprintf(
             $this->l('[Order: %s]', 'Shoppingfeed.Rule'),
@@ -119,5 +119,20 @@ class ManomanoDpdRelais extends RuleAbstract implements RuleInterface
     protected function getDpdAssociation()
     {
         return new DpdAssociation();
+    }
+
+    protected function getRelayIdFromOrder(\ShoppingFeed\Sdk\Api\Order\OrderResource $apiOrder)
+    {
+        $address = $apiOrder->getShippingAddress();
+
+        if (false == empty($address['other'])) {
+            return $address['other'];
+        }
+
+        if (false == empty($address['relayID'])) {
+            return $address['relayID'];
+        }
+
+        return '';
     }
 }

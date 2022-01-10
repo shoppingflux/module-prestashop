@@ -28,6 +28,7 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
+use Exception;
 use Module;
 use Db;
 use Address;
@@ -43,8 +44,6 @@ use Validate;
 use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
-
-use ShoppingfeedClasslib\Registry;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 
 /**
@@ -61,13 +60,25 @@ class ShippedByMarketplace extends RuleAbstract implements RuleInterface
             return true;
         }
 
-        $shippedByMarketplace = [
-            'amazon fba',
-            'epmm',
-            'clogistique'
-        ];
-        $orderRawData = $apiOrder->toArray();
-        return in_array(Tools::strtolower($apiOrder->getChannel()->getName()), $shippedByMarketplace);
+        if ($this->isShippedByMarketplace($apiOrder)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public function onVerifyOrder($params)
+    {
+        $apiOrder = $params['apiOrder'];
+        if ($this->isShippedByMarketplace($apiOrder)) {
+            if (Configuration::get(\Shoppingfeed::ORDER_IMPORT_SHIPPED_MARKETPLACE) === false) {
+                $this->logSkipImport($apiOrder);
+                $params['isSkipImport'] = true;
+            }
+        } else if ($apiOrder->getStatus() == 'shipped' && Configuration::get(\Shoppingfeed::ORDER_IMPORT_SHIPPED) === false) {
+            $this->logSkipImport($apiOrder);
+            $params['isSkipImport'] = true;
+        }
     }
 
     public function checkProductStock($params)
@@ -133,6 +144,25 @@ class ShippedByMarketplace extends RuleAbstract implements RuleInterface
             return;
         }
 
+        if (empty($this->configuration['end_order_state_shipped']) === false) {
+            $changeStateId = $this->configuration['end_order_state_shipped'];
+        } else {
+            $changeStateId = (int) Configuration::get('PS_OS_DELIVERED');
+        }
+
+        if (false == $this->isOrderStateValid($changeStateId)) {
+            ProcessLoggerHandler::logError(
+                $logPrefix .
+                sprintf(
+                    $this->l('Invalid order state. ID: %d', 'ShippedByMarketplace'),
+                    (int)$changeStateId
+                ),
+                'Order',
+                $idOrder
+            );
+            return;
+        }
+
         ProcessLoggerHandler::logInfo(
             $logPrefix .
             sprintf(
@@ -142,11 +172,6 @@ class ShippedByMarketplace extends RuleAbstract implements RuleInterface
             'Order',
             $idOrder
         );
-        if (empty($this->configuration['end_order_state_shipped']) === false) {
-            $changeStateId = $this->configuration['end_order_state_shipped'];
-        } else {
-            $changeStateId = (int) Configuration::get('PS_OS_DELIVERED');
-        }
 
         // Set order to DELIVERED
         $history = new OrderHistory();
@@ -187,9 +212,9 @@ class ShippedByMarketplace extends RuleAbstract implements RuleInterface
         $states[] = [
             'type' => 'select',
             'label' =>
-                $this->l('After a SHIPPED by marketplace order import, turn this order status into', 'ShippedByMarketplace'),
+                $this->l('After a shipped order or an order shipped by Amazon, CDiscount or Manomano import, turn this order status into', 'ShippedByMarketplace'),
             'desc' =>
-                $this->l('By default: Delivered', 'ShippedByMarketplace'),
+                $this->l('By default: Delivered &', 'ShippedByMarketplace'),
             'name' => 'end_order_state_shipped',
             'options' => [
                 'query' => $statuses,
@@ -200,5 +225,75 @@ class ShippedByMarketplace extends RuleAbstract implements RuleInterface
         ];
 
         return $states;
+    }
+
+    /**
+     * @param OrderResource $apiOrder
+     * @return bool
+     */
+    protected function isShippedAmazon(OrderResource $apiOrder)
+    {
+        try {
+            return strpos(strtolower($apiOrder->getPaymentInformation()['method']), 'afn') !== false;
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+
+    /**
+     * @param OrderResource $apiOrder
+     * @return bool
+     */
+    protected function isShippedCdiscount(OrderResource $apiOrder)
+    {
+        try {
+            return strpos(strtolower($apiOrder->getPaymentInformation()['method']), 'clogistique') !== false;
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+
+    /**
+     * @param OrderResource $apiOrder
+     * @return bool
+     */
+    protected function isShippedManomano(OrderResource $apiOrder)
+    {
+        try {
+            return strtolower($apiOrder->toArray()['additionalFields']['env']) == 'epmm';
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+
+    protected function isShippedByMarketplace(OrderResource $apiOrder)
+    {
+        if ($this->isShippedAmazon($apiOrder)) {
+            return true;
+        }
+
+        if ($this->isShippedCdiscount($apiOrder)) {
+            return true;
+        }
+
+        if ($this->isShippedManomano($apiOrder)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    protected function logSkipImport($apiOrder)
+    {
+        $logPrefix = sprintf(
+            $this->l('[Order: %s]', 'ShippedByMarketplace'),
+            $apiOrder->getId()
+        );
+        $logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
+
+        ProcessLoggerHandler::logInfo(
+            $logPrefix . $this->l('Rule triggered. Import should be skipped.', 'Shoppingfeed.Rule'),
+            'Order'
+        );
     }
 }
