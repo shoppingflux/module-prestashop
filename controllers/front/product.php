@@ -201,7 +201,7 @@ class ShoppingfeedProductModuleFrontController  extends \ModuleFrontController
         }
 
         ProcessLoggerHandler::logInfo(
-            sprintf($this->l('products updated: %s'), implode(',', $ids)),
+            sprintf($this->module->l('products updated: %s', 'product'), implode(',', $ids)),
             null,
             null,
             'ShoppingfeedProductModuleFrontController'
