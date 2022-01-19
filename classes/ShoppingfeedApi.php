@@ -313,7 +313,6 @@ class ShoppingfeedApi
                 }
 
                 $orderTask->delete();
-                return false;
             }
 
             if (!$ticket || !$ticket->getId()) {

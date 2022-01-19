@@ -457,8 +457,8 @@ $_MODULE['<{shoppingfeed}prestashop>shoppingfeedordersyncactions_dfc39a16edfb066
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedordersyncactions_9efff4a10b9ad755329d4c3c681958ba'] = 'Aucune opération possible pour le statut de commande %d. Suppression de la liste des tâches.';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedordersyncactions_0d3f40ff7690a7a223da70447cd6fb59'] = 'Aucune tâche de traitement des commandes trouvée.';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedordersyncactions_4930df58c29fc86597530234bec3d755'] = 'Impossible de contacter l\'API Shopping Feed.';
-$_MODULE['<{shoppingfeed}prestashop>shoppingfeedordersyncactions_db1f8322e0af5790765323656aeca3d2'] = 'Ticket créé pour la commande %s portant le statut %d';
-$_MODULE['<{shoppingfeed}prestashop>shoppingfeedordersyncactions_7451257924a055795232ddf1a8007705'] = 'Pas de ticket créé pour la commande %s portant le statut %d';
+$_MODULE['<{shoppingfeed}prestashop>shoppingfeedordersyncactions_db1f8322e0af5790765323656aeca3d2'] = 'Ticket créé pour la commande %s portant le statut %s';
+$_MODULE['<{shoppingfeed}prestashop>shoppingfeedordersyncactions_7451257924a055795232ddf1a8007705'] = 'Pas de ticket créé pour la commande %s portant le statut %s';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedordersyncactions_1267ade1b1ee922f82a83094bb43d97a'] = 'Aucun numéro de ticket configuré.';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedordersyncactions_948b31dd0f66b9eef27c452608989858'] = 'Impossible de vérifier le statut du ticket; La commande Shoppping feed ne peut pas être chargée.';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedordersyncactions_04a31a2d2c31b9392edec8ed801b01e3'] = 'Aucune tâche de traitement des commandes trouvée.';
