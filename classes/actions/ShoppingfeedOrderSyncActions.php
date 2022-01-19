@@ -576,6 +576,18 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
                     // Don't do anything, we'll just send them again later
                     break;
                 case 'canceled':
+                    $this->conveyor['successfulTaskOrders'][] = $taskOrder;
+                    ProcessLoggerHandler::logInfo(
+                        sprintf(
+                            static::getLogPrefix($taskOrder->id_order) . ' ' .
+                            $this->l('Ticket status : %s. Ticket details: %s', 'ShoppingfeedOrderSyncActions'),
+                            $ticket->getStatus(),
+                            json_encode($ticket)
+                        ),
+                        'Order',
+                        $taskOrder->id_order
+                    );
+                    break;
                 case 'succeed':
                     $this->conveyor['successfulTaskOrders'][] = $taskOrder;
                     ProcessLoggerHandler::logSuccess(
