@@ -548,6 +548,7 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
         $order_sync_enabled = Tools::getValue(Shoppingfeed::ORDER_SYNC_ENABLED);
         $order_sync_test = Tools::getValue(Shoppingfeed::ORDER_IMPORT_TEST);
         $order_sync_shipped = Tools::getValue(Shoppingfeed::ORDER_IMPORT_SHIPPED);
+        $order_sync_shipped_marketplace = Tools::getValue(Shoppingfeed::ORDER_IMPORT_SHIPPED_MARKETPLACE);
 
         $shops = Shop::getShops();
         foreach ($shops as $shop) {
@@ -555,6 +556,13 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
             Configuration::updateValue(Shoppingfeed::ORDER_IMPORT_TEST, ($order_sync_test ? true : false), false, null, $shop['id_shop']);
             Configuration::updateValue(Shoppingfeed::ORDER_SYNC_ENABLED, ($order_sync_enabled ? true : false), false, null, $shop['id_shop']);
             Configuration::updateValue(Shoppingfeed::ORDER_IMPORT_SHIPPED, ($order_sync_shipped ? true : false), false, null, $shop['id_shop']);
+            Configuration::updateValue(
+                Shoppingfeed::ORDER_IMPORT_SHIPPED_MARKETPLACE,
+                ($order_sync_shipped_marketplace && $order_sync_shipped? true : false),
+                false,
+                null,
+                $shop['id_shop']
+            );
         }
 
         $orderStatusesShipped = Tools::getValue('status_shipped_order');
