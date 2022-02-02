@@ -16,7 +16,6 @@
  * @copyright Since 2019 Shopping Feed
  * @license   https://opensource.org/licenses/AFL-3.0  Academic Free License (AFL 3.0)
  */
-
 if (!defined('_PS_VERSION_')) {
     exit;
 }
@@ -50,72 +49,73 @@ class ShoppingfeedOrder extends ObjectModel
     public $date_add;
     public $date_upd;
 
-    public static $definition = array(
+    public static $definition = [
         'table' => 'shoppingfeed_order',
         'primary' => 'id_shoppingfeed_order',
-        'fields' => array(
-            'id_internal_shoppingfeed' => array(
+        'fields' => [
+            'id_internal_shoppingfeed' => [
                 'type' => ObjectModel::TYPE_STRING,
                 'validate' => 'isString',
                 'allow_null' => true,
                 'size' => 50,
-            ),
-            'id_order_marketplace' => array(
+            ],
+            'id_order_marketplace' => [
                 'type' => ObjectModel::TYPE_STRING,
                 'validate' => 'isString',
                 'allow_null' => true,
-            ),
-            'name_marketplace' => array(
+            ],
+            'name_marketplace' => [
                 'type' => ObjectModel::TYPE_STRING,
                 'validate' => 'isString',
                 'required' => true,
                 'size' => 50,
-            ),
-            'id_order' => array(
+            ],
+            'id_order' => [
                 'type' => ObjectModel::TYPE_INT,
                 'validate' => 'isUnsignedInt',
                 'required' => true,
                 'unique' => true,
-            ),
-            'payment_method' => array(
+            ],
+            'payment_method' => [
                 'type' => ObjectModel::TYPE_STRING,
                 'validate' => 'isString',
                 'required' => true,
                 'size' => 50,
-            ),
-            'date_marketplace_creation' => array(
+            ],
+            'date_marketplace_creation' => [
                 'type' => self::TYPE_DATE,
                 'validate' => 'isDate',
                 'allow_null' => true,
-            ),
-            'id_shoppingfeed_token' => array(
+            ],
+            'id_shoppingfeed_token' => [
                 'type' => ObjectModel::TYPE_INT,
                 'validate' => 'isInt',
                 'required' => true,
-                'allow_null' => true
-            ),
-            'date_add' => array(
+                'allow_null' => true,
+            ],
+            'date_add' => [
                 'type' => self::TYPE_DATE,
                 'validate' => 'isDate',
-            ),
-            'date_upd' => array(
+            ],
+            'date_upd' => [
                 'type' => self::TYPE_DATE,
                 'validate' => 'isDate',
-            ),
-        ),
-    );
+            ],
+        ],
+    ];
 
     public static function getByIdOrder($id_order)
     {
         $query = new DbQuery();
         $query->select('*')
             ->from('shoppingfeed_order')
-            ->where("id_order = " . (int)$id_order);
+            ->where('id_order = ' . (int) $id_order);
         $shoppingfeed_order_data = DB::getInstance()->getRow($query);
 
         if ($shoppingfeed_order_data) {
             $shoppingfeedOrder = new ShoppingfeedOrder();
             $shoppingfeedOrder->hydrate($shoppingfeed_order_data);
+
             return $shoppingfeedOrder;
         }
 
@@ -149,6 +149,7 @@ class ShoppingfeedOrder extends ObjectModel
 
         $this->id_order_marketplace = $id_order_marketplace;
         $this->save();
+
         return true;
     }
 
@@ -157,7 +158,7 @@ class ShoppingfeedOrder extends ObjectModel
         $query = new DbQuery();
         $query->select('1')
             ->from('shoppingfeed_order')
-            ->where("id_internal_shoppingfeed = " . (int)$id_internal_shoppingfeed);
+            ->where('id_internal_shoppingfeed = ' . (int) $id_internal_shoppingfeed);
         $shoppingfeed_order_data = DB::getInstance()->getRow($query);
 
         return $shoppingfeed_order_data ? true : false;
@@ -168,16 +169,16 @@ class ShoppingfeedOrder extends ObjectModel
         $query = new DbQuery();
         $query->select('*')
             ->from('shoppingfeed_order')
-            ->where("id_internal_shoppingfeed = " . (int)$id_internal_shoppingfeed);
+            ->where('id_internal_shoppingfeed = ' . (int) $id_internal_shoppingfeed);
         $shoppingfeed_order_data = DB::getInstance()->getRow($query);
 
         if ($shoppingfeed_order_data) {
             $shoppingfeedOrder = new ShoppingfeedOrder();
             $shoppingfeedOrder->hydrate($shoppingfeed_order_data);
+
             return $shoppingfeedOrder;
         }
 
         return false;
     }
-
 }

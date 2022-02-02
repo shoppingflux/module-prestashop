@@ -16,7 +16,6 @@
  * @copyright Since 2019 Shopping Feed
  * @license   https://opensource.org/licenses/AFL-3.0  Academic Free License (AFL 3.0)
  */
-
 if (!defined('_PS_VERSION_')) {
     exit;
 }
@@ -40,59 +39,60 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
 {
     /**
      * This module requires at least PHP version
+     *
      * @var string
      */
     public $php_version_required = '5.6';
 
-    const AUTH_TOKEN = "SHOPPINGFEED_AUTH_TOKEN";
-    const STOCK_SYNC_ENABLED = "SHOPPINGFEED_STOCK_SYNC_ENABLED";
-    const PRICE_SYNC_ENABLED = "SHOPPINGFEED_PRICE_SYNC_ENABLED";
-    const ORDER_SYNC_ENABLED = "SHOPPINGFEED_ORDER_SYNC_ENABLED";
-    const STOCK_SYNC_MAX_PRODUCTS = "SHOPPINGFEED_STOCK_SYNC_MAX_PRODUCTS";
-    const REAL_TIME_SYNCHRONIZATION = "SHOPPINGFEED_REAL_TIME_SYNCHRONIZATION";
-    const LAST_CRON_TIME_SYNCHRONIZATION = "SHOPPINGFEED_LAST_CRON_TIME_SYNCHRONIZATION";
-    const ORDER_STATUS_TIME_SHIFT = "SHOPPINGFEED_ORDER_STATUS_TIME_SHIFT";
-    const ORDER_STATUS_MAX_ORDERS = "SHOPPINGFEED_ORDER_STATUS_MAX_ORDERS";
-    const SHIPPED_ORDERS = "SHOPPINGFEED_SHIPPED_ORDERS";
-    const CANCELLED_ORDERS = "SHOPPINGFEED_CANCELLED_ORDERS";
-    const REFUNDED_ORDERS = "SHOPPINGFEED_REFUNDED_ORDERS";
-    const ORDER_IMPORT_ENABLED = "SHOPPINGFEED_ORDER_IMPORT_ENABLED";
-    const ORDER_IMPORT_TEST = "SHOPPINGFEED_ORDER_IMPORT_TEST";
-    const ORDER_IMPORT_SHIPPED = "SHOPPINGFEED_ORDER_IMPORT_SHIPPED";
-    const ORDER_IMPORT_SHIPPED_MARKETPLACE = "SHOPPINGFEED_ORDER_IMPORT_SHIPPED_MARKETPLACE";
-    const ORDER_IMPORT_SPECIFIC_RULES_CONFIGURATION = "SHOPPINGFEED_ORDER_IMPORT_SPECIFIC_RULES_CONFIGURATION";
-    const ORDER_DEFAULT_CARRIER_REFERENCE = "SHOPPINGFEED_ORDER_DEFAULT_CARRIER_REFERENCE";
-    const PRODUCT_FEED_CARRIER_REFERENCE = "SHOPPINGFEED_PRODUCT_FEED_CARRIER_REFERENCE";
-    const PRODUCT_FEED_SYNC_PACK = "SHOPPINGFEED_PRODUCT_FEED_SYNC_PACK";
-    const PRODUCT_FEED_IMAGE_FORMAT = "SHOPPINGFEED_PRODUCT_FEED_IMAGE_FORMAT";
-    const PRODUCT_FEED_CATEGORY_DISPLAY = "SHOPPINGFEED_PRODUCT_FEED_CATEGORY_DISPLAY";
-    const PRODUCT_FEED_CUSTOM_FIELDS = "SHOPPINGFEED_PRODUCT_FEED_CUSTOM_FIELDS";
-    const PRODUCT_FEED_REFERENCE_FORMAT = "SHOPPINGFEED_PRODUCT_FEED_REFERENCE_FORMAT";
-    const PRODUCT_FEED_RULE_FILTERS = "SHOPPINGFEED_PRODUCT_FEED_RULE_FILTERS";
-    const PRODUCT_VISIBILTY_NOWHERE = "SHOPPINGFEED_PRODUCT_VISIBILTY_NOWHERE";
-    const PRODUCT_SYNC_BY_DATE_UPD = "SHOPPINGFEED_PRODUCT_SYNC_BY_DATE_UPD";
-    const PRODUCT_FEED_TIME_FULL_UPDATE = "SHOPPINGFEED_PRODUCT_FEED_TIME_FULL_UPDATE";
-    const PRODUCT_FEED_INTERVAL_CRON = "SHOPPINGFEED_PRODUCT_FEED_INTERVAL_CRON";
-    const ORDER_IMPORT_PERMANENT_SINCE_DATE = "SHOPPINGFEED_ORDER_IMPORT_PERMANENT_SINCE_DATE";
+    const AUTH_TOKEN = 'SHOPPINGFEED_AUTH_TOKEN';
+    const STOCK_SYNC_ENABLED = 'SHOPPINGFEED_STOCK_SYNC_ENABLED';
+    const PRICE_SYNC_ENABLED = 'SHOPPINGFEED_PRICE_SYNC_ENABLED';
+    const ORDER_SYNC_ENABLED = 'SHOPPINGFEED_ORDER_SYNC_ENABLED';
+    const STOCK_SYNC_MAX_PRODUCTS = 'SHOPPINGFEED_STOCK_SYNC_MAX_PRODUCTS';
+    const REAL_TIME_SYNCHRONIZATION = 'SHOPPINGFEED_REAL_TIME_SYNCHRONIZATION';
+    const LAST_CRON_TIME_SYNCHRONIZATION = 'SHOPPINGFEED_LAST_CRON_TIME_SYNCHRONIZATION';
+    const ORDER_STATUS_TIME_SHIFT = 'SHOPPINGFEED_ORDER_STATUS_TIME_SHIFT';
+    const ORDER_STATUS_MAX_ORDERS = 'SHOPPINGFEED_ORDER_STATUS_MAX_ORDERS';
+    const SHIPPED_ORDERS = 'SHOPPINGFEED_SHIPPED_ORDERS';
+    const CANCELLED_ORDERS = 'SHOPPINGFEED_CANCELLED_ORDERS';
+    const REFUNDED_ORDERS = 'SHOPPINGFEED_REFUNDED_ORDERS';
+    const ORDER_IMPORT_ENABLED = 'SHOPPINGFEED_ORDER_IMPORT_ENABLED';
+    const ORDER_IMPORT_TEST = 'SHOPPINGFEED_ORDER_IMPORT_TEST';
+    const ORDER_IMPORT_SHIPPED = 'SHOPPINGFEED_ORDER_IMPORT_SHIPPED';
+    const ORDER_IMPORT_SHIPPED_MARKETPLACE = 'SHOPPINGFEED_ORDER_IMPORT_SHIPPED_MARKETPLACE';
+    const ORDER_IMPORT_SPECIFIC_RULES_CONFIGURATION = 'SHOPPINGFEED_ORDER_IMPORT_SPECIFIC_RULES_CONFIGURATION';
+    const ORDER_DEFAULT_CARRIER_REFERENCE = 'SHOPPINGFEED_ORDER_DEFAULT_CARRIER_REFERENCE';
+    const PRODUCT_FEED_CARRIER_REFERENCE = 'SHOPPINGFEED_PRODUCT_FEED_CARRIER_REFERENCE';
+    const PRODUCT_FEED_SYNC_PACK = 'SHOPPINGFEED_PRODUCT_FEED_SYNC_PACK';
+    const PRODUCT_FEED_IMAGE_FORMAT = 'SHOPPINGFEED_PRODUCT_FEED_IMAGE_FORMAT';
+    const PRODUCT_FEED_CATEGORY_DISPLAY = 'SHOPPINGFEED_PRODUCT_FEED_CATEGORY_DISPLAY';
+    const PRODUCT_FEED_CUSTOM_FIELDS = 'SHOPPINGFEED_PRODUCT_FEED_CUSTOM_FIELDS';
+    const PRODUCT_FEED_REFERENCE_FORMAT = 'SHOPPINGFEED_PRODUCT_FEED_REFERENCE_FORMAT';
+    const PRODUCT_FEED_RULE_FILTERS = 'SHOPPINGFEED_PRODUCT_FEED_RULE_FILTERS';
+    const PRODUCT_VISIBILTY_NOWHERE = 'SHOPPINGFEED_PRODUCT_VISIBILTY_NOWHERE';
+    const PRODUCT_SYNC_BY_DATE_UPD = 'SHOPPINGFEED_PRODUCT_SYNC_BY_DATE_UPD';
+    const PRODUCT_FEED_TIME_FULL_UPDATE = 'SHOPPINGFEED_PRODUCT_FEED_TIME_FULL_UPDATE';
+    const PRODUCT_FEED_INTERVAL_CRON = 'SHOPPINGFEED_PRODUCT_FEED_INTERVAL_CRON';
+    const ORDER_IMPORT_PERMANENT_SINCE_DATE = 'SHOPPINGFEED_ORDER_IMPORT_PERMANENT_SINCE_DATE';
 
-
-    public $extensions = array(
+    public $extensions = [
         \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerExtension::class,
-        \ShoppingfeedClasslib\Extensions\ProcessMonitor\ProcessMonitorExtension::class
-    );
+        \ShoppingfeedClasslib\Extensions\ProcessMonitor\ProcessMonitorExtension::class,
+    ];
 
     /**
      * List of objectModel used in this Module
+     *
      * @var array
      */
-    public $objectModels = array(
+    public $objectModels = [
         ShoppingfeedTaskOrder::class,
         ShoppingfeedProduct::class,
         ShoppingfeedOrder::class,
         ShoppingfeedCarrier::class,
         ShoppingfeedPreloading::class,
         ShoppingfeedToken::class,
-    );
+    ];
 
     /**
      * List of cron tasks indexed by controller name
@@ -101,153 +101,155 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
      *
      * @var array
      */
-    public $cronTasks = array(
-        'syncProduct' => array(
+    public $cronTasks = [
+        'syncProduct' => [
             'name' => 'shoppingfeed:syncProduct',
-            'title' => array(
+            'title' => [
                 'en' => 'Synchronize products on Shopping Feed',
-                'fr' => 'Synchronisation des produits sur Shopping Feed'
-            ),
+                'fr' => 'Synchronisation des produits sur Shopping Feed',
+            ],
             'frequency' => '5min',
-        ),
-        'syncOrder' => array(
+        ],
+        'syncOrder' => [
             'name' => 'shoppingfeed:syncOrder',
-            'title' => array(
+            'title' => [
                 'en' => 'Synchronize orders on Shopping Feed',
-                'fr' => 'Synchronisation des commandes sur Shopping Feed'
-            ),
+                'fr' => 'Synchronisation des commandes sur Shopping Feed',
+            ],
             'frequency' => '5min',
-        ),
-        'syncAll' => array(
+        ],
+        'syncAll' => [
             'name' => 'shoppingfeed:syncAll',
-            'title' => array(
+            'title' => [
                 'en' => 'Sync shoppingfeed products and orders',
-                'fr' => 'Sync produits et commandes shoppingfeed'
-            ),
+                'fr' => 'Sync produits et commandes shoppingfeed',
+            ],
             'frequency' => '5min',
-        )
-    );
+        ],
+    ];
 
-    /** @var array $moduleAdminControllers
+    /** @var array
      */
-    public $moduleAdminControllers = array(
-        array(
-            'name' => array(
+    public $moduleAdminControllers = [
+        [
+            'name' => [
                 'en' => 'Shopping Feed',
-                'fr' => 'Shopping Feed'
-            ),
+                'fr' => 'Shopping Feed',
+            ],
             'class_name' => 'shoppingfeed',
             'parent_class_name' => 'SELL',
             'icon' => 'store_mall_directory',
             'visible' => true,
-        ),
-        array(
-            'name' => array(
+        ],
+        [
+            'name' => [
                 'en' => 'Marketplaces Summary',
-                'fr' => 'Commandes Marketplaces'
-            ),
+                'fr' => 'Commandes Marketplaces',
+            ],
             'class_name' => 'AdminShoppingfeedOrders',
             'parent_class_name' => 'shoppingfeed',
             'visible' => true,
-        ),
-        array(
-            'name' => array(
+        ],
+        [
+            'name' => [
                 'en' => 'Shopping Feed',
-                'fr' => 'Shopping Feed'
-            ),
+                'fr' => 'Shopping Feed',
+            ],
             'class_name' => 'AdminShoppingfeedOrderImport',
             'parent_class_name' => 'shoppingfeed',
             'visible' => false,
-        ),
-        array(
-            'name' => array(
+        ],
+        [
+            'name' => [
                 'en' => 'Settings',
-                'fr' => 'Paramètres'
-            ),
+                'fr' => 'Paramètres',
+            ],
             'class_name' => 'AdminShoppingfeedSettings',
             'parent_class_name' => 'shoppingfeed',
             'visible' => true,
-        ),
-        array(
-            'name' => array(
+        ],
+        [
+            'name' => [
                 'en' => 'Account settings',
-                'fr' => 'Paramètres du compte'
-            ),
+                'fr' => 'Paramètres du compte',
+            ],
             'class_name' => 'AdminShoppingfeedAccountSettings',
             'parent_class_name' => 'AdminShoppingfeedSettings',
             'visible' => true,
-        ),
-        array(
-            'name' => array(
+        ],
+        [
+            'name' => [
                 'en' => 'Products feed',
-                'fr' => 'Flux des produits'
-            ),
+                'fr' => 'Flux des produits',
+            ],
             'class_name' => 'AdminShoppingfeedGeneralSettings',
             'parent_class_name' => 'AdminShoppingfeedSettings',
             'visible' => true,
-        ),
-        array(
-            'name' => array(
+        ],
+        [
+            'name' => [
                 'en' => 'Orders feeds',
-                'fr' => 'Flux des commandes'
-            ),
+                'fr' => 'Flux des commandes',
+            ],
             'class_name' => 'AdminShoppingfeedOrderImportRules',
             'parent_class_name' => 'AdminShoppingfeedSettings',
             'visible' => true,
-        ),
-        array(
-            'name' => array(
+        ],
+        [
+            'name' => [
                 'en' => 'Logs & crons',
                 'fr' => 'Logs & crons',
-            ),
+            ],
             'class_name' => 'AdminShoppingfeedProcess',
             'parent_class_name' => 'shoppingfeed',
             'visible' => true,
-        ),
-        array(
-            'name' => array(
+        ],
+        [
+            'name' => [
                 'en' => 'Logs',
-                'fr' => 'Logs'
-            ),
+                'fr' => 'Logs',
+            ],
             'class_name' => 'AdminShoppingfeedProcessLogger',
             'parent_class_name' => 'AdminShoppingfeedProcess',
             'visible' => true,
-        ),
-        array(
-            'name' => array(
+        ],
+        [
+            'name' => [
                 'en' => 'Cron Tasks',
-                'fr' => 'Tâches cron'
-            ),
+                'fr' => 'Tâches cron',
+            ],
             'class_name' => 'AdminShoppingfeedProcessMonitor',
             'parent_class_name' => 'AdminShoppingfeedProcess',
             'visible' => true,
-        ),
-        array(
-            'name' => array(
+        ],
+        [
+            'name' => [
                 'en' => 'FAQ/Help',
-                'fr' => 'FAQ/Aide'
-            ),
+                'fr' => 'FAQ/Aide',
+            ],
             'class_name' => 'AdminShoppingfeedFaq',
             'parent_class_name' => 'shoppingfeed',
             'visible' => true,
-        ),
-    );
+        ],
+    ];
 
     /**
      * List of ModuleFrontController used in this Module
      * Module::install() register it, after that you can edit it in BO (for rewrite if needed)
+     *
      * @var array
      */
-    public $controllers = array(
+    public $controllers = [
         'syncProduct',
         'syncOrder',
-    );
+    ];
 
     /**
      * List of hooks used in this Module
+     *
      * @var array
      */
-    public $hooks = array(
+    public $hooks = [
         'actionUpdateQuantity',
         'actionObjectProductUpdateBefore',
         'actionObjectCombinationUpdateBefore',
@@ -262,12 +264,14 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         'actionObjectSpecificPriceUpdateAfter',
         'actionObjectSpecificPriceDeleteAfter',
         'deleteProductAttribute',
-        'actionAdminSpecificPriceRuleControllerDeleteBefore'
-    );
+        'actionAdminSpecificPriceRuleControllerDeleteBefore',
+    ];
 
     /**
      * Used to avoid spam or unauthorized execution of cron controller
+     *
      * @var string Unique token depend on _COOKIE_KEY_ which is unique to this website
+     *
      * @see Tools::encrypt()
      */
     public $secure_key;
@@ -282,7 +286,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         $this->version = '@version@';
         $this->author = '202 ecommerce';
         $this->tab = 'market_place';
-        $this->ps_versions_compliancy = array('min' => '1.6', 'max' => '1.7');
+        $this->ps_versions_compliancy = ['min' => '1.6', 'max' => '1.7'];
         $this->need_instance = false;
         $this->bootstrap = true;
 
@@ -295,94 +299,95 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
 
         $this->secure_key = Tools::encrypt($this->name);
         if (version_compare(_PS_VERSION_, '1.7', '<')) {
-            $this->moduleAdminControllers = array(
-                array(
-                    'name' => array(
+            $this->moduleAdminControllers = [
+                [
+                    'name' => [
                         'en' => 'Shopping Feed',
-                        'fr' => 'Shopping Feed'
-                    ),
+                        'fr' => 'Shopping Feed',
+                    ],
                     'class_name' => 'shoppingfeed',
                     'icon' => 'AdminParentOrders',
                     'visible' => true,
-                ),
-                array(
-                    'name' => array(
+                ],
+                [
+                    'name' => [
                         'en' => 'Marketplaces Summary',
-                        'fr' => 'Commandes Marketplaces'
-                    ),
+                        'fr' => 'Commandes Marketplaces',
+                    ],
                     'class_name' => 'AdminShoppingfeedOrders',
                     'parent_class_name' => 'shoppingfeed',
                     'visible' => true,
-                ),
-                array(
-                    'name' => array(
+                ],
+                [
+                    'name' => [
                         'en' => 'Shopping Feed',
-                        'fr' => 'Shopping Feed'
-                    ),
+                        'fr' => 'Shopping Feed',
+                    ],
                     'class_name' => 'AdminShoppingfeedOrderImport',
                     'parent_class_name' => 'shoppingfeed',
                     'visible' => false,
-                ),
-                array(
-                    'name' => array(
+                ],
+                [
+                    'name' => [
                         'en' => 'Account settings',
-                        'fr' => 'Paramètres du compte'
-                    ),
+                        'fr' => 'Paramètres du compte',
+                    ],
                     'class_name' => 'AdminShoppingfeedAccountSettings',
                     'parent_class_name' => 'shoppingfeed',
                     'visible' => true,
-                ),
-                array(
-                    'name' => array(
+                ],
+                [
+                    'name' => [
                         'en' => 'Products feed',
-                        'fr' => 'Flux des produits'
-                    ),
+                        'fr' => 'Flux des produits',
+                    ],
                     'class_name' => 'AdminShoppingfeedGeneralSettings',
                     'parent_class_name' => 'shoppingfeed',
                     'visible' => true,
-                ),
-                array(
-                    'name' => array(
+                ],
+                [
+                    'name' => [
                         'en' => 'Orders feeds',
-                        'fr' => 'Flux des commandes'
-                    ),
+                        'fr' => 'Flux des commandes',
+                    ],
                     'class_name' => 'AdminShoppingfeedOrderImportRules',
                     'parent_class_name' => 'shoppingfeed',
                     'visible' => true,
-                ),
-                array(
-                    'name' => array(
+                ],
+                [
+                    'name' => [
                         'en' => 'Logs',
-                        'fr' => 'Logs'
-                    ),
+                        'fr' => 'Logs',
+                    ],
                     'class_name' => 'AdminShoppingfeedProcessLogger',
                     'parent_class_name' => 'shoppingfeed',
                     'visible' => true,
-                ),
-                array(
-                    'name' => array(
+                ],
+                [
+                    'name' => [
                         'en' => 'Cron Tasks',
-                        'fr' => 'Tâches cron'
-                    ),
+                        'fr' => 'Tâches cron',
+                    ],
                     'class_name' => 'AdminShoppingfeedProcessMonitor',
                     'parent_class_name' => 'shoppingfeed',
                     'visible' => true,
-                ),
-                array(
-                    'name' => array(
+                ],
+                [
+                    'name' => [
                         'en' => 'FAQ/Help',
-                        'fr' => 'FAQ/Aide'
-                    ),
+                        'fr' => 'FAQ/Aide',
+                    ],
                     'class_name' => 'AdminShoppingfeedFaq',
                     'parent_class_name' => 'shoppingfeed',
                     'visible' => true,
-                ),
-            );
+                ],
+            ];
         }
     }
 
     /**
      * Installs the module; see the parent ShoppingfeedModule class from classlib
+     *
      * @return bool
      */
     public function install()
@@ -397,9 +402,9 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         $this->setConfigurationDefault(self::REAL_TIME_SYNCHRONIZATION, false);
         $this->setConfigurationDefault(self::ORDER_STATUS_TIME_SHIFT, 5);
         $this->setConfigurationDefault(self::ORDER_STATUS_MAX_ORDERS, 100);
-        $this->setConfigurationDefault(self::SHIPPED_ORDERS, json_encode(array()));
-        $this->setConfigurationDefault(self::CANCELLED_ORDERS, json_encode(array()));
-        $this->setConfigurationDefault(self::REFUNDED_ORDERS, json_encode(array()));
+        $this->setConfigurationDefault(self::SHIPPED_ORDERS, json_encode([]));
+        $this->setConfigurationDefault(self::CANCELLED_ORDERS, json_encode([]));
+        $this->setConfigurationDefault(self::REFUNDED_ORDERS, json_encode([]));
         $this->setConfigurationDefault(self::ORDER_IMPORT_ENABLED, true);
         $this->setConfigurationDefault(self::ORDER_IMPORT_SHIPPED, false);
         $this->setConfigurationDefault(self::PRODUCT_FEED_CARRIER_REFERENCE, Configuration::getGlobalValue('PS_CARRIER_DEFAULT'));
@@ -500,8 +505,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     }
 
     /**
-     *
-     * @return boolean
+     * @return bool
      */
     public static function isOrderSyncAvailable($id_shop = null)
     {
@@ -523,7 +527,8 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
 
     /**
      * Checks if order import can be activated
-     * @return boolean
+     *
+     * @return bool
      */
     public static function isOrderImportAvailable($id_shop = null)
     {
@@ -543,6 +548,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
 
     /**
      * Redirects the user to our AdminController for configuration
+     *
      * @throws PrestaShopException
      */
     public function getContent()
@@ -555,9 +561,11 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     /**
      * Returns the product's Shopping Feed reference. The developer can skip
      * products to sync by overriding this method and have it return false.
+     *
      * @param ShoppingFeedProduct $sfProduct
      * @param array $arguments Should you want to pass more arguments to this
-     * function, you can find them in this array
+     *                         function, you can find them in this array
+     *
      * @return string
      */
     public function mapReference(ShoppingfeedProduct $sfProduct, ...$arguments)
@@ -566,10 +574,10 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
 
         Hook::exec(
             'ShoppingfeedMapProductReference', // hook_name
-            array(
+            [
                 'ShoppingFeedProduct' => &$sfProduct,
-                'reference' => &$reference
-            ) // hook_args
+                'reference' => &$reference,
+            ] // hook_args
         );
 
         return $reference;
@@ -579,10 +587,12 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
      * Returns the Prestashop product matching the Shopping Feed reference. The
      * developer can skip specific products during order import by overriding
      * this method and have it return false.
+     *
      * @param string $sfProductReference The product's reference in Shopping Feed's system
      * @param string $id_shop
      * @param array $arguments Should you want to pass more arguments to this
-     * function, you can find them in this array
+     *                         function, you can find them in this array
+     *
      * @return array
      */
     public function mapPrestashopProduct($sfProductReference, $id_shop, ...$arguments)
@@ -592,9 +602,9 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
 
         Hook::exec(
             'ShoppingfeedReverseProductReference', // hook_name
-            array(
+            [
                 'sfProductReference' => &$sfProductReference,
-            ) // hook_args
+            ] // hook_args
         );
 
         $explodedReference = explode('_', $sfProductReference);
@@ -608,10 +618,10 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
 
         Hook::exec(
             'ShoppingfeedMapProduct', // hook_name
-            array(
+            [
                 'sfProductReference' => &$sfProductReference,
                 'product' => &$product,
-            ) // hook_args
+            ] // hook_args
         );
 
         return $product;
@@ -622,10 +632,12 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
      * can skip products to sync by overriding this method and have it return
      * false. Note that the comparison with the return value is strict to allow
      * "0" as a valid price.
+     *
      * @param ShoppingFeedProduct $sfProduct
      * @param int $id_shop
      * @param array $arguments Should you want to pass more arguments to this
-     * function, you can find them in this array
+     *                         function, you can find them in this array
+     *
      * @return string
      */
     public function mapProductPrice(ShoppingfeedProduct $sfProduct, $id_shop, $arguments = [])
@@ -634,7 +646,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         Product::flushPriceCache();
 
         // Tax depends on a country. We use country configured as default one for shop.
-        $id_country = (int)Configuration::get('PS_COUNTRY_DEFAULT', null, null, $id_shop);
+        $id_country = (int) Configuration::get('PS_COUNTRY_DEFAULT', null, null, $id_shop);
         $id_currency = (int) Configuration::get('PS_CURRENCY_DEFAULT', null, null, $id_shop);
         $id_group = (int) Group::getCurrent()->id;
 
@@ -665,22 +677,22 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
 
         Hook::exec(
             'ShoppingfeedMapProductPrice', // hook_name
-            array(
+            [
                 'ShoppingFeedProduct' => &$sfProduct,
                 'price' => &$price,
                 'arguments' => $arguments,
-            ) // hook_args
+            ] // hook_args
         );
 
         return $price;
     }
 
-
     /**
      * Returns the number of product in the feed The developer
      * can skip products to sync so it's necessary to ajust the number of
      * products in order to manage indexation.
-     * @return integer
+     *
+     * @return int
      */
     public function countProductsOnFeed($id_shop = null)
     {
@@ -693,6 +705,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
 
     /**
      * Returns the
+     *
      * @return DbQuery
      */
     public function sqlProductsOnFeed($id_shop = null)
@@ -704,13 +717,13 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             ->where('ps.available_for_order = 1');
 
         if ($id_shop === null) {
-            $id_shop = (int)Configuration::get('PS_SHOP_DEFAULT');
+            $id_shop = (int) Configuration::get('PS_SHOP_DEFAULT');
         }
-        $sql->where('ps.id_shop = ' . (int)$id_shop);
+        $sql->where('ps.id_shop = ' . (int) $id_shop);
         $product_feed_rule_filters = Configuration::getGlobalValue(Shoppingfeed::PRODUCT_FEED_RULE_FILTERS);
-        $product_visibility_nowhere = (bool)Configuration::getGlobalValue(Shoppingfeed::PRODUCT_VISIBILTY_NOWHERE);
+        $product_visibility_nowhere = (bool) Configuration::getGlobalValue(Shoppingfeed::PRODUCT_VISIBILTY_NOWHERE);
         $product_filters = Tools::jsonDecode($product_feed_rule_filters, true);
-        $sqlFilter = array();
+        $sqlFilter = [];
         if (is_array($product_filters)) {
             foreach ($product_filters as $product_filter_type => $product_filter) {
                 switch ($product_filter_type) {
@@ -718,19 +731,19 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
                         $sqlFilter[] = 'ps.id_product IN (' . $product_filter . ')';
                         break;
                     case 'attributes':
-                        $sqlFilter[] = 'ps.id_product IN (select id_product from '._DB_PREFIX_. 'product_attribute pa JOIN '._DB_PREFIX_. 'product_attribute_combination pac on pa.id_product_attribute = pac.id_product_attribute where pac.id_attribute IN (' . $product_filter . '))';
+                        $sqlFilter[] = 'ps.id_product IN (select id_product from ' . _DB_PREFIX_ . 'product_attribute pa JOIN ' . _DB_PREFIX_ . 'product_attribute_combination pac on pa.id_product_attribute = pac.id_product_attribute where pac.id_attribute IN (' . $product_filter . '))';
                         break;
                     case 'manufacturers':
-                        $sqlFilter[] = 'ps.id_product IN (select id_product from '._DB_PREFIX_. 'product where id_manufacturer IN (' . $product_filter . '))';
+                        $sqlFilter[] = 'ps.id_product IN (select id_product from ' . _DB_PREFIX_ . 'product where id_manufacturer IN (' . $product_filter . '))';
                         break;
                     case 'categories':
                         $sqlFilter[] = 'ps.id_category_default IN (' . $product_filter . ')';
                         break;
                     case 'suppliers':
-                        $sqlFilter[] = 'ps.id_product IN (select id_product from '._DB_PREFIX_. 'product_supplier where id_supplier IN (' . $product_filter . '))';
+                        $sqlFilter[] = 'ps.id_product IN (select id_product from ' . _DB_PREFIX_ . 'product_supplier where id_supplier IN (' . $product_filter . '))';
                         break;
                     case 'features':
-                        $sqlFilter[] = 'ps.id_product IN (select id_product from '._DB_PREFIX_. 'feature_product where id_feature IN (' . $product_filter . '))';
+                        $sqlFilter[] = 'ps.id_product IN (select id_product from ' . _DB_PREFIX_ . 'feature_product where id_feature IN (' . $product_filter . '))';
                         break;
                     default:
                         break;
@@ -738,9 +751,9 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             }
         }
         if (count($sqlFilter) > 0) {
-            $sql->where( '(' . implode(' or ', $sqlFilter) . ')');
+            $sql->where('(' . implode(' or ', $sqlFilter) . ')');
         }
-        if ((bool)Configuration::getGlobalValue(ShoppingFeed::PRODUCT_FEED_SYNC_PACK) !== true) {
+        if ((bool) Configuration::getGlobalValue(ShoppingFeed::PRODUCT_FEED_SYNC_PACK) !== true) {
             $sql->where('p.cache_is_pack = 0');
         }
         if ($product_visibility_nowhere === false) {
@@ -761,7 +774,9 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     /**
      * Saves a product for stock synchronization, or synchronizes it directly
      * using the Actions handler
+     *
      * @param array $params The hook parameters
+     *
      * @throws Exception
      */
     public function hookActionUpdateQuantity($params)
@@ -778,11 +793,11 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             /** @var ShoppingfeedHandler $handler */
             $handler = new \ShoppingfeedClasslib\Actions\ActionsHandler();
             $handler
-                ->setConveyor(array(
+                ->setConveyor([
                     'id_product' => $id_product,
                     'id_product_attribute' => $id_product_attribute,
                     'product_action' => ShoppingfeedProduct::ACTION_SYNC_STOCK,
-                ))
+                ])
                 ->addActions('saveProduct')
                 ->process('shoppingfeedProductSyncStock');
         } catch (Exception $e) {
@@ -813,6 +828,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     /**
      * Compares an updated product's price with its old price. If the new price
      * is different, saves the product for price synchronization.
+     *
      * @param array $params The hook parameters
      */
     public function hookActionObjectProductUpdateBefore($params)
@@ -829,17 +845,17 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         // Retrieve previous values in DB
         // If all goes well, they should already be cached...
         $old_product = new Product($product->id);
-        if ((float)$old_product->price == (float)$product->price) {
+        if ((float) $old_product->price == (float) $product->price) {
             return;
         }
 
         try {
             $handler = new \ShoppingfeedClasslib\Actions\ActionsHandler();
             $handler
-                ->setConveyor(array(
+                ->setConveyor([
                     'id_product' => $product->id,
                     'product_action' => ShoppingfeedProduct::ACTION_SYNC_PRICE,
-                ))
+                ])
                 ->addActions('saveProduct')
                 ->process('shoppingfeedProductSyncPrice');
         } catch (Exception $e) {
@@ -855,7 +871,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         }
 
         if (!\ShoppingfeedClasslib\Registry::isRegistered('updated_product_prices_ids')) {
-            \ShoppingfeedClasslib\Registry::set('updated_product_prices_ids', array());
+            \ShoppingfeedClasslib\Registry::set('updated_product_prices_ids', []);
         }
         $updatedProductPricesIds = \ShoppingfeedClasslib\Registry::get('updated_product_prices_ids');
         $updatedProductPricesIds[] = $product->id;
@@ -869,9 +885,9 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
 
             if (is_array($attributes) && false == empty($attributes)) {
                 foreach ($attributes as $attribute) {
-                    $this->hookActionObjectCombinationUpdateBefore(array(
-                        'object' => new Combination($attribute['id_product_attribute'])
-                    ));
+                    $this->hookActionObjectCombinationUpdateBefore([
+                        'object' => new Combination($attribute['id_product_attribute']),
+                    ]);
                 }
             }
         }
@@ -880,6 +896,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     /**
      * Compares an updated combinations's price with its old price. If the new
      * price is different, saves the combination for price synchronization.
+     *
      * @param array $params The hook parameters
      */
     public function hookActionObjectCombinationUpdateBefore($params)
@@ -896,7 +913,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         // Retrieve previous values in DB
         // If all goes well, they should already be cached...
         $old_combination = new Combination($combination->id);
-        if ((float)$old_combination->price == (float)$combination->price &&
+        if ((float) $old_combination->price == (float) $combination->price &&
             (
                 !\ShoppingfeedClasslib\Registry::isRegistered('updated_product_prices_ids') ||
                 !in_array($combination->id_product, \ShoppingfeedClasslib\Registry::get('updated_product_prices_ids'))
@@ -907,11 +924,11 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         try {
             $handler = new \ShoppingfeedClasslib\Actions\ActionsHandler();
             $handler
-                ->setConveyor(array(
+                ->setConveyor([
                     'id_product' => $combination->id_product,
                     'id_product_attribute' => $combination->id,
                     'product_action' => ShoppingfeedProduct::ACTION_SYNC_PRICE,
-                ))
+                ])
                 ->addActions('saveProduct')
                 ->process('shoppingfeedProductSyncPrice');
         } catch (Exception $e) {
@@ -931,22 +948,22 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
 
     /**
      * Delete a product on SF
+     *
      * @param array $params The hook parameters
      */
     public function hookActionObjectProductDeleteBefore($params)
     {
         $product = $params['object'];
         if (!Validate::isLoadedObject($product)) {
-
             return false;
         }
         $handler = new \ShoppingfeedClasslib\Actions\ActionsHandler();
         $handler->addActions('deleteProduct');
         try {
-            $handler->setConveyor(array(
+            $handler->setConveyor([
                 'product' => $product,
                 'product_action' => ShoppingfeedProduct::ACTION_SYNC_PRICE,
-            ));
+            ]);
             $processResult = $handler->process('ShoppingfeedProductSyncPreloading');
             if (!$processResult) {
                 \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logError(
@@ -967,6 +984,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     /**
      * Updates a product on SF if realtime sync is enabled.
      * On PS1.6, it should also update the product's combinations if needed.
+     *
      * @param array $params The hook parameters
      */
     public function hookActionObjectProductUpdateAfter($params)
@@ -977,6 +995,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
 
     /**
      * Updates a combination on SF if realtime sync is enabled.
+     *
      * @param array $params The hook parameters
      */
     public function hookActionObjectCombinationUpdateAfter($params)
@@ -990,11 +1009,9 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     public function updateShoppingFeedPriceRealtime()
     {
         if (!Configuration::get(Shoppingfeed::PRICE_SYNC_ENABLED)) {
-
             return;
         }
-        if ((bool)Configuration::getGlobalValue(Shoppingfeed::REAL_TIME_SYNCHRONIZATION) === false) {
-
+        if ((bool) Configuration::getGlobalValue(Shoppingfeed::REAL_TIME_SYNCHRONIZATION) === false) {
             return;
         }
         $handler = new \ShoppingfeedClasslib\Actions\ActionsHandler();
@@ -1003,10 +1020,10 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         $tokens = $sft->findAllActive();
         try {
             foreach ($tokens as $token) {
-                $handler->setConveyor(array(
+                $handler->setConveyor([
                     'id_token' => $token['id_shoppingfeed_token'],
                     'product_action' => ShoppingfeedProduct::ACTION_SYNC_PRICE,
-                ));
+                ]);
 
                 $processResult = $handler->process('shoppingfeedProductSyncPrice');
                 if (!$processResult) {
@@ -1031,11 +1048,11 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         $category = $params['object'];
         $categoryIds = [];
         foreach ($category->getAllParents() as $parent) {
-            $categoryIds[] = (int)$parent->id;
+            $categoryIds[] = (int) $parent->id;
         }
-        $categoryIds[] = (int)$category->id;
+        $categoryIds[] = (int) $category->id;
         foreach ($category->getAllChildren() as $children) {
-            $categoryIds[] = (int)$children->id;
+            $categoryIds[] = (int) $children->id;
         }
         $products = $this->getProductsByCategoryIds($categoryIds);
 
@@ -1049,10 +1066,10 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         $products = [];
         $sql = new DbQuery();
         $sql->from(Product::$definition['table'])
-            ->where('id_category_default in(' .  implode(',', $categoryIds) . ')');
+            ->where('id_category_default in(' . implode(',', $categoryIds) . ')');
         $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
 
-        return $result === []? [] : array_column($result, 'id_product');
+        return $result === [] ? [] : array_column($result, 'id_product');
     }
 
     /**
@@ -1071,10 +1088,10 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             $processResult = $handler
                         ->addActions($action)
                         ->setConveyor(
-                            array(
+                            [
                                 'products_id' => $products_id,
                                 'product_action' => $action,
-                            )
+                            ]
                         )
                         ->process('ShoppingfeedProductSyncPreloading');
             if (!$processResult) {
@@ -1099,6 +1116,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
      * This hook is used to "record" SF orders imported using the old module.
      *
      * @param type array
+     *
      * @return void
      */
     public function hookActionValidateOrder($params)
@@ -1110,7 +1128,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         $currentOrder = $params['order'];
 
         // Only process orders added via the shoppingflux module
-        if ($currentOrder->module != "sfpayment") {
+        if ($currentOrder->module != 'sfpayment') {
             return;
         }
 
@@ -1127,7 +1145,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
 
             $handler = new \ShoppingfeedClasslib\Actions\ActionsHandler();
             $processResult = $handler
-                ->setConveyor(array('id_order' => $currentOrder->id))
+                ->setConveyor(['id_order' => $currentOrder->id])
                 ->addActions('saveOrder')
                 ->process('shoppingfeedOrderSync');
 
@@ -1156,6 +1174,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
      * Saves an order for status synchronization
      *
      * @param type $params
+     *
      * @return type
      */
     public function hookActionOrderStatusPostUpdate($params)
@@ -1196,10 +1215,10 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             );
             $handler = new \ShoppingfeedClasslib\Actions\ActionsHandler();
             $handler
-                ->setConveyor(array(
+                ->setConveyor([
                     'id_order' => $params['id_order'],
                     'order_action' => ShoppingfeedTaskOrder::ACTION_SYNC_STATUS,
-                ))
+                ])
                 ->addActions('saveTaskOrder')
                 ->process('shoppingfeedOrderSync');
         } catch (Exception $e) {
@@ -1226,7 +1245,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
      */
     public function hookActionShoppingfeedOrderImportRegisterSpecificRules($params)
     {
-        $defaultRulesClassNames = array(
+        $defaultRulesClassNames = [
             ShoppingfeedAddon\OrderImport\Rules\AmazonB2B::class,
             ShoppingfeedAddon\OrderImport\Rules\AmazonEbay::class,
             ShoppingfeedAddon\OrderImport\Rules\AmazonPrime::class,
@@ -1242,9 +1261,9 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             ShoppingfeedAddon\OrderImport\Rules\SymbolConformity::class,
             ShoppingfeedAddon\OrderImport\Rules\ManomanoDpdRelais::class,
             ShoppingfeedAddon\OrderImport\Rules\Colissimo::class,
-        );
+        ];
 
-        foreach($defaultRulesClassNames as $ruleClassName) {
+        foreach ($defaultRulesClassNames as $ruleClassName) {
             $params['specificRulesClassNames'][] = $ruleClassName;
         }
     }
@@ -1273,7 +1292,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     {
         $productIds = $this
             ->getSpecificPriceService()
-            ->getProductIdsByRule((int)Tools::getValue('id_specific_price_rule'));
+            ->getProductIdsByRule((int) Tools::getValue('id_specific_price_rule'));
 
         $this->updateShoppingFeedPreloading($productIds, ShoppingfeedPreloading::ACTION_SYNC_PRICE);
     }
@@ -1289,11 +1308,12 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     public function addDateIndexToLogs()
     {
         $s_index = 'SHOW INDEX
-                FROM '._DB_PREFIX_.'shoppingfeed_processlogger
+                FROM ' . _DB_PREFIX_ . 'shoppingfeed_processlogger
                 WHERE Key_name = "date_log"';
 
         if (empty(Db::getInstance()->executeS($s_index))) {
-            $cr_index = "CREATE INDEX date_log ON " . _DB_PREFIX_ . "shoppingfeed_processlogger(date_add)";
+            $cr_index = 'CREATE INDEX date_log ON ' . _DB_PREFIX_ . 'shoppingfeed_processlogger(date_add)';
+
             return DB::getInstance()->execute($cr_index);
         }
 
@@ -1302,7 +1322,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
 
     public function truncatePrelodingWhenProductSyncByDateUpdDisabled()
     {
-        if ((bool)Configuration::get(Shoppingfeed::PRODUCT_SYNC_BY_DATE_UPD)) {
+        if ((bool) Configuration::get(Shoppingfeed::PRODUCT_SYNC_BY_DATE_UPD)) {
             return true;
         }
 

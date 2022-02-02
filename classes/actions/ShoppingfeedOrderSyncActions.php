@@ -17,11 +17,10 @@
  * @license   https://opensource.org/licenses/AFL-3.0  Academic Free License (AFL 3.0)
  */
 
-use ShoppingfeedClasslib\Actions\DefaultActions;
-use ShoppingfeedClasslib\Registry;
-use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
-
 use ShoppingFeed\Sdk\Api\Order\OrderOperation;
+use ShoppingfeedClasslib\Actions\DefaultActions;
+use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
+use ShoppingfeedClasslib\Registry;
 
 class ShoppingfeedOrderSyncActions extends DefaultActions
 {
@@ -40,6 +39,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
                 $this->l('SF Order not imported; no ID order found', 'ShoppingfeedOrderSyncActions'),
                 'Order'
             );
+
             return false;
         }
         $id_order = $this->conveyor['id_order'];
@@ -52,6 +52,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
                 'Order',
                 $id_order
             );
+
             return false;
         }
 
@@ -83,6 +84,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
                 $this->l('Order not registered for synchronization; no ID order found', 'ShoppingfeedOrderSyncActions'),
                 'Order'
             );
+
             return false;
         }
         $id_order = $this->conveyor['id_order'];
@@ -95,6 +97,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
                 'Order',
                 $id_order
             );
+
             return false;
         }
 
@@ -105,6 +108,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
                 'Order',
                 $id_order
             );
+
             return false;
         }
         $action = $this->conveyor['order_action'];
@@ -119,6 +123,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
                 'Order',
                 $id_order
             );
+
             return false;
         }
         if (!$shoppingfeedOrder->setReferenceFromOrder()) {
@@ -128,6 +133,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
                 'Order',
                 $id_order
             );
+
             return false;
         }
 
@@ -140,7 +146,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
         if (false === $shoppingfeedTaskOrder || !Validate::isLoadedObject($shoppingfeedTaskOrder)) {
             $shoppingfeedTaskOrder = new ShoppingfeedTaskOrder();
             $shoppingfeedTaskOrder->action = $action;
-            $shoppingfeedTaskOrder->id_order = (int)$id_order;
+            $shoppingfeedTaskOrder->id_order = (int) $id_order;
         }
 
         // When setting a status to "shipped", the synchronization must be
@@ -175,15 +181,17 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
                 $this->l('No ID Shop found.', 'ShoppingfeedOrderSyncActions'),
                 'Order'
             );
+
             return false;
         }
-        $id_shop = (int)$this->conveyor['id_shop'];
+        $id_shop = (int) $this->conveyor['id_shop'];
 
         if (empty($this->conveyor['order_action'])) {
             ProcessLoggerHandler::logInfo(
                 $this->l('Could not retrieve Task Orders; no order action found', 'ShoppingfeedProductSyncActions'),
                 'Order'
             );
+
             return false;
         }
         $action = $this->conveyor['order_action'];
@@ -197,9 +205,9 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
             ->where('update_at IS NOT NULL')
             ->where('update_at <= "' . pSQL(date('Y-m-d H:i:s')) . '"')
             ->where('id_shop = ' . (int) $id_shop)
-            ->where('so.id_shoppingfeed_token IS NULL OR so.id_shoppingfeed_token = 0 OR so.id_shoppingfeed_token = ' . (int)$this->conveyor['id_token'])
+            ->where('so.id_shoppingfeed_token IS NULL OR so.id_shoppingfeed_token = 0 OR so.id_shoppingfeed_token = ' . (int) $this->conveyor['id_token'])
             ->orderBy('sto.date_upd ASC')
-            ->limit((int)Configuration::get(ShoppingFeed::ORDER_STATUS_MAX_ORDERS, null, null, $id_shop));
+            ->limit((int) Configuration::get(ShoppingFeed::ORDER_STATUS_MAX_ORDERS, null, null, $id_shop));
         $taskOrdersData = DB::getInstance()->executeS($query);
 
         if (false === $taskOrdersData) {
@@ -207,10 +215,11 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
                 $this->l('Could not retrieve Task Orders.', 'ShoppingfeedProductSyncActions'),
                 'Order'
             );
+
             return false;
         }
 
-        $this->conveyor['taskOrders'] = array();
+        $this->conveyor['taskOrders'] = [];
         foreach ($taskOrdersData as $taskOrderData) {
             $taskOrder = new ShoppingfeedTaskOrder();
             $taskOrder->hydrate($taskOrderData);
@@ -227,15 +236,17 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
                 $this->l('No ID Shop found.', 'ShoppingfeedOrderSyncActions'),
                 'Order'
             );
+
             return false;
         }
-        $id_shop = (int)$this->conveyor['id_shop'];
+        $id_shop = (int) $this->conveyor['id_shop'];
 
         if (empty($this->conveyor['taskOrders'])) {
             ProcessLoggerHandler::logInfo(
                 $this->l('No Task Orders to prepare.', 'ShoppingfeedOrderSyncActions'),
                 'Order'
             );
+
             return false;
         }
         $taskOrders = $this->conveyor['taskOrders'];
@@ -244,7 +255,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
         $cancelled_status = json_decode(Configuration::get(Shoppingfeed::CANCELLED_ORDERS, null, null, $id_shop));
         $refunded_status = json_decode(Configuration::get(Shoppingfeed::REFUNDED_ORDERS, null, null, $id_shop));
 
-        $this->conveyor['preparedTaskOrders'] = array();
+        $this->conveyor['preparedTaskOrders'] = [];
         foreach ($taskOrders as $taskOrder) {
             /** @var $taskOrder ShoppingfeedTaskOrder */
             $logPrefix = self::getLogPrefix($taskOrder->id_order);
@@ -286,21 +297,21 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
 
             $orderHistory = $order->getHistory($order->id_lang);
             $taskOrderOperation = null;
-            $taskOrderPayload = array();
+            $taskOrderPayload = [];
 
             foreach ($orderHistory as $state) {
-                $idOrderState = (int)$state['id_order_state'];
+                $idOrderState = (int) $state['id_order_state'];
                 if (in_array($idOrderState, $shipped_status)) {
                     $taskOrderOperation = OrderOperation::TYPE_SHIP;
 
                     // Default values...
-                    $taskOrderPayload = array(
+                    $taskOrderPayload = [
                         'carrier_name' => '',
                         'tracking_number' => '',
                         'tracking_url' => '',
-                    );
+                    ];
 
-                    $carrier = new Carrier((int)$order->id_carrier);
+                    $carrier = new Carrier((int) $order->id_carrier);
                     if (!Validate::isLoadedObject($carrier)) {
                         ProcessLoggerHandler::logError(
                             $logPrefix . ' ' .
@@ -319,7 +330,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
                             //import the necessary classes
                             Module::getInstanceByName('relaiscolis');
                             $order = new Order($order->id);
-                            $idRelaisColisOrder = (int)RelaisColisOrder::getRelaisColisOrderId((int)$order->id);
+                            $idRelaisColisOrder = (int) RelaisColisOrder::getRelaisColisOrderId((int) $order->id);
                             $relaisColisOrder = new RelaisColisOrder($idRelaisColisOrder);
 
                             if (Validate::isLoadedObject($relaisColisOrder)) {
@@ -332,12 +343,12 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
                         $orderTrackingUrl = str_replace('http://http://', 'http://', $carrier->url);
                         $orderTrackingUrl = str_replace('@', $trackingNumber, $orderTrackingUrl);
 
-                        $taskOrderPayload = array(
+                        $taskOrderPayload = [
                             // "state_name" is indeed the carrier's name...
                             'carrier_name' => $orderShipping[0]['state_name'],
                             'tracking_number' => $trackingNumber,
                             'tracking_url' => $orderTrackingUrl,
-                        );
+                        ];
                     }
 
                     Hook::exec('actionShoppingfeedTracking', ['order' => $order, 'taskOrderPayload' => &$taskOrderPayload]);
@@ -345,7 +356,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
                 } elseif (in_array($idOrderState, $cancelled_status)) {
                     $taskOrderOperation = OrderOperation::TYPE_CANCEL;
                     break;
-                    // The "reason" field is not supported (at least for now)
+                // The "reason" field is not supported (at least for now)
                 } elseif (in_array($idOrderState, $refunded_status)) {
                     $taskOrderOperation = OrderOperation::TYPE_REFUND;
                     break;
@@ -367,13 +378,13 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
                 continue;
             }
 
-            $this->conveyor['preparedTaskOrders'][] = array(
+            $this->conveyor['preparedTaskOrders'][] = [
                 'reference_marketplace' => $sfOrder->id_order_marketplace,
                 'marketplace' => $sfOrder->name_marketplace,
                 'taskOrder' => $taskOrder,
                 'operation' => $taskOrderOperation,
                 'payload' => $taskOrderPayload,
-            );
+            ];
         }
 
         return true;
@@ -386,6 +397,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
                 $this->l('No ID Shop found.', 'ShoppingfeedOrderSyncActions'),
                 'Order'
             );
+
             return false;
         }
 
@@ -394,6 +406,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
                 $this->l('No prepared Task Orders found.', 'ShoppingfeedOrderSyncActions'),
                 'Order'
             );
+
             return false;
         }
 
@@ -403,6 +416,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
                 $this->l('Could not retrieve Shopping Feed API.', 'ShoppingfeedOrderSyncActions'),
                 'Order'
             );
+
             return false;
         }
 
@@ -413,14 +427,14 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
         }
 
         // Index each task order with its order reference
-        $preparedTaskOrders = array();
+        $preparedTaskOrders = [];
         foreach ($this->conveyor['preparedTaskOrders'] as $preparedTaskOrder) {
             $preparedTaskOrders[$preparedTaskOrder['reference_marketplace']] = $preparedTaskOrder;
         }
         unset($preparedTaskOrder);
 
         // Check each ticket, and match it with its task order
-        $this->conveyor['successfulTaskOrders'] = array();
+        $this->conveyor['successfulTaskOrders'] = [];
         foreach ($result->getTickets() as $ticket) {
             $ticketOrderReference = $ticket->getPayloadProperty('reference');
             $taskOrder = $preparedTaskOrders[$ticketOrderReference]['taskOrder'];
@@ -446,7 +460,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
         }
 
         // Any remaining task order is an error
-        $this->conveyor['failedTaskOrders'] = array();
+        $this->conveyor['failedTaskOrders'] = [];
         foreach ($preparedTaskOrders as $preparedTaskOrder) {
             ProcessLoggerHandler::logError(
                 sprintf(
@@ -471,13 +485,14 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
                 $this->l('No Task Orders to prepare.', 'ShoppingfeedOrderSyncActions'),
                 'Order'
             );
+
             return false;
         }
         $taskOrders = $this->conveyor['taskOrders'];
 
         // We don't have much to prepare; just make sure every task order has a
         // ticket number, and link each task to its SF order
-        $this->conveyor['preparedTaskOrders'] = array();
+        $this->conveyor['preparedTaskOrders'] = [];
         foreach ($taskOrders as $taskOrder) {
             /** @var $taskOrder ShoppingfeedTaskOrder */
             $logPrefix = self::getLogPrefix($taskOrder->id_order);
@@ -505,11 +520,11 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
                 continue;
             }
 
-            $this->conveyor['preparedTaskOrders'][] = array(
+            $this->conveyor['preparedTaskOrders'][] = [
                 'taskOrder' => $taskOrder,
                 'ticket_number' => $taskOrder->ticket_number,
                 'reference_marketplace' => $shoppingfeedOrder->id_order_marketplace,
-            );
+            ];
         }
 
         return true;
@@ -522,6 +537,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
                 $this->l('No ID Shop found.', 'ShoppingfeedOrderSyncActions'),
                 'Order'
             );
+
             return false;
         }
 
@@ -530,6 +546,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
                 $this->l('No Task Orders found.', 'ShoppingfeedOrderSyncActions'),
                 'Order'
             );
+
             return false;
         }
 
@@ -540,7 +557,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
         }
 
         // Index each task order with its order reference
-        $preparedTaskOrders = array();
+        $preparedTaskOrders = [];
         foreach ($this->conveyor['preparedTaskOrders'] as $preparedTaskOrder) {
             $preparedTaskOrders[$preparedTaskOrder['reference_marketplace']] = $preparedTaskOrder;
         }
@@ -548,8 +565,8 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
 
         // Check each ticket, and match it with its task order
         // Don't delete task orders here, we may need them later !
-        $this->conveyor['successfulTaskOrders'] = array();
-        $this->conveyor['failedTaskOrders'] = array();
+        $this->conveyor['successfulTaskOrders'] = [];
+        $this->conveyor['failedTaskOrders'] = [];
         foreach ($tickets as $ticket) {
             $ticketOrderReference = $ticket->getPayloadProperty('reference');
             $taskOrder = $preparedTaskOrders[$ticketOrderReference]['taskOrder'];
@@ -613,6 +630,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
                 $this->l('No ID Shop found.', 'ShoppingfeedOrderSyncActions'),
                 'Order'
             );
+
             return false;
         }
         $id_shop = $this->conveyor['id_shop'];
@@ -622,14 +640,15 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
                 $this->l('No Task Orders found.', 'ShoppingfeedOrderSyncActions'),
                 'Order'
             );
+
             return false;
         }
         $failedTaskOrders = $this->conveyor['failedTaskOrders'];
 
-        $id_lang = (int)Configuration::get('PS_LANG_DEFAULT', null, null, $id_shop);
+        $id_lang = (int) Configuration::get('PS_LANG_DEFAULT', null, null, $id_shop);
 
         if (false === $this->isEmailTemplateExists('order-sync-errors', $id_lang, $id_shop)) {
-            $id_lang = (int)Language::getIdByIso('en');
+            $id_lang = (int) Language::getIdByIso('en');
 
             if ($id_lang == false) {
                 return false;
@@ -637,37 +656,37 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
         }
 
         // Get order data
-        $failedTaskOrdersMailData = array();
+        $failedTaskOrdersMailData = [];
         foreach ($failedTaskOrders as $taskOrder) {
             $order = new Order($taskOrder->id_order);
             $orderState = new OrderState($order->current_state);
-            $failedTaskOrdersMailData[] = array(
+            $failedTaskOrdersMailData[] = [
                 'reference' => $order->reference,
-                'status' => !empty($orderState->name[$id_lang]) ? $orderState->name[$id_lang] : reset($orderState->name)
-            );
+                'status' => !empty($orderState->name[$id_lang]) ? $orderState->name[$id_lang] : reset($orderState->name),
+            ];
         }
 
         $listFailuresHtml = $this->getEmailTemplateContent(
             'order-sync-errors-list.tpl',
             $id_lang,
             $id_shop,
-            array('failedTaskOrdersData' => $failedTaskOrdersMailData)
+            ['failedTaskOrdersData' => $failedTaskOrdersMailData]
         );
         $listFailuresTxt = $this->getEmailTemplateContent(
             'order-sync-errors-list.txt',
             $id_lang,
             $id_shop,
-            array('failedTaskOrdersData' => $failedTaskOrdersMailData)
+            ['failedTaskOrdersData' => $failedTaskOrdersMailData]
         );
 
         return Mail::Send(
-            (int)$id_lang,
+            (int) $id_lang,
             'order-sync-errors',
             $this->l('Shopping Feed synchronization errors', 'ShoppingfeedOrderSyncActions'),
-            array(
+            [
                 '{list_order_sync_errors_html}' => $listFailuresHtml,
                 '{list_order_sync_errors_txt}' => $listFailuresTxt,
-            ),
+            ],
             Configuration::get('PS_SHOP_EMAIL', null, null, $id_shop),
             null,
             null,
@@ -689,11 +708,11 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
      * @param array $var will be assigned to the smarty template
      *
      * @return string the template's content, or an empty string if no template
-     * was found
+     *                was found
      */
     protected function getEmailTemplateContent($template_name, $id_lang, $id_shop, $var)
     {
-        $shop = new Shop((int)$id_shop);
+        $shop = new Shop((int) $id_shop);
 
         if (false === Validate::isLoadedObject($shop)) {
             return '';
@@ -755,10 +774,10 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
             $themeName = $shop->theme_name;
         }
 
-        $pathsToCheck = array(
+        $pathsToCheck = [
             _PS_ALL_THEMES_DIR_ . $themeName . '/shoppingfeed/mails/' . $isoLang . '/' . $template_name,
-            _PS_MODULE_DIR_ . 'shoppingfeed/mails/' . $isoLang . '/' . $template_name
-        );
+            _PS_MODULE_DIR_ . 'shoppingfeed/mails/' . $isoLang . '/' . $template_name,
+        ];
 
         foreach ($pathsToCheck as $path) {
             if (Tools::file_exists_cache($path)) {

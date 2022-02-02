@@ -21,7 +21,6 @@
  * @copyright Copyright (c) 202-ecommerce
  * @license   Commercial license
  */
-
 if (!defined('_PS_VERSION_')) {
     exit;
 }
@@ -30,7 +29,7 @@ require_once _PS_MODULE_DIR_ . 'shoppingfeed/vendor/autoload.php';
 use ShoppingfeedClasslib\Extensions\ProcessLogger\Controllers\Admin\AdminProcessLoggerController;
 
 /**
- * @inheritdoc
+ * {@inheritdoc}
  */
 class AdminShoppingfeedProcessLoggerController extends AdminProcessLoggerController
 {

@@ -28,22 +28,19 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-use Tools;
-use Module;
 use Carrier;
-use Validate;
-use Country;
-
-use ShoppingfeedAddon\OrderImport\RuleAbstract;
-use ShoppingfeedAddon\OrderImport\RuleInterface;
-use ShoppingFeed\Sdk\Api\Order\OrderResource;
-
-use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
-
+use ColissimoCartPickupPoint;
+use ColissimoPickupPoint;
 use ColissimoService;
 use ColissimoTools;
-use ColissimoPickupPoint;
-use ColissimoCartPickupPoint;
+use Country;
+use Module;
+use ShoppingFeed\Sdk\Api\Order\OrderResource;
+use ShoppingfeedAddon\OrderImport\RuleAbstract;
+use ShoppingfeedAddon\OrderImport\RuleInterface;
+use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
+use Tools;
+use Validate;
 
 /**
  * See ticket #30781
@@ -64,7 +61,7 @@ class Colissimo extends RuleAbstract implements RuleInterface
 
         // Check marketplace, that the additional fields with the pickup point data are there and not empty, and that the "colissimo" module is installed and active
         $module_colissimo = Module::getInstanceByName('colissimo');
-        if ("zalandohexagona" === Tools::strtolower($apiOrder->getChannel()->getName())
+        if ('zalandohexagona' === Tools::strtolower($apiOrder->getChannel()->getName())
             && !empty($apiOrderData['additionalFields']['service_point_id'])
             && !empty($apiOrderData['additionalFields']['service_point_name'])
             && $module_colissimo && $module_colissimo->active
@@ -74,6 +71,7 @@ class Colissimo extends RuleAbstract implements RuleInterface
                     $this->l('Rule triggered.', 'Colissimo'),
                 'Order'
             );
+
             return true;
         }
 
@@ -112,14 +110,8 @@ class Colissimo extends RuleAbstract implements RuleInterface
             $destinationType
         );
         if (!$idColissimoService) {
-            throw new Exception(
-                $logPrefix .
-                    sprintf(
-                        $this->l('Could not retrieve ColissimoService from productCode %s and destinationType %s.', 'Colissimo'),
-                        $productCode,
-                        $destinationType
-                    )
-            );
+            throw new Exception($logPrefix . sprintf($this->l('Could not retrieve ColissimoService from productCode %s and destinationType %s.', 'Colissimo'), $productCode, $destinationType));
+
             return false;
         }
 
@@ -138,29 +130,13 @@ class Colissimo extends RuleAbstract implements RuleInterface
         $colissimoService = new ColissimoService($idColissimoService);
         $colissimoCarrier = Carrier::getCarrierByReference($colissimoService->id_carrier);
         if (!Validate::isLoadedObject($colissimoCarrier)) {
-            throw new Exception(
-                $logPrefix .
-                    sprintf(
-                        $this->l('Could not retrieve Carrier with id_reference %s from ColissimoService %s with productCode %s and destinationType %s.', 'Colissimo'),
-                        $colissimoService->id_carrier,
-                        $colissimoService->id,
-                        $productCode,
-                        $destinationType
-                    )
-            );
+            throw new Exception($logPrefix . sprintf($this->l('Could not retrieve Carrier with id_reference %s from ColissimoService %s with productCode %s and destinationType %s.', 'Colissimo'), $colissimoService->id_carrier, $colissimoService->id, $productCode, $destinationType));
+
             return false;
         }
         if (!$colissimoCarrier->active || $colissimoCarrier->deleted) {
-            throw new Exception(
-                $logPrefix .
-                    sprintf(
-                        $this->l('Retrieved Carrier with id_reference %s from ColissimoService %s with productCode %s and destinationType %s is inactive or deleted.', 'Colissimo'),
-                        $colissimoService->id_carrier,
-                        $colissimoService->id,
-                        $productCode,
-                        $destinationType
-                    )
-            );
+            throw new Exception($logPrefix . sprintf($this->l('Retrieved Carrier with id_reference %s from ColissimoService %s with productCode %s and destinationType %s is inactive or deleted.', 'Colissimo'), $colissimoService->id_carrier, $colissimoService->id, $productCode, $destinationType));
+
             return false;
         }
 
@@ -177,6 +153,7 @@ class Colissimo extends RuleAbstract implements RuleInterface
         // Use retrieved carrier and skip SF carrier creation; Colissimo should decide by itself which carrier should be used
         $params['carrier'] = $colissimoCarrier;
         $params['skipSfCarrierCreation'] = true;
+
         return true;
     }
 
@@ -245,7 +222,7 @@ class Colissimo extends RuleAbstract implements RuleInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getConditions()
     {
@@ -253,7 +230,7 @@ class Colissimo extends RuleAbstract implements RuleInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getDescription()
     {

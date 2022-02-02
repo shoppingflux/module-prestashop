@@ -28,16 +28,15 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-use Tools;
-use Module;
+use ColissimoCartPickupPoint;
+use ColissimoPickupPoint;
 use Country;
+use Module;
+use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
-use ShoppingFeed\Sdk\Api\Order\OrderResource;
-use ColissimoPickupPoint;
-use ColissimoCartPickupPoint;
-
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
+use Tools;
 
 class CdiscountRelay extends RuleAbstract implements RuleInterface
 {
@@ -46,14 +45,15 @@ class CdiscountRelay extends RuleAbstract implements RuleInterface
         // Check marketplace, that the additional fields with the pickup point data are there and not empty, and that the "colissimo" module is installed and active
         $module_colissimo = Module::getInstanceByName('colissimo');
         $apiOrderShipment = $apiOrder->getShipment();
-        return (preg_match('#^cdiscount$#', Tools::strtolower($apiOrder->getChannel()->getName()))
+
+        return preg_match('#^cdiscount$#', Tools::strtolower($apiOrder->getChannel()->getName()))
             && (
-                $apiOrderShipment['carrier'] === "SO1"
-                || $apiOrderShipment['carrier'] === "REL"
-                || $apiOrderShipment['carrier'] === "RCO"
+                $apiOrderShipment['carrier'] === 'SO1'
+                || $apiOrderShipment['carrier'] === 'REL'
+                || $apiOrderShipment['carrier'] === 'RCO'
             )
-            && $module_colissimo 
-            && $module_colissimo->active)
+            && $module_colissimo
+            && $module_colissimo->active
         ;
     }
 
@@ -107,13 +107,12 @@ class CdiscountRelay extends RuleAbstract implements RuleInterface
         // And now we decompose the fullname (in the FirstName field) by last name + first name
         // We consider that what's after the last space is the first name
         $fullname = trim($address['firstName']);
-        $explodedFullname = explode(" ", $fullname);
+        $explodedFullname = explode(' ', $fullname);
         if (isset($explodedFullname[0])) {
             $address['firstName'] = array_pop($explodedFullname);
             $address['lastName'] = implode(' ', $explodedFullname);
         }
     }
-
 
     /**
      * refs #32011
@@ -144,7 +143,7 @@ class CdiscountRelay extends RuleAbstract implements RuleInterface
 
         $shippingAddress = $apiOrder->getShippingAddress();
         $productCode = 'A2P'; // hack
-        
+
         // Save/update Colissimo pickup point
         $pickupPointData = [
             'colissimo_id' => $colissimoPickupPointId,
@@ -156,12 +155,12 @@ class CdiscountRelay extends RuleAbstract implements RuleInterface
             'country' => Tools::strtoupper(Country::getNameById($params['cart']->id_lang, Country::getByIso($shippingAddress['country']))),
             'iso_country' => $shippingAddress['country'],
             'product_code' => $productCode,
-            'network' => '' //TODO; how do we get this field ? It's not in the data sent by SF. Ask Colissimo directly ? Then again, it's not required.
+            'network' => '', //TODO; how do we get this field ? It's not in the data sent by SF. Ask Colissimo directly ? Then again, it's not required.
         ];
         $pickupPoint = ColissimoPickupPoint::getPickupPointByIdColissimo($colissimoPickupPointId);
         $pickupPoint->hydrate(array_map('pSQL', $pickupPointData));
         $pickupPoint->save();
-        
+
         if (empty($pickupPoint) === true) {
             ProcessLoggerHandler::logError(
                 $logPrefix .
@@ -172,6 +171,7 @@ class CdiscountRelay extends RuleAbstract implements RuleInterface
                     ),
                 'Order'
             );
+
             return true;
         }
 
@@ -195,9 +195,8 @@ class CdiscountRelay extends RuleAbstract implements RuleInterface
         return true;
     }
 
-
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getConditions()
     {
@@ -205,10 +204,10 @@ class CdiscountRelay extends RuleAbstract implements RuleInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getDescription()
     {
         return $this->l('Retrieves  the relay ID from the \'lastname\' field and puts it in \'company\'. If a company is already set, appends it to \'address (2)\'. Fills the \'lastname\' field with everything after the first space from \'firstname\'.', 'CdiscountRelay');
     }
-}   
+}

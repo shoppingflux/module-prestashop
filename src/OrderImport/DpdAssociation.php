@@ -24,10 +24,10 @@
 
 namespace ShoppingfeedAddon\OrderImport;
 
-use Validate;
+use Address;
 use Cart;
 use Db;
-use Address;
+use Validate;
 
 class DpdAssociation
 {
@@ -48,9 +48,9 @@ class DpdAssociation
         }
 
         $data = [
-            'id_customer' => (int)$cart->id_customer,
-            'id_cart' => (int)$cart->id,
-            'id_carrier' => (int)$cart->id_carrier,
+            'id_customer' => (int) $cart->id_customer,
+            'id_cart' => (int) $cart->id,
+            'id_carrier' => (int) $cart->id_carrier,
             'service' => 'REL',
             'relay_id' => pSQL($relayId),
             'company' => pSQL($address->company),
@@ -58,7 +58,7 @@ class DpdAssociation
             'address2' => pSQL($address->address2),
             'postcode' => pSQL($address->postcode),
             'city' => pSQL($address->city),
-            'id_country' => (int)$address->id_country
+            'id_country' => (int) $address->id_country,
         ];
 
         try {

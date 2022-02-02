@@ -21,7 +21,6 @@
  * @copyright Copyright (c) 202-ecommerce
  * @license   Commercial license
  */
-
 if (!defined('_PS_VERSION_')) {
     exit;
 }
@@ -36,15 +35,16 @@ class AdminShoppingfeedFaqController extends ShoppingfeedAdminController
     public $bootstrap = true;
 
     public $nbr_products;
+
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function initContent()
     {
-        $this->addCSS(array(
+        $this->addCSS([
             $this->module->getPathUri() . 'views/css/shoppingfeed_configuration/form.css',
-            $this->module->getPathUri() . 'views/css/font-awesome.min.css'
-        ));
+            $this->module->getPathUri() . 'views/css/font-awesome.min.css',
+        ]);
 
         $this->nbr_products = count(Product::getSimpleProducts($this->context->language->id));
 
@@ -58,44 +58,44 @@ class AdminShoppingfeedFaqController extends ShoppingfeedAdminController
 
     public function welcomeForm()
     {
-        $fields_form = array(
-            'legend' => array(
+        $fields_form = [
+            'legend' => [
                 'title' => $this->module->l('Shoppingfeed Prestashop Plugin (Feed&Order)', 'AdminShoppingfeedAccountSettings'),
-            )
-        );
+            ],
+        ];
 
         $helper = new HelperForm($this);
         $this->setHelperDisplay($helper);
-        $helper->tpl_vars['img_path'] = $this->module->getPathUri() . "views/img/";
+        $helper->tpl_vars['img_path'] = $this->module->getPathUri() . 'views/img/';
         $helper->base_folder = $this->getTemplatePath();
         $helper->base_tpl = 'welcome.tpl';
 
-        return $helper->generateForm(array(array('form' => $fields_form)));
+        return $helper->generateForm([['form' => $fields_form]]);
     }
 
     public function faqForm()
     {
-        $fields_form = array(
-            'legend' => array(
+        $fields_form = [
+            'legend' => [
                 'title' => $this->module->l('Faq / Support', 'AdminShoppingfeedFaq'),
-                'icon' => 'icon-question'
-            )
-        );
+                'icon' => 'icon-question',
+            ],
+        ];
 
         $syncProductUrl = $this->context->link->getModuleLink(
             'shoppingfeed',
             'syncProduct',
-            array('secure_key' => $this->module->secure_key)
+            ['secure_key' => $this->module->secure_key]
         );
 
         $syncOrderUrl = $this->context->link->getModuleLink(
             'shoppingfeed',
             'syncOrder',
-            array('secure_key' => $this->module->secure_key)
+            ['secure_key' => $this->module->secure_key]
         );
 
         $helper = new HelperForm($this);
-        $helper->tpl_vars['REAL_TIME_SYNCHRONIZATION'] = Configuration::get(Shoppingfeed::REAL_TIME_SYNCHRONIZATION)?'true':'false';
+        $helper->tpl_vars['REAL_TIME_SYNCHRONIZATION'] = Configuration::get(Shoppingfeed::REAL_TIME_SYNCHRONIZATION) ? 'true' : 'false';
         $helper->tpl_vars['nbr_products'] = $this->nbr_products;
         $helper->tpl_vars['shop_url'] = Tools::getShopDomain();
         $helper->tpl_vars['php_version'] = PHP_VERSION;
@@ -111,6 +111,6 @@ class AdminShoppingfeedFaqController extends ShoppingfeedAdminController
         $helper->base_folder = $this->getTemplatePath() . $this->override_folder;
         $helper->base_tpl = 'faq.tpl';
 
-        return $helper->generateForm(array(array('form' => $fields_form)));
+        return $helper->generateForm([['form' => $fields_form]]);
     }
 }

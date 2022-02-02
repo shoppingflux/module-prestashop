@@ -1,6 +1,5 @@
 <?php
 
-
 namespace ShoppingfeedAddon\OrderImport\Rules;
 
 use Cart;
@@ -18,11 +17,11 @@ if (!defined('_PS_VERSION_')) {
 
 class ManomanoDpdRelais extends RuleAbstract implements RuleInterface
 {
-    /** @var Module*/
+    /** @var Module */
     protected $dpdfrance;
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function isApplicable(\ShoppingFeed\Sdk\Api\Order\OrderResource $apiOrder)
     {
@@ -32,7 +31,7 @@ class ManomanoDpdRelais extends RuleAbstract implements RuleInterface
             return false;
         }
 
-        if ("monechelle" !== Tools::strtolower($apiOrder->getChannel()->getName())) {
+        if ('monechelle' !== Tools::strtolower($apiOrder->getChannel()->getName())) {
             return false;
         }
 
@@ -44,7 +43,7 @@ class ManomanoDpdRelais extends RuleAbstract implements RuleInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getDescription()
     {
@@ -52,7 +51,7 @@ class ManomanoDpdRelais extends RuleAbstract implements RuleInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getConditions()
     {
@@ -65,7 +64,7 @@ class ManomanoDpdRelais extends RuleAbstract implements RuleInterface
             return false;
         }
 
-        /** @var Cart $cart*/
+        /** @var Cart $cart */
         $cart = $params['cart'];
 
         if (false == $cart instanceof Cart) {
@@ -98,13 +97,12 @@ class ManomanoDpdRelais extends RuleAbstract implements RuleInterface
             )
         );
 
-
-
         if (false == $this->associateWithDpd($cart, $relayID)) {
             ProcessLoggerHandler::logInfo(
                 $logPrefix .
                 $this->l('Failed to associate an order with dpdfrance module', 'Shoppingfeed.Rule')
             );
+
             return false;
         }
 

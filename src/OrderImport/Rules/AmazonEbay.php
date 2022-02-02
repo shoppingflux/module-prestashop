@@ -28,12 +28,11 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-use Tools;
+use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
-use ShoppingFeed\Sdk\Api\Order\OrderResource;
-
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
+use Tools;
 
 class AmazonEbay extends RuleAbstract implements RuleInterface
 {
@@ -94,7 +93,7 @@ class AmazonEbay extends RuleAbstract implements RuleInterface
             $fullname = $address['firstName'];
         }
 
-        $explodedFullname = explode(" ", $fullname);
+        $explodedFullname = explode(' ', $fullname);
         if (isset($explodedFullname[0])) {
             $address['firstName'] = array_shift($explodedFullname);
             $address['lastName'] = implode(' ', $explodedFullname);
@@ -102,7 +101,7 @@ class AmazonEbay extends RuleAbstract implements RuleInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getConditions()
     {
@@ -110,7 +109,7 @@ class AmazonEbay extends RuleAbstract implements RuleInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getDescription()
     {
@@ -118,36 +117,35 @@ class AmazonEbay extends RuleAbstract implements RuleInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getConfigurationSubform()
     {
-        return array(
-            array(
+        return [
+            [
                 'type' => 'switch',
-                'label' =>
-                $this->l('Parse firstname/lastname for Amazon and Ebay orders.', 'AmazonEbay'),
+                'label' => $this->l('Parse firstname/lastname for Amazon and Ebay orders.', 'AmazonEbay'),
                 'name' => 'enabled',
                 'is_bool' => true,
-                'values' => array(
-                    array(
+                'values' => [
+                    [
                         'id' => 'ok',
                         'value' => 1,
-                    ),
-                    array(
+                    ],
+                    [
                         'id' => 'ko',
                         'value' => 0,
-                    )
-                ),
-            )
-        );
+                    ],
+                ],
+            ],
+        ];
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getDefaultConfiguration()
     {
-        return array('enabled' => true);
+        return ['enabled' => true];
     }
 }

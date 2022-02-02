@@ -28,12 +28,11 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-use Tools;
+use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
-use ShoppingFeed\Sdk\Api\Order\OrderResource;
-
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
+use Tools;
 
 class AmazonB2B extends RuleAbstract implements RuleInterface
 {
@@ -66,11 +65,10 @@ class AmazonB2B extends RuleAbstract implements RuleInterface
         );
 
         $orderData->payment['method'] = 'amazon b2b';
-
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getConditions()
     {
@@ -78,7 +76,7 @@ class AmazonB2B extends RuleAbstract implements RuleInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getDescription()
     {

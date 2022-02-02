@@ -28,15 +28,14 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
+use DB;
 use Order;
 use OrderDetail;
-use Tools;
-use DB;
+use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
-use ShoppingFeed\Sdk\Api\Order\OrderResource;
-
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
+use Tools;
 
 class Cdiscount extends RuleAbstract implements RuleInterface
 {
@@ -51,7 +50,6 @@ class Cdiscount extends RuleAbstract implements RuleInterface
             && !empty($apiOrderAdditionalFields['INTERETBCA'])
             && $apiOrderAdditionalFields['INTERETBCA'] > 0;
     }
-
 
     public function onPostProcess($params)
     {
@@ -74,20 +72,19 @@ class Cdiscount extends RuleAbstract implements RuleInterface
             'Order'
         );
 
-
         // See old module _updatePrices
         // Retrieve the order invoice ID to associate it with the FDG.
         // This way, the FDG will appears in the invoice.
         $idOrderInvoice = Db::getInstance()->getValue('
         SELECT `id_order_invoice`
-        FROM `'._DB_PREFIX_.'order_invoice`
-        WHERE `id_order` =  '.(int)$psOrder->id);
+        FROM `' . _DB_PREFIX_ . 'order_invoice`
+        WHERE `id_order` =  ' . (int) $psOrder->id);
 
         $processingFees = Tools::ps_round($processingFees, 2);
 
-        $fdgInsertFields = array(
+        $fdgInsertFields = [
             'id_order' => (int) $psOrder->id,
-            'id_order_invoice' => empty($idOrderInvoice) ? 0 : (int)$idOrderInvoice,
+            'id_order_invoice' => empty($idOrderInvoice) ? 0 : (int) $idOrderInvoice,
             'id_warehouse' => 0,
             'id_shop' => (int) $psOrder->id_shop,
             'product_id' => 0,
@@ -126,8 +123,8 @@ class Cdiscount extends RuleAbstract implements RuleInterface
             'total_shipping_price_tax_incl' => 0,
             'total_shipping_price_tax_excl' => 0,
             'purchase_supplier_price' => 0,
-            'original_product_price' => 0
-        );
+            'original_product_price' => 0,
+        ];
 
         // Insert the FDG-ShoppingFlux in the order details
         $orderDetail = new OrderDetail();
@@ -137,48 +134,48 @@ class Cdiscount extends RuleAbstract implements RuleInterface
         $orderDetail->add(true, true);
 
         // insert doesn't return the id, we therefore need to make another request to find out the id_order_detail_fdg
-        $sql = 'SELECT od.id_order_detail FROM '._DB_PREFIX_.'order_detail od
-            WHERE od.id_order = '.(int)$psOrder->id.' AND od.product_reference = "FDG-ShoppingFlux"';
+        $sql = 'SELECT od.id_order_detail FROM ' . _DB_PREFIX_ . 'order_detail od
+            WHERE od.id_order = ' . (int) $psOrder->id . ' AND od.product_reference = "FDG-ShoppingFlux"';
         $id_order_detail_fdg = Db::getInstance()->getValue($sql);
 
         // Insert the FDG in the tax details
-        $insertOrderDetailTaxFgd = array(
+        $insertOrderDetailTaxFgd = [
             'id_order_detail' => $id_order_detail_fdg,
             'id_tax' => 0,
-            'unit_amount'  => 0,
+            'unit_amount' => 0,
             'total_amount' => 0,
-        );
+        ];
         Db::getInstance()->insert('order_detail_tax', $insertOrderDetailTaxFgd);
 
         // Add fees to order
-        $orderFieldsToIncrease = array(
+        $orderFieldsToIncrease = [
             'total_paid' => '',
             'total_paid_tax_incl' => '',
             'total_paid_tax_excl' => '',
             'total_paid_real' => '',
             'total_products' => '',
             'total_products_wt' => '',
-        );
+        ];
         $psOrder = new Order($params['sfOrder']->id_order);
-        foreach($orderFieldsToIncrease as $orderField => &$orderValue) {
+        foreach ($orderFieldsToIncrease as $orderField => &$orderValue) {
             $psOrder->{$orderField} = $psOrder->{$orderField} + $processingFees;
         }
         $psOrder->save();
 
         // Add fees to order invoice
-        $orderInvoiceFieldsToIncrease = array(
+        $orderInvoiceFieldsToIncrease = [
             'total_paid_tax_incl' => '',
             'total_paid_tax_excl' => '',
             'total_products' => '',
             'total_products_wt' => '',
-        );
-        foreach($orderInvoiceFieldsToIncrease as $orderInvoiceField => &$orderInvoiceValue) {
-            $orderInvoiceValue = array(
+        ];
+        foreach ($orderInvoiceFieldsToIncrease as $orderInvoiceField => &$orderInvoiceValue) {
+            $orderInvoiceValue = [
                 'type' => 'sql',
-                'value' => '`' . pSQL($orderInvoiceField) . '` + ' . $processingFees
-            );
+                'value' => '`' . pSQL($orderInvoiceField) . '` + ' . $processingFees,
+            ];
         }
-        Db::getInstance()->update('order_invoice', $orderInvoiceFieldsToIncrease, '`id_order` = '.(int)$psOrder->id);
+        Db::getInstance()->update('order_invoice', $orderInvoiceFieldsToIncrease, '`id_order` = ' . (int) $psOrder->id);
 
         ProcessLoggerHandler::logInfo(
             $logPrefix .
@@ -188,7 +185,7 @@ class Cdiscount extends RuleAbstract implements RuleInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getConditions()
     {
@@ -196,7 +193,7 @@ class Cdiscount extends RuleAbstract implements RuleInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getDescription()
     {

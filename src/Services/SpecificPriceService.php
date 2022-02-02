@@ -1,10 +1,9 @@
 <?php
 
-
 namespace ShoppingfeedAddon\Services;
 
-use DbQuery;
 use Db;
+use DbQuery;
 use SpecificPrice;
 use SpecificPriceRule;
 
@@ -12,6 +11,7 @@ class SpecificPriceService
 {
     /**
      * @param int $idRule
+     *
      * @return int[]
      */
     public function getProductIdsByRule($idRule)
@@ -20,7 +20,7 @@ class SpecificPriceService
             ->select('id_product')
             ->from(SpecificPrice::$definition['table'], 'sp')
             ->leftJoin(SpecificPriceRule::$definition['table'], 'spr', 'sp.id_specific_price_rule = spr.id_specific_price_rule')
-            ->where('spr.id_specific_price_rule = ' . (int)$idRule);
+            ->where('spr.id_specific_price_rule = ' . (int) $idRule);
 
         $res = Db::getInstance()->executeS($query);
 
@@ -29,8 +29,8 @@ class SpecificPriceService
         }
 
         return array_map(
-            function($row) {
-                return (int)$row['id_product'];
+            function ($row) {
+                return (int) $row['id_product'];
             },
             $res
         );

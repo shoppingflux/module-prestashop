@@ -1,21 +1,18 @@
 <?php
 
-
 namespace ShoppingfeedAddon\Services;
 
-
+use ShoppingFeed\Feed\Product;
 use ShoppingFeed\Feed\ProductFeedMetadata;
 use ShoppingFeed\Feed\ProductFeedResult;
 use ShoppingFeed\Feed\ProductFeedWriterInterface;
 use ShoppingFeed\Feed\ProductGenerator;
-
-use ShoppingFeed\Feed\Product;
 use ShoppingFeed\Feed\Xml;
 
 class SfProductGenerator
 {
-    const VALIDATE_NONE      = 0;
-    const VALIDATE_EXCLUDE   = 1;
+    const VALIDATE_NONE = 0;
+    const VALIDATE_EXCLUDE = 1;
     const VALIDATE_EXCEPTION = 2;
 
     /**
@@ -78,10 +75,8 @@ class SfProductGenerator
      */
     public static function registerWriter($alias, $writerClass)
     {
-        if (! in_array(ProductFeedWriterInterface::class, class_implements($writerClass), true)) {
-            throw new \InvalidArgumentException(
-                sprintf('Writer class shoud implements "%s" interface', ProductFeedWriterInterface::class)
-            );
+        if (!in_array(ProductFeedWriterInterface::class, class_implements($writerClass), true)) {
+            throw new \InvalidArgumentException(sprintf('Writer class shoud implements "%s" interface', ProductFeedWriterInterface::class));
         }
 
         self::$writers[$alias] = $writerClass;
@@ -100,7 +95,7 @@ class SfProductGenerator
     }
 
     /**
-     * @param string string $uri         The uri where data will be written
+     * @param string string $uri The uri where data will be written
      * @param string string $writerAlias The writer to use for this generator instance
      */
     public function __construct($uri = 'php://output', $writerAlias = 'xml')
@@ -133,10 +128,8 @@ class SfProductGenerator
      */
     public function setWriter($alias)
     {
-        if (! isset(self::$writers[$alias])) {
-            throw new \InvalidArgumentException(
-                sprintf('Writer alias "%s" is not registered', $alias)
-            );
+        if (!isset(self::$writers[$alias])) {
+            throw new \InvalidArgumentException(sprintf('Writer alias "%s" is not registered', $alias));
         }
 
         $this->writer = $alias;
@@ -145,8 +138,8 @@ class SfProductGenerator
     }
 
     /**
-     * @param string $name  The attribute name
-     * @param mixed  $value The attribute value
+     * @param string $name The attribute name
+     * @param mixed $value The attribute value
      *
      * @return $this
      */
@@ -247,7 +240,7 @@ class SfProductGenerator
 
     public function appendProduct($iterable)
     {
-        if (! $iterable instanceof \Traversable && ! is_array($iterable)) {
+        if (!$iterable instanceof \Traversable && !is_array($iterable)) {
             throw new \Exception(sprintf('cannot iterates over %s', gettype($iterable)));
         }
 
@@ -275,9 +268,7 @@ class SfProductGenerator
             // The product does not match expected validation rules
             if ($this->validate && false === $product->isValid()) {
                 if ($this->validate === self::VALIDATE_EXCEPTION) {
-                    throw new Product\InvalidProductException(
-                        sprintf('Invalid product found at index %d, aborting', $metadata->getTotalCount())
-                    );
+                    throw new Product\InvalidProductException(sprintf('Invalid product found at index %d, aborting', $metadata->getTotalCount()));
                 }
 
                 $this->metadata->incrInvalid();
@@ -293,11 +284,12 @@ class SfProductGenerator
      * @param \Traversable|array $iterable
      *
      * @return ProductFeedResult
+     *
      * @throws \Exception
      */
     public function write($iterable)
     {
-        if (! $iterable instanceof \Traversable && ! is_array($iterable)) {
+        if (!$iterable instanceof \Traversable && !is_array($iterable)) {
             throw new \Exception(sprintf('cannot iterates over %s', gettype($iterable)));
         }
 
@@ -332,9 +324,7 @@ class SfProductGenerator
             // The product does not match expected validation rules
             if ($this->validate && false === $product->isValid()) {
                 if ($this->validate === self::VALIDATE_EXCEPTION) {
-                    throw new Product\InvalidProductException(
-                        sprintf('Invalid product found at index %d, aborting', $metadata->getTotalCount())
-                    );
+                    throw new Product\InvalidProductException(sprintf('Invalid product found at index %d, aborting', $metadata->getTotalCount()));
                 }
 
                 $metadata->incrInvalid();

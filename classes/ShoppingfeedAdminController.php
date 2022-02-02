@@ -16,11 +16,11 @@
  * @copyright Since 2019 Shopping Feed
  * @license   https://opensource.org/licenses/AFL-3.0  Academic Free License (AFL 3.0)
  */
-
 class ShoppingfeedAdminController extends ModuleAdminController
 {
     /**
      * Method is added for compatibility with PS 1.6
+     *
      * @return array
      */
     public function getTemplateFormVars()
