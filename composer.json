@@ -1,10 +1,31 @@
 {
+  "name": "module-partners/shoppingfeed",
+  "description": "PrestaShop module shoppingfeed",
+  "homepage": "https://shoppingfeed.com/",
+  "license": "AFL-3.0",
+  "authors": [
+      {
+          "name": "202 ecommerce",
+          "email": "tech@202-ecommerce.com"
+      }
+  ],
+  "config": {
+     "vendor-dir": "vendor",
+      "preferred-install": "dist",
+      "classmap-authoritative": true,
+      "optimize-autoloader": true,
+      "prepend-autoloader": false,
+      "platform": {
+          "php": "5.6"
+      }
+  },
   "require": {
+    "php": ">=5.6.0",
     "shoppingfeed/php-feed-generator": "~1.2.1",
     "psr/http-message": "~1.0"
   },
-  "config": {
-    "vendor-dir": "vendor"
+  "require-dev": {
+      "prestashop/php-dev-tools": "^3.4"
   },
   "autoload": {
     "exclude-from-classmap": ["classes/Compatibility"],
@@ -28,5 +49,6 @@
   },
   "scripts": {
     "pre-autoload-dump": "if [ ${TOTPSCLASSLIB_DEV_PATH} ]; then php ${TOTPSCLASSLIB_DEV_PATH}/classlib/refresh.php .; fi"
-  }
+  },
+  "type": "prestashop-module"
 }
