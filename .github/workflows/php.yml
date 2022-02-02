@@ -38,7 +38,7 @@ jobs:
                 key: php-${{ hashFiles('composer.lock') }}
 
             - name: Install dependencies
-              run: composer install
+              run: composer update
 
             - name: Run PHP-CS-Fixer
               run: ./vendor/bin/php-cs-fixer fix --dry-run --diff --using-cache=no --diff-format udiff

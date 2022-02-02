@@ -5,3 +5,4 @@
 #/composer.json
 /.project
 /node_modules
+.php_cs.cache
