@@ -1,5 +1,25 @@
 
-$(document).ready(function() { 
+/*
+ *
+ *  Copyright since 2019 Shopping Feed
+ *
+ *  NOTICE OF LICENSE
+ *
+ *  This source file is subject to the Academic Free License (AFL 3.0)
+ *  that is bundled with this package in the file LICENSE.md.
+ *  It is also available through the world-wide-web at this URL:
+ *  https://opensource.org/licenses/AFL-3.0
+ *  If you did not receive a copy of the license and are unable to
+ *  obtain it through the world-wide-web, please send an email
+ *  to tech@202-ecommerce.com so we can send you a copy immediately.
+ *
+ *  @author    202 ecommerce <tech@202-ecommerce.com>
+ *  @copyright Since 2019 Shopping Feed
+ *  @license   https://opensource.org/licenses/AFL-3.0  Academic Free License (AFL 3.0)
+ *
+ */
+
+$(document).ready(function() {
 
     $('#SHOPPINGFEED_PRODUCT_FEED_TIME_FULL_UPDATE, #SHOPPINGFEED_PRODUCT_FEED_INTERVAL_CRON').change(function() {
         if ($('#SHOPPINGFEED_PRODUCT_FEED_TIME_FULL_UPDATE').val() == 0 && $('#SHOPPINGFEED_PRODUCT_FEED_INTERVAL_CRON').val() == 0) {
@@ -7,7 +27,7 @@ $(document).ready(function() {
         } else {
             $('input[name="SHOPPINGFEED_PRODUCT_SYNC_BY_DATE_UPD"]').prop("disabled", true);
         }
-        
+
     });
 
     $('input[name="SHOPPINGFEED_PRODUCT_SYNC_BY_DATE_UPD"]').change(function() {
@@ -16,6 +36,6 @@ $(document).ready(function() {
         } else {
             $('#SHOPPINGFEED_PRODUCT_FEED_TIME_FULL_UPDATE, #SHOPPINGFEED_PRODUCT_FEED_INTERVAL_CRON').prop("disabled", true);
         }
-        
+
     });
 });

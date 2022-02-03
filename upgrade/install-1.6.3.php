@@ -20,28 +20,27 @@
  */
 
 use ShoppingfeedClasslib\Install\Installer;
+use ShoppingfeedClasslib\Install\ModuleInstaller;
+use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerExtension;
 
-function upgrade_module_1_3_0($module)
+function upgrade_module_1_6_3($module)
 {
-    // Get the classlib installer
-    $installer = new Installer();
-    $installer->setModule($module);
-
-    // Install the new hooks
-    $installer->registerHooks();
-
-    // Install new admintab
-    $installer->uninstallModuleAdminControllers();
-    $installer->installModuleAdminControllers();
-
-    // Update the ShoppingfeedProduct Model
-    $installer->installObjectModel('ShoppingfeedOrder');
-
-    // Install the new ShoppingfeedCarrier Model
-    $installer->installObjectModel('ShoppingfeedCarrier');
-
-    // Install the new configuration variables
-    $module->setConfigurationDefault(Shoppingfeed::ORDER_IMPORT_ENABLED, false);
+    if (Shop::isFeatureActive()) {
+        foreach (Shop::getShops() as $shop) {
+            Configuration::updateValue(
+                Shoppingfeed::ORDER_IMPORT_SHIPPED_MARKETPLACE,
+                (int)Configuration::get(Shoppingfeed::ORDER_IMPORT_SHIPPED, null, null, $shop['id_shop']),
+                false,
+                null,
+                $shop['id_shop']
+            );
+        }
+    } else {
+        Configuration::updateValue(
+            Shoppingfeed::ORDER_IMPORT_SHIPPED_MARKETPLACE,
+            (int)Configuration::get(Shoppingfeed::ORDER_IMPORT_SHIPPED)
+        );
+    }
 
     return true;
 }
