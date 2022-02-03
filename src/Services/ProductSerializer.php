@@ -52,6 +52,8 @@ class ProductSerializer
     private $id_shop;
     private $id_lang;
     private $id_currency;
+    private $productCoreFields;
+    private $productCategory;
 
     public function __construct($id_product, $id_lang, $id_shop, $id_currency)
     {

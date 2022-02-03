@@ -40,7 +40,8 @@ use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 use ShoppingfeedClasslib\Registry;
-
+use SoFlexibiliteDelivery;
+use SoColissimoFlexibiliteDelivery;
 class Socolissimo extends RuleAbstract implements RuleInterface
 {
     public function isApplicable(OrderResource $apiOrder)
@@ -57,8 +58,8 @@ class Socolissimo extends RuleAbstract implements RuleInterface
         $module_soflexibilite = Module::getInstanceByName('soflexibilite');
         if ($module_soflexibilite && $module_soflexibilite->active
             && (
-                class_exists('SoFlexibiliteDelivery')
-                || class_exists('SoColissimoFlexibiliteDelivery')
+                class_exists(SoFlexibiliteDelivery::class)
+                || class_exists(SoColissimoFlexibiliteDelivery::class)
             )
         ) {
             Registry::set(self::class . '_id_shipping_address', null);
@@ -107,8 +108,8 @@ class Socolissimo extends RuleAbstract implements RuleInterface
         $module_soflexibilite = Module::getInstanceByName('soflexibilite');
         if ($module_soflexibilite && $module_soflexibilite->active
             && (
-                class_exists('SoFlexibiliteDelivery')
-                || class_exists('SoColissimoFlexibiliteDelivery')
+                class_exists(SoFlexibiliteDelivery::class)
+                || class_exists(SoColissimoFlexibiliteDelivery::class)
             )
         ) {
             $result = $this->insertSoFlexibiliteData($params['cart']);
@@ -181,10 +182,12 @@ class Socolissimo extends RuleAbstract implements RuleInterface
         // module's version.
         // Version 2.0 seems to be using the class SoColissimoFlexibiliteDelivery
         // and versions 3.0 are using the class SoFlexibiliteDelivery
-        if (class_exists('SoFlexibiliteDelivery')) {
+        if (class_exists(\SoFlexibiliteDelivery::class)) {
             $so_delivery = new \SoFlexibiliteDelivery();
-        } else {
+        } elseif (class_exists(\SoColissimoFlexibiliteDelivery::class)) {
             $so_delivery = new \SoColissimoFlexibiliteDelivery();
+        } else {
+            return true;
         }
 
         $so_delivery->id_cart = (int) $cart->id;

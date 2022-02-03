@@ -92,7 +92,7 @@ class ShoppingfeedSyncProductModuleFrontController extends ShoppingfeedCronContr
             $this->processAction($action, $actionData['actions_suffix']);
         }
 
-        Configuration::updateValue(ShoppingFeed::LAST_CRON_TIME_SYNCHRONIZATION, date('Y-m-d H:i:s'));
+        Configuration::updateValue(Shoppingfeed::LAST_CRON_TIME_SYNCHRONIZATION, date('Y-m-d H:i:s'));
         ProcessLoggerHandler::closeLogger();
     }
 

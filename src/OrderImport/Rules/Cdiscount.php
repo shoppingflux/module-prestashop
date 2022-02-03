@@ -28,7 +28,7 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-use DB;
+use Db;
 use Order;
 use OrderDetail;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;

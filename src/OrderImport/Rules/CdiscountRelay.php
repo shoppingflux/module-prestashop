@@ -121,6 +121,9 @@ class CdiscountRelay extends RuleAbstract implements RuleInterface
      */
     public function afterCartCreation($params)
     {
+        if (class_exists(ColissimoPickupPoint::class) === false || class_exists(ColissimoCartPickupPoint::class) === false) {
+            return;
+        }
         /** @var ShoppingFeed\Sdk\Api\Order\OrderResource $apiOrder */
         $apiOrder = $params['apiOrder'];
 

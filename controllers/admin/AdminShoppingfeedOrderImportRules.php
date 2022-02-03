@@ -32,6 +32,8 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
 {
     public $bootstrap = true;
 
+    public $override_folder;
+
     /** @var ShoppingfeedOrderImportSpecificRulesManager */
     protected $specificRulesManager;
 
@@ -56,8 +58,8 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
                 Context::getContext()->link->getAdminLink('AdminShoppingfeedAccountSettings')
             );
         }
-        $order_sync_available = ShoppingFeed::isOrderSyncAvailable();
-        $order_import_available = ShoppingFeed::isOrderImportAvailable();
+        $order_sync_available = Shoppingfeed::isOrderSyncAvailable();
+        $order_import_available = Shoppingfeed::isOrderImportAvailable();
         $order_import_test = Configuration::get(Shoppingfeed::ORDER_IMPORT_TEST);
         $order_import_shipped = Configuration::get(Shoppingfeed::ORDER_IMPORT_SHIPPED);
 
@@ -121,7 +123,7 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
             return '';
         }
 
-        $helper = new HelperForm($this);
+        $helper = new HelperForm();
         $this->setHelperDisplay($helper);
         $helper->submit_action = 'saveRulesConfiguration';
         $helper->fields_value = $fields_value;
@@ -174,10 +176,10 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
         $orderCancelledState = [];
         $orderRefundedState = [];
 
-        $ids_shipped_status_selected = json_decode(Configuration::get(ShoppingFeed::SHIPPED_ORDERS));
-        $ids_cancelled_status_selected = json_decode(Configuration::get(ShoppingFeed::CANCELLED_ORDERS));
+        $ids_shipped_status_selected = json_decode(Configuration::get(Shoppingfeed::SHIPPED_ORDERS));
+        $ids_cancelled_status_selected = json_decode(Configuration::get(Shoppingfeed::CANCELLED_ORDERS));
 
-        $ids_refunded_status_selected = json_decode(Configuration::get(ShoppingFeed::REFUNDED_ORDERS));
+        $ids_refunded_status_selected = json_decode(Configuration::get(Shoppingfeed::REFUNDED_ORDERS));
         if (!is_array($ids_refunded_status_selected)) {
             $ids_refunded_status_selected = [$ids_refunded_status_selected];
         }
@@ -310,7 +312,7 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
                                 },
                                 ShoppingfeedCarrier::getAllMarketplaces()
                             ),
-                            'default_carrier_field_name' => ShoppingFeed::ORDER_DEFAULT_CARRIER_REFERENCE,
+                            'default_carrier_field_name' => Shoppingfeed::ORDER_DEFAULT_CARRIER_REFERENCE,
                             'carriers_matching_field' => [
                                 'name' => 'shoppingfeed_carrier_matching',
                                 'labels' => array_map(
@@ -478,7 +480,7 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
             ],
         ];
 
-        $helper = new HelperForm($this);
+        $helper = new HelperForm();
         $helper->fields_value = [
             Shoppingfeed::ORDER_IMPORT_ENABLED => !$order_import_available ? false : Configuration::get(Shoppingfeed::ORDER_IMPORT_ENABLED),
             Shoppingfeed::ORDER_IMPORT_TEST => !$order_import_test ? false : Configuration::get(Shoppingfeed::ORDER_IMPORT_TEST),
@@ -505,7 +507,7 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
             ],
         ];
 
-        $helper = new HelperForm($this);
+        $helper = new HelperForm();
         $this->setHelperDisplay($helper);
         $helper->tpl_vars['img_path'] = $this->module->getPathUri() . 'views/img/';
         $helper->base_folder = $this->getTemplatePath();
@@ -530,7 +532,7 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
     {
         $rulesConfiguration = Tools::getValue('rulesConfiguration');
         Configuration::updateValue(
-            ShoppingFeed::ORDER_IMPORT_SPECIFIC_RULES_CONFIGURATION,
+            Shoppingfeed::ORDER_IMPORT_SPECIFIC_RULES_CONFIGURATION,
             Tools::jsonEncode($rulesConfiguration),
             false,
             null,

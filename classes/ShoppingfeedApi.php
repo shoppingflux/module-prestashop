@@ -324,7 +324,7 @@ class ShoppingfeedApi
                 $orderTask->delete();
             }
 
-            if (!$ticket || !$ticket->getId()) {
+            if (empty($ticket) || !$ticket->getId()) {
                 continue;
             }
             $tickets[] = $ticket;

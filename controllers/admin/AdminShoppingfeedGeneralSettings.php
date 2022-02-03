@@ -33,6 +33,8 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
 
     public $nbr_products;
 
+    public $override_folder;
+
     /**
      * {@inheritdoc}
      */
@@ -76,7 +78,7 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
             ],
         ];
 
-        $helper = new HelperForm($this);
+        $helper = new HelperForm();
         $this->setHelperDisplay($helper);
         $helper->tpl_vars['img_path'] = $this->module->getPathUri() . 'views/img/';
         $helper->base_folder = $this->getTemplatePath() . $this->override_folder;
@@ -167,7 +169,7 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
             Shoppingfeed::PRICE_SYNC_ENABLED => Configuration::get(Shoppingfeed::PRICE_SYNC_ENABLED),
         ];
 
-        $helper = new HelperForm($this);
+        $helper = new HelperForm();
         $this->setHelperDisplay($helper);
         $helper->fields_value = $fields_value;
         $helper->tpl_vars = $this->getTemplateFormVars();
@@ -307,7 +309,7 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
             $fields_value[Shoppingfeed::PRODUCT_FEED_CUSTOM_FIELDS . '[]'] = $customFieldsValues;
         }
 
-        $helper = new HelperForm($this);
+        $helper = new HelperForm();
         $this->setHelperDisplay($helper);
         $helper->fields_value = $fields_value;
         $helper->tpl_vars = $this->getTemplateFormVars();
@@ -322,6 +324,7 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
      */
     public function renderSynchroConfigForm()
     {
+        $message_realtime = '';
         switch (true) {
             case $this->nbr_products <= 100:
                 $message_realtime = $this->module->l('You have less than 100 products, the RealTime parameter on YES is recommended. You have little stock for each reference and for you the stock precision is fundamental. Moreover, no need to set up any cron job. Sending real-time inventory updates to the Feed API makes it easy for you to sync inventory in less than 15 minutes. However, this multiplies the calls to the Shopping API stream which can slow the loading time of pages that decrement or increment the stock, especially during order status updates.', 'AdminShoppingfeedGeneralSettings');
@@ -397,7 +400,7 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
             Shoppingfeed::STOCK_SYNC_MAX_PRODUCTS => Configuration::get(Shoppingfeed::STOCK_SYNC_MAX_PRODUCTS),
         ];
 
-        $helper = new HelperForm($this);
+        $helper = new HelperForm();
         $this->setHelperDisplay($helper);
         $helper->fields_value = $fields_value;
         $helper->tpl_vars = $this->getTemplateFormVars();
@@ -521,7 +524,7 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
             'with_factory' => Tools::getValue('with_factory'),
         ];
 
-        $helper = new HelperForm($this);
+        $helper = new HelperForm();
         $this->setHelperDisplay($helper);
         $helper->fields_value = $fields_value;
         $helper->tpl_vars = $this->getTemplateFormVars();

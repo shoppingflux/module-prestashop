@@ -33,7 +33,7 @@ function upgrade_module_1_5_1($module)
 
     $installer->reset($module);
 
-    $isIdTokenExiste = 0 < (int) DB::getInstance()->getValue('SELECT count(*) 
+    $isIdTokenExiste = 0 < (int) Db::getInstance()->getValue('SELECT count(*) 
 	    FROM INFORMATION_SCHEMA.COLUMNS
 		WHERE `TABLE_NAME` = "' . _DB_PREFIX_ . ShoppingfeedOrder::$definition['table'] . '"
 		AND `TABLE_SCHEMA` = "' . _DB_NAME_ . '"

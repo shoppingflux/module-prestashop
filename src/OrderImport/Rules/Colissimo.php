@@ -34,6 +34,7 @@ use ColissimoPickupPoint;
 use ColissimoService;
 use ColissimoTools;
 use Country;
+use Exception;
 use Module;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use ShoppingfeedAddon\OrderImport\RuleAbstract;
@@ -83,6 +84,9 @@ class Colissimo extends RuleAbstract implements RuleInterface
      */
     public function onCarrierRetrieval($params)
     {
+        if (class_exists(ColissimoService::class) === false || class_exists(ColissimoTools::class) === false) {
+            return;
+        }
         /** @var ShoppingFeed\Sdk\Api\Order\OrderResource $apiOrder */
         $apiOrder = $params['apiOrder'];
 
@@ -163,6 +167,9 @@ class Colissimo extends RuleAbstract implements RuleInterface
      */
     public function afterCartCreation($params)
     {
+        if (class_exists(ColissimoPickupPoint::class) === false || class_exists(ColissimoCartPickupPoint::class) === false) {
+            return;
+        }
         /** @var ShoppingFeed\Sdk\Api\Order\OrderResource $apiOrder */
         $apiOrder = $params['apiOrder'];
 

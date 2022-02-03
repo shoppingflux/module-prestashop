@@ -11,5 +11,8 @@ parameters:
       - ../../controllers
       - ../../src
       - ../../upgrade
+  ignoreErrors:
+    - '#Instantiated class RelaisColisInfo not found\.#'
+    
   reportUnmatchedIgnoredErrors: false
   level: 1

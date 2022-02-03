@@ -188,7 +188,7 @@ class ShoppingfeedProductModuleFrontController extends \ModuleFrontController
             }
         } catch (Exception $e) {
             ProcessLoggerHandler::logError(
-                sprintf('Error while update a preloading products: $s. File: %s. Line: %d', $e->getMessage(), $e->getFile(), $e->getLine()),
+                sprintf('Error while update a preloading products: %s. File: %s. Line: %d', $e->getMessage(), $e->getFile(), $e->getLine()),
                 null,
                 null,
                 'ShoppingfeedProductModuleFrontController'

@@ -36,6 +36,8 @@ class AdminShoppingfeedFaqController extends ShoppingfeedAdminController
 
     public $nbr_products;
 
+    public $override_folder;
+
     /**
      * {@inheritdoc}
      */
@@ -64,7 +66,7 @@ class AdminShoppingfeedFaqController extends ShoppingfeedAdminController
             ],
         ];
 
-        $helper = new HelperForm($this);
+        $helper = new HelperForm();
         $this->setHelperDisplay($helper);
         $helper->tpl_vars['img_path'] = $this->module->getPathUri() . 'views/img/';
         $helper->base_folder = $this->getTemplatePath();
@@ -94,7 +96,7 @@ class AdminShoppingfeedFaqController extends ShoppingfeedAdminController
             ['secure_key' => $this->module->secure_key]
         );
 
-        $helper = new HelperForm($this);
+        $helper = new HelperForm();
         $helper->tpl_vars['REAL_TIME_SYNCHRONIZATION'] = Configuration::get(Shoppingfeed::REAL_TIME_SYNCHRONIZATION) ? 'true' : 'false';
         $helper->tpl_vars['nbr_products'] = $this->nbr_products;
         $helper->tpl_vars['shop_url'] = Tools::getShopDomain();

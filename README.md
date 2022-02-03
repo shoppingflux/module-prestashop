@@ -79,6 +79,26 @@ Contributors wishing to edit a module's files should follow the following proces
 
 That's it: you have contributed to this open-source project! Congratulations!
 
+### Command line launched by github actions
+
+#### phpcs fixer
+
+```bash
+~modules/shoppingfeed$ endor/bin/php-cs-fixer --fix
+```
+#### phpstan
+
+You need a docker container to launch phpstan
+
+```
+# create the prestashop container
+~modules/shoppingfeed$ docker run -tid --rm -v ps-volume:/var/www/html --name temp-ps prestashop/prestashop
+
+# launch phpstan
+~modules/shoppingfeed$ docker run --rm --volumes-from temp-ps -v $PWD:/var/www/html/modules/shoppingfeed -e _PS_ROOT_DIR_=/var/www/html --workdir=/var/www/html/modules/shoppingfeed phpstan/phpstan:0.12 analyse --configuration=/var/www/html/modules/shoppingfeed/202/phpstan/phpstan.neon
+```
+
+
 [1]: https://devdocs.prestashop.com/1.7/development/coding-standards/
 [2]: http://doc.prestashop.com/display/PS16/How+to+write+a+commit+message
 [3]: https://help.github.com/articles/using-pull-requests

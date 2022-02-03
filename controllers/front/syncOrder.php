@@ -52,11 +52,11 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
      */
     protected function processCron($data)
     {
-        if (Configuration::get(ShoppingFeed::ORDER_IMPORT_ENABLED)) {
+        if (Configuration::get(Shoppingfeed::ORDER_IMPORT_ENABLED)) {
             $this->importOrders();
         }
 
-        if (Configuration::get(ShoppingFeed::ORDER_SYNC_ENABLED)) {
+        if (Configuration::get(Shoppingfeed::ORDER_SYNC_ENABLED)) {
             $this->syncOrderStatus();
         }
 
@@ -75,7 +75,7 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
         foreach ($tokens as $token) {
             $logPrefix = '[Shop ' . $token['id_shop'] . ']';
 
-            if (!ShoppingFeed::isOrderSyncAvailable($token['id_shop'])) {
+            if (!Shoppingfeed::isOrderSyncAvailable($token['id_shop'])) {
                 ProcessLoggerHandler::logInfo(
                     $logPrefix . ' ' .
                         $this->module->l('Synchronization error : the Shopping Feed Official module (shoppingfluxexport) is enabled for the post-import synchronization. The “Order shipment” & “Order cancellation” options must be disabled in the official module for enabling this type of synchronization in the new module.', 'syncOrder'),
@@ -268,11 +268,12 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
 
         $sft = new ShoppingfeedToken();
         $tokens = $sft->findAllActive();
+        $result = [];
         foreach ($tokens as $token) {
             $id_shop = (int) $token['id_shop'];
 
             // If order import is not available
-            if (!ShoppingFeed::isOrderImportAvailable($id_shop)) {
+            if (!Shoppingfeed::isOrderImportAvailable($id_shop)) {
                 ProcessLoggerHandler::logInfo(
                     $this->module->l('The Shopping Feed module (shoppingfluxexport) is installed on your shop for enabling the orders import synchronization. The “Order importation” option must be disabled in the module for enabling this type of synchronization in this module. If you disable the options in the shoppingfluxexport\'s module and you enable it again later the button "New orders import" will be disabled automatically in the Shopping feed 15 min module.', 'syncOrder'),
                     $this->processMonitor->getProcessObjectModelName(),
@@ -308,7 +309,7 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
 
                 return false;
             }
-            if (!count($result)) {
+            if (empty($result) === true) {
                 ProcessLoggerHandler::logInfo(
                     $this->module->l('No orders to import.', 'syncOrder'),
                     $this->processMonitor->getProcessObjectModelName(),

@@ -108,8 +108,8 @@ class ShoppingfeedOrderImportActions extends DefaultActions
 
         // Check if order already exists
         if (ShoppingfeedOrder::existsInternalId($apiOrder->getId())) {
-            $this->values['error'] = $this->l('Order not imported; already present.', 'ShoppingfeedOrderImportActions');
-            ProcessLoggerHandler::logInfo($this->logPrefix . $this->values['error'], 'Order');
+            $this->conveyor['error'] = $this->l('Order not imported; already present.', 'ShoppingfeedOrderImportActions');
+            ProcessLoggerHandler::logInfo($this->logPrefix . $this->conveyor['error'], 'Order');
             $this->forward('acknowledgeOrder');
 
             return false;
@@ -152,11 +152,11 @@ class ShoppingfeedOrderImportActions extends DefaultActions
 
             // Does the product exist ?
             if (!Validate::isLoadedObject($psProduct)) {
-                $this->values['error'] = sprintf(
+                $this->conveyor['error'] = sprintf(
                         $this->l('Product reference %s does not match a product on PrestaShop.', 'ShoppingfeedOrderImportActions'),
                         $apiProduct->reference
                     );
-                ProcessLoggerHandler::logInfo($this->logPrefix . $this->values['error'], 'Order');
+                ProcessLoggerHandler::logInfo($this->logPrefix . $this->conveyor['error'], 'Order');
                 $this->forward('acknowledgeOrder');
 
                 return false;
@@ -164,11 +164,11 @@ class ShoppingfeedOrderImportActions extends DefaultActions
 
             // Is the product active ?
             if (!$psProduct->active) {
-                $this->values['error'] = sprintf(
+                $this->conveyor['error'] = sprintf(
                         $this->l('Product %s on PrestaShop is inactive.', 'ShoppingfeedOrderImportActions'),
                         $psProduct->reference
                     );
-                ProcessLoggerHandler::logInfo($this->logPrefix . $this->values['error'], 'Order');
+                ProcessLoggerHandler::logInfo($this->logPrefix . $this->conveyor['error'], 'Order');
                 $this->forward('acknowledgeOrder');
 
                 return false;
@@ -176,11 +176,11 @@ class ShoppingfeedOrderImportActions extends DefaultActions
 
             // Can the product be ordered ?
             if (!$psProduct->available_for_order) {
-                $this->values['error'] = sprintf(
+                $this->conveyor['error'] = sprintf(
                         $this->l('Product %s on PrestaShop is not available for order.', 'ShoppingfeedOrderImportActions'),
                         $psProduct->reference
                     );
-                ProcessLoggerHandler::logInfo($this->logPrefix . $this->values['error'], 'Order');
+                ProcessLoggerHandler::logInfo($this->logPrefix . $this->conveyor['error'], 'Order');
                 $this->forward('acknowledgeOrder');
 
                 return false;
@@ -225,9 +225,9 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         }
 
         if (!Validate::isLoadedObject($carrier)) {
-            $this->values['error'] =
+            $this->conveyor['error'] =
                 $this->l('Could not find a valid carrier for order. Please configure a default carrier on PrestaShop module Shoppingfeed > Parameters > Order feed', 'ShoppingfeedOrderImportActions');
-            ProcessLoggerHandler::logInfo($this->logPrefix . $this->values['error'], 'Order');
+            ProcessLoggerHandler::logInfo($this->logPrefix . $this->conveyor['error'], 'Order');
             $this->forward('acknowledgeOrder');
 
             return false;
@@ -288,8 +288,8 @@ class ShoppingfeedOrderImportActions extends DefaultActions
     public function createOrderCart()
     {
         if (empty($this->conveyor['apiOrder'])) {
-            $this->values['error'] = $this->l('No apiOrder found', 'ShoppingfeedOrderImportActions');
-            ProcessLoggerHandler::logInfo($this->logPrefix . $this->values['error'], 'Order');
+            $this->conveyor['error'] = $this->l('No apiOrder found', 'ShoppingfeedOrderImportActions');
+            ProcessLoggerHandler::logInfo($this->logPrefix . $this->conveyor['error'], 'Order');
             $this->forward('acknowledgeOrder');
 
             return false;
@@ -344,7 +344,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                     $e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine()
                 );
                 ProcessLoggerHandler::logError($msgError);
-                $this->values['error'] = $msgError;
+                $this->conveyor['error'] = $msgError;
                 $this->forward('acknowledgeOrder');
 
                 return false;
@@ -459,8 +459,8 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 $shippingAddress->id
             );
         } catch (Exception $ex) {
-            $this->values['error'] = $ex->getMessage();
-            ProcessLoggerHandler::logError($this->logPrefix . $this->values['error'], 'Order');
+            $this->conveyor['error'] = $ex->getMessage();
+            ProcessLoggerHandler::logError($this->logPrefix . $this->conveyor['error'], 'Order');
             $this->forward('acknowledgeOrder');
 
             return false;
@@ -495,11 +495,11 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             if ($useAdvancedStock) {
                 // If there's not enough stock to place the order
                 if (!$this->checkAdvancedStockQty($psProduct, $apiProduct->quantity)) {
-                    $this->values['error'] = sprintf(
+                    $this->conveyor['error'] = sprintf(
                                     $this->l('Not enough stock for product %s.', 'ShoppingfeedOrderImportActions'),
                                     $apiProduct->reference
                                 );
-                    ProcessLoggerHandler::logInfo($this->logPrefix . $this->values['error'], 'Order');
+                    ProcessLoggerHandler::logInfo($this->logPrefix . $this->conveyor['error'], 'Order');
                     $this->forward('acknowledgeOrder');
 
                     return false;
@@ -587,24 +587,24 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                     $psProduct->id_product_attribute
                 );
             } catch (Exception $e) {
-                $this->values['error'] = sprintf(
+                $this->conveyor['error'] = sprintf(
                         $this->l('Could not add product %s to cart : %s', 'ShoppingfeedOrderImportActions'),
                         $apiProduct->reference,
                         $e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine()
                     );
-                ProcessLoggerHandler::logInfo($this->logPrefix . $this->values['error'], 'Order');
+                ProcessLoggerHandler::logInfo($this->logPrefix . $this->conveyor['error'], 'Order');
                 $this->forward('acknowledgeOrder');
 
                 return false;
             }
 
             if ($addToCartResult < 0 || $addToCartResult === false) {
-                $this->values['error'] = sprintf(
+                $this->conveyor['error'] = sprintf(
                         $this->l('Could not add product %s to cart : %s', 'ShoppingfeedOrderImportActions'),
                         $apiProduct->reference,
                         $cart->id
                     );
-                ProcessLoggerHandler::logInfo($this->logPrefix . $this->values['error'], 'Order');
+                ProcessLoggerHandler::logInfo($this->logPrefix . $this->conveyor['error'], 'Order');
                 $this->forward('acknowledgeOrder');
 
                 return false;
@@ -633,11 +633,11 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         );
 
         if ($cart->nbProducts() === 0) {
-            $this->values['error'] = sprintf(
+            $this->conveyor['error'] = sprintf(
                     $this->l('Could not add product to cart : %s', 'ShoppingfeedOrderImportActions'),
                     $cart->id
                 );
-            ProcessLoggerHandler::logInfo($this->logPrefix . $this->values['error'], 'Order');
+            ProcessLoggerHandler::logInfo($this->logPrefix . $this->conveyor['error'], 'Order');
             $this->forward('acknowledgeOrder');
 
             return false;
@@ -736,8 +736,8 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 'Error type: ' . get_class($e),
             ];
             $message = implode(';', $log);
-            $this->values['error'] = $this->l('Order not valid on PrestaShop.', 'ShoppingfeedOrderImportActions') . ' ' . $message;
-            ProcessLoggerHandler::logInfo($this->logPrefix . $this->values['error'], 'Order');
+            $this->conveyor['error'] = $this->l('Order not valid on PrestaShop.', 'ShoppingfeedOrderImportActions') . ' ' . $message;
+            ProcessLoggerHandler::logInfo($this->logPrefix . $this->conveyor['error'], 'Order');
         }
 
         if ($paymentModule->currentOrder && $paymentModule->currentOrderReference) {
@@ -829,7 +829,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 $apiOrder->getChannel()->getName(),
                 isset($this->conveyor['id_order']) ? $this->conveyor['id_order'] : null,
                 $isSucess,
-                empty($this->values['error']) ? null : $this->values['error']
+                empty($this->conveyor['error']) ? null : $this->conveyor['error']
             );
         } catch (Exception $e) {
             ProcessLoggerHandler::logError(
@@ -983,7 +983,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         }
         $carrier_tax_rate = $carrier->getTaxesRate($address);
         $total_shipping_tax_excl = Tools::ps_round((float) $paymentInformation['shippingAmount'] / (1 + ($carrier_tax_rate / 100)), 2);
-
+        $id_order = 0;
         foreach ($ordersList as $id_order => $orderPrices) {
             $total_paid = Tools::ps_round($orderPrices['total_products_tax_incl'], 2);
             $total_paid_tax_excl = Tools::ps_round($orderPrices['total_products_tax_excl'], 4);

@@ -61,7 +61,7 @@ class AdminShoppingfeedOrderImportController extends ShoppingfeedAdminController
             ],
         ];
 
-        $helper = new HelperForm($this);
+        $helper = new HelperForm();
         $this->setHelperDisplay($helper);
         $helper->base_folder = $this->getTemplatePath() . 'shoppingfeed_order/';
         $helper->base_tpl = 'shoppingfluxexport.tpl';

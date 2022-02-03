@@ -2,12 +2,13 @@
 
 namespace ShoppingfeedAddon\Services;
 
+use ShoppingFeed\Feed\Csv\CsvProductFeedWriter;
 use ShoppingFeed\Feed\Product;
 use ShoppingFeed\Feed\ProductFeedMetadata;
 use ShoppingFeed\Feed\ProductFeedResult;
 use ShoppingFeed\Feed\ProductFeedWriterInterface;
 use ShoppingFeed\Feed\ProductGenerator;
-use ShoppingFeed\Feed\Xml;
+use ShoppingFeed\Feed\Xml\XmlProductFeedWriter;
 
 class SfProductGenerator
 {
@@ -63,8 +64,8 @@ class SfProductGenerator
      * @var array
      */
     protected static $writers = [
-        'xml' => Xml\XmlProductFeedWriter::class,
-        'csv' => Csv\CsvProductFeedWriter::class,
+        'xml' => XmlProductFeedWriter::class,
+        'csv' => CsvProductFeedWriter::class,
     ];
 
     /**
@@ -268,7 +269,7 @@ class SfProductGenerator
             // The product does not match expected validation rules
             if ($this->validate && false === $product->isValid()) {
                 if ($this->validate === self::VALIDATE_EXCEPTION) {
-                    throw new Product\InvalidProductException(sprintf('Invalid product found at index %d, aborting', $metadata->getTotalCount()));
+                    throw new Product\InvalidProductException(sprintf('Invalid product found at index %d, aborting', $product->id));
                 }
 
                 $this->metadata->incrInvalid();

@@ -37,8 +37,8 @@ function upgrade_module_1_1_0($module)
     $installer->installObjectModel('ShoppingfeedProduct');
 
     // Set default values for configuration variables
-    Configuration::updateGlobalValue(ShoppingFeed::STOCK_SYNC_ENABLED, true);
-    Configuration::updateGlobalValue(ShoppingFeed::PRICE_SYNC_ENABLED, true);
+    Configuration::updateGlobalValue(Shoppingfeed::STOCK_SYNC_ENABLED, true);
+    Configuration::updateGlobalValue(Shoppingfeed::PRICE_SYNC_ENABLED, true);
 
     return true;
 }

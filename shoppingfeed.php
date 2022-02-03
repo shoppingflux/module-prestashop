@@ -753,7 +753,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         if (count($sqlFilter) > 0) {
             $sql->where('(' . implode(' or ', $sqlFilter) . ')');
         }
-        if ((bool) Configuration::getGlobalValue(ShoppingFeed::PRODUCT_FEED_SYNC_PACK) !== true) {
+        if ((bool) Configuration::getGlobalValue(Shoppingfeed::PRODUCT_FEED_SYNC_PACK) !== true) {
             $sql->where('p.cache_is_pack = 0');
         }
         if ($product_visibility_nowhere === false) {
@@ -1314,7 +1314,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         if (empty(Db::getInstance()->executeS($s_index))) {
             $cr_index = 'CREATE INDEX date_log ON ' . _DB_PREFIX_ . 'shoppingfeed_processlogger(date_add)';
 
-            return DB::getInstance()->execute($cr_index);
+            return Db::getInstance()->execute($cr_index);
         }
 
         return true;

@@ -59,7 +59,7 @@ class RulesManager
         $this->apiOrder = $apiOrder;
         $this->rulesConfiguration = Tools::jsonDecode(
             Configuration::get(
-                \ShoppingFeed::ORDER_IMPORT_SPECIFIC_RULES_CONFIGURATION,
+                \Shoppingfeed::ORDER_IMPORT_SPECIFIC_RULES_CONFIGURATION,
                 null,
                 null,
                 $id_shop

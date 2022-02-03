@@ -152,9 +152,9 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
         // When setting a status to "shipped", the synchronization must be
         // delayed to give the merchant time to fill the tracking number
         $updateAt = time();
-        $shippedStatuses = json_decode(Configuration::get(ShoppingFeed::SHIPPED_ORDERS));
+        $shippedStatuses = json_decode(Configuration::get(Shoppingfeed::SHIPPED_ORDERS));
         if (in_array($order->current_state, $shippedStatuses)) {
-            $updateAt += (60 * Configuration::get(ShoppingFeed::ORDER_STATUS_TIME_SHIFT));
+            $updateAt += (60 * Configuration::get(Shoppingfeed::ORDER_STATUS_TIME_SHIFT));
         }
 
         // Save the task order
@@ -207,8 +207,8 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
             ->where('id_shop = ' . (int) $id_shop)
             ->where('so.id_shoppingfeed_token IS NULL OR so.id_shoppingfeed_token = 0 OR so.id_shoppingfeed_token = ' . (int) $this->conveyor['id_token'])
             ->orderBy('sto.date_upd ASC')
-            ->limit((int) Configuration::get(ShoppingFeed::ORDER_STATUS_MAX_ORDERS, null, null, $id_shop));
-        $taskOrdersData = DB::getInstance()->executeS($query);
+            ->limit((int) Configuration::get(Shoppingfeed::ORDER_STATUS_MAX_ORDERS, null, null, $id_shop));
+        $taskOrdersData = Db::getInstance()->executeS($query);
 
         if (false === $taskOrdersData) {
             ProcessLoggerHandler::logInfo(
@@ -326,7 +326,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
                     if (!empty($orderShipping[0])) {
                         $trackingNumber = $orderShipping[0]['tracking_number'];
                         // Getting a tracking number for relaiscolis carrier
-                        if ($carrier->external_module_name == 'relaiscolis') {
+                        if ($carrier->external_module_name == 'relaiscolis' && class_exists(RelaisColisOrder::class)) {
                             //import the necessary classes
                             Module::getInstanceByName('relaiscolis');
                             $order = new Order($order->id);

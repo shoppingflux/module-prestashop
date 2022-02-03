@@ -55,7 +55,7 @@ class ShoppingfeedProductSyncPreloadingActions extends DefaultActions
         Context::getContext()->currency = $currency;
 
         $sfModule = Module::getInstanceByName('shoppingfeed');
-        $limit = Configuration::getGlobalValue(ShoppingFeed::STOCK_SYNC_MAX_PRODUCTS);
+        $limit = Configuration::getGlobalValue(Shoppingfeed::STOCK_SYNC_MAX_PRODUCTS);
         $nb_total_product = $sfModule->countProductsOnFeed();
         $nb_preloaded_product = (new ShoppingfeedPreloading())->getPreloadingCountForSync($token->id_shoppingfeed_token);
         if ($nb_total_product == $nb_preloaded_product) {

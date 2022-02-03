@@ -110,7 +110,7 @@ class ShoppingfeedOrder extends ObjectModel
         $query->select('*')
             ->from('shoppingfeed_order')
             ->where('id_order = ' . (int) $id_order);
-        $shoppingfeed_order_data = DB::getInstance()->getRow($query);
+        $shoppingfeed_order_data = Db::getInstance()->getRow($query);
 
         if ($shoppingfeed_order_data) {
             $shoppingfeedOrder = new ShoppingfeedOrder();
@@ -159,7 +159,7 @@ class ShoppingfeedOrder extends ObjectModel
         $query->select('1')
             ->from('shoppingfeed_order')
             ->where('id_internal_shoppingfeed = ' . (int) $id_internal_shoppingfeed);
-        $shoppingfeed_order_data = DB::getInstance()->getRow($query);
+        $shoppingfeed_order_data = Db::getInstance()->getRow($query);
 
         return $shoppingfeed_order_data ? true : false;
     }
@@ -170,7 +170,7 @@ class ShoppingfeedOrder extends ObjectModel
         $query->select('*')
             ->from('shoppingfeed_order')
             ->where('id_internal_shoppingfeed = ' . (int) $id_internal_shoppingfeed);
-        $shoppingfeed_order_data = DB::getInstance()->getRow($query);
+        $shoppingfeed_order_data = Db::getInstance()->getRow($query);
 
         if ($shoppingfeed_order_data) {
             $shoppingfeedOrder = new ShoppingfeedOrder();

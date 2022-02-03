@@ -28,6 +28,7 @@ require_once _PS_MODULE_DIR_ . 'shoppingfeed/vendor/autoload.php';
 class AdminShoppingfeedAccountSettingsController extends ShoppingfeedAdminController
 {
     public $bootstrap = true;
+    public $override_folder;
 
     /**
      * {@inheritdoc}
@@ -67,7 +68,7 @@ class AdminShoppingfeedAccountSettingsController extends ShoppingfeedAdminContro
             ],
         ];
 
-        $helper = new HelperForm($this);
+        $helper = new HelperForm();
         $this->setHelperDisplay($helper);
         $helper->tpl_vars['img_path'] = $this->module->getPathUri() . 'views/img/';
         $helper->base_folder = $this->getTemplatePath();
@@ -84,17 +85,17 @@ class AdminShoppingfeedAccountSettingsController extends ShoppingfeedAdminContro
             ],
         ];
 
-        $helper = new HelperForm($this);
+        $helper = new HelperForm();
         $this->setHelperDisplay($helper);
         $helper->tpl_vars['img_path'] = $this->module->getPathUri() . 'views/img/';
         $helper->base_folder = $this->getTemplatePath();
         $helper->base_tpl = 'shoppingfeed_account_settings/register.tpl';
 
         $id_default_country = Configuration::get('PS_COUNTRY_DEFAULT');
-        $this->default_country = new Country($id_default_country);
+        $default_country = new Country($id_default_country);
         $this->context->smarty->assign('phone', Tools::safeOutput(Configuration::get('PS_SHOP_PHONE')));
         $this->context->smarty->assign('email', Tools::safeOutput(Configuration::get('PS_SHOP_EMAIL')));
-        $this->context->smarty->assign('lang', Tools::strtolower($this->default_country->iso_code));
+        $this->context->smarty->assign('lang', Tools::strtolower($default_country->iso_code));
         $this->context->smarty->assign('shoppingfeed_token', md5(rand()));
 
         return $helper->generateForm([['form' => $fields_form]]);
@@ -173,13 +174,13 @@ class AdminShoppingfeedAccountSettingsController extends ShoppingfeedAdminContro
         ];
         $id_shop = $this->context->shop->id;
         $fields_value = [
-            Shoppingfeed::AUTH_TOKEN => Configuration::get(ShoppingFeed::AUTH_TOKEN, null, null, $id_shop),
+            Shoppingfeed::AUTH_TOKEN => Configuration::get(Shoppingfeed::AUTH_TOKEN, null, null, $id_shop),
             'shop' => Context::getContext()->shop->id,
             'language' => Context::getContext()->language->id,
             'currency' => Context::getContext()->currency->id,
         ];
 
-        $helper = new HelperForm($this);
+        $helper = new HelperForm();
         $this->setHelperDisplay($helper);
         $helper->fields_value = $fields_value;
 
@@ -266,7 +267,7 @@ class AdminShoppingfeedAccountSettingsController extends ShoppingfeedAdminContro
             'currency' => Context::getContext()->currency->id,
         ];
 
-        $helper = new HelperForm($this);
+        $helper = new HelperForm();
         $this->setHelperDisplay($helper);
         $helper->fields_value = $fields_value;
         $helper->tpl_vars = $this->getTemplateFormVars();
@@ -371,7 +372,7 @@ class AdminShoppingfeedAccountSettingsController extends ShoppingfeedAdminContro
         }
 
         $id_shop = $this->context->shop->id;
-        Configuration::updateValue(shoppingfeed::AUTH_TOKEN, $shoppingFeedApi->getToken(), null, null, $id_shop);
+        Configuration::updateValue(Shoppingfeed::AUTH_TOKEN, $shoppingFeedApi->getToken(), null, null, $id_shop);
 
         $this->confirmations[] = $this->module->l('Login successful; your token has been saved.', 'AdminShoppingfeedAccountSettings');
 
