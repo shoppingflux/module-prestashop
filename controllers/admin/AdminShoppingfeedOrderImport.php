@@ -1,20 +1,22 @@
 <?php
 /**
- * Copyright since 2019 Shopping Feed
  *
- * NOTICE OF LICENSE
+ *  Copyright since 2019 Shopping Feed
  *
- * This source file is subject to the Academic Free License (AFL 3.0)
- * that is bundled with this package in the file LICENSE.md.
- * It is also available through the world-wide-web at this URL:
- * https://opensource.org/licenses/AFL-3.0
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to tech@202-ecommerce.com so we can send you a copy immediately.
+ *  NOTICE OF LICENSE
  *
- * @author    202 ecommerce <tech@202-ecommerce.com>
- * @copyright Since 2019 Shopping Feed
- * @license   https://opensource.org/licenses/AFL-3.0  Academic Free License (AFL 3.0)
+ *  This source file is subject to the Academic Free License (AFL 3.0)
+ *  that is bundled with this package in the file LICENSE.md.
+ *  It is also available through the world-wide-web at this URL:
+ *  https://opensource.org/licenses/AFL-3.0
+ *  If you did not receive a copy of the license and are unable to
+ *  obtain it through the world-wide-web, please send an email
+ *  to tech@202-ecommerce.com so we can send you a copy immediately.
+ *
+ *  @author    202 ecommerce <tech@202-ecommerce.com>
+ *  @copyright Since 2019 Shopping Feed
+ *  @license   https://opensource.org/licenses/AFL-3.0  Academic Free License (AFL 3.0)
+ *
  */
 
 if (!defined('_PS_VERSION_')) {
@@ -67,7 +69,7 @@ class AdminShoppingfeedOrderImportController extends ShoppingfeedAdminController
         $helper->base_folder = $this->getTemplatePath() . 'shoppingfeed_order/';
         $helper->base_tpl = 'shoppingfluxexport.tpl';
         $this->context->smarty->assign(
-            'isOrderSyncAvailable', 
+            'isOrderSyncAvailable',
             Module::isInstalled('shoppingfluxexport') === true && Module::isEnabled('shoppingfluxexport') === false
         );
 
@@ -139,7 +141,7 @@ class AdminShoppingfeedOrderImportController extends ShoppingfeedAdminController
             $currentToken = $sft->findByToken($curentTokensShoppingfluxexport['token']);
             if ($currentToken === false) {
                 $errors[] = $error = sprintf(
-                    $this->module->l('Token %s not found in shoppingfeed', 'adminshoppingfeedorderimport'), 
+                    $this->module->l('Token %s not found in shoppingfeed', 'adminshoppingfeedorderimport'),
                     $curentTokensShoppingfluxexport['token']
                 );
                 ProcessLoggerHandler::logError($error);
