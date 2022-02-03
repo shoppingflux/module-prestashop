@@ -40,8 +40,9 @@ use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 use ShoppingfeedClasslib\Registry;
-use SoFlexibiliteDelivery;
 use SoColissimoFlexibiliteDelivery;
+use SoFlexibiliteDelivery;
+
 class Socolissimo extends RuleAbstract implements RuleInterface
 {
     public function isApplicable(OrderResource $apiOrder)
