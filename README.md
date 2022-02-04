@@ -1,5 +1,7 @@
 # Shoppingfeed PrestaShop Addons
 
+[![PHP tests](https://github.com/shoppingflux/module-prestashop/actions/workflows/php.yml/badge.svg)](https://github.com/shoppingfeed/module-prestashop/actions/workflows/php.yml)
+
 ## About
 
 Synchronize stocks, prices, products feed and orders from or to marketplace available on ShoppingFeed
@@ -17,8 +19,8 @@ Please contact ShoppingFeed customer service to get
 
 | PrestaShop version | Module version |  Repo               | Doc                |  PHP Version |
 |--------------------|----------------|---------------------|--------------------|--------------|
-| 1.6.0.x            | 1.x            |  [release/1.4.x]    | [module documentation][module-doc] |   5.6 or greater    |
-| 1.7.7.x            | 1.x            |  [master]           | [module documentation][module-doc] |   7.1 or greater    |
+| 1.6.x              | 1.x            |  [master]           | [techincal documentation][module-doc] |   5.6 or greater    |
+| 1.7.x              | 1.x            |  [master]           | [techincal documentation][module-doc] |   7.1 or greater    |
 
 
 ## Requirements
@@ -81,10 +83,12 @@ That's it: you have contributed to this open-source project! Congratulations!
 
 ### Command line launched by github actions
 
+Please launch these command line before submitting a Pull Request.
+
 #### phpcs fixer
 
 ```bash
-~modules/shoppingfeed$ endor/bin/php-cs-fixer --fix
+~modules/shoppingfeed$ vendor/bin/php-cs-fixer --fix
 ```
 #### phpstan
 
