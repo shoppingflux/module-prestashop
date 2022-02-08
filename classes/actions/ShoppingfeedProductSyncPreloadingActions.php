@@ -16,7 +16,6 @@
  * @copyright Since 2019 Shopping Feed
  * @license   https://opensource.org/licenses/AFL-3.0  Academic Free License (AFL 3.0)
  */
-
 if (!defined('_PS_VERSION_')) {
     exit;
 }
@@ -56,7 +55,7 @@ class ShoppingfeedProductSyncPreloadingActions extends DefaultActions
         Context::getContext()->currency = $currency;
 
         $sfModule = Module::getInstanceByName('shoppingfeed');
-        $limit = Configuration::getGlobalValue(ShoppingFeed::STOCK_SYNC_MAX_PRODUCTS);
+        $limit = Configuration::getGlobalValue(Shoppingfeed::STOCK_SYNC_MAX_PRODUCTS);
         $nb_total_product = $sfModule->countProductsOnFeed();
         $nb_preloaded_product = (new ShoppingfeedPreloading())->getPreloadingCountForSync($token->id_shoppingfeed_token);
         if ($nb_total_product == $nb_preloaded_product) {
@@ -66,11 +65,11 @@ class ShoppingfeedProductSyncPreloadingActions extends DefaultActions
 
         $db = Db::getInstance(_PS_USE_SQL_SLAVE_);
         $sfp = new ShoppingfeedPreloading();
-        foreach($iterations as $iteration) {
+        foreach ($iterations as $iteration) {
             $sql = $sfModule->sqlProductsOnFeed($token->id_shop)
                 ->select('ps.id_product')
                 ->limit($limit)
-                ->where(sprintf('ps.`id_product` NOT IN (SELECT spf.`id_product` FROM `'._DB_PREFIX_.'shoppingfeed_preloading` spf WHERE `id_token` = %d AND (spf.`actions`  IS NULL OR  spf.`actions` = ""))', $token->id_shoppingfeed_token));
+                ->where(sprintf('ps.`id_product` NOT IN (SELECT spf.`id_product` FROM `' . _DB_PREFIX_ . 'shoppingfeed_preloading` spf WHERE `id_token` = %d AND (spf.`actions`  IS NULL OR  spf.`actions` = ""))', $token->id_shoppingfeed_token));
             $result = $db->executeS($sql, true, false);
             $ids = '';
             foreach ($result as $key => $row) {
@@ -90,6 +89,7 @@ class ShoppingfeedProductSyncPreloadingActions extends DefaultActions
         }
 
         $this->removeProductFeed();
+
         return true;
     }
 
@@ -99,6 +99,7 @@ class ShoppingfeedProductSyncPreloadingActions extends DefaultActions
             ProcessLoggerHandler::logInfo(
                 '[Preloading] ' . $this->l('Product not registered for synchronization; no action found', 'ShoppingfeedProductSyncPreloadingActions')
             );
+
             return false;
         }
         $action = $this->conveyor['product_action'];
@@ -108,10 +109,10 @@ class ShoppingfeedProductSyncPreloadingActions extends DefaultActions
         $db = Db::getInstance(_PS_USE_SQL_SLAVE_);
         $sql = $sfModule->sqlProductsOnFeed()
                 ->select('ps.id_product')
-                ->where('ps.id_product in (' . implode(',', $this->conveyor['products_id']) .  ')');
+                ->where('ps.id_product in (' . implode(',', $this->conveyor['products_id']) . ')');
 
         $result = $db->executeS($sql, true, false);
-        $productsAvailable = ($result === [])? [] : array_column($result, 'id_product');
+        $productsAvailable = ($result === []) ? [] : array_column($result, 'id_product');
 
         foreach ($this->conveyor['products_id'] as $product_id) {
             if (in_array($product_id, $productsAvailable)) {
@@ -129,7 +130,6 @@ class ShoppingfeedProductSyncPreloadingActions extends DefaultActions
         foreach ($tokens as $token) {
             $this->conveyor['id_token'] = $token['id_shoppingfeed_token'];
             if (Configuration::get(Shoppingfeed::REAL_TIME_SYNCHRONIZATION)) {
-
                 $this->forward('getBatch');
             }
         }
@@ -146,7 +146,6 @@ class ShoppingfeedProductSyncPreloadingActions extends DefaultActions
         foreach ($tokens as $token) {
             $this->conveyor['id_token'] = $token['id_shoppingfeed_token'];
             if (Configuration::get(Shoppingfeed::REAL_TIME_SYNCHRONIZATION)) {
-
                 $this->forward('getBatch');
             }
         }
@@ -170,7 +169,7 @@ class ShoppingfeedProductSyncPreloadingActions extends DefaultActions
                 sprintf(
                     'id_token = %s and id_product not in (%s)',
                     $token['id_shoppingfeed_token'],
-                    implode(',',  array_column($result, 'id_product'))
+                    implode(',', array_column($result, 'id_product'))
                 )
             );
         }
@@ -196,7 +195,6 @@ class ShoppingfeedProductSyncPreloadingActions extends DefaultActions
         }
 
         if (Configuration::get(Shoppingfeed::REAL_TIME_SYNCHRONIZATION)) {
-
             return $this->forward('getBatch');
         }
 

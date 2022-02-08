@@ -16,7 +16,6 @@
  * @copyright Since 2019 Shopping Feed
  * @license   https://opensource.org/licenses/AFL-3.0  Academic Free License (AFL 3.0)
  */
-
 if (!defined('_PS_VERSION_')) {
     exit;
 }
@@ -26,58 +25,58 @@ if (!defined('_PS_VERSION_')) {
  */
 class ShoppingfeedCarrier extends ObjectModel
 {
-    /** @var string $name_marketplace */
+    /** @var string */
     public $name_marketplace;
 
-    /** @var string $name_carrier The carrier's name on the Shopping Feed platform */
+    /** @var string The carrier's name on the Shopping Feed platform */
     public $name_carrier;
 
-    /** @var int $id_carrier_reference The linked Prestashop carrier id_reference */
+    /** @var int The linked Prestashop carrier id_reference */
     public $id_carrier_reference;
 
-    /** @var bool $is_new Is this a new SF carrier ? Set to false when settings are saved */
+    /** @var bool Is this a new SF carrier ? Set to false when settings are saved */
     public $is_new;
 
     public $date_add;
     public $date_upd;
 
-    public static $definition = array(
+    public static $definition = [
         'table' => 'shoppingfeed_carrier',
         'primary' => 'id_shoppingfeed_carrier',
-        'fields' => array(
-            'name_marketplace' => array(
+        'fields' => [
+            'name_marketplace' => [
                 'type' => ObjectModel::TYPE_STRING,
                 'validate' => 'isString',
                 'required' => true,
                 'unique' => true,
                 'size' => 50,
-            ),
-            'name_carrier' => array(
+            ],
+            'name_carrier' => [
                 'type' => ObjectModel::TYPE_STRING,
                 'validate' => 'isString',
                 'required' => true,
                 'unique' => true,
                 'size' => 190,
-            ),
-            'id_carrier_reference' => array(
+            ],
+            'id_carrier_reference' => [
                 'type' => ObjectModel::TYPE_INT,
                 'validate' => 'isUnsignedInt',
                 'required' => true,
-            ),
-            'is_new' => array(
+            ],
+            'is_new' => [
                 'type' => ObjectModel::TYPE_BOOL,
                 'validate' => 'isBool',
-            ),
-            'date_add' => array(
+            ],
+            'date_add' => [
                 'type' => self::TYPE_DATE,
-                'validate' => 'isDate'
-            ),
-            'date_upd' => array(
+                'validate' => 'isDate',
+            ],
+            'date_upd' => [
                 'type' => self::TYPE_DATE,
-                'validate' => 'isDate'
-            ),
-        ),
-    );
+                'validate' => 'isDate',
+            ],
+        ],
+    ];
 
     public static function getByMarketplaceAndName($marketplace, $name)
     {
@@ -94,6 +93,7 @@ class ShoppingfeedCarrier extends ObjectModel
 
         $sfCarrier = new ShoppingfeedCarrier();
         $sfCarrier->hydrate($result);
+
         return $sfCarrier;
     }
 
@@ -106,7 +106,7 @@ class ShoppingfeedCarrier extends ObjectModel
         $result = Db::getInstance()->executeS($query);
 
         if (!$result) {
-            return array();
+            return [];
         }
 
         return array_map(
@@ -129,13 +129,14 @@ class ShoppingfeedCarrier extends ObjectModel
         $result = Db::getInstance()->executeS($query);
 
         if (!$result) {
-            return array();
+            return [];
         }
 
         return array_map(
             function ($i) {
                 $o = new ShoppingfeedCarrier();
                 $o->hydrate($i);
+
                 return $o;
             },
             $result

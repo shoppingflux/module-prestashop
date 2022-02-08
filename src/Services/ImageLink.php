@@ -24,7 +24,6 @@
 
 namespace ShoppingfeedAddon\Services;
 
-
 use Configuration;
 use Context;
 use Image;
@@ -34,7 +33,7 @@ use Tools;
 
 class ImageLink
 {
-    /** @var bool*/
+    /** @var bool */
     protected $allow;
 
     public function __construct()
@@ -44,6 +43,7 @@ class ImageLink
 
     /**
      * @uses The same as Link::getImageLink() except it takes in account a shop id
+     *
      * @return string
      */
     public function getImageLink($name, $ids, $type = null, $idShop = null)

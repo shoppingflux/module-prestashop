@@ -22,9 +22,9 @@
  * @license   Commercial license
  */
 
+use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerExtension;
 use ShoppingfeedClasslib\Install\Installer;
 use ShoppingfeedClasslib\Install\ModuleInstaller;
-use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerExtension;
 
 function upgrade_module_1_6_0($module)
 {
@@ -33,7 +33,7 @@ function upgrade_module_1_6_0($module)
     if (!$installer->reset($module)) {
         return false;
     }
-    
+
     $moduleInstaller = new ModuleInstaller($module);
     if (!$moduleInstaller->installExtension(ProcessLoggerExtension::class)) {
         return false;

@@ -16,7 +16,6 @@
  * @copyright Since 2019 Shopping Feed
  * @license   https://opensource.org/licenses/AFL-3.0  Academic Free License (AFL 3.0)
  */
-
 if (!defined('_PS_VERSION_')) {
     exit;
 }
@@ -29,7 +28,7 @@ use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
  */
 abstract class ShoppingfeedProductSyncActions extends DefaultActions
 {
-    /** @var bool $no_save_forward Should we stop after saving regardless of
+    /** @var bool Should we stop after saving regardless of
      * realtime sync ?
      */
     protected $no_forward_after_save = false;
@@ -37,6 +36,7 @@ abstract class ShoppingfeedProductSyncActions extends DefaultActions
     /**
      * Saves a ShoppingfeedProduct to be synchronized. Runs the synchronization
      * if real-time is enabled.
+     *
      * @return bool
      */
     public function saveProduct()
@@ -46,6 +46,7 @@ abstract class ShoppingfeedProductSyncActions extends DefaultActions
                     $this->l('Product not registered for synchronization; no ID product found', 'ShoppingfeedProductSyncActions'),
                 'Product'
             );
+
             return false;
         }
 
@@ -64,9 +65,9 @@ abstract class ShoppingfeedProductSyncActions extends DefaultActions
                 ),
                 'Product'
             );
+
             return false;
         }
-
 
         $action = $this->conveyor['product_action'];
 
@@ -87,8 +88,8 @@ abstract class ShoppingfeedProductSyncActions extends DefaultActions
             if (false === $sfProduct || !Validate::isLoadedObject($sfProduct)) {
                 $sfProduct = new ShoppingfeedProduct();
                 $sfProduct->action = $action;
-                $sfProduct->id_product = (int)$id_product;
-                $sfProduct->id_product_attribute = (int)$id_product_attribute;
+                $sfProduct->id_product = (int) $id_product;
+                $sfProduct->id_product_attribute = (int) $id_product_attribute;
                 $sfProduct->id_token = $token['id_shoppingfeed_token'];
             }
 
@@ -107,8 +108,11 @@ abstract class ShoppingfeedProductSyncActions extends DefaultActions
      * Gets a batch of ShoppindfeedProduct requiring synchronization, and saves it
      * in the conveyor at ['batch'].
      * Forwards to prepareBatch.
+     *
      * @see prepareBatch
+     *
      * @return bool
+     *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
@@ -132,7 +136,7 @@ abstract class ShoppingfeedProductSyncActions extends DefaultActions
             ->from('shoppingfeed_product')
             ->where("action = '" . pSQL($action) . "'")
             ->where('update_at IS NOT NULL')
-            ->where('id_token ='. (int) $this->conveyor['id_token'])
+            ->where('id_token =' . (int) $this->conveyor['id_token'])
             ->where("update_at <= '" . date('Y-m-d H:i:s') . "'")
             ->orderBy('date_add ASC');
         $sfProductsRows = Db::getInstance()->executeS($query);
@@ -142,10 +146,11 @@ abstract class ShoppingfeedProductSyncActions extends DefaultActions
                 $logPrefix . ' ' . $this->l('Nothing to synchronize.', 'ShoppingfeedProductSyncActions'),
                 'Product'
             );
+
             return true;
         }
 
-        $this->conveyor['batch'] = array();
+        $this->conveyor['batch'] = [];
         foreach ($sfProductsRows as $row) {
             $sfProduct = new ShoppingfeedProduct();
             $sfProduct->hydrate($row);
@@ -157,8 +162,10 @@ abstract class ShoppingfeedProductSyncActions extends DefaultActions
 
     /**
      * Prepares a batch of ShoppingfeedProduct to be used with API calls.
+     *
      * @see getBatch
      * @see executeBatch
+     *
      * @return bool
      */
     abstract public function prepareBatch();
@@ -181,7 +188,9 @@ abstract class ShoppingfeedProductSyncActions extends DefaultActions
      *      set it to 0. A response is still sent, without any error.
      * </li>
      * </ul>
+     *
      * @see prepareBatch
+     *
      * @return bool
      */
     abstract public function executeBatch();

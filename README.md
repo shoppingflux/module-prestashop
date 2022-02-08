@@ -1,5 +1,7 @@
 # Shoppingfeed PrestaShop Addons
 
+[![PHP tests](https://github.com/shoppingflux/module-prestashop/actions/workflows/php.yml/badge.svg)](https://github.com/shoppingfeed/module-prestashop/actions/workflows/php.yml)
+
 ## About
 
 Synchronize stocks, prices, products feed and orders from or to marketplace available on ShoppingFeed
@@ -17,8 +19,8 @@ Please contact ShoppingFeed customer service to get
 
 | PrestaShop version | Module version |  Repo               | Doc                |  PHP Version |
 |--------------------|----------------|---------------------|--------------------|--------------|
-| 1.6.0.x            | 1.x            |  [release/1.4.x]    | [module documentation][module-doc] |   5.6 or greater    |
-| 1.7.7.x            | 1.x            |  [master]           | [module documentation][module-doc] |   7.1 or greater    |
+| 1.6.x              | 1.x            |  [master]           | [techincal documentation][module-doc] |   5.6 or greater    |
+| 1.7.x              | 1.x            |  [master]           | [techincal documentation][module-doc] |   7.1 or greater    |
 
 
 ## Requirements
@@ -78,6 +80,28 @@ Contributors wishing to edit a module's files should follow the following proces
 8. Wait for one of the core developers either to include your change in the codebase, or to comment on possible improvements you should make to your code.
 
 That's it: you have contributed to this open-source project! Congratulations!
+
+### Command line launched by github actions
+
+Please launch these command line before submitting a Pull Request.
+
+#### phpcs fixer
+
+```bash
+~modules/shoppingfeed$ vendor/bin/php-cs-fixer --fix
+```
+#### phpstan
+
+You need a docker container to launch phpstan
+
+```
+# create the prestashop container
+~modules/shoppingfeed$ docker run -tid --rm -v ps-volume:/var/www/html --name temp-ps prestashop/prestashop
+
+# launch phpstan
+~modules/shoppingfeed$ docker run --rm --volumes-from temp-ps -v $PWD:/var/www/html/modules/shoppingfeed -e _PS_ROOT_DIR_=/var/www/html --workdir=/var/www/html/modules/shoppingfeed phpstan/phpstan:0.12 analyse --configuration=/var/www/html/modules/shoppingfeed/202/phpstan/phpstan.neon
+```
+
 
 [1]: https://devdocs.prestashop.com/1.7/development/coding-standards/
 [2]: http://doc.prestashop.com/display/PS16/How+to+write+a+commit+message

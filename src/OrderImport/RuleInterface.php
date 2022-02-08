@@ -40,7 +40,7 @@ interface RuleInterface
      *
      * @param array $configuration
      */
-    public function __construct($configuration = array());
+    public function __construct($configuration = []);
 
     /**
      * Returns true if a rule is applicable to an SF order
@@ -60,7 +60,7 @@ interface RuleInterface
      * Gets the configuration subform for a rule. This subform will be included
      * in the module's specific rules page.
      *
-     * @return array an array of arrays formatted as inputs for HelperForm.
+     * @return array an array of arrays formatted as inputs for HelperForm
      */
     public function getConfigurationSubform();
 

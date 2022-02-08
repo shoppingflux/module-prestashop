@@ -21,7 +21,6 @@
  * @copyright Copyright (c) 202-ecommerce
  * @license   Commercial license
  */
-
 if (!defined('_PS_VERSION_')) {
     exit;
 }
@@ -37,15 +36,15 @@ class AdminShoppingfeedOrdersController extends ShoppingfeedAdminController
 
     public $table = 'shoppingfeed_order';
 
-    protected $statuses_array = array();
+    protected $statuses_array = [];
 
     /**
-     * @var array $cache_sfIdToPsId We would either have to query the DB or loop
-     * over the list each time we need to match a SF id to a PS id (see displayViewLink),
-     * so we'll loop once over the list when it's first retrieved and index each
-     * PS id with its matching SF id
+     * @var array We would either have to query the DB or loop
+     *            over the list each time we need to match a SF id to a PS id (see displayViewLink),
+     *            so we'll loop once over the list when it's first retrieved and index each
+     *            PS id with its matching SF id
      */
-    protected $cache_sfIdToPsId = array();
+    protected $cache_sfIdToPsId = [];
 
     public function __construct()
     {
@@ -69,26 +68,26 @@ class AdminShoppingfeedOrdersController extends ShoppingfeedAdminController
             $this->statuses_array[$status['id_order_state']] = $status['name'];
         }
 
-        $this->fields_list = array(
-            'id_order' => array(
+        $this->fields_list = [
+            'id_order' => [
                 'title' => $this->module->l('ID', 'AdminShoppingfeedOrders'),
                 'align' => 'text-center',
                 'class' => 'fixed-width-xs',
-                'filter_key' => 'a!id_order'
-            ),
-            'reference' => array(
+                'filter_key' => 'a!id_order',
+            ],
+            'reference' => [
                 'title' => $this->module->l('Reference', 'AdminShoppingfeedOrders'),
-            ),
-            'customer_name' => array(
+            ],
+            'customer_name' => [
                 'title' => $this->module->l('Customer', 'AdminShoppingfeedOrders'),
-                'filter_key' => 'c!lastname'
-            ),
-            'total_paid' => array(
+                'filter_key' => 'c!lastname',
+            ],
+            'total_paid' => [
                 'title' => $this->module->l('Amount', 'AdminShoppingfeedOrders'),
                 'align' => 'text-right',
                 'callback' => 'setOrderCurrency',
-            ),
-            'current_state_name' => array(
+            ],
+            'current_state_name' => [
                 'title' => $this->module->l('Status', 'AdminShoppingfeedOrders'),
                 'type' => 'select',
                 'color' => 'current_state_color',
@@ -96,31 +95,31 @@ class AdminShoppingfeedOrdersController extends ShoppingfeedAdminController
                 'filter_key' => 'o!current_state',
                 'filter_type' => 'int',
                 'order_key' => 'current_state',
-            ),
-            'payment_method' => array(
+            ],
+            'payment_method' => [
                 'title' => $this->module->l('Payment method', 'AdminShoppingfeedOrders'),
-            ),
-            'id_order_marketplace' => array(
+            ],
+            'id_order_marketplace' => [
                 'title' => $this->module->l('Marketplace reference', 'AdminShoppingfeedOrders'),
-            ),
-            'name_marketplace' => array(
+            ],
+            'name_marketplace' => [
                 'title' => $this->module->l('Marketplace', 'AdminShoppingfeedOrders'),
-            ),
-            'date_marketplace_creation' => array(
+            ],
+            'date_marketplace_creation' => [
                 'title' => $this->module->l('Marketplace creation date', 'AdminShoppingfeedOrders'),
-            ),
-        );
+            ],
+        ];
 
-        $this->actions = array(
-            'view'
-        );
+        $this->actions = [
+            'view',
+        ];
 
         $this->_defaultOrderBy = 'date_marketplace_creation';
         $this->_defaultOrderWay = 'DESC';
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function initContent()
     {
@@ -130,7 +129,7 @@ class AdminShoppingfeedOrdersController extends ShoppingfeedAdminController
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getList(
         $id_lang,
@@ -162,11 +161,12 @@ class AdminShoppingfeedOrdersController extends ShoppingfeedAdminController
      *
      * @param arry $echo
      * @param arry $tr
+     *
      * @return type
      */
     public static function setOrderCurrency($echo, $tr)
     {
-        return Tools::displayPrice($echo, (int)$tr['id_currency']);
+        return Tools::displayPrice($echo, (int) $tr['id_currency']);
     }
 
     /**
@@ -179,7 +179,7 @@ class AdminShoppingfeedOrdersController extends ShoppingfeedAdminController
         parent::initProcess();
         if ($this->action == 'view') {
             $sfOrder = new ShoppingfeedOrder(Tools::getValue('id_shoppingfeed_order'));
-            $this->redirectToOrder((int)$sfOrder->id_order);
+            $this->redirectToOrder((int) $sfOrder->id_order);
         }
     }
 
@@ -188,7 +188,7 @@ class AdminShoppingfeedOrdersController extends ShoppingfeedAdminController
         if (version_compare(_PS_VERSION_, '1.7', '<')) {
             Tools::redirectAdmin(
                 $this->context->link->getAdminLink('AdminOrders') . '&' .
-                implode('&', array('id_order=' . (int)$idOrder, 'vieworder'))
+                implode('&', ['id_order=' . (int) $idOrder, 'vieworder'])
             );
         }
 
@@ -198,8 +198,8 @@ class AdminShoppingfeedOrdersController extends ShoppingfeedAdminController
                 true,
                 [],
                 [
-                    'id_order' => (int)$idOrder,
-                    'vieworder' => true
+                    'id_order' => (int) $idOrder,
+                    'vieworder' => true,
                 ]
             )
         );
