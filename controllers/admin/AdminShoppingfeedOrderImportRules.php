@@ -325,15 +325,7 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
                                     $sfCarriers
                                 ),
                             ),
-                            'carriers' => array_map(
-                                function ($c) {
-                                    return array(
-                                        'value' => $c['id_reference'],
-                                        'label' => $c['name'],
-                                    );
-                                },
-                                Carrier::getCarriers(Context::getContext()->language->id, true, false, false, null, Carrier::ALL_CARRIERS)
-                            ),
+                            'carriers' => $this->getAvailableCarriers(),
                             'shoppingfeed_carriers' => $sfCarriers,
                         ),
                         array(
@@ -628,5 +620,23 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
     protected function getSinceDateService()
     {
         return new SinceDate();
+    }
+
+    protected function getAvailableCarriers()
+    {
+        $carriers = [
+            [
+                'value' => 0,
+                'label' => $this->l('Select carrier', 'AdminShoppingfeedOrderImportRules')
+            ]
+        ];
+
+        foreach (Carrier::getCarriers(Context::getContext()->language->id, true, false, false, null, Carrier::ALL_CARRIERS) as $carrier) {
+            $carriers[] = [
+                'value' => $carrier['id_reference'],
+                'label' => $carrier['name'],
+            ];
+        }
+        return $carriers;
     }
 }
