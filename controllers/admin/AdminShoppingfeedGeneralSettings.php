@@ -16,7 +16,6 @@
  * @copyright Since 2019 Shopping Feed
  * @license   https://opensource.org/licenses/AFL-3.0  Academic Free License (AFL 3.0)
  */
-
 if (!defined('_PS_VERSION_')) {
     exit;
 }
@@ -33,8 +32,11 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
     public $bootstrap = true;
 
     public $nbr_products;
+
+    public $override_folder;
+
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function initContent()
     {
@@ -45,10 +47,10 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
                 Context::getContext()->link->getAdminLink('AdminShoppingfeedAccountSettings')
             );
         }
-        $this->addCSS(array(
+        $this->addCSS([
             $this->module->getPathUri() . 'views/css/shoppingfeed_configuration/form.css',
-            $this->module->getPathUri() . 'views/css/font-awesome.min.css'
-        ));
+            $this->module->getPathUri() . 'views/css/font-awesome.min.css',
+        ]);
         $this->nbr_products = $this->module->countProductsOnFeed($this->context->shop->id);
         $this->addJS($this->module->getPathUri() . 'views/js/form_config.js');
         $this->addJS($this->module->getPathUri() . 'views/js/form_config_filter.js');
@@ -70,15 +72,15 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
         $product_feed_rule_filters = Configuration::getGlobalValue(Shoppingfeed::PRODUCT_FEED_RULE_FILTERS);
         $product_filters = Tools::jsonDecode($product_feed_rule_filters, true);
 
-        $fields_form = array(
-            'legend' => array(
+        $fields_form = [
+            'legend' => [
                 'title' => $this->module->l('Shoppingfeed Prestashop Plugin (Feed&Order)', 'AdminShoppingfeedGeneralSettings'),
-            )
-        );
+            ],
+        ];
 
-        $helper = new HelperForm($this);
+        $helper = new HelperForm();
         $this->setHelperDisplay($helper);
-        $helper->tpl_vars['img_path'] = $this->module->getPathUri() . "views/img/";
+        $helper->tpl_vars['img_path'] = $this->module->getPathUri() . 'views/img/';
         $helper->base_folder = $this->getTemplatePath() . $this->override_folder;
         $helper->base_tpl = 'products_feeds.tpl';
         $tokens = (new ShoppingfeedToken())->findAllActive();
@@ -87,8 +89,8 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
         $countProductInShops = 0;
 
         foreach ($tokens as $token) {
-            $countProductInShops += (int)$this->module->countProductsOnFeed((int)$token['id_shop']);
-            $countPreloading += (int)$shoppingfeedPreloading->getPreloadingCountForSync($token['id_shoppingfeed_token']);
+            $countProductInShops += (int) $this->module->countProductsOnFeed((int) $token['id_shop']);
+            $countPreloading += (int) $shoppingfeedPreloading->getPreloadingCountForSync($token['id_shoppingfeed_token']);
         }
 
         $percentPreloading = ($countPreloading / $countProductInShops) * 100;
@@ -101,430 +103,435 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
         $syncProduct = $crons->findOneByName('shoppingfeed:syncProduct');
         $this->context->smarty->assign('syncProduct', $syncProduct);
 
-        return $helper->generateForm(array(array('form' => $fields_form)));
+        return $helper->generateForm([['form' => $fields_form]]);
     }
 
     /**
      * Renders the HTML for the global configuration form
+     *
      * @return string the rendered form's HTML
      */
     public function renderGlobalConfigForm()
     {
-        $fields_form = array(
-            'legend' => array(
+        $fields_form = [
+            'legend' => [
                 'title' => $this->module->l('Stocks and prices 15 min updates (all shops)', 'AdminShoppingfeedGeneralSettings'),
-                'icon' => 'icon-cog'
-            ),
-            'input' => array(
-                array(
+                'icon' => 'icon-cog',
+            ],
+            'input' => [
+                [
                     'type' => 'html',
                     'name' => 'real_synch_help',
                     'html_content' => '<div id="real_synch" class="alert alert-info">
-                    '.$this->module->l('If you disabled stocks and prices synchronisation, your data will be sync only once a day with your products feed.', 'AdminShoppingfeedGeneralSettings').'</div>',
-                ),
-                array(
+                    ' . $this->module->l('If you disabled stocks and prices synchronisation, your data will be sync only once a day with your products feed.', 'AdminShoppingfeedGeneralSettings') . '</div>',
+                ],
+                [
                     'type' => 'switch',
                     'is_bool' => true,
-                    'values' => array(
-                        array(
+                    'values' => [
+                        [
                             'id' => 'ok',
                             'value' => 1,
-                        ),
-                        array(
+                        ],
+                        [
                             'id' => 'ko',
                             'value' => 0,
-                        )
-                    ),
+                        ],
+                    ],
                     'label' => $this->module->l('Products Stock synchronization', 'AdminShoppingfeedGeneralSettings'),
                     'name' => Shoppingfeed::STOCK_SYNC_ENABLED,
-                ),
-                array(
+                ],
+                [
                     'type' => 'switch',
                     'is_bool' => true,
-                    'values' => array(
-                        array(
+                    'values' => [
+                        [
                             'id' => 'ok',
                             'value' => 1,
-                        ),
-                        array(
+                        ],
+                        [
                             'id' => 'ko',
                             'value' => 0,
-                        )
-                    ),
+                        ],
+                    ],
                     'label' => $this->module->l('Products Price synchronization', 'AdminShoppingfeedGeneralSettings'),
                     'name' => Shoppingfeed::PRICE_SYNC_ENABLED,
-                ),
-            ),
-            'submit' => array(
+                ],
+            ],
+            'submit' => [
                 'title' => $this->module->l('Save', 'AdminShoppingfeedGeneralSettings'),
-                'name' => 'saveGlobalConfig'
-            )
-        );
+                'name' => 'saveGlobalConfig',
+            ],
+        ];
 
-        $fields_value = array(
+        $fields_value = [
             Shoppingfeed::STOCK_SYNC_ENABLED => Configuration::get(Shoppingfeed::STOCK_SYNC_ENABLED),
             Shoppingfeed::PRICE_SYNC_ENABLED => Configuration::get(Shoppingfeed::PRICE_SYNC_ENABLED),
-        );
+        ];
 
-        $helper = new HelperForm($this);
+        $helper = new HelperForm();
         $this->setHelperDisplay($helper);
         $helper->fields_value = $fields_value;
         $helper->tpl_vars = $this->getTemplateFormVars();
 
-        return $helper->generateForm(array(array('form' => $fields_form)));
+        return $helper->generateForm([['form' => $fields_form]]);
     }
 
     /**
      * Renders the HTML for the product feed configuration form
+     *
      * @return string the rendered form's HTML
      */
     public function renderFeedConfigForm()
     {
-        $fields_form = array(
-            'legend' => array(
+        $fields_form = [
+            'legend' => [
                 'title' => $this->module->l('Products feed (all shops)', 'AdminShoppingfeedGeneralSettings'),
-                'icon' => 'icon-cog'
-            ),
-            'input' => array(
-                array(
+                'icon' => 'icon-cog',
+            ],
+            'input' => [
+                [
                     'type' => 'html',
                     'name' => 'real_synch_help',
                     'html_content' => '<div id="real_synch" class="alert alert-info">
-                    '.$this->module->l('By updating this form, please not your index will be purge.', 'AdminShoppingfeedGeneralSettings').'</div>',
-                ),
-                array(
+                    ' . $this->module->l('By updating this form, please not your index will be purge.', 'AdminShoppingfeedGeneralSettings') . '</div>',
+                ],
+                [
                     'type' => 'switch',
                     'is_bool' => true,
-                    'values' => array(
-                        array(
+                    'values' => [
+                        [
                             'id' => 'ok',
                             'value' => 1,
-                        ),
-                        array(
+                        ],
+                        [
                             'id' => 'ko',
                             'value' => 0,
-                        )
-                    ),
+                        ],
+                    ],
                     'label' => $this->module->l('Export packs', 'AdminShoppingfeedGeneralSettings'),
                     'name' => Shoppingfeed::PRODUCT_FEED_SYNC_PACK,
-                ),
-                array(
+                ],
+                [
                     'type' => 'select',
-                    'options' => array(
+                    'options' => [
                         'query' => array_map(
                             function ($c) {
-                                return array(
+                                return [
                                     'id' => $c['id_reference'],
                                     'name' => $c['name'],
-                                );
+                                ];
                             },
                             Carrier::getCarriers(Context::getContext()->language->id, true, false, false, null, Carrier::ALL_CARRIERS)
                         ),
                         'id' => 'id',
                         'name' => 'name',
-                    ),
+                    ],
                     'label' => $this->module->l('Shipping cost based on carrier', 'AdminShoppingfeedGeneralSettings'),
                     'desc' => $this->module->l('Each product are computed according to this carrier.', 'AdminShoppingfeedGeneralSettings'),
                     'name' => Shoppingfeed::PRODUCT_FEED_CARRIER_REFERENCE,
-                ),
-                array(
+                ],
+                [
                     'type' => 'select',
-                    'options' => array(
+                    'options' => [
                         'query' => array_map(
                             function ($c) {
-                                return array(
+                                return [
                                     'id' => $c['name'],
                                     'name' => $c['name'],
-                                );
+                                ];
                             },
                             ImageType::getImagesTypes('products')
                         ),
                         'id' => 'id',
                         'name' => 'name',
-                    ),
+                    ],
                     'label' => $this->module->l('Image format', 'AdminShoppingfeedGeneralSettings'),
                     'hint' => $this->module->l('Send image according to a specific image format.', 'AdminShoppingfeedGeneralSettings'),
                     'name' => Shoppingfeed::PRODUCT_FEED_IMAGE_FORMAT,
-                ),
-                array(
+                ],
+                [
                     'type' => 'select',
-                    'options' => array(
-                        'query' => array(
-                            array(
+                    'options' => [
+                        'query' => [
+                            [
                                 'id' => 'breadcrumb',
                                 'name' => $this->module->l('Breadcrumb format with all parents categories', 'AdminShoppingfeedGeneralSettings'),
-                            ),
-                            array(
+                            ],
+                            [
                                 'id' => 'default_category',
                                 'name' => $this->module->l('Only the default category', 'AdminShoppingfeedGeneralSettings'),
-                            ),
-                        ),
+                            ],
+                        ],
                         'id' => 'id',
                         'name' => 'name',
-                    ),
+                    ],
                     'label' => $this->module->l('Category display', 'AdminShoppingfeedGeneralSettings'),
                     'name' => Shoppingfeed::PRODUCT_FEED_CATEGORY_DISPLAY,
-                ),
-            ),
-            'submit' => array(
+                ],
+            ],
+            'submit' => [
                 'title' => $this->module->l('Save', 'AdminShoppingfeedGeneralSettings'),
-                'name' => 'saveFeedConfig'
-            )
-        );
+                'name' => 'saveFeedConfig',
+            ],
+        ];
 
-        $fields_value = array(
+        $fields_value = [
             Shoppingfeed::PRODUCT_FEED_CARRIER_REFERENCE => Configuration::get(Shoppingfeed::PRODUCT_FEED_CARRIER_REFERENCE),
             Shoppingfeed::PRODUCT_FEED_SYNC_PACK => Configuration::get(Shoppingfeed::PRODUCT_FEED_SYNC_PACK),
             Shoppingfeed::PRODUCT_FEED_IMAGE_FORMAT => Configuration::get(Shoppingfeed::PRODUCT_FEED_IMAGE_FORMAT),
             Shoppingfeed::PRODUCT_FEED_CATEGORY_DISPLAY => Configuration::get(Shoppingfeed::PRODUCT_FEED_CATEGORY_DISPLAY),
-        );
+        ];
 
         $customFields = $this->getOverrideFields();
         if (empty($customFields) === false) {
-            $fields_form['input'][] = array(
+            $fields_form['input'][] = [
                 'type' => 'select',
                 'multiple' => true,
-                'options' => array(
+                'options' => [
                     'query' => array_map(
                         function ($field) {
-                            return array(
+                            return [
                                 'id' => $field,
                                 'name' => $field,
-                            );
+                            ];
                         },
                         $customFields
                     ),
                     'id' => 'id',
                     'name' => 'name',
-                ),
+                ],
                 'label' => $this->module->l('Custom fields', 'AdminShoppingfeedGeneralSettings'),
                 'name' => Shoppingfeed::PRODUCT_FEED_CUSTOM_FIELDS . '[]',
                 'desc' => $this->module->l('Select products fields to include on the feed.', 'AdminShoppingfeedGeneralSettings'),
-            );
+            ];
             $customFieldsValues = json_decode(Configuration::get(Shoppingfeed::PRODUCT_FEED_CUSTOM_FIELDS), true);
-            $fields_value[Shoppingfeed::PRODUCT_FEED_CUSTOM_FIELDS. '[]'] = $customFieldsValues;
+            $fields_value[Shoppingfeed::PRODUCT_FEED_CUSTOM_FIELDS . '[]'] = $customFieldsValues;
         }
 
-        $helper = new HelperForm($this);
+        $helper = new HelperForm();
         $this->setHelperDisplay($helper);
         $helper->fields_value = $fields_value;
         $helper->tpl_vars = $this->getTemplateFormVars();
 
-        return $helper->generateForm(array(array('form' => $fields_form)));
+        return $helper->generateForm([['form' => $fields_form]]);
     }
 
     /**
      * Renders the HTML for the synchro configuration form
+     *
      * @return string the rendered form's HTML
      */
     public function renderSynchroConfigForm()
     {
+        $message_realtime = '';
         switch (true) {
-            case ($this->nbr_products <= 100):
+            case $this->nbr_products <= 100:
                 $message_realtime = $this->module->l('You have less than 100 products, the RealTime parameter on YES is recommended. You have little stock for each reference and for you the stock precision is fundamental. Moreover, no need to set up any cron job. Sending real-time inventory updates to the Feed API makes it easy for you to sync inventory in less than 15 minutes. However, this multiplies the calls to the Shopping API stream which can slow the loading time of pages that decrement or increment the stock, especially during order status updates.', 'AdminShoppingfeedGeneralSettings');
                 break;
-            case ($this->nbr_products < 1000 && $this->nbr_products > 100):
+            case $this->nbr_products < 1000 && $this->nbr_products > 100:
                 $message_realtime = $this->module->l('You have between 100 and 1000 products, the Realtime parameter on NO is recommended. Updates are queued and the configuration of a cron job (URL) every 5 minutes will allow you to synchronize of all products waiting for synchronization. This reduce calls sent to the Shopping Flux API and improve page loading performances.', 'AdminShoppingfeedGeneralSettings');
                 break;
-            case ($this->nbr_products > 1000):
+            case $this->nbr_products > 1000:
                 $message_realtime = $this->module->l('You have more than 1000 products, Realtime parameter NO is required. You probably use an external tool (like an ERP) to manage your inventory which can lead to many updates at the same time. In this case, the updates are queued and the configuration of a cron job (URL) every 5 minutes will allow you to synchronize of all products waiting for synchronization. This reduce calls sent to the Shopping Flux API and improve page loading performances', 'AdminShoppingfeedGeneralSettings');
                 break;
         }
 
-        $fields_form = array(
-            'legend' => array(
+        $fields_form = [
+            'legend' => [
                 'title' => $this->module->l('Products synchronization type (all shops)', 'AdminShoppingfeedGeneralSettings'),
-                'icon' => 'icon-cog'
-            ),
-            'input' => array(
-                array(
+                'icon' => 'icon-cog',
+            ],
+            'input' => [
+                [
                     'type' => 'html',
                     'name' => 'real_synch',
                     'html_content' => '<div id="real_synch_notice" class="alert alert-info">
-                    '.sprintf(
+                    ' . sprintf(
                         $this->module->l('You should select the type of synchronization (in real time or via a %s Cron job %s) for updating your product stocks and / or prices.', 'AdminShoppingfeedGeneralSettings'),
                         '<a href="' . $this->context->link->getAdminLink('AdminShoppingfeedProcessMonitor') . '">',
                         '</a>'
-                    ).'</div>',
-                ),
-                array(
+                    ) . '</div>',
+                ],
+                [
                     'type' => 'html',
                     'name' => 'real_synch_help',
                     'html_content' => '<div id="real_synch" class="alert alert-info">
-                    '.$message_realtime.'</div>',
-                ),
-                array(
+                    ' . $message_realtime . '</div>',
+                ],
+                [
                     'type' => 'switch',
                     'is_bool' => true,
-                    'values' => array(
-                        array(
+                    'values' => [
+                        [
                             'id' => 'ok',
                             'value' => 1,
-                        ),
-                        array(
+                        ],
+                        [
                             'id' => 'ko',
                             'value' => 0,
-                        )
-                    ),
+                        ],
+                    ],
                     'label' => $this->module->l('Real-time synchronization', 'AdminShoppingfeedGeneralSettings'),
                     'hint' => $this->module->l('If checked, no CRON will be needed. Synchronization will occur as soon as the changes are made. This may impact user performance.', 'AdminShoppingfeedGeneralSettings'),
                     'name' => Shoppingfeed::REAL_TIME_SYNCHRONIZATION,
-                ),
-                array(
+                ],
+                [
                     'type' => 'html',
                     'name' => 'for_real',
                     'html_content' => '<div id="for_real" class="alert alert-warning">
-                    '.$this->module->l('The Max product update parameter is reserved for experts (100 by default). You can configure the number of products to be processed each time the cron job is called. The more you increase this number, the greater the number of database queries. The value of this parameter is to be calibrated according to the capacities of your MySQL server and your stock rotation rate to process the queue in the time that suits you.', 'AdminShoppingfeedGeneralSettings').'</div>',
-                ),
-                array(
+                    ' . $this->module->l('The Max product update parameter is reserved for experts (100 by default). You can configure the number of products to be processed each time the cron job is called. The more you increase this number, the greater the number of database queries. The value of this parameter is to be calibrated according to the capacities of your MySQL server and your stock rotation rate to process the queue in the time that suits you.', 'AdminShoppingfeedGeneralSettings') . '</div>',
+                ],
+                [
                     'type' => 'text',
                     'label' => $this->module->l('Max. product update per request', 'AdminShoppingfeedGeneralSettings'),
                     'name' => Shoppingfeed::STOCK_SYNC_MAX_PRODUCTS,
                     'required' => true,
-                    'class' => 'for_real'
-                ),
-            ),
-            'submit' => array(
+                    'class' => 'for_real',
+                ],
+            ],
+            'submit' => [
                 'title' => $this->module->l('Save', 'AdminShoppingfeedGeneralSettings'),
-                'name' => 'saveSynchroConfig'
-            )
-        );
-        $fields_value = array(
+                'name' => 'saveSynchroConfig',
+            ],
+        ];
+        $fields_value = [
             Shoppingfeed::REAL_TIME_SYNCHRONIZATION => Configuration::get(Shoppingfeed::REAL_TIME_SYNCHRONIZATION),
             Shoppingfeed::STOCK_SYNC_MAX_PRODUCTS => Configuration::get(Shoppingfeed::STOCK_SYNC_MAX_PRODUCTS),
-        );
+        ];
 
-        $helper = new HelperForm($this);
+        $helper = new HelperForm();
         $this->setHelperDisplay($helper);
         $helper->fields_value = $fields_value;
         $helper->tpl_vars = $this->getTemplateFormVars();
 
-        return $helper->generateForm(array(array('form' => $fields_form)));
+        return $helper->generateForm([['form' => $fields_form]]);
     }
 
     /**
      * Renders the HTML for the global configuration form
+     *
      * @return string the rendered form's HTML
      */
     public function renderFactoryConfigForm()
     {
-        $syncByDateUpdate = (bool)Configuration::get(Shoppingfeed::PRODUCT_SYNC_BY_DATE_UPD);
-        $time_full_update = (int)Configuration::get(Shoppingfeed::PRODUCT_FEED_TIME_FULL_UPDATE);
-        $interval_cron = (int)Configuration::get(Shoppingfeed::PRODUCT_FEED_INTERVAL_CRON);
+        $syncByDateUpdate = (bool) Configuration::get(Shoppingfeed::PRODUCT_SYNC_BY_DATE_UPD);
+        $time_full_update = (int) Configuration::get(Shoppingfeed::PRODUCT_FEED_TIME_FULL_UPDATE);
+        $interval_cron = (int) Configuration::get(Shoppingfeed::PRODUCT_FEED_INTERVAL_CRON);
 
-        $fields_form = array(
-            'legend' => array(
+        $fields_form = [
+            'legend' => [
                 'title' => $this->module->l('Factory settings', 'AdminShoppingfeedGeneralSettings'),
-                'icon' => 'icon-cog'
-            ),
-            'input' => array(
-                array(
+                'icon' => 'icon-cog',
+            ],
+            'input' => [
+                [
                     'type' => 'html',
                     'name' => 'real_synch_help',
                     'html_content' => '<div id="real_synch" class="alert alert-info">
-                    '.$this->module->l('This settings are only updatable by Shoppingfeed support team.', 'AdminShoppingfeedGeneralSettings').'</div>',
-                ),
-                array(
+                    ' . $this->module->l('This settings are only updatable by Shoppingfeed support team.', 'AdminShoppingfeedGeneralSettings') . '</div>',
+                ],
+                [
                     'type' => 'select',
                     'disabled' => (Tools::getValue('with_factory') !== false) ? false : true,
-                    'options' => array(
-                        'query' => array(
-                            array(
+                    'options' => [
+                        'query' => [
+                            [
                                 'id' => '',
                                 'name' => $this->module->l('Default value (ID product with ID combination)', 'AdminShoppingfeedGeneralSettings'),
-                            ),
-                            array(
+                            ],
+                            [
                                 'id' => 'reference',
                                 'name' => $this->module->l('Reference (SKU defined by the merchand)', 'AdminShoppingfeedGeneralSettings'),
-                            ),
-                            array(
+                            ],
+                            [
                                 'id' => 'supplier_reference',
                                 'name' => $this->module->l('Supplier reference', 'AdminShoppingfeedGeneralSettings'),
-                            ),
-                            array(
+                            ],
+                            [
                                 'id' => 'isbn',
                                 'name' => $this->module->l('ISBN code', 'AdminShoppingfeedGeneralSettings'),
-                            ),
-                            array(
+                            ],
+                            [
                                 'id' => 'ean13',
                                 'name' => $this->module->l('EAN-13 or JAN barcode', 'AdminShoppingfeedGeneralSettings'),
-                            ),
-                            array(
+                            ],
+                            [
                                 'id' => 'upc',
                                 'name' => $this->module->l('UPC barcode', 'AdminShoppingfeedGeneralSettings'),
-                            ),
-                            array(
+                            ],
+                            [
                                 'id' => 'mpn',
                                 'name' => $this->module->l('MPN', 'AdminShoppingfeedGeneralSettings'),
-                            ),
-                        ),
+                            ],
+                        ],
                         'id' => 'id',
                         'name' => 'name',
-                    ),
+                    ],
                     'label' => $this->module->l('Product reference association', 'AdminShoppingfeedGeneralSettings'),
                     'desc' => $this->module->l('Shoud be: Default shoppingfeed value, reference, supplier reference, isbn, ean13, upc or mpn.', 'AdminShoppingfeedGeneralSettings'),
                     'name' => Shoppingfeed::PRODUCT_FEED_REFERENCE_FORMAT,
-                ),
-                array(
+                ],
+                [
                     'type' => 'switch',
                     'is_bool' => true,
                     'disabled' => (Tools::getValue('with_factory') !== false) ? ($time_full_update > 0 || $interval_cron > 0) : true,
-                    'values' => array(
-                        array(
+                    'values' => [
+                        [
                             'id' => 'ok',
                             'value' => 1,
-                        ),
-                        array(
+                        ],
+                        [
                             'id' => 'ko',
                             'value' => 0,
-                        )
-                    ),
+                        ],
+                    ],
                     'label' => $this->module->l("Synchronize the XML feed from the 'ps_product.date_upd' et 'ps_product_shop.date_upd' fields", 'AdminShoppingfeedGeneralSettings'),
                     'name' => Shoppingfeed::PRODUCT_SYNC_BY_DATE_UPD,
-                ),
-                array(
+                ],
+                [
                     'type' => 'number',
                     'label' => $this->module->l('Update products in XML feed every X hours', 'AdminShoppingfeedGeneralSettings'),
                     'name' => Shoppingfeed::PRODUCT_FEED_TIME_FULL_UPDATE,
                     'disabled' => (Tools::getValue('with_factory') !== false) ? $syncByDateUpdate : true,
-                    'class' => 'for_real'
-                ),
-                array(
+                    'class' => 'for_real',
+                ],
+                [
                     'type' => 'number',
                     'label' => $this->module->l('Cron update time every X minutes', 'AdminShoppingfeedGeneralSettings'),
                     'name' => Shoppingfeed::PRODUCT_FEED_INTERVAL_CRON,
                     'disabled' => (Tools::getValue('with_factory') !== false) ? $syncByDateUpdate : true,
-                    'class' => 'for_real'
-                ),
-            ),
-        );
+                    'class' => 'for_real',
+                ],
+            ],
+        ];
         if (Tools::getValue('with_factory') !== false) {
-            $fields_form['submit'] = array(
+            $fields_form['submit'] = [
                 'title' => $this->module->l('Save', 'AdminShoppingfeedGeneralSettings'),
                 'name' => 'saveFactoryConfig',
-            );
-            $fields_form['input'][] = array(
+            ];
+            $fields_form['input'][] = [
                 'type' => 'hidden',
                 'name' => 'with_factory',
-            );
+            ];
         }
 
-        $fields_value = array(
+        $fields_value = [
             Shoppingfeed::PRODUCT_FEED_REFERENCE_FORMAT => Configuration::get(Shoppingfeed::PRODUCT_FEED_REFERENCE_FORMAT),
             Shoppingfeed::PRODUCT_SYNC_BY_DATE_UPD => $syncByDateUpdate,
             Shoppingfeed::PRODUCT_FEED_TIME_FULL_UPDATE => $time_full_update,
-            Shoppingfeed::PRODUCT_FEED_INTERVAL_CRON =>  $interval_cron,
+            Shoppingfeed::PRODUCT_FEED_INTERVAL_CRON => $interval_cron,
             'with_factory' => Tools::getValue('with_factory'),
-        );
+        ];
 
-        $helper = new HelperForm($this);
+        $helper = new HelperForm();
         $this->setHelperDisplay($helper);
         $helper->fields_value = $fields_value;
         $helper->tpl_vars = $this->getTemplateFormVars();
         $helper->base_folder = $this->getTemplatePath();
         $helper->base_tpl = 'shoppingfeed_general_settings/factory_form.tpl';
 
-        return $helper->generateForm(array(array('form' => $fields_form)));
+        return $helper->generateForm([['form' => $fields_form]]);
     }
 
     public function renderProductSelectionConfigForm()
@@ -533,10 +540,10 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
 
         $product_feed_rule_filters = Configuration::getGlobalValue(Shoppingfeed::PRODUCT_FEED_RULE_FILTERS);
         $product_filters = Tools::jsonDecode($product_feed_rule_filters, true);
-        $product_visibility_nowhere = (bool)Configuration::getGlobalValue(Shoppingfeed::PRODUCT_VISIBILTY_NOWHERE);
+        $product_visibility_nowhere = (bool) Configuration::getGlobalValue(Shoppingfeed::PRODUCT_VISIBILTY_NOWHERE);
 
         $tpl->assign([
-            'product_filters' => ($product_feed_rule_filters === null)? [] : $product_filters,
+            'product_filters' => ($product_feed_rule_filters === null) ? [] : $product_filters,
             'product_visibility_nowhere' => $product_visibility_nowhere,
         ]);
 
@@ -544,29 +551,33 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function postProcess()
     {
         if (Tools::isSubmit('saveFeedFilterConfig')) {
             $this->saveFilterConfig();
             $this->purgePrealoading();
+
             return true;
-        } else if (Tools::isSubmit('saveGlobalConfig')) {
+        } elseif (Tools::isSubmit('saveGlobalConfig')) {
             return $this->saveGlobalConfig();
         } elseif (Tools::isSubmit('saveSynchroConfig')) {
             return $this->saveSynchroConfig();
         } elseif (Tools::isSubmit('saveFeedConfig')) {
             $this->purgePrealoading();
+
             return $this->saveFeedConfig();
         } elseif (Tools::isSubmit('saveFactoryConfig') && Tools::getValue('with_factory') !== false) {
             $this->purgePrealoading();
+
             return $this->saveFactoryConfig();
         }
     }
 
     /**
      * Saves the global configuration for the module
+     *
      * @return bool
      */
     public function saveGlobalConfig()
@@ -582,7 +593,7 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
 
     public function saveFilterConfig()
     {
-        $product_visibility_nowhere = (bool)Tools::getValue('product_visibility_nowhere', false);
+        $product_visibility_nowhere = (bool) Tools::getValue('product_visibility_nowhere', false);
         $product_rule_select = Tools::getValue('product_rule_select', []);
         $product_filter = [];
 
@@ -605,7 +616,6 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
         return true;
     }
 
-
     public function purgePrealoading()
     {
         $preloading = new ShoppingfeedPreloading();
@@ -618,10 +628,10 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
             $tokens = $sft->findAllActive();
             try {
                 foreach ($tokens as $token) {
-                    $handler->setConveyor(array(
+                    $handler->setConveyor([
                         'id_token' => $token['id_shoppingfeed_token'],
                         'product_action' => ShoppingfeedPreloading::ACTION_SYNC_PRELODING,
-                    ));
+                    ]);
                     $processResult = $handler->process('shoppingfeedProductSyncPreloading');
                 }
             } catch (Exception $e) {
@@ -632,13 +642,14 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
 
     /**
      * Saves the global configuration for the module
+     *
      * @return bool
      */
     public function saveFactoryConfig()
     {
         $reference_format = Tools::getValue(Shoppingfeed::PRODUCT_FEED_REFERENCE_FORMAT);
         $sync_by_date = Tools::getValue(Shoppingfeed::PRODUCT_SYNC_BY_DATE_UPD);
-        $time_full_update  = Tools::getValue(Shoppingfeed::PRODUCT_FEED_TIME_FULL_UPDATE);
+        $time_full_update = Tools::getValue(Shoppingfeed::PRODUCT_FEED_TIME_FULL_UPDATE);
         $interval_cron = Tools::getValue(Shoppingfeed::PRODUCT_FEED_INTERVAL_CRON);
 
         Configuration::updateGlobalValue(Shoppingfeed::PRODUCT_FEED_REFERENCE_FORMAT, $reference_format);
@@ -651,12 +662,13 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
 
     /**
      * Saves the synchro configuration for the module
+     *
      * @return bool
      */
     public function saveSynchroConfig()
     {
         $realtime_sync = Tools::getValue(Shoppingfeed::REAL_TIME_SYNCHRONIZATION);
-        $stock_sync_max_products = (int)Tools::getValue(Shoppingfeed::STOCK_SYNC_MAX_PRODUCTS);
+        $stock_sync_max_products = (int) Tools::getValue(Shoppingfeed::STOCK_SYNC_MAX_PRODUCTS);
 
         Configuration::updateGlobalValue(Shoppingfeed::REAL_TIME_SYNCHRONIZATION, ($realtime_sync ? true : false));
 
@@ -671,6 +683,7 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
 
     /**
      * Saves the synchro configuration for the module
+     *
      * @return bool
      */
     public function saveFeedConfig()
@@ -680,7 +693,6 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
         $imageFormat = Tools::getValue(Shoppingfeed::PRODUCT_FEED_IMAGE_FORMAT);
         $categoryDisplay = Tools::getValue(Shoppingfeed::PRODUCT_FEED_CATEGORY_DISPLAY);
         $customFields = Tools::getValue(Shoppingfeed::PRODUCT_FEED_CUSTOM_FIELDS);
-
 
         Configuration::updateGlobalValue(Shoppingfeed::PRODUCT_FEED_SYNC_PACK, ($sync_pack ? true : false));
         Configuration::updateGlobalValue(Shoppingfeed::PRODUCT_FEED_CARRIER_REFERENCE, $carrierReference);
@@ -703,10 +715,10 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
         // Load override Product info
         $overrideProductFields = Product::$definition['fields'];
 
-        $newFields = array();
+        $newFields = [];
 
         $productCoreFields = ProductCore::$definition['fields'];
-        $coreFields = array();
+        $coreFields = [];
 
         foreach ($productCoreFields as $key => $value) {
             $coreFields[] = $key;
@@ -738,63 +750,63 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
         }
         $products = [
             'selected' => [],
-            'unselected' => []
+            'unselected' => [],
         ];
         switch ($product_rule_type) {
             case 'attributes':
                 $results = Db::getInstance()->executeS('
 				SELECT CONCAT(agl.name, " - ", al.name) as name, a.id_attribute as id
-				FROM '._DB_PREFIX_.'attribute_group_lang agl
-				LEFT JOIN '._DB_PREFIX_.'attribute a ON a.id_attribute_group = agl.id_attribute_group
-				LEFT JOIN '._DB_PREFIX_.'attribute_lang al ON (a.id_attribute = al.id_attribute AND al.id_lang = '.(int)Context::getContext()->language->id.')
-				WHERE agl.id_lang = '.(int)Context::getContext()->language->id.'
+				FROM ' . _DB_PREFIX_ . 'attribute_group_lang agl
+				LEFT JOIN ' . _DB_PREFIX_ . 'attribute a ON a.id_attribute_group = agl.id_attribute_group
+				LEFT JOIN ' . _DB_PREFIX_ . 'attribute_lang al ON (a.id_attribute = al.id_attribute AND al.id_lang = ' . (int) Context::getContext()->language->id . ')
+				WHERE agl.id_lang = ' . (int) Context::getContext()->language->id . '
 				ORDER BY agl.name, al.name');
                 break;
             case 'products':
                 $results = Db::getInstance()->executeS('
 				SELECT DISTINCT name, p.id_product as id
-				FROM '._DB_PREFIX_.'product p
-				LEFT JOIN `'._DB_PREFIX_.'product_lang` pl
+				FROM ' . _DB_PREFIX_ . 'product p
+				LEFT JOIN `' . _DB_PREFIX_ . 'product_lang` pl
 					ON (p.`id_product` = pl.`id_product`
-					AND pl.`id_lang` = '.(int)Context::getContext()->language->id.Shop::addSqlRestrictionOnLang('pl').')
-				'.Shop::addSqlAssociation('product', 'p').'
-				WHERE id_lang = '.(int)Context::getContext()->language->id.'
+					AND pl.`id_lang` = ' . (int) Context::getContext()->language->id . Shop::addSqlRestrictionOnLang('pl') . ')
+				' . Shop::addSqlAssociation('product', 'p') . '
+				WHERE id_lang = ' . (int) Context::getContext()->language->id . '
 				ORDER BY name');
                 break;
             case 'manufacturers':
                 $results = Db::getInstance()->executeS('
 				SELECT name, id_manufacturer as id
-				FROM '._DB_PREFIX_.'manufacturer
+				FROM ' . _DB_PREFIX_ . 'manufacturer
 				ORDER BY name');
                 break;
             case 'suppliers':
                 $results = Db::getInstance()->executeS('
 				SELECT name, id_supplier as id
-				FROM '._DB_PREFIX_.'supplier
+				FROM ' . _DB_PREFIX_ . 'supplier
 				ORDER BY name');
                 break;
             case 'categories':
                 $results = Db::getInstance()->executeS('
 				SELECT DISTINCT name, c.id_category as id
-				FROM '._DB_PREFIX_.'category c
-				LEFT JOIN `'._DB_PREFIX_.'category_lang` cl
+				FROM ' . _DB_PREFIX_ . 'category c
+				LEFT JOIN `' . _DB_PREFIX_ . 'category_lang` cl
 					ON (c.`id_category` = cl.`id_category`
-					AND cl.`id_lang` = '.(int)Context::getContext()->language->id.Shop::addSqlRestrictionOnLang('cl').')
-				'.Shop::addSqlAssociation('category', 'c').'
-				WHERE id_lang = '.(int)Context::getContext()->language->id.'
+					AND cl.`id_lang` = ' . (int) Context::getContext()->language->id . Shop::addSqlRestrictionOnLang('cl') . ')
+				' . Shop::addSqlAssociation('category', 'c') . '
+				WHERE id_lang = ' . (int) Context::getContext()->language->id . '
 				ORDER BY name');
                 break;
             case 'features':
                 $results = Db::getInstance()->executeS('
                 SELECT DISTINCT name, f.id_feature as id
-                FROM '._DB_PREFIX_.'feature f
-                LEFT JOIN `'._DB_PREFIX_.'feature_lang` fl
+                FROM ' . _DB_PREFIX_ . 'feature f
+                LEFT JOIN `' . _DB_PREFIX_ . 'feature_lang` fl
                     ON (f.`id_feature` = fl.`id_feature`)
-                '.Shop::addSqlAssociation('feature', 'f').'
-                WHERE id_lang = '.(int)Context::getContext()->language->id.'
+                ' . Shop::addSqlAssociation('feature', 'f') . '
+                WHERE id_lang = ' . (int) Context::getContext()->language->id . '
                 ORDER BY name');
                 break;
-            default :
+            default:
                 return '';
         }
         foreach ($results as $row) {

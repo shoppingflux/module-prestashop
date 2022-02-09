@@ -17,13 +17,13 @@
  * @license   https://opensource.org/licenses/AFL-3.0  Academic Free License (AFL 3.0)
  */
 
-use ShoppingfeedClasslib\Actions\DefaultActions;
 use ShoppingfeedAddon\OrderImport\OrderData;
+use ShoppingfeedClasslib\Actions\DefaultActions;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 
 class ShoppingfeedOrderImportActions extends DefaultActions
 {
-    /** @var ShoppingfeedOrderImportSpecificRulesManager $specificRulesManager */
+    /** @var ShoppingfeedOrderImportSpecificRulesManager */
     protected $specificRulesManager;
 
     protected $logPrefix = '';
@@ -68,6 +68,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 $this->l('No apiOrder found', 'ShoppingfeedOrderImportActions'),
                 'Order'
             );
+
             return false;
         }
 
@@ -80,10 +81,10 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         // Specific rule : give a chance to tweak general data before using them
         $this->specificRulesManager->applyRules(
             'onPreProcess',
-            array(
+            [
                 'apiOrder' => $this->conveyor['apiOrder'],
                 'orderData' => $this->conveyor['orderData'],
-            )
+            ]
         );
 
         return true;
@@ -96,6 +97,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 $this->l('No apiOrder found', 'ShoppingfeedOrderImportActions'),
                 'Order'
             );
+
             return false;
         }
         /** @var ShoppingFeed\Sdk\Api\Order\OrderResource $apiOrder */
@@ -106,15 +108,15 @@ class ShoppingfeedOrderImportActions extends DefaultActions
 
         // Check if order already exists
         if (ShoppingfeedOrder::existsInternalId($apiOrder->getId())) {
-            $this->values['error'] = $this->l('Order not imported; already present.', 'ShoppingfeedOrderImportActions');
-            ProcessLoggerHandler::logInfo($this->logPrefix . $this->values['error'], 'Order');
+            $this->conveyor['error'] = $this->l('Order not imported; already present.', 'ShoppingfeedOrderImportActions');
+            ProcessLoggerHandler::logInfo($this->logPrefix . $this->conveyor['error'], 'Order');
             $this->forward('acknowledgeOrder');
 
             return false;
         }
 
         // Check products
-        $this->conveyor['prestashopProducts'] = array();
+        $this->conveyor['prestashopProducts'] = [];
         $sfModule = Module::getInstanceByName('shoppingfeed');
         if (count($this->conveyor['orderData']->items) === 0) {
             ProcessLoggerHandler::logInfo(
@@ -124,6 +126,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 ),
                 'Order'
             );
+
             return false;
         }
 
@@ -131,7 +134,6 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         foreach ($this->conveyor['orderData']->items as &$apiProduct) {
             if (isset($this->conveyor['orderData']->itemsReferencesAliases) === true
                     && empty($this->conveyor['orderData']->itemsReferencesAliases[$apiProduct->reference]) === false) {
-
                 ProcessLoggerHandler::logInfo(
                     sprintf(
                         $this->logPrefix .
@@ -150,11 +152,11 @@ class ShoppingfeedOrderImportActions extends DefaultActions
 
             // Does the product exist ?
             if (!Validate::isLoadedObject($psProduct)) {
-                $this->values['error'] = sprintf(
+                $this->conveyor['error'] = sprintf(
                         $this->l('Product reference %s does not match a product on PrestaShop.', 'ShoppingfeedOrderImportActions'),
                         $apiProduct->reference
                     );
-                ProcessLoggerHandler::logInfo($this->logPrefix . $this->values['error'], 'Order');
+                ProcessLoggerHandler::logInfo($this->logPrefix . $this->conveyor['error'], 'Order');
                 $this->forward('acknowledgeOrder');
 
                 return false;
@@ -162,11 +164,11 @@ class ShoppingfeedOrderImportActions extends DefaultActions
 
             // Is the product active ?
             if (!$psProduct->active) {
-                $this->values['error'] = sprintf(
+                $this->conveyor['error'] = sprintf(
                         $this->l('Product %s on PrestaShop is inactive.', 'ShoppingfeedOrderImportActions'),
                         $psProduct->reference
                     );
-                ProcessLoggerHandler::logInfo($this->logPrefix . $this->values['error'], 'Order');
+                ProcessLoggerHandler::logInfo($this->logPrefix . $this->conveyor['error'], 'Order');
                 $this->forward('acknowledgeOrder');
 
                 return false;
@@ -174,11 +176,11 @@ class ShoppingfeedOrderImportActions extends DefaultActions
 
             // Can the product be ordered ?
             if (!$psProduct->available_for_order) {
-                $this->values['error'] = sprintf(
+                $this->conveyor['error'] = sprintf(
                         $this->l('Product %s on PrestaShop is not available for order.', 'ShoppingfeedOrderImportActions'),
                         $psProduct->reference
                     );
-                ProcessLoggerHandler::logInfo($this->logPrefix . $this->values['error'], 'Order');
+                ProcessLoggerHandler::logInfo($this->logPrefix . $this->conveyor['error'], 'Order');
                 $this->forward('acknowledgeOrder');
 
                 return false;
@@ -195,15 +197,15 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         // Specific rules to get a carrier
         $this->specificRulesManager->applyRules(
             'onCarrierRetrieval',
-            array(
+            [
                 'apiOrder' => $this->conveyor['apiOrder'],
                 'apiOrderShipment' => &$apiOrderShipment,
                 // Note : if you choose to set a carrier directly, you may want
                 // to either set the $apiOrderShipment data accordingly, or skip
                 // the ShoppingfeedCarrier creation step
                 'carrier' => &$carrier,
-                'skipSfCarrierCreation' => &$skipSfCarrierCreation
-            )
+                'skipSfCarrierCreation' => &$skipSfCarrierCreation,
+            ]
         );
 
         $sfCarrier = ShoppingfeedCarrier::getByMarketplaceAndName(
@@ -223,9 +225,9 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         }
 
         if (!Validate::isLoadedObject($carrier)) {
-            $this->values['error'] =
+            $this->conveyor['error'] =
                 $this->l('Could not find a valid carrier for order. Please configure a default carrier on PrestaShop module Shoppingfeed > Parameters > Order feed', 'ShoppingfeedOrderImportActions');
-            ProcessLoggerHandler::logInfo($this->logPrefix . $this->values['error'], 'Order');
+            ProcessLoggerHandler::logInfo($this->logPrefix . $this->conveyor['error'], 'Order');
             $this->forward('acknowledgeOrder');
 
             return false;
@@ -258,10 +260,10 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         $this->conveyor['isSkipImport'] = false;
         $this->specificRulesManager->applyRules(
             'onVerifyOrder',
-            array(
+            [
                 'apiOrder' => $this->conveyor['apiOrder'],
-                'isSkipImport' => &$this->conveyor['isSkipImport']
-            )
+                'isSkipImport' => &$this->conveyor['isSkipImport'],
+            ]
         );
 
         if ($this->conveyor['isSkipImport']) {
@@ -270,6 +272,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 'Order'
             );
             $this->forward('acknowledgeOrder');
+
             return false;
         }
 
@@ -285,8 +288,8 @@ class ShoppingfeedOrderImportActions extends DefaultActions
     public function createOrderCart()
     {
         if (empty($this->conveyor['apiOrder'])) {
-            $this->values['error'] = $this->l('No apiOrder found', 'ShoppingfeedOrderImportActions');
-            ProcessLoggerHandler::logInfo($this->logPrefix . $this->values['error'], 'Order');
+            $this->conveyor['error'] = $this->l('No apiOrder found', 'ShoppingfeedOrderImportActions');
+            ProcessLoggerHandler::logInfo($this->logPrefix . $this->conveyor['error'], 'Order');
             $this->forward('acknowledgeOrder');
 
             return false;
@@ -314,7 +317,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             $customer = new Customer();
             $customer->lastname = !empty($apiBillingAddress['lastName']) ? Tools::substr($apiBillingAddress['lastName'], 0, 32) : '-';
             $customer->firstname = !empty($apiBillingAddress['firstName']) ? Tools::substr($apiBillingAddress['firstName'], 0, 32) : '-';
-            $customer->passwd = md5(pSQL(_COOKIE_KEY_.rand()));
+            $customer->passwd = md5(pSQL(_COOKIE_KEY_ . rand()));
             $customer->id_default_group = Configuration::get('PS_UNIDENTIFIED_GROUP');
             $customer->email = $customerEmail;
             $customer->newsletter = 0;
@@ -327,10 +330,10 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             // Specific rules
             $this->specificRulesManager->applyRules(
                 'onCustomerCreation',
-                array(
+                [
                     'apiOrder' => $apiOrder,
-                    'customer' => $customer
-                )
+                    'customer' => $customer,
+                ]
             );
 
             try {
@@ -341,7 +344,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                     $e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine()
                 );
                 ProcessLoggerHandler::logError($msgError);
-                $this->values['error'] = $msgError;
+                $this->conveyor['error'] = $msgError;
                 $this->forward('acknowledgeOrder');
 
                 return false;
@@ -357,10 +360,10 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             // Specific rules
             $this->specificRulesManager->applyRules(
                 'onCustomerRetrieval',
-                array(
+                [
                     'apiOrder' => $apiOrder,
-                    'customer' => $customer
-                )
+                    'customer' => $customer,
+                ]
             );
 
             ProcessLoggerHandler::logInfo(
@@ -377,16 +380,16 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             // Specific rules
             $this->specificRulesManager->applyRules(
                 'beforeBillingAddressCreation',
-                array(
+                [
                     'apiBillingAddress' => &$apiBillingAddress,
                     'apiOrder' => $apiOrder,
-                )
+                ]
             );
 
             $billingAddress = $this->getOrderAddress(
                 $apiBillingAddress,
                 $customer,
-                'Billing-'.$apiOrder->getId(),
+                'Billing-' . $apiOrder->getId(),
                 $this->conveyor['orderData']->shippingAddress
             );
 
@@ -394,21 +397,17 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 // Specific rules
                 $this->specificRulesManager->applyRules(
                     'beforeBillingAddressSave',
-                    array(
+                    [
                         'apiBillingAddress' => &$apiBillingAddress,
                         'billingAddress' => $billingAddress,
                         'apiOrder' => $apiOrder,
-                    )
+                    ]
                 );
                 $billingAddress->save();
 
                 $this->conveyor['id_billing_address'] = $billingAddress->id;
             } catch (Exception $e) {
-                throw new Exception(sprintf(
-                    $this->l('Address %s could not be created : %s', 'ShoppingfeedOrderImportActions'),
-                    'Billing-'.$apiOrder->getId(),
-                    $e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine()
-                ));
+                throw new Exception(sprintf($this->l('Address %s could not be created : %s', 'ShoppingfeedOrderImportActions'), 'Billing-' . $apiOrder->getId(), $e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine()));
             }
 
             ProcessLoggerHandler::logInfo(
@@ -423,16 +422,16 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             // Specific rules
             $this->specificRulesManager->applyRules(
                 'beforeShippingAddressCreation',
-                array(
+                [
                     'apiShippingAddress' => &$apiShippingAddress,
                     'apiOrder' => $apiOrder,
-                )
+                ]
             );
 
             $shippingAddress = $this->getOrderAddress(
                 $apiShippingAddress,
                 $customer,
-                'Shipping-'.$apiOrder->getId(),
+                'Shipping-' . $apiOrder->getId(),
                 $this->conveyor['orderData']->billingAddress
             );
 
@@ -440,21 +439,17 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 // Specific rules
                 $this->specificRulesManager->applyRules(
                     'beforeShippingAddressSave',
-                    array(
+                    [
                         'apiShippingAddress' => &$apiShippingAddress,
                         'shippingAddress' => $shippingAddress,
                         'apiOrder' => $apiOrder,
-                    )
+                    ]
                 );
                 $shippingAddress->save();
 
                 $this->conveyor['id_shipping_address'] = $shippingAddress->id;
             } catch (Exception $e) {
-                throw new Exception(sprintf(
-                    $this->l('Address %s could not be created : %s', 'ShoppingfeedOrderImportActions'),
-                    'Shipping-'.$apiOrder->getId(),
-                    $e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine()
-                ));
+                throw new Exception(sprintf($this->l('Address %s could not be created : %s', 'ShoppingfeedOrderImportActions'), 'Shipping-' . $apiOrder->getId(), $e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine()));
             }
 
             ProcessLoggerHandler::logInfo(
@@ -464,8 +459,8 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 $shippingAddress->id
             );
         } catch (Exception $ex) {
-            $this->values['error'] = $ex->getMessage();
-            ProcessLoggerHandler::logError($this->logPrefix . $this->values['error'], 'Order');
+            $this->conveyor['error'] = $ex->getMessage();
+            ProcessLoggerHandler::logError($this->logPrefix . $this->conveyor['error'], 'Order');
             $this->forward('acknowledgeOrder');
 
             return false;
@@ -487,24 +482,24 @@ class ShoppingfeedOrderImportActions extends DefaultActions
 
             $this->specificRulesManager->applyRules(
                 'checkProductStock',
-                array(
+                [
                     'id_shop' => $this->getIdShop(),
                     'apiOrder' => $apiOrder,
                     'orderData' => &$this->conveyor['orderData'],
                     'psProduct' => $psProduct,
                     'apiProduct' => &$apiProduct,
-                )
+                ]
             );
 
             // If the product uses advanced stock management
             if ($useAdvancedStock) {
                 // If there's not enough stock to place the order
                 if (!$this->checkAdvancedStockQty($psProduct, $apiProduct->quantity)) {
-                    $this->values['error'] = sprintf(
+                    $this->conveyor['error'] = sprintf(
                                     $this->l('Not enough stock for product %s.', 'ShoppingfeedOrderImportActions'),
                                     $apiProduct->reference
                                 );
-                    ProcessLoggerHandler::logInfo($this->logPrefix . $this->values['error'], 'Order');
+                    ProcessLoggerHandler::logInfo($this->logPrefix . $this->conveyor['error'], 'Order');
                     $this->forward('acknowledgeOrder');
 
                     return false;
@@ -521,15 +516,15 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                     $psProduct->id_product_attribute,
                     $this->getIdShop()
                 );
-                $stockToAdd = (int)$apiProduct->quantity - (int)$currentStock;
+                $stockToAdd = (int) $apiProduct->quantity - (int) $currentStock;
                 ProcessLoggerHandler::logInfo(
                     sprintf(
                         $this->logPrefix .
                             $this->l('Not enough stock for product %s: original %d, required %d, add %d.', 'ShoppingfeedOrderImportActions'),
                         $apiProduct->reference,
-                        (int)$currentStock,
-                        (int)$apiProduct->quantity,
-                        (int)$stockToAdd
+                        (int) $currentStock,
+                        (int) $apiProduct->quantity,
+                        (int) $stockToAdd
                     ),
                     'Order'
                 );
@@ -557,8 +552,8 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         $cart->id_address_invoice = $billingAddress->id;
         $cart->id_address_delivery = $shippingAddress->id;
         $cart->id_currency = Currency::getIdByIsoCode(
-            (string)$paymentInformation['currency'] == '' ?
-                'EUR' : (string)$paymentInformation['currency']
+            (string) $paymentInformation['currency'] == '' ?
+                'EUR' : (string) $paymentInformation['currency']
         );
         $cart->id_lang = Configuration::get('PS_LANG_DEFAULT');
 
@@ -568,9 +563,9 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         $cart->id_carrier = $this->conveyor['carrier']->id;
         $cart->id_shop = $this->getIdShop();
         if (version_compare(_PS_VERSION_, '1.7.2.5', '>=')) {
-            $cart->delivery_option = Tools::jsonEncode([$cart->id_address_delivery => $cart->id_carrier.',']);
+            $cart->delivery_option = Tools::jsonEncode([$cart->id_address_delivery => $cart->id_carrier . ',']);
         } else {
-            $cart->delivery_option = @serialize([$cart->id_address_delivery => $cart->id_carrier.',']);
+            $cart->delivery_option = @serialize([$cart->id_address_delivery => $cart->id_carrier . ',']);
         }
         $cart->add();
 
@@ -592,24 +587,24 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                     $psProduct->id_product_attribute
                 );
             } catch (Exception $e) {
-                $this->values['error'] = sprintf(
+                $this->conveyor['error'] = sprintf(
                         $this->l('Could not add product %s to cart : %s', 'ShoppingfeedOrderImportActions'),
                         $apiProduct->reference,
                         $e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine()
                     );
-                ProcessLoggerHandler::logInfo($this->logPrefix . $this->values['error'], 'Order');
+                ProcessLoggerHandler::logInfo($this->logPrefix . $this->conveyor['error'], 'Order');
                 $this->forward('acknowledgeOrder');
 
                 return false;
             }
 
             if ($addToCartResult < 0 || $addToCartResult === false) {
-                $this->values['error'] = sprintf(
+                $this->conveyor['error'] = sprintf(
                         $this->l('Could not add product %s to cart : %s', 'ShoppingfeedOrderImportActions'),
                         $apiProduct->reference,
                         $cart->id
                     );
-                ProcessLoggerHandler::logInfo($this->logPrefix . $this->values['error'], 'Order');
+                ProcessLoggerHandler::logInfo($this->logPrefix . $this->conveyor['error'], 'Order');
                 $this->forward('acknowledgeOrder');
 
                 return false;
@@ -618,11 +613,11 @@ class ShoppingfeedOrderImportActions extends DefaultActions
 
         $this->specificRulesManager->applyRules(
             'onCartCreation',
-            array(
+            [
                 'apiOrder' => $apiOrder,
                 'orderData' => &$this->conveyor['orderData'],
                 'cart' => &$cart,
-            )
+            ]
         );
 
         $cart->update();
@@ -630,19 +625,19 @@ class ShoppingfeedOrderImportActions extends DefaultActions
 
         $this->specificRulesManager->applyRules(
             'afterCartCreation',
-            array(
+            [
                 'apiOrder' => $apiOrder,
                 'orderData' => &$this->conveyor['orderData'],
                 'cart' => &$cart,
-            )
+            ]
         );
 
         if ($cart->nbProducts() === 0) {
-            $this->values['error'] = sprintf(
+            $this->conveyor['error'] = sprintf(
                     $this->l('Could not add product to cart : %s', 'ShoppingfeedOrderImportActions'),
                     $cart->id
                 );
-            ProcessLoggerHandler::logInfo($this->logPrefix . $this->values['error'], 'Order');
+            ProcessLoggerHandler::logInfo($this->logPrefix . $this->conveyor['error'], 'Order');
             $this->forward('acknowledgeOrder');
 
             return false;
@@ -677,7 +672,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         $cart->getDeliveryOptionList(null, true);
         $cart->getDeliveryOption(null, false, false);
 
-        Context::getContext()->currency = new Currency((int)$cart->id_currency);
+        Context::getContext()->currency = new Currency((int) $cart->id_currency);
 
         if (!Context::getContext()->country->active) {
             ProcessLoggerHandler::logInfo(
@@ -710,15 +705,15 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         $this->conveyor['customer']->email = 'do-not-send@alerts-shopping-flux.com';
         $this->conveyor['customer']->update();
 
-        $amount_paid = (float)Tools::ps_round((float)$cart->getOrderTotal(true, Cart::BOTH), 2);
+        $amount_paid = (float) Tools::ps_round((float) $cart->getOrderTotal(true, Cart::BOTH), 2);
         try {
             $paymentModule->validateOrder(
-                (int)$cart->id,
+                (int) $cart->id,
                 Configuration::get('PS_OS_PAYMENT'),
                 $amount_paid,
                 Tools::strtolower($apiOrder->getChannel()->getName()),
                 null,
-                array(),
+                [],
                 $cart->id_currency,
                 false,
                 $cart->secure_key,
@@ -726,7 +721,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             );
         } catch (Exception $e) {
             if (false === is_int($paymentModule->currentOrder) || $paymentModule->currentOrder === 0) {
-                $order = $this->getOrderByCartId((int)$cart->id);
+                $order = $this->getOrderByCartId((int) $cart->id);
 
                 if (Validate::isLoadedObject($order)) {
                     $paymentModule->currentOrder = $order->id;
@@ -738,11 +733,11 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 'Message: ' . $e->getMessage(),
                 'File: ' . $e->getFile(),
                 'Line: ' . $e->getLine(),
-                'Error type: ' . get_class($e)
+                'Error type: ' . get_class($e),
             ];
             $message = implode(';', $log);
-            $this->values['error'] = $this->l('Order not valid on PrestaShop.', 'ShoppingfeedOrderImportActions') . ' ' .$message;
-            ProcessLoggerHandler::logInfo($this->logPrefix . $this->values['error'], 'Order');
+            $this->conveyor['error'] = $this->l('Order not valid on PrestaShop.', 'ShoppingfeedOrderImportActions') . ' ' . $message;
+            ProcessLoggerHandler::logInfo($this->logPrefix . $this->conveyor['error'], 'Order');
         }
 
         if ($paymentModule->currentOrder && $paymentModule->currentOrderReference) {
@@ -760,10 +755,10 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         // after this point
         $sfOrder = new ShoppingfeedOrder();
         $sfOrder->id_order = $this->conveyor['id_order'];
-        $sfOrder->id_internal_shoppingfeed = (string)$apiOrder->getId();
+        $sfOrder->id_internal_shoppingfeed = (string) $apiOrder->getId();
         $sfOrder->id_order_marketplace = $apiOrder->getReference();
         $sfOrder->name_marketplace = $apiOrder->getChannel()->getName();
-        $sfOrder->id_shoppingfeed_token = (int)$this->conveyor['id_token'];
+        $sfOrder->id_shoppingfeed_token = (int) $this->conveyor['id_token'];
 
         $paymentInformation = $this->conveyor['orderData']->payment;
         $sfOrder->payment_method = !empty($paymentInformation['method']) ? $paymentInformation['method'] : '-';
@@ -778,11 +773,11 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         // Specific rules
         $this->specificRulesManager->applyRules(
             'afterOrderCreation',
-            array(
+            [
                 'apiOrder' => $apiOrder,
                 'id_order' => $this->conveyor['id_order'],
-                'order_reference' => $this->conveyor['order_reference']
-            )
+                'order_reference' => $this->conveyor['order_reference'],
+            ]
         );
 
         ProcessLoggerHandler::logInfo(
@@ -818,6 +813,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 'Order',
                 empty($this->conveyor['sfOrder']) === false ? $this->conveyor['sfOrder']->id_order : ''
             );
+
             return true;
         }
 
@@ -833,7 +829,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 $apiOrder->getChannel()->getName(),
                 isset($this->conveyor['id_order']) ? $this->conveyor['id_order'] : null,
                 $isSucess,
-                empty($this->values['error']) ? null : $this->values['error']
+                empty($this->conveyor['error']) ? null : $this->conveyor['error']
             );
         } catch (Exception $e) {
             ProcessLoggerHandler::logError(
@@ -856,6 +852,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 'Order',
                 empty($this->conveyor['sfOrder']) === false ? $this->conveyor['sfOrder']->id_order : ''
             );
+
             return true;
         }
 
@@ -873,13 +870,13 @@ class ShoppingfeedOrderImportActions extends DefaultActions
     {
         /** @var ShoppingFeed\Sdk\Api\Order\OrderResource $apiOrder */
         $apiOrder = $this->conveyor['apiOrder'];
-        $psOrder = new Order((int)$this->conveyor['id_order']);
+        $psOrder = new Order((int) $this->conveyor['id_order']);
 
         $this->initProcess($apiOrder);
 
         // We may have multiple orders created for the same reference, (advanced stock management)
         // therefore the total price of each orders needs to be calculated separately
-        $ordersList = array();
+        $ordersList = [];
 
         // See old module _updatePrices()
         /** @var ShoppingfeedAddon\OrderImport\OrderItemData $apiProduct */
@@ -893,11 +890,11 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 ->leftJoin('orders', 'o', 'o.id_order = od.id_order')
                 ->leftJoin('order_detail_tax', 'odt', 'odt.id_order_detail = od.id_order_detail')
                 ->leftJoin('tax', 'tax', 'tax.id_tax = odt.id_tax')
-                ->where('o.id_order = ' . (int)$this->conveyor['id_order'])
-                ->where('product_id = ' . (int)$psProduct->id)
+                ->where('o.id_order = ' . (int) $this->conveyor['id_order'])
+                ->where('product_id = ' . (int) $psProduct->id)
             ;
             if ($psProduct->id_product_attribute) {
-                $query->where('product_attribute_id = ' . (int)$psProduct->id_product_attribute);
+                $query->where('product_attribute_id = ' . (int) $psProduct->id_product_attribute);
             }
             $productOrderDetail = Db::getInstance()->getRow($query);
 
@@ -917,19 +914,19 @@ class ShoppingfeedOrderImportActions extends DefaultActions
 
             // Retrieve the id_order linked to the order_reference (as there might be multiple orders created
             // from the same reference)
-            if (!isset($ordersList[(int)$productOrderDetail['id_order']])) {
+            if (!isset($ordersList[(int) $productOrderDetail['id_order']])) {
                 // We populate the list of orders with the same reference
-                $ordersList[(int)$productOrderDetail['id_order']] = array(
+                $ordersList[(int) $productOrderDetail['id_order']] = [
                     'total_products_tax_excl' => 0,
                     'total_products_tax_incl' => 0,
-                );
+                ];
             }
 
-            $orderDetailPrice_tax_incl = (float)$apiProduct->getTotalPrice();
-            $orderDetailPrice_tax_excl = (float)($orderDetailPrice_tax_incl / (1 + ($tax_rate / 100)));
+            $orderDetailPrice_tax_incl = (float) $apiProduct->getTotalPrice();
+            $orderDetailPrice_tax_excl = (float) ($orderDetailPrice_tax_incl / (1 + ($tax_rate / 100)));
 
-            $ordersList[(int)$productOrderDetail['id_order']]['total_products_tax_incl'] += $orderDetailPrice_tax_incl;
-            $ordersList[(int)$productOrderDetail['id_order']]['total_products_tax_excl'] += $orderDetailPrice_tax_excl;
+            $ordersList[(int) $productOrderDetail['id_order']]['total_products_tax_incl'] += $orderDetailPrice_tax_incl;
+            $ordersList[(int) $productOrderDetail['id_order']]['total_products_tax_excl'] += $orderDetailPrice_tax_excl;
 
             $original_product_price = Product::getPriceStatic(
                 $psProduct->id,
@@ -937,40 +934,40 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 $psProduct->id_product_attribute,
                 6
             );
-            $updateOrderDetail = array(
-                'product_price'        => (float)((float)$apiProduct->unitPrice / (1 + ($tax_rate / 100))),
-                'reduction_percent'    => 0,
-                'reduction_amount'     => 0,
-                'ecotax'               => 0,
+            $updateOrderDetail = [
+                'product_price' => (float) ((float) $apiProduct->unitPrice / (1 + ($tax_rate / 100))),
+                'reduction_percent' => 0,
+                'reduction_amount' => 0,
+                'ecotax' => 0,
                 'total_price_tax_incl' => $orderDetailPrice_tax_incl,
                 'total_price_tax_excl' => $orderDetailPrice_tax_excl,
-                'unit_price_tax_incl'  => (float)$apiProduct->unitPrice,
-                'unit_price_tax_excl'  => (float)((float)$apiProduct->unitPrice / (1 + ($tax_rate / 100))),
+                'unit_price_tax_incl' => (float) $apiProduct->unitPrice,
+                'unit_price_tax_excl' => (float) ((float) $apiProduct->unitPrice / (1 + ($tax_rate / 100))),
                 'original_product_price' => $original_product_price,
-            );
+            ];
             Db::getInstance()->update(
                 'order_detail',
                 $updateOrderDetail,
-                '`id_order` = '.(int)$productOrderDetail['id_order'] .
-                    ' AND `product_id` = ' . (int)$psProduct->id .
-                    ' AND `product_attribute_id` = ' . (int)$psProduct->id_product_attribute
+                '`id_order` = ' . (int) $productOrderDetail['id_order'] .
+                    ' AND `product_id` = ' . (int) $psProduct->id .
+                    ' AND `product_attribute_id` = ' . (int) $psProduct->id_product_attribute
             );
 
             if ($tax_rate > 0) {
-                $updateOrderDetailTax = array(
-                    'unit_amount'  => Tools::ps_round((float)((float)$apiProduct->unitPrice - ((float)$apiProduct->unitPrice / (1 + ($tax_rate / 100)))), 2),
-                    'total_amount' => Tools::ps_round((float)(((float)$apiProduct->unitPrice - ((float)$apiProduct->unitPrice / (1 + ($tax_rate / 100)))) * $apiProduct->quantity), 2),
-                );
+                $updateOrderDetailTax = [
+                    'unit_amount' => Tools::ps_round((float) ((float) $apiProduct->unitPrice - ((float) $apiProduct->unitPrice / (1 + ($tax_rate / 100)))), 2),
+                    'total_amount' => Tools::ps_round((float) (((float) $apiProduct->unitPrice - ((float) $apiProduct->unitPrice / (1 + ($tax_rate / 100)))) * $apiProduct->quantity), 2),
+                ];
                 Db::getInstance()->update(
                     'order_detail_tax',
                     $updateOrderDetailTax,
-                    '`id_order_detail` = ' . (int)$productOrderDetail['id_order_detail']
+                    '`id_order_detail` = ' . (int) $productOrderDetail['id_order_detail']
                 );
             } else {
                 // delete tax so that it does not appear in tax details block in invoice
                 Db::getInstance()->delete(
                     'order_detail_tax',
-                    '`id_order_detail` = ' . (int)$productOrderDetail['id_order_detail']
+                    '`id_order_detail` = ' . (int) $productOrderDetail['id_order_detail']
                 );
             }
         }
@@ -986,15 +983,15 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         }
         $carrier_tax_rate = $carrier->getTaxesRate($address);
         $total_shipping_tax_excl = Tools::ps_round((float) $paymentInformation['shippingAmount'] / (1 + ($carrier_tax_rate / 100)), 2);
-
+        $id_order = 0;
         foreach ($ordersList as $id_order => $orderPrices) {
             $total_paid = Tools::ps_round($orderPrices['total_products_tax_incl'], 2);
             $total_paid_tax_excl = Tools::ps_round($orderPrices['total_products_tax_excl'], 4);
             // Only on main order
-            if ($psOrder->id == (int)$id_order) {
+            if ($psOrder->id == (int) $id_order) {
                 // main order
                 $total_paid = Tools::ps_round($total_paid + (float) $paymentInformation['shippingAmount'], 2);
-                $total_paid_tax_excl = Tools::ps_round($orderPrices['total_products_tax_excl'] + (float)$total_shipping_tax_excl, 4);
+                $total_paid_tax_excl = Tools::ps_round($orderPrices['total_products_tax_excl'] + (float) $total_shipping_tax_excl, 4);
                 $orderPrices['total_shipping'] = Tools::ps_round($paymentInformation['shippingAmount'], 2);
                 $orderPrices['total_shipping_tax_incl'] = Tools::ps_round($paymentInformation['shippingAmount'], 2);
                 $orderPrices['total_shipping_tax_excl'] = $total_shipping_tax_excl;
@@ -1008,44 +1005,44 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             $orderPrices['total_paid_tax_incl'] = Tools::ps_round($total_paid, 2);
             $orderPrices['total_paid_tax_excl'] = Tools::ps_round($total_paid_tax_excl, 4);
 
-            $updateOrder = array(
-                'total_paid'              => Tools::ps_round($orderPrices['total_paid'], 2),
-                'total_paid_tax_incl'     => Tools::ps_round($orderPrices['total_paid_tax_incl'], 2),
-                'total_paid_tax_excl'     => Tools::ps_round($orderPrices['total_paid_tax_excl'], 4),
-                'total_paid_real'         => Tools::ps_round($orderPrices['total_paid'], 2),
-                'total_products'          => Tools::ps_round($orderPrices['total_products_tax_excl'], 2),
-                'total_products_wt'       => Tools::ps_round($orderPrices['total_products_tax_incl'], 4),
-                'total_shipping'          => Tools::ps_round($orderPrices['total_shipping'], 2),
+            $updateOrder = [
+                'total_paid' => Tools::ps_round($orderPrices['total_paid'], 2),
+                'total_paid_tax_incl' => Tools::ps_round($orderPrices['total_paid_tax_incl'], 2),
+                'total_paid_tax_excl' => Tools::ps_round($orderPrices['total_paid_tax_excl'], 4),
+                'total_paid_real' => Tools::ps_round($orderPrices['total_paid'], 2),
+                'total_products' => Tools::ps_round($orderPrices['total_products_tax_excl'], 2),
+                'total_products_wt' => Tools::ps_round($orderPrices['total_products_tax_incl'], 4),
+                'total_shipping' => Tools::ps_round($orderPrices['total_shipping'], 2),
                 'total_shipping_tax_incl' => Tools::ps_round($orderPrices['total_shipping_tax_incl'], 4),
                 'total_shipping_tax_excl' => Tools::ps_round($orderPrices['total_shipping_tax_excl'], 4),
-                'carrier_tax_rate'        => $carrier_tax_rate,
-                'id_carrier'              => $carrier->id,
+                'carrier_tax_rate' => $carrier_tax_rate,
+                'id_carrier' => $carrier->id,
                 'total_discounts' => 0,
                 'total_discounts_tax_incl' => 0,
-                'total_discounts_tax_excl' => 0
-            );
+                'total_discounts_tax_excl' => 0,
+            ];
 
-            $updateOrderInvoice = array(
-                'total_paid_tax_incl'     => Tools::ps_round($orderPrices['total_paid_tax_incl'], 2),
-                'total_paid_tax_excl'     => Tools::ps_round($orderPrices['total_paid_tax_excl'], 4),
-                'total_products'          => Tools::ps_round($orderPrices['total_products_tax_excl'], 4),
-                'total_products_wt'       => Tools::ps_round($orderPrices['total_products_tax_incl'], 2),
+            $updateOrderInvoice = [
+                'total_paid_tax_incl' => Tools::ps_round($orderPrices['total_paid_tax_incl'], 2),
+                'total_paid_tax_excl' => Tools::ps_round($orderPrices['total_paid_tax_excl'], 4),
+                'total_products' => Tools::ps_round($orderPrices['total_products_tax_excl'], 4),
+                'total_products_wt' => Tools::ps_round($orderPrices['total_products_tax_incl'], 2),
                 'total_shipping_tax_incl' => Tools::ps_round($orderPrices['total_shipping_tax_incl'], 2),
                 'total_shipping_tax_excl' => Tools::ps_round($orderPrices['total_shipping_tax_excl'], 4),
-            );
+            ];
 
-            $updateOrderTracking = array(
+            $updateOrderTracking = [
                 'shipping_cost_tax_incl' => Tools::ps_round($orderPrices['total_shipping'], 2),
                 'shipping_cost_tax_excl' => Tools::ps_round($orderPrices['total_shipping_tax_excl'], 4),
-                'id_carrier' => $carrier->id
-            );
+                'id_carrier' => $carrier->id,
+            ];
 
             foreach ($updateOrder as $key => $value) {
                 $psOrder->{$key} = $value;
             }
             $psOrder->save(true);
-            Db::getInstance()->update('order_invoice', $updateOrderInvoice, '`id_order` = '.(int)$id_order);
-            Db::getInstance()->update('order_carrier', $updateOrderTracking, '`id_order` = '.(int)$id_order);
+            Db::getInstance()->update('order_invoice', $updateOrderInvoice, '`id_order` = ' . (int) $id_order);
+            Db::getInstance()->update('order_carrier', $updateOrderTracking, '`id_order` = ' . (int) $id_order);
             Db::getInstance()->delete('order_cart_rule', 'id_order = ' . $psOrder->id);
         }
 
@@ -1060,7 +1057,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             _DB_PREFIX_ . 'orders',
             _DB_PREFIX_ . 'order_payment',
             Tools::ps_round($paymentInformation['totalAmount'], 4),
-            (int)$id_order
+            (int) $id_order
         );
         Db::getInstance()->execute($queryUpdateOrderPayment);
         Cache::clean('order_invoice_paid_*');
@@ -1080,12 +1077,12 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         // Specific rule : after the process is complete
         $this->specificRulesManager->applyRules(
             'onPostProcess',
-            array(
+            [
                 'apiOrder' => $this->conveyor['apiOrder'],
                 'orderData' => $this->conveyor['orderData'],
                 'sfOrder' => $this->conveyor['sfOrder'],
-                'id_order' => (int)$this->conveyor['id_order']
-            )
+                'id_order' => (int) $this->conveyor['id_order'],
+            ]
         );
 
         return true;
@@ -1105,18 +1102,18 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         $addressQuery = new DbQuery();
         $addressQuery->select('id_address')
             ->from('address')
-            ->where('id_customer = ' . (int)$customer->id)
+            ->where('id_customer = ' . (int) $customer->id)
             ->where("alias = '" . pSQL($addressAlias) . "'");
         $id_address = Db::getInstance()->getValue($addressQuery);
 
         if ($id_address) {
-            $address = new Address((int)$id_address);
+            $address = new Address((int) $id_address);
         } else {
             $address = new Address();
         }
 
         $address->alias = $addressAlias;
-        $address->id_customer = (int)$customer->id;
+        $address->id_customer = (int) $customer->id;
         $address->firstname = Tools::substr(
             !empty($apiAddress['firstName']) ? $apiAddress['firstName'] : $customer->firstname,
             0,
@@ -1161,28 +1158,16 @@ class ShoppingfeedOrderImportActions extends DefaultActions
 
         // Check if country is valid and active
         if (!Validate::isLanguageIsoCode($apiAddress['country'])) {
-            throw new Exception(sprintf(
-                $this->l('Country ISO code %s is not valid for address %s.', 'ShoppingfeedOrderImportActions'),
-                $apiAddress['country'],
-                $addressAlias
-            ));
+            throw new Exception(sprintf($this->l('Country ISO code %s is not valid for address %s.', 'ShoppingfeedOrderImportActions'), $apiAddress['country'], $addressAlias));
         }
-        $id_country = (int)Country::getByIso($apiAddress['country']);
+        $id_country = (int) Country::getByIso($apiAddress['country']);
         if (!$id_country) {
-            throw new Exception(sprintf(
-                $this->l('Country %s was not found for address %s.', 'ShoppingfeedOrderImportActions'),
-                $apiAddress['country'],
-                $addressAlias
-            ));
+            throw new Exception(sprintf($this->l('Country %s was not found for address %s.', 'ShoppingfeedOrderImportActions'), $apiAddress['country'], $addressAlias));
         }
 
         $country = new Country($id_country);
         if (!$country->active) {
-            throw new Exception(sprintf(
-                $this->l('Address %s has country %s, but it is not active.', 'ShoppingfeedOrderImportActions'),
-                $addressAlias,
-                $apiAddress['country']
-            ));
+            throw new Exception(sprintf($this->l('Address %s has country %s, but it is not active.', 'ShoppingfeedOrderImportActions'), $addressAlias, $apiAddress['country']));
         }
         $address->id_country = $id_country;
 
@@ -1204,7 +1189,8 @@ class ShoppingfeedOrderImportActions extends DefaultActions
      *
      * @param Product $product
      * @param int $quantityOrdered
-     * @return boolean true if the order can be placed; false otherwise
+     *
+     * @return bool true if the order can be placed; false otherwise
      */
     protected function checkAdvancedStockQty($product, $quantityOrdered)
     {
@@ -1221,7 +1207,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         }
 
         foreach ($productWarehouses as $warehouse) {
-            $id_warehouse = (int)$warehouse['id_warehouse'];
+            $id_warehouse = (int) $warehouse['id_warehouse'];
 
             $physicalQuantity = $stockManager->getProductPhysicalQuantities(
                 $product->id,
@@ -1239,14 +1225,15 @@ class ShoppingfeedOrderImportActions extends DefaultActions
 
     /**
      * @param $idCart int
+     *
      * @return Order
      */
     protected function getOrderByCartId($idCart)
     {
         if (version_compare(_PS_VERSION_, '1.7.1', '<')) {
-            return new Order(Order::getOrderByCartId((int)$idCart));
+            return new Order(Order::getOrderByCartId((int) $idCart));
         } else {
-            return new Order(Order::getIdByCartId((int)$idCart));
+            return new Order(Order::getIdByCartId((int) $idCart));
         }
     }
 
@@ -1255,7 +1242,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
      */
     protected function getIdShop()
     {
-        if (isset($this->conveyor['id_shop']) && (int)$this->conveyor['id_shop']) {
+        if (isset($this->conveyor['id_shop']) && (int) $this->conveyor['id_shop']) {
             return (int) $this->conveyor['id_shop'];
         }
 

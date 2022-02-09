@@ -21,14 +21,12 @@
  * @copyright Copyright (c) 202-ecommerce
  * @license   Commercial license
  */
-
 if (!defined('_PS_VERSION_')) {
     exit;
 }
 
 require_once _PS_MODULE_DIR_ . 'shoppingfeed/vendor/autoload.php';
 
-use ShoppingfeedClasslib\Extensions\ProcessMonitor\Controllers\Front\CronController;
 use ShoppingfeedClasslib\Actions\ActionsHandler;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 use ShoppingfeedClasslib\Registry;
@@ -36,48 +34,52 @@ use ShoppingfeedClasslib\Registry;
 /**
  * This front controller receives the HTTP call for the CRON. It is used to
  * synchronize the ShoppingfeedProduct's stocks and prices.
+ *
  * @see ShoppingfeedClasslib\Extensions\ProcessMonitor\CronController
  */
 class ShoppingfeedSyncProductModuleFrontController extends ShoppingfeedCronController
 {
-    public $taskDefinition = array(
+    public $taskDefinition = [
         'name' => 'shoppingfeed:syncProduct',
-        'title' => array(
+        'title' => [
             'en' => 'Sync shoppingfeed products',
-            'fr' => 'Sync produits shoppingfeed'
-        ),
-    );
+            'fr' => 'Sync produits shoppingfeed',
+        ],
+    ];
 
     /**
      * Executed by the CRON
+     *
      * @param $data the data saved for this CRON (see totpsclasslib doc)
+     *
      * @return mixed
+     *
      * @throws Exception
      */
     protected function processCron($data)
     {
-        if ((bool)Configuration::get(Shoppingfeed::PRODUCT_SYNC_BY_DATE_UPD)) {
+        if ((bool) Configuration::get(Shoppingfeed::PRODUCT_SYNC_BY_DATE_UPD)) {
             $this->addFlagUpdatePreloadingTableByDateUpdate();
             $this->addTaskSyncProduct();
-        } else if ($this->ifPreloadingTableNeedToBeUpdateAllTime()) {
+        } elseif ($this->ifPreloadingTableNeedToBeUpdateAllTime()) {
             $this->addFlagUpdatePreloadingTableByLastUpdate();
         }
 
-        $actions = array();
+        $actions = [];
         if (Configuration::get(Shoppingfeed::STOCK_SYNC_ENABLED)) {
-            $actions[ShoppingfeedProduct::ACTION_SYNC_STOCK] = array(
-                'actions_suffix' => 'Stock'
-            );
+            $actions[ShoppingfeedProduct::ACTION_SYNC_STOCK] = [
+                'actions_suffix' => 'Stock',
+            ];
         }
         if (Configuration::get(Shoppingfeed::PRICE_SYNC_ENABLED)) {
-            $actions[ShoppingfeedProduct::ACTION_SYNC_PRICE] = array(
-                'actions_suffix' => 'Price'
-            );
+            $actions[ShoppingfeedProduct::ACTION_SYNC_PRICE] = [
+                'actions_suffix' => 'Price',
+            ];
         }
 
-        $actions[ShoppingfeedPreloading::ACTION_SYNC_PRELODING] = array(
-            'actions_suffix' => 'Preloading'
-        );
+        $actions[ShoppingfeedPreloading::ACTION_SYNC_PRELODING] = [
+            'actions_suffix' => 'Preloading',
+        ];
 
         if (empty($actions)) {
             // The data to be saved in the CRON table
@@ -90,7 +92,7 @@ class ShoppingfeedSyncProductModuleFrontController extends ShoppingfeedCronContr
             $this->processAction($action, $actionData['actions_suffix']);
         }
 
-        Configuration::updateValue(ShoppingFeed::LAST_CRON_TIME_SYNCHRONIZATION, date("Y-m-d H:i:s"));
+        Configuration::updateValue(Shoppingfeed::LAST_CRON_TIME_SYNCHRONIZATION, date('Y-m-d H:i:s'));
         ProcessLoggerHandler::closeLogger();
     }
 
@@ -98,7 +100,7 @@ class ShoppingfeedSyncProductModuleFrontController extends ShoppingfeedCronContr
     {
         $actionClassname = 'ShoppingfeedProductSync' . $actions_suffix . 'Actions';
         ProcessLoggerHandler::logInfo(
-            '[' . $actionClassname  . '] ' . $this->module->l('Process start', 'syncProduct'),
+            '[' . $actionClassname . '] ' . $this->module->l('Process start', 'syncProduct'),
             $this->processMonitor->getProcessObjectModelName(),
             $this->processMonitor->getProcessObjectModelId()
         );
@@ -114,10 +116,10 @@ class ShoppingfeedSyncProductModuleFrontController extends ShoppingfeedCronContr
         try {
             foreach ($tokens as $token) {
                 $logPrefix = $actionClassname::getLogPrefix($token['id_shoppingfeed_token']);
-                $handler->setConveyor(array(
+                $handler->setConveyor([
                     'id_token' => $token['id_shoppingfeed_token'],
                     'product_action' => $action,
-                ));
+                ]);
 
                 $processResult = $handler->process('shoppingfeedProductSync' . $actions_suffix);
                 if (!$processResult) {
@@ -143,10 +145,10 @@ class ShoppingfeedSyncProductModuleFrontController extends ShoppingfeedCronContr
 
         ProcessLoggerHandler::logInfo(
             sprintf(
-                '[' . $actionClassname  . '] ' . $this->module->l('%d products updated - %d not in catalog - %d errors', 'syncProduct'),
-                (int)Registry::get('updatedProducts'),
-                (int)Registry::get('not-in-catalog'),
-                (int)Registry::get('errors')
+                '[' . $actionClassname . '] ' . $this->module->l('%d products updated - %d not in catalog - %d errors', 'syncProduct'),
+                (int) Registry::get('updatedProducts'),
+                (int) Registry::get('not-in-catalog'),
+                (int) Registry::get('errors')
             ),
             $this->processMonitor->getProcessObjectModelName(),
             $this->processMonitor->getProcessObjectModelId()
@@ -202,22 +204,22 @@ class ShoppingfeedSyncProductModuleFrontController extends ShoppingfeedCronContr
 
     private function ifPreloadingTableNeedToBeUpdateAllTime()
     {
-        $interval_full_update  = (int)Configuration::getGlobalValue(Shoppingfeed::PRODUCT_FEED_TIME_FULL_UPDATE);
-        $interval_cron = (int)Configuration::getGlobalValue(Shoppingfeed::PRODUCT_FEED_INTERVAL_CRON);
+        $interval_full_update = (int) Configuration::getGlobalValue(Shoppingfeed::PRODUCT_FEED_TIME_FULL_UPDATE);
+        $interval_cron = (int) Configuration::getGlobalValue(Shoppingfeed::PRODUCT_FEED_INTERVAL_CRON);
 
-        return (bool)Configuration::get(Shoppingfeed::PRODUCT_SYNC_BY_DATE_UPD) === false
+        return (bool) Configuration::get(Shoppingfeed::PRODUCT_SYNC_BY_DATE_UPD) === false
                && $interval_full_update > 0 && $interval_cron > 0;
     }
 
     private function addFlagUpdatePreloadingTableByLastUpdate()
     {
         $tokens = (new ShoppingfeedToken())->findAllActive();
-        $interval_full_update  = (int)Configuration::getGlobalValue(Shoppingfeed::PRODUCT_FEED_TIME_FULL_UPDATE);
-        $interval_cron = (int)Configuration::getGlobalValue(Shoppingfeed::PRODUCT_FEED_INTERVAL_CRON);
+        $interval_full_update = (int) Configuration::getGlobalValue(Shoppingfeed::PRODUCT_FEED_TIME_FULL_UPDATE);
+        $interval_cron = (int) Configuration::getGlobalValue(Shoppingfeed::PRODUCT_FEED_INTERVAL_CRON);
         $shoppingfeedPreloading = new ShoppingfeedPreloading();
 
         foreach ($tokens as $token) {
-            $countPreloading = (int)$shoppingfeedPreloading->getPreloadingCountForSync($token['id_shoppingfeed_token']);
+            $countPreloading = (int) $shoppingfeedPreloading->getPreloadingCountForSync($token['id_shoppingfeed_token']);
 
             $sql = sprintf('
                 UPDATE %s%s SET actions = "[\"SYNC_ALL\"]" where id_token = %d order by date_upd, id_product ASC limit %d',

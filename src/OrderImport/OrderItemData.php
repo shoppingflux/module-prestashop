@@ -40,27 +40,26 @@ use ShoppingFeed\Sdk\Api\Order\OrderItem;
  */
 class OrderItemData
 {
-    
-    /** @var string $reference */
+    /** @var string */
     public $reference;
 
-    /** @var int $quantity */
+    /** @var int */
     public $quantity;
 
-    /** @var float $unitPrice */
+    /** @var float */
     public $unitPrice;
 
-    /** @var float $taxAmount */
+    /** @var float */
     public $taxAmount;
-    
-    public function __construct(\ShoppingFeed\Sdk\Api\Order\OrderItem $orderItem)
+
+    public function __construct(OrderItem $orderItem)
     {
         $this->reference = $orderItem->getReference();
         $this->quantity = $orderItem->getQuantity();
         $this->unitPrice = $orderItem->getUnitPrice();
         $this->taxAmount = $orderItem->getTaxAmount();
     }
-    
+
     public function getTotalPrice()
     {
         return $this->unitPrice * $this->quantity;

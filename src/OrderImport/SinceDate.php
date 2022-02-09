@@ -19,10 +19,9 @@
 
 namespace ShoppingfeedAddon\OrderImport;
 
-
 use Configuration;
 use DateInterval;
-use \DateTime;
+use DateTime;
 use Shoppingfeed;
 
 class SinceDate

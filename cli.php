@@ -17,7 +17,6 @@
  * @copyright Since 2019 Shopping Feed
  * @license   https://opensource.org/licenses/AFL-3.0  Academic Free License (AFL 3.0)
  */
-
 if (php_sapi_name() !== 'cli') {
     exit;
 }
@@ -32,24 +31,23 @@ foreach ($pathDirs as $key => $pathDir) {
     }
 }
 
-
-$params = array();
-foreach($_SERVER['argv'] as $argv) {
+$params = [];
+foreach ($_SERVER['argv'] as $argv) {
     if (strpos($argv, '=') == true) {
-        $args = explode('=',$argv);
-        $params[$args[0]]=$args[1];
+        $args = explode('=', $argv);
+        $params[$args[0]] = $args[1];
     }
 }
 
 if (empty($params['controller']) || empty($params['secure_key']) || empty($path) === true) {
-    echo 'Please define cli in absolute path, controller and secure_key as expected.'."\r\n";
-    echo 'Usage: php '. dirname(__FILE__) . '/cli.php controller=syncAll secure_key=db7a3a582a43e797a55842eced563d4a'."\r\n";
+    echo 'Please define cli in absolute path, controller and secure_key as expected.' . "\r\n";
+    echo 'Usage: php ' . dirname(__FILE__) . '/cli.php controller=syncAll secure_key=db7a3a582a43e797a55842eced563d4a' . "\r\n";
     exit;
 }
 
-$_GET['fc']         = 'module';
+$_GET['fc'] = 'module';
 $_GET['controller'] = $params['controller'];
-$_GET['module']     = 'shoppingfeed';
+$_GET['module'] = 'shoppingfeed';
 $_GET['secure_key'] = $params['secure_key'];
 
-require_once $path.'/index.php';
+require_once $path . '/index.php';

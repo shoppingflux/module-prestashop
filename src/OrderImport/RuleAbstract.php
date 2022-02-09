@@ -25,7 +25,6 @@
 namespace ShoppingfeedAddon\OrderImport;
 
 use OrderState;
-use ShoppingfeedAddon\OrderImport\RuleInterface;
 use Validate;
 
 if (!defined('_PS_VERSION_')) {
@@ -41,9 +40,9 @@ abstract class RuleAbstract implements RuleInterface
     protected $configuration;
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
-    public function __construct($configuration = array())
+    public function __construct($configuration = [])
     {
         if (empty($configuration)) {
             $configuration = $this->getDefaultConfiguration();
@@ -52,12 +51,12 @@ abstract class RuleAbstract implements RuleInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     abstract public function isApplicable(\ShoppingFeed\Sdk\Api\Order\OrderResource $apiOrder);
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getConfiguration()
     {
@@ -65,23 +64,23 @@ abstract class RuleAbstract implements RuleInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     protected function getDefaultConfiguration()
     {
-        return array();
+        return [];
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getConfigurationSubform()
     {
-        return array();
+        return [];
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     protected function l($msg, $domain)
     {
@@ -91,7 +90,7 @@ abstract class RuleAbstract implements RuleInterface
     protected function isOrderStateValid($idOrderState)
     {
         try {
-            $orderState = new OrderState((int)$idOrderState);
+            $orderState = new OrderState((int) $idOrderState);
         } catch (\Throwable $e) {
             return false;
         }
@@ -100,12 +99,12 @@ abstract class RuleAbstract implements RuleInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     abstract public function getDescription();
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     abstract public function getConditions();
 }

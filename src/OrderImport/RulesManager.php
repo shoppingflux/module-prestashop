@@ -28,11 +28,10 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-use Tools;
-use Hook;
 use Configuration;
-
+use Hook;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
+use Tools;
 
 /**
  * This class will manage a list of specific rules, and the execution of hooks
@@ -40,15 +39,14 @@ use ShoppingFeed\Sdk\Api\Order\OrderResource;
  */
 class RulesManager
 {
-
-    /** @var ShoppingFeed\Sdk\Api\Order\OrderResource $apiOrder */
+    /** @var ShoppingFeed\Sdk\Api\Order\OrderResource */
     protected $apiOrder;
 
-    /** @var array $rules The rules to be applied */
-    protected $rules = array();
+    /** @var array The rules to be applied */
+    protected $rules = [];
 
-    /** @var array $rulesConfiguration The rules configuration */
-    protected $rulesConfiguration = array();
+    /** @var array The rules configuration */
+    protected $rulesConfiguration = [];
 
     /**
      * If no OrderResource is specified, the manager will retrieve all rules but
@@ -61,7 +59,7 @@ class RulesManager
         $this->apiOrder = $apiOrder;
         $this->rulesConfiguration = Tools::jsonDecode(
             Configuration::get(
-                \ShoppingFeed::ORDER_IMPORT_SPECIFIC_RULES_CONFIGURATION,
+                \Shoppingfeed::ORDER_IMPORT_SPECIFIC_RULES_CONFIGURATION,
                 null,
                 null,
                 $id_shop
@@ -69,19 +67,19 @@ class RulesManager
             true
         );
 
-        $rulesClassNames = array();
+        $rulesClassNames = [];
 
         Hook::exec(
             'actionShoppingfeedOrderImportRegisterSpecificRules',
-            array(
-                'specificRulesClassNames' => &$rulesClassNames
-            )
+            [
+                'specificRulesClassNames' => &$rulesClassNames,
+            ]
         );
 
         foreach ($rulesClassNames as $ruleClassName) {
             $this->addRule(
                 new $ruleClassName(
-                isset($this->rulesConfiguration[$ruleClassName]) ? $this->rulesConfiguration[$ruleClassName] : array()
+                isset($this->rulesConfiguration[$ruleClassName]) ? $this->rulesConfiguration[$ruleClassName] : []
             )
             );
         }
@@ -92,14 +90,17 @@ class RulesManager
      * rule matches the order.
      *
      * @param \ShoppingfeedAddon\OrderImport\RuleInterface $ruleObject
-     * @return boolean
+     *
+     * @return bool
      */
     protected function addRule(RuleAbstract $ruleObject)
     {
         if (!$this->apiOrder || $ruleObject->isApplicable($this->apiOrder)) {
             $this->rules[get_class($ruleObject)] = $ruleObject;
+
             return true;
         }
+
         return false;
     }
 
@@ -137,7 +138,7 @@ class RulesManager
         }
 
         foreach ($this->rules as $rule) {
-            if (is_callable(array($rule, $eventName))) {
+            if (is_callable([$rule, $eventName])) {
                 $rule->{$eventName}($params);
             }
         }
@@ -145,15 +146,15 @@ class RulesManager
 
     public function getRulesInformation()
     {
-        $rulesInformation = array();
+        $rulesInformation = [];
         foreach ($this->rules as $rule) {
-            $rulesInformation[] = array(
+            $rulesInformation[] = [
                 'className' => get_class($rule),
                 'conditions' => $rule->getConditions(),
                 'description' => $rule->getDescription(),
                 'configurationSubform' => $rule->getConfigurationSubform(),
                 'configuration' => $rule->getConfiguration(),
-            );
+            ];
         }
 
         return $rulesInformation;

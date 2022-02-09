@@ -28,23 +28,15 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-use Module;
-use Db;
-use Address;
-use Country;
-use Customer;
 use Configuration;
-use Carrier;
 use Order;
 use OrderHistory;
 use OrderState;
-use Validate;
+use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
-use ShoppingFeed\Sdk\Api\Order\OrderResource;
-
-use ShoppingfeedClasslib\Registry;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
+use Validate;
 
 class ChangeStateOrder extends RuleAbstract implements RuleInterface
 {
@@ -82,6 +74,7 @@ class ChangeStateOrder extends RuleAbstract implements RuleInterface
                 'Order',
                 $idOrder
             );
+
             return;
         }
 
@@ -90,11 +83,12 @@ class ChangeStateOrder extends RuleAbstract implements RuleInterface
                 $logPrefix .
                 sprintf(
                     $this->l('Invalid order state. ID: %d', 'ChangeStateOrder'),
-                    (int)$this->configuration['end_order_state']
+                    (int) $this->configuration['end_order_state']
                 ),
                 'Order',
                 $idOrder
             );
+
             return;
         }
 
@@ -118,7 +112,7 @@ class ChangeStateOrder extends RuleAbstract implements RuleInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getConditions()
     {
@@ -126,7 +120,7 @@ class ChangeStateOrder extends RuleAbstract implements RuleInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getDescription()
     {
@@ -134,7 +128,7 @@ class ChangeStateOrder extends RuleAbstract implements RuleInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getConfigurationSubform()
     {
@@ -144,19 +138,19 @@ class ChangeStateOrder extends RuleAbstract implements RuleInterface
           'id_order_state' => '',
           'name' => '',
         ]);
-        return array(
-            array(
+
+        return [
+            [
                 'type' => 'select',
-                'label' =>
-                    $this->l('After a sucessfull order import, turn this order status into ', 'ChangeStateOrder'),
+                'label' => $this->l('After a sucessfull order import, turn this order status into ', 'ChangeStateOrder'),
                 'name' => 'end_order_state',
-                'options' => array(
+                'options' => [
                     'query' => $statuses,
                     'id' => 'id_order_state',
-                    'name' => 'name'
-                ),
+                    'name' => 'name',
+                ],
                 'required' => false,
-            )
-        );
+            ],
+        ];
     }
 }

@@ -28,15 +28,12 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-use Tools;
-use Translate;
-
-use ShoppingfeedClasslib\Registry;
+use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
-use ShoppingFeed\Sdk\Api\Order\OrderResource;
-
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
+use ShoppingfeedClasslib\Registry;
+use Tools;
 
 /**
  * RDC is using RelayID from the delivery adresse and Other for the order number
@@ -56,8 +53,10 @@ class RueducommerceMondialrelay extends RuleAbstract implements RuleInterface
         ) {
             // If the rule is applicable, we'll make sure this is empty, just in case...
             Registry::set(self::class . '_mondialRelayId', null);
+
             return true;
         }
+
         return false;
     }
 
@@ -86,7 +85,7 @@ class RueducommerceMondialrelay extends RuleAbstract implements RuleInterface
         $mondialRelayID = array_pop($explodedCarrier);
 
         // Rebuild the carrier name; it should be found properly
-        $orderData->shipment['carrier'] = implode($explodedCarrier, " ");
+        $orderData->shipment['carrier'] = implode($explodedCarrier, ' ');
 
         // Save the relay ID in the shipping address "Other" field so it can be
         // used by the main Mondial Relay rule
@@ -101,7 +100,7 @@ class RueducommerceMondialrelay extends RuleAbstract implements RuleInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getConditions()
     {
@@ -109,7 +108,7 @@ class RueducommerceMondialrelay extends RuleAbstract implements RuleInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getDescription()
     {

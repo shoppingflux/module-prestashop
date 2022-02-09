@@ -24,7 +24,6 @@
 
 namespace ShoppingfeedAddon\Services;
 
-
 use Cache;
 use Combination;
 use Context;
@@ -77,10 +76,10 @@ class ProductAttributeCombination
             ->leftJoin('attribute_group', 'ag', 'ag.`id_attribute_group` = a.`id_attribute_group`')
             ->leftJoin('attribute_lang', 'al', 'a.`id_attribute` = al.`id_attribute`')
             ->leftJoin('attribute_group_lang', 'agl', 'ag.`id_attribute_group` = agl.`id_attribute_group`')
-            ->where('pas.id_shop = ' . (int)$idShop)
-            ->where('al.id_lang = ' . (int)$idLang)
-            ->where('agl.id_lang = ' . (int)$idLang)
-            ->where('pa.id_product = ' . (int)$product->id)
+            ->where('pas.id_shop = ' . (int) $idShop)
+            ->where('al.id_lang = ' . (int) $idLang)
+            ->where('agl.id_lang = ' . (int) $idLang)
+            ->where('pa.id_product = ' . (int) $product->id)
             ->orderBy('pa.`id_product_attribute`')
         ;
 

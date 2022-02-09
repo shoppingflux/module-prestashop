@@ -16,7 +16,6 @@
  * @copyright Since 2019 Shopping Feed
  * @license   https://opensource.org/licenses/AFL-3.0  Academic Free License (AFL 3.0)
  */
-
 require_once _PS_MODULE_DIR_ . 'shoppingfeed/classes/Compatibility/PriceFormatter.php';
 
 class SpecificPriceFormatter

@@ -28,12 +28,11 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-use Tools;
+use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
-use ShoppingFeed\Sdk\Api\Order\OrderResource;
-
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
+use Tools;
 
 class AmazonPrime extends RuleAbstract implements RuleInterface
 {
@@ -69,7 +68,7 @@ class AmazonPrime extends RuleAbstract implements RuleInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getConditions()
     {
@@ -77,7 +76,7 @@ class AmazonPrime extends RuleAbstract implements RuleInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getDescription()
     {

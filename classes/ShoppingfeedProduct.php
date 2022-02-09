@@ -16,7 +16,6 @@
  * @copyright Since 2019 Shopping Feed
  * @license   https://opensource.org/licenses/AFL-3.0  Academic Free License (AFL 3.0)
  */
-
 if (!defined('_PS_VERSION_')) {
     exit;
 }
@@ -26,8 +25,8 @@ if (!defined('_PS_VERSION_')) {
  */
 class ShoppingfeedProduct extends ObjectModel
 {
-    const ACTION_SYNC_STOCK = "SYNC_STOCK";
-    const ACTION_SYNC_PRICE = "SYNC_PRICE";
+    const ACTION_SYNC_STOCK = 'SYNC_STOCK';
+    const ACTION_SYNC_PRICE = 'SYNC_PRICE';
 
     /** @var string The action to execute for this product */
     public $action;
@@ -49,68 +48,68 @@ class ShoppingfeedProduct extends ObjectModel
 
     public $date_upd;
 
-    public static $definition = array(
+    public static $definition = [
         'table' => 'shoppingfeed_product',
         'primary' => 'id_shoppingfeed_product',
-        'fields' => array(
-            'action' => array(
+        'fields' => [
+            'action' => [
                 'type' => ObjectModel::TYPE_STRING,
                 'validate' => 'isGenericName',
                 'required' => true,
                 'unique' => true,
-                'values' => array(self::ACTION_SYNC_STOCK, self::ACTION_SYNC_PRICE),
-            ),
-            'id_product' => array(
+                'values' => [self::ACTION_SYNC_STOCK, self::ACTION_SYNC_PRICE],
+            ],
+            'id_product' => [
                 'type' => ObjectModel::TYPE_INT,
                 'validate' => 'isUnsignedInt',
                 'required' => true,
                 'unique' => true,
-            ),
-            'id_product_attribute' => array(
+            ],
+            'id_product_attribute' => [
                 'type' => ObjectModel::TYPE_INT,
                 'validate' => 'isUnsignedInt',
                 'required' => true,
                 'unique' => true,
-            ),
-            'id_token' => array(
+            ],
+            'id_token' => [
                 'type' => ObjectModel::TYPE_INT,
                 'validate' => 'isUnsignedInt',
                 'required' => true,
                 'unique' => true,
-            ),
-            'update_at'=> array(
+            ],
+            'update_at' => [
                 'type' => self::TYPE_DATE,
                 'validate' => 'isDate',
                 'allow_null' => true,
-            ),
-            'date_add' => array(
+            ],
+            'date_add' => [
                 'type' => self::TYPE_DATE,
-                'validate' => 'isDate'
-            ),
-            'date_upd' => array(
+                'validate' => 'isDate',
+            ],
+            'date_upd' => [
                 'type' => self::TYPE_DATE,
-                'validate' => 'isDate'
-            ),
-        ),
-        'associations' => array(
-            'products' => array(
+                'validate' => 'isDate',
+            ],
+        ],
+        'associations' => [
+            'products' => [
                 'type' => ObjectModel::HAS_ONE,
                 'object' => 'Product',
                 'association' => 'product_shoppingfeed',
                 'field' => 'id_product',
                 'multishop' => true,
-            ),
-        ),
-    );
-
+            ],
+        ],
+    ];
 
     /**
      * Returns the product's Shopping Feed reference
+     *
      * @return string
      */
     public function getShoppingfeedReference()
     {
-        $reference = $this->id_product . ($this->id_product_attribute ? "_" . $this->id_product_attribute : "");
+        $reference = $this->id_product . ($this->id_product_attribute ? '_' . $this->id_product_attribute : '');
         $reference_format = Configuration::get(Shoppingfeed::PRODUCT_FEED_REFERENCE_FORMAT);
         if (empty($reference_format) === true) {
             return $reference;
@@ -123,7 +122,7 @@ class ShoppingfeedProduct extends ObjectModel
                 $sql->select('sp.`product_supplier_reference`');
                 $sql->leftJoin('product_supplier', 'sp', 'sp.`id_product` = p.`id_product`');
             } else {
-                $sql->select('p.`'.pSQL($reference_format).'`');
+                $sql->select('p.`' . pSQL($reference_format) . '`');
             }
             $where = 'p.`id_product` = ' . (int) $this->id_product;
         } else {
@@ -132,7 +131,7 @@ class ShoppingfeedProduct extends ObjectModel
                 $sql->select('sp.`product_supplier_reference`');
                 $sql->leftJoin('product_supplier', 'sp', 'sp.`id_product_attribute` = pa.`id_product_attribute`');
             } else {
-                $sql->select('pa.`'.pSQL($reference_format).'`');
+                $sql->select('pa.`' . pSQL($reference_format) . '`');
             }
             $where = 'pa.`id_product_attribute` = ' . (int) $this->id_product_attribute .
                 ' AND pa.`id_product` = ' . (int) $this->id_product;
@@ -143,10 +142,11 @@ class ShoppingfeedProduct extends ObjectModel
         return is_string($reference) ? trim($reference) : '';
     }
 
-
     /**
      * Returns the product id and combination ID from Shopping Feed reference
+     *
      * @param string $sfReference
+     *
      * @return string
      */
     public function getReverseShoppingfeedReference($sfReference)
@@ -169,7 +169,7 @@ class ShoppingfeedProduct extends ObjectModel
                         WHERE sp.`id_product_attribute` = pa.`id_product_attribute` AND `product_supplier_reference` = "' . pSQL($sfReference) . '"
                     )';
             } else {
-                $where = 'pa.`'.pSQL($reference_format).'` = "' . pSQL($sfReference) . '"';
+                $where = 'pa.`' . pSQL($reference_format) . '` = "' . pSQL($sfReference) . '"';
             }
             $sql->where($where);
             $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql);
@@ -189,7 +189,7 @@ class ShoppingfeedProduct extends ObjectModel
                     WHERE sp.`id_product` = p.`id_product` AND `product_supplier_reference` = "' . pSQL($sfReference) . '"
                 )';
         } else {
-            $where = 'p.`'.pSQL($reference_format).'` = "' . pSQL($sfReference) . '"';
+            $where = 'p.`' . pSQL($reference_format) . '` = "' . pSQL($sfReference) . '"';
         }
         $sql->where($where);
         $value = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
@@ -211,11 +211,14 @@ class ShoppingfeedProduct extends ObjectModel
 
     /**
      * Attempts to retrieve an object using its unique key; returns false if none was found.
+     *
      * @param $action
      * @param $id_product
      * @param $id_product_attribute
      * @param $id_token
+     *
      * @return bool|ShoppingfeedProduct
+     *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
@@ -224,14 +227,15 @@ class ShoppingfeedProduct extends ObjectModel
         $sql = new DbQuery();
         $sql->select('id_shoppingfeed_product')
             ->from(self::$definition['table'])
-            ->where('action = \'' . pSQL($action). '\'')
-            ->where('id_product = ' . (int)$id_product)
-            ->where('id_product_attribute = ' . (int)$id_product_attribute)
-            ->where('id_token = ' . (int)$id_token);
+            ->where('action = \'' . pSQL($action) . '\'')
+            ->where('id_product = ' . (int) $id_product)
+            ->where('id_product_attribute = ' . (int) $id_product_attribute)
+            ->where('id_token = ' . (int) $id_token);
         $id = Db::getInstance()->getValue($sql);
         if ($id) {
             return new ShoppingfeedProduct($id);
         }
+
         return false;
     }
 }
