@@ -612,12 +612,12 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
         return new SinceDate();
     }
 
-    public function getAvailableCarriers()
+    protected function getAvailableCarriers()
     {
         $carriers = [
             [
                 'value' => 0,
-                'label' => $this->l('Select carrier')
+                'label' => $this->l('Select carrier', 'AdminShoppingfeedOrderImportRules')
             ]
         ];
 
