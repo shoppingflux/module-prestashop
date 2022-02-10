@@ -729,24 +729,24 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
                 switch ($product_filter_type) {
                     case 'products':
                         $sqlFilter[] = 'ps.id_product IN (' . $product_filter . ')';
-                        break;
+                        continue 2;
                     case 'attributes':
                         $sqlFilter[] = 'ps.id_product IN (select id_product from ' . _DB_PREFIX_ . 'product_attribute pa JOIN ' . _DB_PREFIX_ . 'product_attribute_combination pac on pa.id_product_attribute = pac.id_product_attribute where pac.id_attribute IN (' . $product_filter . '))';
-                        break;
+                        continue 2;
                     case 'manufacturers':
                         $sqlFilter[] = 'ps.id_product IN (select id_product from ' . _DB_PREFIX_ . 'product where id_manufacturer IN (' . $product_filter . '))';
-                        break;
+                        continue 2;
                     case 'categories':
                         $sqlFilter[] = 'ps.id_category_default IN (' . $product_filter . ')';
-                        break;
+                        continue 2;
                     case 'suppliers':
                         $sqlFilter[] = 'ps.id_product IN (select id_product from ' . _DB_PREFIX_ . 'product_supplier where id_supplier IN (' . $product_filter . '))';
-                        break;
+                        continue 2;
                     case 'features':
                         $sqlFilter[] = 'ps.id_product IN (select id_product from ' . _DB_PREFIX_ . 'feature_product where id_feature IN (' . $product_filter . '))';
-                        break;
+                        continue 2;
                     default:
-                        break;
+                        continue 2;
                 }
             }
         }

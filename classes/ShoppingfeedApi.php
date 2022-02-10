@@ -236,19 +236,19 @@ class ShoppingfeedApi
                             $taskOrder['payload']['tracking_number'],
                             $taskOrder['payload']['tracking_url']
                         );
-                        break;
+                        continue 2;
                     case OrderOperation::TYPE_CANCEL:
                         $operation->cancel(
                             $taskOrder['reference_marketplace'],
                             $taskOrder['marketplace']
                         );
-                        break;
+                        continue 2;
                     case OrderOperation::TYPE_REFUND:
                         $operation->refund(
                             $taskOrder['reference_marketplace'],
                             $taskOrder['marketplace']
                         );
-                        break;
+                        continue 2;
                 }
             }
 
