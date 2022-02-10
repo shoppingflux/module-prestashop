@@ -12,17 +12,17 @@ jobs:
             - name: PHP syntax checker 5.6
               uses: prestashop/github-action-php-lint/5.6@master
               with:
-                folder-to-exclude: "! -path \"./202/*\"
+                folder-to-exclude: "! -path \"./202/*\""
 
             - name: PHP syntax checker 7.2
               uses: prestashop/github-action-php-lint/7.2@master
               with:
-                folder-to-exclude: "! -path \"./202/*\"
+                folder-to-exclude: "! -path \"./202/*\""
 
             - name: PHP syntax checker 7.3
               uses: prestashop/github-action-php-lint/7.3@master
               with:
-                folder-to-exclude: "! -path \"./202/*\"
+                folder-to-exclude: "! -path \"./202/*\""
 
     # Check the PHP code follow the coding standards
     php-cs-fixer:
