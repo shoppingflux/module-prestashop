@@ -49,13 +49,13 @@ use Validate;
  * the data for the pickup point are in the additional fields. The data must be set up in the "colissimo" module's table so that colissimo can treat it as a
  * standard order. The goal is to allow the merchant to generate labels with the "colissimo" module so that the standard shipping process can take place.
  */
-class Colissimo extends RuleAbstract implements RuleInterface
+class ZalandohexagonaColissimo extends RuleAbstract implements RuleInterface
 {
     public function isApplicable(OrderResource $apiOrder)
     {
         $apiOrderData = $apiOrder->toArray();
         $logPrefix = sprintf(
-            $this->l('[Order: %s]', 'Colissimo'),
+            $this->l('[Order: %s]', 'ZalandohexagonaColissimo'),
             $apiOrder->getId()
         );
         $logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
@@ -69,7 +69,7 @@ class Colissimo extends RuleAbstract implements RuleInterface
         ) {
             ProcessLoggerHandler::logInfo(
                 $logPrefix .
-                    $this->l('Rule triggered.', 'Colissimo'),
+                    $this->l('Rule triggered.', 'ZalandohexagonaColissimo'),
                 'Order'
             );
 
@@ -91,13 +91,13 @@ class Colissimo extends RuleAbstract implements RuleInterface
         $apiOrder = $params['apiOrder'];
 
         $logPrefix = sprintf(
-            $this->l('[Order: %s]', 'Colissimo'),
+            $this->l('[Order: %s]', 'ZalandohexagonaColissimo'),
             $apiOrder->getId()
         );
         $logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
 
         ProcessLoggerHandler::logInfo(
-            $logPrefix . $this->l('Setting Colissimo carrier.', 'Colissimo'),
+            $logPrefix . $this->l('Setting Colissimo carrier.', 'ZalandohexagonaColissimo'),
             'Order'
         );
 
@@ -114,7 +114,7 @@ class Colissimo extends RuleAbstract implements RuleInterface
             $destinationType
         );
         if (!$idColissimoService) {
-            throw new Exception($logPrefix . sprintf($this->l('Could not retrieve ColissimoService from productCode %s and destinationType %s.', 'Colissimo'), $productCode, $destinationType));
+            throw new Exception($logPrefix . sprintf($this->l('Could not retrieve ColissimoService from productCode %s and destinationType %s.', 'ZalandohexagonaColissimo'), $productCode, $destinationType));
 
             return false;
         }
@@ -122,7 +122,7 @@ class Colissimo extends RuleAbstract implements RuleInterface
         ProcessLoggerHandler::logInfo(
             $logPrefix .
                 sprintf(
-                    $this->l('Retrieved ColissimoService %s from productCode %s and destinationType %s.', 'Colissimo'),
+                    $this->l('Retrieved ColissimoService %s from productCode %s and destinationType %s.', 'ZalandohexagonaColissimo'),
                         $idColissimoService,
                         $productCode,
                         $destinationType
@@ -134,12 +134,12 @@ class Colissimo extends RuleAbstract implements RuleInterface
         $colissimoService = new ColissimoService($idColissimoService);
         $colissimoCarrier = Carrier::getCarrierByReference($colissimoService->id_carrier);
         if (!Validate::isLoadedObject($colissimoCarrier)) {
-            throw new Exception($logPrefix . sprintf($this->l('Could not retrieve Carrier with id_reference %s from ColissimoService %s with productCode %s and destinationType %s.', 'Colissimo'), $colissimoService->id_carrier, $colissimoService->id, $productCode, $destinationType));
+            throw new Exception($logPrefix . sprintf($this->l('Could not retrieve Carrier with id_reference %s from ColissimoService %s with productCode %s and destinationType %s.', 'ZalandohexagonaColissimo'), $colissimoService->id_carrier, $colissimoService->id, $productCode, $destinationType));
 
             return false;
         }
         if (!$colissimoCarrier->active || $colissimoCarrier->deleted) {
-            throw new Exception($logPrefix . sprintf($this->l('Retrieved Carrier with id_reference %s from ColissimoService %s with productCode %s and destinationType %s is inactive or deleted.', 'Colissimo'), $colissimoService->id_carrier, $colissimoService->id, $productCode, $destinationType));
+            throw new Exception($logPrefix . sprintf($this->l('Retrieved Carrier with id_reference %s from ColissimoService %s with productCode %s and destinationType %s is inactive or deleted.', 'ZalandohexagonaColissimo'), $colissimoService->id_carrier, $colissimoService->id, $productCode, $destinationType));
 
             return false;
         }
@@ -147,7 +147,7 @@ class Colissimo extends RuleAbstract implements RuleInterface
         ProcessLoggerHandler::logInfo(
             $logPrefix .
                 sprintf(
-                    $this->l('Retrieved Colissimo carrier %s from ColissimoService %s.', 'Colissimo'),
+                    $this->l('Retrieved Colissimo carrier %s from ColissimoService %s.', 'ZalandohexagonaColissimo'),
                     $colissimoService->id_carrier,
                     $colissimoService->id
                 ),
@@ -174,13 +174,13 @@ class Colissimo extends RuleAbstract implements RuleInterface
         $apiOrder = $params['apiOrder'];
 
         $logPrefix = sprintf(
-            $this->l('[Order: %s]', 'Colissimo'),
+            $this->l('[Order: %s]', 'ZalandohexagonaColissimo'),
             $apiOrder->getId()
         );
         $logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
 
         ProcessLoggerHandler::logInfo(
-            $logPrefix . $this->l('Saving Colissimo pickup point.', 'Colissimo'),
+            $logPrefix . $this->l('Saving Colissimo pickup point.', 'ZalandohexagonaColissimo'),
             'Order'
         );
 
@@ -211,7 +211,7 @@ class Colissimo extends RuleAbstract implements RuleInterface
         ProcessLoggerHandler::logInfo(
             $logPrefix .
                 sprintf(
-                    $this->l('Linking Colissimo pickup point %s to cart %s.', 'Colissimo'),
+                    $this->l('Linking Colissimo pickup point %s to cart %s.', 'ZalandohexagonaColissimo'),
                     $colissimoPickupPointId,
                     $params['cart']->id
                 ),
@@ -233,7 +233,7 @@ class Colissimo extends RuleAbstract implements RuleInterface
      */
     public function getConditions()
     {
-        return $this->l('If the order comes from Zalando and has non-empty "service_point_id" and "service_point_name" additional fields.', 'Colissimo');
+        return $this->l('If the order comes from Zalando and has non-empty "service_point_id" and "service_point_name" additional fields.', 'ZalandohexagonaColissimo');
     }
 
     /**
@@ -241,6 +241,6 @@ class Colissimo extends RuleAbstract implements RuleInterface
      */
     public function getDescription()
     {
-        return $this->l('Set the carrier to Colissimo Pickup Point and add necessary data in the colissimo module accordingly.', 'Colissimo');
+        return $this->l('Set the carrier to Colissimo Pickup Point and add necessary data in the colissimo module accordingly.', 'ZalandohexagonaColissimo');
     }
 }
