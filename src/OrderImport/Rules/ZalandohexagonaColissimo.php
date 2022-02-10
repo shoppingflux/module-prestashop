@@ -49,7 +49,7 @@ use Validate;
  * the data for the pickup point are in the additional fields. The data must be set up in the "colissimo" module's table so that colissimo can treat it as a
  * standard order. The goal is to allow the merchant to generate labels with the "colissimo" module so that the standard shipping process can take place.
  */
-class ZalandohexagonaColissimo extends RuleAbstract implements RuleInterface
+class ZalandohexagonaColissimo extends AbstractColissimo implements RuleInterface
 {
     public function isApplicable(OrderResource $apiOrder)
     {
@@ -61,11 +61,10 @@ class ZalandohexagonaColissimo extends RuleAbstract implements RuleInterface
         $logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
 
         // Check marketplace, that the additional fields with the pickup point data are there and not empty, and that the "colissimo" module is installed and active
-        $module_colissimo = Module::getInstanceByName('colissimo');
         if ('zalandohexagona' === Tools::strtolower($apiOrder->getChannel()->getName())
             && !empty($apiOrderData['additionalFields']['service_point_id'])
             && !empty($apiOrderData['additionalFields']['service_point_name'])
-            && $module_colissimo && $module_colissimo->active
+            && $this->isModuleColissimoEnabled()
         ) {
             ProcessLoggerHandler::logInfo(
                 $logPrefix .

@@ -38,12 +38,11 @@ use ShoppingfeedAddon\OrderImport\RuleInterface;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 use Tools;
 
-class CdiscountColissimo extends RuleAbstract implements RuleInterface
+class CdiscountColissimo extends AbstractColissimo implements RuleInterface
 {
     public function isApplicable(OrderResource $apiOrder)
     {
         // Check marketplace, that the additional fields with the pickup point data are there and not empty, and that the "colissimo" module is installed and active
-        $module_colissimo = Module::getInstanceByName('colissimo');
         $apiOrderShipment = $apiOrder->getShipment();
 
         return preg_match('#^cdiscount$#', Tools::strtolower($apiOrder->getChannel()->getName()))
@@ -52,8 +51,7 @@ class CdiscountColissimo extends RuleAbstract implements RuleInterface
                 || $apiOrderShipment['carrier'] === 'REL'
                 || $apiOrderShipment['carrier'] === 'RCO'
             )
-            && $module_colissimo
-            && $module_colissimo->active
+            && $this->isModuleColissimoEnabled()
         ;
     }
 
