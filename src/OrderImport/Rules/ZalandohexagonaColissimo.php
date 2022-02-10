@@ -37,7 +37,6 @@ use Country;
 use Exception;
 use Module;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
-use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 use Tools;

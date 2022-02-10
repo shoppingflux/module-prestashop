@@ -1,6 +1,5 @@
 <?php
 /**
- *
  *  Copyright since 2019 Shopping Feed
  *
  *  NOTICE OF LICENSE
@@ -16,15 +15,13 @@
  *  @author    202 ecommerce <tech@202-ecommerce.com>
  *  @copyright Since 2019 Shopping Feed
  *  @license   https://opensource.org/licenses/AFL-3.0  Academic Free License (AFL 3.0)
- *
  */
 
 namespace ShoppingfeedAddon\OrderImport\Rules;
 
-
+use Module;
 use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
-use Module;
 
 abstract class AbstractColissimo extends RuleAbstract implements RuleInterface
 {
