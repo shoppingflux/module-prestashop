@@ -21,7 +21,6 @@
  * @copyright Copyright (c) 202-ecommerce
  * @license   Commercial license
  */
-
 function upgrade_module_1_5_12($module)
 {
     foreach ($module->hooks as $hook) {

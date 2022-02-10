@@ -16,7 +16,6 @@
  * @copyright Since 2019 Shopping Feed
  * @license   https://opensource.org/licenses/AFL-3.0  Academic Free License (AFL 3.0)
  */
-
 if (!defined('_PS_VERSION_')) {
     exit;
 }
@@ -39,65 +38,65 @@ class ShoppingfeedToken extends ObjectModel
 
     public $date_upd;
 
-    public static $definition = array(
+    public static $definition = [
         'table' => 'shoppingfeed_token',
         'primary' => 'id_shoppingfeed_token',
-        'fields' => array(
-            'id_shop' => array(
+        'fields' => [
+            'id_shop' => [
                 'type' => self::TYPE_INT,
                 'validate' => 'isUnsignedInt',
-                'required' => true
-            ),
-            'id_lang' => array(
+                'required' => true,
+            ],
+            'id_lang' => [
                 'type' => self::TYPE_INT,
                 'validate' => 'isUnsignedInt',
-                'required' => true
-            ),
-            'id_currency' => array(
+                'required' => true,
+            ],
+            'id_currency' => [
                 'type' => self::TYPE_INT,
                 'validate' => 'isUnsignedInt',
-                'required' => true
-            ),
-            'content' => array(
+                'required' => true,
+            ],
+            'content' => [
                 'type' => self::TYPE_STRING,
                 'validate' => 'isString',
                 'unique' => true,
                 'required' => true,
-            ),
-            'active' => array(
+            ],
+            'active' => [
                 'type' => ObjectModel::TYPE_BOOL,
                 'validate' => 'isBool',
-            ),
-            'date_add' => array(
+            ],
+            'date_add' => [
                 'type' => self::TYPE_DATE,
                 'validate' => 'isDate',
-            ),
-            'date_upd' => array(
+            ],
+            'date_upd' => [
                 'type' => self::TYPE_DATE,
-                'validate' => 'isDate'
-            ),
-        ),
-        'associations' => array(
-            'shops' => array(
+                'validate' => 'isDate',
+            ],
+        ],
+        'associations' => [
+            'shops' => [
                 'type' => ObjectModel::HAS_ONE,
                 'object' => 'Shop',
                 'association' => 'shop',
                 'field' => 'id_shop',
-            ),
-            'langs' => array(
+            ],
+            'langs' => [
                 'type' => ObjectModel::HAS_ONE,
                 'object' => 'Language',
                 'association' => 'language',
                 'field' => 'id_lang',
-            ),
-            'currencies' => array(
+            ],
+            'currencies' => [
                 'type' => ObjectModel::HAS_ONE,
                 'object' => 'Currency',
                 'association' => 'currency',
                 'field' => 'id_currency',
-            ),
-        ),
-    );
+            ],
+        ],
+    ];
 
     public function findAllActive()
     {
@@ -106,7 +105,7 @@ class ShoppingfeedToken extends ObjectModel
             ->from(self::$definition['table'])
             ->where('active = 1');
 
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql) ;
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
     }
 
     public function findAllActiveByShops($idShops)
@@ -114,16 +113,15 @@ class ShoppingfeedToken extends ObjectModel
         $sql = new DbQuery();
         $sql->select('*')
             ->from(self::$definition['table'])
-            ->where('id_shop IN('.implode(', ', $idShops).')')
+            ->where('id_shop IN(' . implode(', ', $idShops) . ')')
             ->where('active = 1');
 
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql) ;
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
     }
 
     public function addToken($id_shop, $id_lang, $id_currency, $token)
     {
         if ($this->findByToken($token) !== false) {
-
             throw new Exception("Duplicate entry for token $token");
         }
         $this->id_shop = $id_shop;
@@ -133,7 +131,6 @@ class ShoppingfeedToken extends ObjectModel
         $this->active = true;
 
         return $this->save();
-
     }
 
     public function findByToken($token)
@@ -144,7 +141,7 @@ class ShoppingfeedToken extends ObjectModel
             ->where("content = '$token'")
         ;
 
-        return  Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($query);
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($query);
     }
 
     public function getDefaultToken()
@@ -155,7 +152,7 @@ class ShoppingfeedToken extends ObjectModel
             ->where('active = 1')
         ;
 
-        return  Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($query);
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($query);
     }
 
     public function findAll()
@@ -175,6 +172,6 @@ class ShoppingfeedToken extends ObjectModel
             $sql->select('sft.id_shop, sft.id_shoppingfeed_token, sft.content as token, sft.active, s.name as shop_name, l.name as lang_name, c.name as currency_name');
         }
 
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql) ;
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
     }
 }

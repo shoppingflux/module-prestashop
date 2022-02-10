@@ -28,20 +28,14 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-use Module;
-use Db;
-use Address;
-use Country;
-use Customer;
-use Configuration;
 use Carrier;
+use Configuration;
+use Module;
 use Order;
 use OrderHistory;
+use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
-use ShoppingFeed\Sdk\Api\Order\OrderResource;
-
-use ShoppingfeedClasslib\Registry;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 
 class TestingOrder extends RuleAbstract implements RuleInterface
@@ -61,7 +55,7 @@ class TestingOrder extends RuleAbstract implements RuleInterface
         /** @var \ShoppingfeedAddon\OrderImport\OrderData $orderData */
         $orderData = $params['orderData'];
         $apiOrder = $params['apiOrder'];
-        $idOrderState = (int)Configuration::get('PS_OS_CANCELED');
+        $idOrderState = (int) Configuration::get('PS_OS_CANCELED');
 
         $logPrefix = sprintf(
             $this->l('[Order: %s]', 'TestingOrder'),
@@ -79,6 +73,7 @@ class TestingOrder extends RuleAbstract implements RuleInterface
                 'Order',
                 $params['sfOrder']->id_order
             );
+
             return;
         }
 
@@ -102,7 +97,7 @@ class TestingOrder extends RuleAbstract implements RuleInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getConditions()
     {
@@ -110,7 +105,7 @@ class TestingOrder extends RuleAbstract implements RuleInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getDescription()
     {

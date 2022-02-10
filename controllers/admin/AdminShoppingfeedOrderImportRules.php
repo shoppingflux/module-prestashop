@@ -16,7 +16,6 @@
  * @copyright Since 2019 Shopping Feed
  * @license   https://opensource.org/licenses/AFL-3.0  Academic Free License (AFL 3.0)
  */
-
 if (!defined('_PS_VERSION_')) {
     exit;
 }
@@ -33,18 +32,20 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
 {
     public $bootstrap = true;
 
-    /** @var ShoppingfeedOrderImportSpecificRulesManager $specificRulesManager */
+    public $override_folder;
+
+    /** @var ShoppingfeedOrderImportSpecificRulesManager */
     protected $specificRulesManager;
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function initContent()
     {
-        $this->addCSS(array(
+        $this->addCSS([
             $this->module->getPathUri() . 'views/css/shoppingfeed_configuration/form.css',
-            $this->module->getPathUri() . 'views/css/font-awesome.min.css'
-        ));
+            $this->module->getPathUri() . 'views/css/font-awesome.min.css',
+        ]);
 
         $this->addJS($this->module->getPathUri() . 'views/js/form_config.js');
         $this->content = $this->welcomeForm();
@@ -57,8 +58,8 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
                 Context::getContext()->link->getAdminLink('AdminShoppingfeedAccountSettings')
             );
         }
-        $order_sync_available = ShoppingFeed::isOrderSyncAvailable();
-        $order_import_available = ShoppingFeed::isOrderImportAvailable();
+        $order_sync_available = Shoppingfeed::isOrderSyncAvailable();
+        $order_import_available = Shoppingfeed::isOrderImportAvailable();
         $order_import_test = Configuration::get(Shoppingfeed::ORDER_IMPORT_TEST);
         $order_import_shipped = Configuration::get(Shoppingfeed::ORDER_IMPORT_SHIPPED);
 
@@ -73,26 +74,26 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
 
     public function renderRulesConfigurationForm()
     {
-        $fields_form = array(
-            'legend' => array(
+        $fields_form = [
+            'legend' => [
                 'title' => $this->module->l('Rules Configuration', 'AdminShoppingfeedOrderImportRules'),
-                'icon' => 'icon-cogs'
-            ),
-            'input' => array(),
-            'submit' => array(
+                'icon' => 'icon-cogs',
+            ],
+            'input' => [],
+            'submit' => [
                 'title' => $this->module->l('Save', 'AdminShoppingfeedOrderImportRules'),
                 'name' => 'saveRulesConfiguration',
                 // PS hides the button if this is not set
-                'id' => 'shoppingfeed_saveRulesConfiguration-submit'
-            )
-        );
+                'id' => 'shoppingfeed_saveRulesConfiguration-submit',
+            ],
+        ];
 
         $rulesInformation = $this->specificRulesManager->getRulesInformation();
         if (empty($rulesInformation)) {
             return '';
         }
 
-        $fields_value = array();
+        $fields_value = [];
         foreach ($rulesInformation as $ruleInformation) {
             if (empty($ruleInformation['configurationSubform'])) {
                 continue;
@@ -122,12 +123,12 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
             return '';
         }
 
-        $helper = new HelperForm($this);
+        $helper = new HelperForm();
         $this->setHelperDisplay($helper);
         $helper->submit_action = 'saveRulesConfiguration';
         $helper->fields_value = $fields_value;
 
-        return $helper->generateForm(array(array('form' => $fields_form)));
+        return $helper->generateForm([['form' => $fields_form]]);
     }
 
     public function renderRulesList()
@@ -137,20 +138,20 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
             return '';
         }
 
-        $fieldsList = array(
-            'className' => array(
+        $fieldsList = [
+            'className' => [
                 'title' => $this->module->l('Class name', 'AdminShoppingfeedOrderImportRules'),
                 'search' => false,
-            ),
-            'conditions' => array(
+            ],
+            'conditions' => [
                 'title' => $this->module->l('Conditions', 'AdminShoppingfeedOrderImportRules'),
                 'search' => false,
-            ),
-            'description' => array(
+            ],
+            'description' => [
                 'title' => $this->module->l('Description', 'AdminShoppingfeedOrderImportRules'),
                 'search' => false,
-            ),
-        );
+            ],
+        ];
 
         $helper = new HelperList();
         $helper->title = 'Helper List';
@@ -171,93 +172,93 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
 
         $allState = OrderState::getOrderStates($this->context->language->id);
 
-        $orderShippedState = array();
-        $orderCancelledState = array();
-        $orderRefundedState = array();
+        $orderShippedState = [];
+        $orderCancelledState = [];
+        $orderRefundedState = [];
 
-        $ids_shipped_status_selected = json_decode(Configuration::get(ShoppingFeed::SHIPPED_ORDERS));
-        $ids_cancelled_status_selected = json_decode(Configuration::get(ShoppingFeed::CANCELLED_ORDERS));
+        $ids_shipped_status_selected = json_decode(Configuration::get(Shoppingfeed::SHIPPED_ORDERS));
+        $ids_cancelled_status_selected = json_decode(Configuration::get(Shoppingfeed::CANCELLED_ORDERS));
 
-        $ids_refunded_status_selected = json_decode(Configuration::get(ShoppingFeed::REFUNDED_ORDERS));
+        $ids_refunded_status_selected = json_decode(Configuration::get(Shoppingfeed::REFUNDED_ORDERS));
         if (!is_array($ids_refunded_status_selected)) {
             $ids_refunded_status_selected = [$ids_refunded_status_selected];
         }
 
-        $orderShippedState['selected'] = array();
-        $orderCancelledState['selected'] = array();
-        $orderRefundedState['selected'] = array();
-        $orderShippedState['unselected'] = array();
-        $orderCancelledState['unselected'] = array();
-        $orderRefundedState['unselected'] = array();
+        $orderShippedState['selected'] = [];
+        $orderCancelledState['selected'] = [];
+        $orderRefundedState['selected'] = [];
+        $orderShippedState['unselected'] = [];
+        $orderCancelledState['unselected'] = [];
+        $orderRefundedState['unselected'] = [];
 
         foreach ($allState as $state) {
-            $orderShippedState[in_array($state['id_order_state'], $ids_shipped_status_selected) ? 'selected' : 'unselected'][] = array(
+            $orderShippedState[in_array($state['id_order_state'], $ids_shipped_status_selected) ? 'selected' : 'unselected'][] = [
                 'value' => $state['id_order_state'],
                 'label' => $state['name'],
-            );
+            ];
 
-            $orderCancelledState[in_array($state['id_order_state'], $ids_cancelled_status_selected) ? 'selected' : 'unselected'][] = array(
+            $orderCancelledState[in_array($state['id_order_state'], $ids_cancelled_status_selected) ? 'selected' : 'unselected'][] = [
                 'value' => $state['id_order_state'],
                 'label' => $state['name'],
-            );
+            ];
 
-            $orderRefundedState[in_array($state['id_order_state'], $ids_refunded_status_selected) ? 'selected' : 'unselected'][] = array(
+            $orderRefundedState[in_array($state['id_order_state'], $ids_refunded_status_selected) ? 'selected' : 'unselected'][] = [
                 'value' => $state['id_order_state'],
                 'label' => $state['name'],
-            );
+            ];
         }
 
         $sfCarriers = ShoppingfeedCarrier::getAllCarriers();
 
-        $fields_form = array(
-            'form' => array(
-                'form' => array(
+        $fields_form = [
+            'form' => [
+                'form' => [
                     'id_form' => 'order-sync-form',
-                    'legend' => array(
+                    'legend' => [
                         'title' => $this->module->l('Orders import and synchronization settings (All shop)', 'AdminShoppingfeedOrderImportRules'),
-                    ),
-                    'input' => array(
-                        array(
+                    ],
+                    'input' => [
+                        [
                             'type' => 'shoppingfeed_alert',
                             'severity' => 'warning',
                             'condition' => !$order_import_available,
-                            'message' => $this->module->l('The Shopping Feed module (shoppingfluxexport) is installed on your shop for enabling the orders import synchronization. The “Order importation” option must be disabled in the module for enabling this type of synchronization in this module. If you disable the options in the shoppingfluxexport\'s module and you enable it again later the button "New orders import" will be disabled automatically in the Shopping feed 15 min module.', 'AdminShoppingfeedOrderImportRules')
-                        ),
-                        array(
+                            'message' => $this->module->l('The Shopping Feed module (shoppingfluxexport) is installed on your shop for enabling the orders import synchronization. The “Order importation” option must be disabled in the module for enabling this type of synchronization in this module. If you disable the options in the shoppingfluxexport\'s module and you enable it again later the button "New orders import" will be disabled automatically in the Shopping feed 15 min module.', 'AdminShoppingfeedOrderImportRules'),
+                        ],
+                        [
                             'type' => 'switch',
                             'label' => $this->module->l('New orders import', 'AdminShoppingfeedOrderImportRules'),
                             'name' => Shoppingfeed::ORDER_IMPORT_ENABLED,
                             'id' => 'shoppingfeed_order-import-switch',
                             'is_bool' => true,
                             'disabled' => !$order_import_available,
-                            'values' => array(
-                                array(
+                            'values' => [
+                                [
                                     'id' => 'ok',
                                     'value' => 1,
-                                ),
-                                array(
+                                ],
+                                [
                                     'id' => 'ko',
                                     'value' => 0,
-                                )
-                            ),
-                        ),
-                        array(
+                                ],
+                            ],
+                        ],
+                        [
                             'type' => 'switch',
                             'label' => $this->module->l('Allow import testing order', 'AdminShoppingfeedOrderImportRules'),
                             'name' => Shoppingfeed::ORDER_IMPORT_TEST,
                             'id' => 'shoppingfeed_order-import-switch',
                             'is_bool' => true,
                             'disabled' => !Configuration::get(Shoppingfeed::ORDER_IMPORT_ENABLED),
-                            'values' => array(
-                                array(
+                            'values' => [
+                                [
                                     'value' => 1,
-                                ),
-                                array(
+                                ],
+                                [
                                     'value' => 0,
-                                )
-                            ),
-                        ),
-                        array(
+                                ],
+                            ],
+                        ],
+                        [
                             'type' => 'switch',
                             'label' => $this->module->l('Import orders already in "shipped" status on Shopping Feed, except orders shipped by market places', 'AdminShoppingfeedOrderImportRules'),
                             'name' => Shoppingfeed::ORDER_IMPORT_SHIPPED,
@@ -266,18 +267,18 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
                             'hint' => $this->module->l('By default, a ”shipped” order will be imported as ”delivered” on PrestaShop. This can be configured.', 'AdminShoppingfeedOrderImportRules'),
                             'is_bool' => true,
                             'disabled' => !Configuration::get(Shoppingfeed::ORDER_IMPORT_ENABLED),
-                            'values' => array(
-                                array(
+                            'values' => [
+                                [
                                     'id' => 'ok',
                                     'value' => 1,
-                                ),
-                                array(
+                                ],
+                                [
                                     'id' => 'ko',
                                     'value' => 0,
-                                )
-                            ),
-                        ),
-                        array(
+                                ],
+                            ],
+                        ],
+                        [
                             'type' => 'switch',
                             'label' => $this->module->l('Allow import orders shipped by Marketplaces Amazon, CDiscount and Manomano', 'AdminShoppingfeedOrderImportRules'),
                             'name' => Shoppingfeed::ORDER_IMPORT_SHIPPED_MARKETPLACE,
@@ -285,34 +286,34 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
                             'hint' => $this->module->l('Order will be imported regardless of its status on Shopping Feed side', 'AdminShoppingfeedOrderImportRules'),
                             'is_bool' => true,
                             'disabled' => !Configuration::get(Shoppingfeed::ORDER_IMPORT_ENABLED),
-                            'values' => array(
-                                array(
+                            'values' => [
+                                [
                                     'value' => 1,
-                                ),
-                                array(
+                                ],
+                                [
                                     'value' => 0,
-                                )
-                            ),
-                        ),
-                        array(
+                                ],
+                            ],
+                        ],
+                        [
                             'type' => 'shoppingfeed_open-section',
                             'id' => 'shoppingfeed_carriers-matching',
                             'title' => $this->module->l('Carriers matching', 'AdminShoppingfeedOrderImportRules'),
                             'desc' => $this->module->l('Match carriers from marketplaces to your Prestashop\'s carriers', 'AdminShoppingfeedOrderImportRules'),
-                        ),
-                        array(
+                        ],
+                        [
                             'type' => 'shoppingfeed_carrier-matching',
                             'marketplace_filter_options' => array_map(
                                 function ($m) {
-                                    return array(
+                                    return [
                                         'value' => $m,
                                         'label' => $m,
-                                    );
+                                    ];
                                 },
                                 ShoppingfeedCarrier::getAllMarketplaces()
                             ),
-                            'default_carrier_field_name' => ShoppingFeed::ORDER_DEFAULT_CARRIER_REFERENCE,
-                            'carriers_matching_field' => array(
+                            'default_carrier_field_name' => Shoppingfeed::ORDER_DEFAULT_CARRIER_REFERENCE,
+                            'carriers_matching_field' => [
                                 'name' => 'shoppingfeed_carrier_matching',
                                 'labels' => array_map(
                                     function ($c) {
@@ -325,154 +326,154 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
                             ),
                             'carriers' => $this->getAvailableCarriers(),
                             'shoppingfeed_carriers' => $sfCarriers,
-                        ),
-                        array(
+                        ],
+                        [
                             'type' => 'shoppingfeed_close-section',
-                        ),
-                        array(
+                        ],
+                        [
                             'type' => 'shoppingfeed_alert',
                             'severity' => 'warning',
                             'condition' => !$order_sync_available,
-                            'message' => $this->module->l('The Shopping Feed Official module (shoppingfluxexport) should be installed on your shop for enabling the post-import synchronization. The “Order shipment” & “Order cancellation” options must be disabled in the official module for enabling this type of synchronization in the new module. If you disable these options in the official module and you enable them again later the “Orders post-import synchronization” will be disabled automatically in the Shopping feed 15 min module.', 'AdminShoppingfeedOrderImportRules')
-                        ),
-                        array(
+                            'message' => $this->module->l('The Shopping Feed Official module (shoppingfluxexport) should be installed on your shop for enabling the post-import synchronization. The “Order shipment” & “Order cancellation” options must be disabled in the official module for enabling this type of synchronization in the new module. If you disable these options in the official module and you enable them again later the “Orders post-import synchronization” will be disabled automatically in the Shopping feed 15 min module.', 'AdminShoppingfeedOrderImportRules'),
+                        ],
+                        [
                             'type' => 'switch',
                             'is_bool' => true,
                             'disabled' => !$order_sync_available,
                             'hint' => $this->module->l('The order post-import synchronization allows you to manage the following order statuses : shipped, cancelled, refunded.', 'AdminShoppingfeedOrderImportRules'),
-                            'values' => array(
-                                array(
+                            'values' => [
+                                [
                                     'id' => 'ok',
                                     'value' => 1,
-                                ),
-                                array(
+                                ],
+                                [
                                     'id' => 'ko',
                                     'value' => 0,
-                                )
-                            ),
+                                ],
+                            ],
                             'label' => $this->module->l('Orders post-import synchronization', 'AdminShoppingfeedOrderImportRules'),
                             'name' => Shoppingfeed::ORDER_SYNC_ENABLED,
-                        ),
-                        array(
+                        ],
+                        [
                             'type' => 'shoppingfeed_alert',
                             'severity' => 'info',
                             'message' => sprintf(
                                 $this->module->l('You should set the frequency of synchronization via a %s Cron job %s for updating your orders status', 'AdminShoppingfeedOrderImportRules'),
                                 '<a href="' . $cronLink . '">',
                                 '</a>'
-                            )
-                        ),
-                        array(
+                            ),
+                        ],
+                        [
                             'type' => 'shoppingfeed_open-section',
                             'id' => 'shoppingfeed_orders-status',
-                        ),
-                        array(
+                        ],
+                        [
                             'type' => 'shoppingfeed_double-list',
                             'name' => 'status_shipped_order',
                             'label' => $this->module->l('Shipped orders synchronization', 'AdminShoppingfeedOrderImportRules'),
-                            'unselected' => array(
+                            'unselected' => [
                                 'id' => 'status_shipped_order_add',
                                 'label' => $this->module->l('Unselected order status', 'AdminShoppingfeedOrderImportRules'),
                                 'options' => $orderShippedState['unselected'],
-                                'btn' => array(
+                                'btn' => [
                                     'id' => 'status_shipped_order_add_btn',
                                     'label' => $this->module->l('Add', 'AdminShoppingfeedOrderImportRules'),
-                                ),
-                            ),
-                            'selected' => array(
+                                ],
+                            ],
+                            'selected' => [
                                 'id' => 'status_shipped_order_remove',
                                 'label' => $this->module->l('Selected order status', 'AdminShoppingfeedOrderImportRules'),
                                 'options' => $orderShippedState['selected'],
-                                'btn' => array(
+                                'btn' => [
                                     'id' => 'status_shipped_order_remove_btn',
                                     'label' => $this->module->l('Remove', 'AdminShoppingfeedOrderImportRules'),
-                                ),
-                            ),
-                        ),
-                        array(
+                                ],
+                            ],
+                        ],
+                        [
                             'type' => 'text',
                             'label' => $this->module->l('Time shift for tracking numbers synchronization', 'AdminShoppingfeedOrderImportRules'),
                             'name' => 'tracking_timeshift',
                             'hint' => $this->module->l('In some cases, the tracking number can be sent to your shop after the order status update. For being sure and always sending the tracking numbers to the marketplaces you can set a shift time (in minutes). By default, the sending of the tracking number will be delayed by 5 minutes. Please note that the synchronization will be done after x minutes of the Time shift by the next Cron task.', 'AdminShoppingfeedOrderImportRules'),
                             'suffix' => $this->module->l('minutes', 'AdminShoppingfeedOrderImportRules'),
                             'class' => 'col-lg-6',
-                        ),
-                        array(
+                        ],
+                        [
                             'type' => 'shoppingfeed_double-list',
                             'name' => 'status_cancelled_order',
                             'label' => $this->module->l('Cancelled orders synchronization', 'AdminShoppingfeedOrderImportRules'),
-                            'unselected' => array(
+                            'unselected' => [
                                 'id' => 'status_cancelled_order_add',
                                 'label' => $this->module->l('Unselected order status', 'AdminShoppingfeedOrderImportRules'),
                                 'options' => $orderCancelledState['unselected'],
-                                'btn' => array(
+                                'btn' => [
                                     'id' => 'status_cancelled_order_add_btn',
                                     'label' => $this->module->l('Add', 'AdminShoppingfeedOrderImportRules'),
-                                ),
-                            ),
-                            'selected' => array(
+                                ],
+                            ],
+                            'selected' => [
                                 'id' => 'status_cancelled_order_remove',
                                 'label' => $this->module->l('Selected order status', 'AdminShoppingfeedOrderImportRules'),
                                 'options' => $orderCancelledState['selected'],
-                                'btn' => array(
+                                'btn' => [
                                     'id' => 'status_cancelled_order_remove_btn',
                                     'label' => $this->module->l('Remove', 'AdminShoppingfeedOrderImportRules'),
-                                ),
-                            ),
-                        ),
-                        array(
+                                ],
+                            ],
+                        ],
+                        [
                             'type' => 'shoppingfeed_double-list',
                             'name' => 'status_refunded_order',
                             'label' => $this->module->l('Refunded orders synchronization', 'AdminShoppingfeedOrderImportRules'),
-                            'unselected' => array(
+                            'unselected' => [
                                 'id' => 'status_refunded_order_add',
                                 'label' => $this->module->l('Unselected order status', 'AdminShoppingfeedOrderImportRules'),
                                 'options' => $orderRefundedState['unselected'],
-                                'btn' => array(
+                                'btn' => [
                                     'id' => 'status_refunded_order_add_btn',
                                     'label' => $this->module->l('Add', 'AdminShoppingfeedOrderImportRules'),
-                                ),
-                            ),
-                            'selected' => array(
+                                ],
+                            ],
+                            'selected' => [
                                 'id' => 'status_refunded_order_remove',
                                 'label' => $this->module->l('Selected order status', 'AdminShoppingfeedOrderImportRules'),
                                 'options' => $orderRefundedState['selected'],
-                                'btn' => array(
+                                'btn' => [
                                     'id' => 'status_refunded_order_remove_btn',
                                     'label' => $this->module->l('Remove', 'AdminShoppingfeedOrderImportRules'),
-                                ),
-                            ),
-                        ),
-                        array(
+                                ],
+                            ],
+                        ],
+                        [
                             'type' => 'shoppingfeed_alert',
                             'severity' => 'warning',
-                            'message' => $this->module->l('The Max order update parameter is reserved for experts (100 by default). You can configure the number of orders to be processed each time the cron job is called. The more you increase this number, the greater the number of database queries. The value of this parameter is to be calibrated according to the capacities of your MySQL server and your stock rotation rate to process the queue in the time that suits you.', 'AdminShoppingfeedOrderImportRules')
-                        ),
-                        array(
+                            'message' => $this->module->l('The Max order update parameter is reserved for experts (100 by default). You can configure the number of orders to be processed each time the cron job is called. The more you increase this number, the greater the number of database queries. The value of this parameter is to be calibrated according to the capacities of your MySQL server and your stock rotation rate to process the queue in the time that suits you.', 'AdminShoppingfeedOrderImportRules'),
+                        ],
+                        [
                             'type' => 'text',
                             'label' => $this->module->l('Max. order update per request', 'AdminShoppingfeedOrderImportRules'),
                             'name' => 'max_order_update',
                             'class' => 'number_require',
-                        ),
-                        array(
+                        ],
+                        [
                             'type' => 'date',
                             'label' => $this->module->l('Import the orders since', 'AdminShoppingfeedOrderImportRules'),
                             'name' => Shoppingfeed::ORDER_IMPORT_PERMANENT_SINCE_DATE,
-                        ),
-                        array(
+                        ],
+                        [
                             'type' => 'shoppingfeed_close-section',
-                        ),
-                    ),
-                    'submit' => array(
+                        ],
+                    ],
+                    'submit' => [
                         'title' => $this->module->l('Save', 'AdminShoppingfeedOrderImportRules'),
-                        'name' => 'saveOrdersConfig'
-                    ),
-                ),
-            ),
-        );
+                        'name' => 'saveOrdersConfig',
+                    ],
+                ],
+            ],
+        ];
 
-        $helper = new HelperForm($this);
-        $helper->fields_value = array(
+        $helper = new HelperForm();
+        $helper->fields_value = [
             Shoppingfeed::ORDER_IMPORT_ENABLED => !$order_import_available ? false : Configuration::get(Shoppingfeed::ORDER_IMPORT_ENABLED),
             Shoppingfeed::ORDER_IMPORT_TEST => !$order_import_test ? false : Configuration::get(Shoppingfeed::ORDER_IMPORT_TEST),
             Shoppingfeed::ORDER_IMPORT_SHIPPED => !$order_import_shipped ? false : Configuration::get(Shoppingfeed::ORDER_IMPORT_SHIPPED),
@@ -481,8 +482,8 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
             Shoppingfeed::ORDER_DEFAULT_CARRIER_REFERENCE => Configuration::get(Shoppingfeed::ORDER_DEFAULT_CARRIER_REFERENCE),
             'tracking_timeshift' => Configuration::get(Shoppingfeed::ORDER_STATUS_TIME_SHIFT),
             'max_order_update' => Configuration::get(Shoppingfeed::ORDER_STATUS_MAX_ORDERS),
-            Shoppingfeed::ORDER_IMPORT_PERMANENT_SINCE_DATE => $this->getSinceDateService()->get()
-        );
+            Shoppingfeed::ORDER_IMPORT_PERMANENT_SINCE_DATE => $this->getSinceDateService()->get(),
+        ];
 
         $helper->base_folder = $this->getTemplatePath() . $this->override_folder;
         $helper->base_tpl = 'order_status_syncro.tpl';
@@ -492,23 +493,23 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
 
     public function welcomeForm()
     {
-        $fields_form = array(
-            'legend' => array(
+        $fields_form = [
+            'legend' => [
                 'title' => $this->module->l('Shoppingfeed Prestashop Plugin (Feed&Order)', 'AdminShoppingfeedOrderImportRules'),
-            )
-        );
+            ],
+        ];
 
-        $helper = new HelperForm($this);
+        $helper = new HelperForm();
         $this->setHelperDisplay($helper);
-        $helper->tpl_vars['img_path'] = $this->module->getPathUri() . "views/img/";
+        $helper->tpl_vars['img_path'] = $this->module->getPathUri() . 'views/img/';
         $helper->base_folder = $this->getTemplatePath();
         $helper->base_tpl = 'welcome.tpl';
 
-        return $helper->generateForm(array(array('form' => $fields_form)));
+        return $helper->generateForm([['form' => $fields_form]]);
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function postProcess()
     {
@@ -523,15 +524,17 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
     {
         $rulesConfiguration = Tools::getValue('rulesConfiguration');
         Configuration::updateValue(
-            ShoppingFeed::ORDER_IMPORT_SPECIFIC_RULES_CONFIGURATION,
+            Shoppingfeed::ORDER_IMPORT_SPECIFIC_RULES_CONFIGURATION,
             Tools::jsonEncode($rulesConfiguration),
             false,
             null,
             $this->context->shop->id
         );
     }
+
     /**
      * Save the post-import for the module
+     *
      * @return bool
      */
     public function saveOrdersConfig()
@@ -559,29 +562,29 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
 
         $orderStatusesShipped = Tools::getValue('status_shipped_order');
         if (!$orderStatusesShipped) {
-            $orderStatusesShipped = array();
+            $orderStatusesShipped = [];
         }
 
         $orderStatusesCancelled = Tools::getValue('status_cancelled_order');
         if (!$orderStatusesCancelled) {
-            $orderStatusesCancelled = array();
+            $orderStatusesCancelled = [];
         }
 
         $orderStatusRefunded = Tools::getValue('status_refunded_order');
         if (!$orderStatusRefunded) {
-            $orderStatusRefunded = array();
+            $orderStatusRefunded = [];
         }
 
         $tracking_timeshift = Tools::getValue('tracking_timeshift');
         $max_orders = Tools::getValue('max_order_update');
 
-        if (!is_numeric($tracking_timeshift) || (int)$tracking_timeshift <= 0) {
+        if (!is_numeric($tracking_timeshift) || (int) $tracking_timeshift <= 0) {
             $this->errors[] = $this->module->l('You must specify a valid \'Time shift\' number (greater than 0).', 'AdminShoppingfeedOrderImportRules');
         } elseif (!is_numeric($max_orders) || $max_orders > 200 || $max_orders <= 0) {
             $this->errors[] = $this->module->l('You must specify a valid \'Max Order update\' number (between 1 and 200 included).', 'AdminShoppingfeedOrderImportRules');
         } else {
             Configuration::updateValue(Shoppingfeed::SHIPPED_ORDERS, json_encode($orderStatusesShipped));
-            Configuration::updateValue(Shoppingfeed::ORDER_STATUS_TIME_SHIFT, (int)$tracking_timeshift);
+            Configuration::updateValue(Shoppingfeed::ORDER_STATUS_TIME_SHIFT, (int) $tracking_timeshift);
             Configuration::updateValue(Shoppingfeed::CANCELLED_ORDERS, json_encode($orderStatusesCancelled));
             Configuration::updateValue(Shoppingfeed::REFUNDED_ORDERS, json_encode($orderStatusRefunded));
             Configuration::updateValue(Shoppingfeed::ORDER_STATUS_MAX_ORDERS, $max_orders);
@@ -594,7 +597,7 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
             foreach ($carriersMatching as $id_shoppingfeed_carrier => $id_carrier_reference) {
                 $sfCarrier = new ShoppingfeedCarrier($id_shoppingfeed_carrier);
                 if (Validate::isLoadedObject($sfCarrier)) {
-                    $sfCarrier->id_carrier_reference = (int)$id_carrier_reference;
+                    $sfCarrier->id_carrier_reference = (int) $id_carrier_reference;
                     $sfCarrier->is_new = 0;
                     $sfCarrier->update();
                 }

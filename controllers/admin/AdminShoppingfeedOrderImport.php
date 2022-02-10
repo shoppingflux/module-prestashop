@@ -16,7 +16,6 @@
  * @copyright Since 2019 Shopping Feed
  * @license   https://opensource.org/licenses/AFL-3.0  Academic Free License (AFL 3.0)
  */
-
 if (!defined('_PS_VERSION_')) {
     exit;
 }
@@ -38,10 +37,10 @@ class AdminShoppingfeedOrderImportController extends ShoppingfeedAdminController
         parent::setMedia($isNewTheme);
         $this->addCSS(_PS_MODULE_DIR_ . 'shoppingfeed/views/css/process_monitor/process_monitor.css');
         Media::addJsDef(
-            array(
+            [
                 'shoppingfeedProcessMonitorController' => $this->context->link->getAdminLink('AdminShoppingfeedProcessMonitor'),
-                'shoppingfeedProcessOrderImportController' => $this->context->link->getAdminLink('AdminShoppingfeedOrderImport')
-            )
+                'shoppingfeedProcessOrderImportController' => $this->context->link->getAdminLink('AdminShoppingfeedOrderImport'),
+            ]
         );
         $this->addJS($this->module->getPathUri() . 'views/js/order_import/import.js');
     }
@@ -56,22 +55,22 @@ class AdminShoppingfeedOrderImportController extends ShoppingfeedAdminController
 
     public function welcomeForm()
     {
-        $fields_form = array(
-            'legend' => array(
+        $fields_form = [
+            'legend' => [
                 'title' => $this->module->l('Shoppingfeed Prestashop Plugin (Feed&Order)', 'AdminShoppingfeedAccountSettings'),
-            )
-        );
+            ],
+        ];
 
-        $helper = new HelperForm($this);
+        $helper = new HelperForm();
         $this->setHelperDisplay($helper);
         $helper->base_folder = $this->getTemplatePath() . 'shoppingfeed_order/';
         $helper->base_tpl = 'shoppingfluxexport.tpl';
         $this->context->smarty->assign(
-            'isOrderSyncAvailable', 
+            'isOrderSyncAvailable',
             Module::isInstalled('shoppingfluxexport') === true && Module::isEnabled('shoppingfluxexport') === false
         );
 
-        return $helper->generateForm(array(array('form' => $fields_form)));
+        return $helper->generateForm([['form' => $fields_form]]);
     }
 
     protected function getProcessModal()
@@ -86,8 +85,8 @@ class AdminShoppingfeedOrderImportController extends ShoppingfeedAdminController
                 Tools::jsonEncode(
                     [
                         'errors' => [
-                            $this->module->l('shoppingfluxexport not install, impossible to import order from shoppingfluxexport', 'adminshoppingfeedorderimport')
-                        ]
+                            $this->module->l('shoppingfluxexport not install, impossible to import order from shoppingfluxexport', 'adminshoppingfeedorderimport'),
+                        ],
                     ]
                 )
             );
@@ -98,8 +97,8 @@ class AdminShoppingfeedOrderImportController extends ShoppingfeedAdminController
                 Tools::jsonEncode(
                     [
                         'errors' => [
-                            $this->module->l('shoppingfluxexport is enabled, impossible to import order from shoppingfluxexport', 'adminshoppingfeedorderimport')
-                        ]
+                            $this->module->l('shoppingfluxexport is enabled, impossible to import order from shoppingfluxexport', 'adminshoppingfeedorderimport'),
+                        ],
                     ]
                 )
             );
@@ -108,13 +107,13 @@ class AdminShoppingfeedOrderImportController extends ShoppingfeedAdminController
 
     private function createSfOrder($apiOrder, $id_order, $id_shoppingfeed_token)
     {
-        $orderData =  new OrderData($apiOrder);
+        $orderData = new OrderData($apiOrder);
         $sfOrder = new ShoppingfeedOrder();
         $sfOrder->id_order = $id_order;
-        $sfOrder->id_internal_shoppingfeed = (string)$apiOrder->getId();
+        $sfOrder->id_internal_shoppingfeed = (string) $apiOrder->getId();
         $sfOrder->id_order_marketplace = $apiOrder->getReference();
         $sfOrder->name_marketplace = $apiOrder->getChannel()->getName();
-        $sfOrder->id_shoppingfeed_token = (int)$id_shoppingfeed_token;
+        $sfOrder->id_shoppingfeed_token = (int) $id_shoppingfeed_token;
         $paymentInformation = $orderData->payment;
         $sfOrder->payment_method = !empty($paymentInformation['method']) ? $paymentInformation['method'] : '-';
         if ($orderData->createdAt->getTimestamp() !== 0) {
@@ -128,7 +127,7 @@ class AdminShoppingfeedOrderImportController extends ShoppingfeedAdminController
         $this->checkModuleShoppingfluxexport();
         $filters = [
             'acknowledgment' => 'acknowledged',
-            'since' => date('Y-m-d\TH:m:s', strtotime('-7 days'))
+            'since' => date('Y-m-d\TH:m:s', strtotime('-7 days')),
         ];
         $errors = [];
         $resultImport = [];
@@ -139,7 +138,7 @@ class AdminShoppingfeedOrderImportController extends ShoppingfeedAdminController
             $currentToken = $sft->findByToken($curentTokensShoppingfluxexport['token']);
             if ($currentToken === false) {
                 $errors[] = $error = sprintf(
-                    $this->module->l('Token %s not found in shoppingfeed', 'adminshoppingfeedorderimport'), 
+                    $this->module->l('Token %s not found in shoppingfeed', 'adminshoppingfeedorderimport'),
                     $curentTokensShoppingfluxexport['token']
                 );
                 ProcessLoggerHandler::logError($error);
@@ -183,7 +182,7 @@ class AdminShoppingfeedOrderImportController extends ShoppingfeedAdminController
                 $apiOrderData = $apiOrder->toArray();
                 $id_order = $apiOrderData['storeReference'];
                 $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow('
-                    SELECT `id_order` FROM `'._DB_PREFIX_.'orders` WHERE `id_order` = '.(int)$id_order
+                    SELECT `id_order` FROM `' . _DB_PREFIX_ . 'orders` WHERE `id_order` = ' . (int) $id_order
                 );
                 if ($result === false) {
                     $error = sprintf(
@@ -195,7 +194,7 @@ class AdminShoppingfeedOrderImportController extends ShoppingfeedAdminController
                     continue;
                 }
                 try {
-                    $this->createSfOrder($apiOrder, (int)$id_order, (int)$currentToken['id_shoppingfeed_token']);
+                    $this->createSfOrder($apiOrder, (int) $id_order, (int) $currentToken['id_shoppingfeed_token']);
                     ++$resultImport[$curentTokensShoppingfluxexport['token']]['success'];
                 } catch (Exception $e) {
                     $error = sprintf(
@@ -220,7 +219,7 @@ class AdminShoppingfeedOrderImportController extends ShoppingfeedAdminController
             ProcessLoggerHandler::logInfo($log);
         }
         ProcessLoggerHandler::closeLogger();
-            $this->ajaxDie(
+        $this->ajaxDie(
             Tools::jsonEncode(['errors' => $errors])
         );
     }

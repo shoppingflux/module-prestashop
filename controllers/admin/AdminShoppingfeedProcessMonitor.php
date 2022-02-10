@@ -21,7 +21,6 @@
  * @copyright Copyright (c) 202-ecommerce
  * @license   Commercial license
  */
-
 if (!defined('_PS_VERSION_')) {
     exit;
 }
@@ -30,7 +29,7 @@ require_once _PS_MODULE_DIR_ . 'shoppingfeed/vendor/autoload.php';
 use ShoppingfeedClasslib\Extensions\ProcessMonitor\Controllers\Admin\AdminProcessMonitorController;
 
 /**
- * @inheritdoc
+ * {@inheritdoc}
  */
 class AdminShoppingfeedProcessMonitorController extends AdminProcessMonitorController
 {
@@ -42,7 +41,7 @@ class AdminShoppingfeedProcessMonitorController extends AdminProcessMonitorContr
             'name',
             'IFNULL(pid,"") as pid',
             'duration',
-            'last_update'
+            'last_update',
         ];
         $this->_select = implode(',', $select);
     }
@@ -58,7 +57,7 @@ class AdminShoppingfeedProcessMonitorController extends AdminProcessMonitorContr
             $this->context->smarty->assign('js_def', Media::getJsDef());
             $this->context->smarty->assign(
                 'content',
-                $this->context->smarty->fetch(_PS_ALL_THEMES_DIR_.'javascript.tpl') . $this->content
+                $this->context->smarty->fetch(_PS_ALL_THEMES_DIR_ . 'javascript.tpl') . $this->content
             );
         }
     }

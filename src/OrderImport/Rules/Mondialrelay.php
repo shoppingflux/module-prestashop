@@ -28,26 +28,26 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-use Module;
-use Tools;
-use Configuration;
-use DbQuery;
-use Db;
 use Address;
-use Country;
 use Carrier;
-use SoapClient;
-use Order;
 use Cart;
+use Configuration;
+use Country;
+use Db;
+use DbQuery;
+use Module;
+use Order;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
+use SoapClient;
+use Tools;
 use Validate;
 
 class Mondialrelay extends RuleAbstract implements RuleInterface
 {
-    /** @var Module*/
+    /** @var Module */
     protected $module_mondialRelay;
 
     public function isApplicable(OrderResource $apiOrder)
@@ -106,10 +106,11 @@ class Mondialrelay extends RuleAbstract implements RuleInterface
                 'Order',
                 $order->id
             );
+
             return false;
         }
 
-        $carrier = new Carrier((int)$order->id_carrier);
+        $carrier = new Carrier((int) $order->id_carrier);
         $address = new Address($order->id_address_delivery);
         $countryIso = Country::getIsoById($address->id_country);
 
@@ -134,6 +135,7 @@ class Mondialrelay extends RuleAbstract implements RuleInterface
                 'Order',
                 $order->id
             );
+
             return false;
         }
 
@@ -150,6 +152,7 @@ class Mondialrelay extends RuleAbstract implements RuleInterface
         // Insertion in the module is dependent on module version.
         if (version_compare($this->module_mondialRelay->version, '3', '<')) {
             $this->addOrderBeforeV3($relayId, $countryIso, $relayData, $carrier, $order, $logPrefix);
+
             return;
         }
 
@@ -162,7 +165,7 @@ class Mondialrelay extends RuleAbstract implements RuleInterface
         $queryGetMondialRelayMethod = new DbQuery();
         $queryGetMondialRelayMethod->select('id_mr_method')
             ->from('mr_method')
-            ->where('id_carrier = ' . (int)$carrier->id)
+            ->where('id_carrier = ' . (int) $carrier->id)
             ->orderBy('id_mr_method DESC');
         $mondialRelayMethod = Db::getInstance()->getValue($queryGetMondialRelayMethod);
 
@@ -176,6 +179,7 @@ class Mondialrelay extends RuleAbstract implements RuleInterface
                 'Order',
                 $order->id
             );
+
             return false;
         }
 
@@ -185,11 +189,11 @@ class Mondialrelay extends RuleAbstract implements RuleInterface
 
         $insertResult = Db::getInstance()->insert(
             'mr_selected',
-            array(
-                'id_customer' => (int)$order->id_customer,
-                'id_method' => (int)$mondialRelayMethod,
-                'id_cart' => (int)$order->id_cart,
-                'id_order' => (int)$order->id,
+            [
+                'id_customer' => (int) $order->id_customer,
+                'id_method' => (int) $mondialRelayMethod,
+                'id_cart' => (int) $order->id_cart,
+                'id_order' => (int) $order->id,
                 'MR_Selected_Num' => pSQL($formattedRelayId),
                 'MR_Selected_LgAdr1' => pSQL($relayData->LgAdr1),
                 'MR_Selected_LgAdr2' => pSQL($relayData->LgAdr2),
@@ -198,7 +202,7 @@ class Mondialrelay extends RuleAbstract implements RuleInterface
                 'MR_Selected_CP' => pSQL($relayData->CP),
                 'MR_Selected_Ville' => pSQL($relayData->Ville),
                 'MR_Selected_Pays' => pSQL($countryIso),
-            )
+            ]
         );
 
         if ($insertResult) {
@@ -208,6 +212,7 @@ class Mondialrelay extends RuleAbstract implements RuleInterface
                 'Order',
                 $order->id
             );
+
             return;
         }
 
@@ -225,7 +230,7 @@ class Mondialrelay extends RuleAbstract implements RuleInterface
         $queryGetMondialRelayMethod = new DbQuery();
         $queryGetMondialRelayMethod->select('id_mondialrelay_carrier_method')
             ->from('mondialrelay_carrier_method')
-            ->where('id_carrier = ' . (int)$carrier->id)
+            ->where('id_carrier = ' . (int) $carrier->id)
             ->orderBy('id_mondialrelay_carrier_method DESC');
         $mondialRelayCarrierMethodId = Db::getInstance()->getValue($queryGetMondialRelayMethod);
 
@@ -239,20 +244,21 @@ class Mondialrelay extends RuleAbstract implements RuleInterface
                 'Order',
                 $order->id
             );
+
             return false;
         }
 
         // Depending of the marketplace, the length of the relay ID is not the same. (5 digits, 6 digits).
         // We force a 6 digits string required by Mondial Relay
         $formattedRelayId = str_pad($relayId, 6, '0', STR_PAD_LEFT);
-        $cart = new Cart((int)$order->id_cart);
+        $cart = new Cart((int) $order->id_cart);
         $insertResult = Db::getInstance()->insert(
             'mondialrelay_selected_relay',
-            array(
-                'id_customer' => (int)$order->id_customer,
-                'id_mondialrelay_carrier_method' => (int)$mondialRelayCarrierMethodId,
-                'id_cart' => (int)$order->id_cart,
-                'id_order' => (int)$order->id,
+            [
+                'id_customer' => (int) $order->id_customer,
+                'id_mondialrelay_carrier_method' => (int) $mondialRelayCarrierMethodId,
+                'id_cart' => (int) $order->id_cart,
+                'id_order' => (int) $order->id,
                 'selected_relay_num' => pSQL($formattedRelayId),
                 'selected_relay_adr1' => pSQL($relayData->LgAdr1),
                 'selected_relay_adr2' => pSQL($relayData->LgAdr2),
@@ -261,10 +267,10 @@ class Mondialrelay extends RuleAbstract implements RuleInterface
                 'selected_relay_postcode' => pSQL($relayData->CP),
                 'selected_relay_city' => pSQL($relayData->Ville),
                 'selected_relay_country_iso' => pSQL($countryIso),
-                'package_weight' => $cart->getTotalWeight() * (float)Configuration::get('MONDIALRELAY_WEIGHT_COEFF'),
+                'package_weight' => $cart->getTotalWeight() * (float) Configuration::get('MONDIALRELAY_WEIGHT_COEFF'),
                 'date_add' => date('Y-m-d H:i:s'),
                 'date_upd' => date('Y-m-d H:i:s'),
-            )
+            ]
         );
 
         if ($insertResult) {
@@ -274,6 +280,7 @@ class Mondialrelay extends RuleAbstract implements RuleInterface
                 'Order',
                 $order->id
             );
+
             return;
         }
 
@@ -292,7 +299,6 @@ class Mondialrelay extends RuleAbstract implements RuleInterface
      * @param string $relayId
      * @param string $countryIso
      */
-
     public function getRelayData(OrderResource $apiOrder, $relayId, $countryIso)
     {
         $urlWebService = 'http://www.mondialrelay.fr/webservice/Web_Services.asmx?WSDL';
@@ -319,19 +325,20 @@ class Mondialrelay extends RuleAbstract implements RuleInterface
                 ),
                 'Order'
             );
+
             return false;
         }
         $client->soap_defencoding = 'UTF-8';
         $client->decode_utf8 = false;
 
-        $reqParams = array(
+        $reqParams = [
             'Enseigne' => $mondialRelayConfig['enseigne'],
             'Num' => $relayId,
             'Pays' => $countryIso,
             'Security' => Tools::strtoupper(md5(
-                $mondialRelayConfig['enseigne'].$relayId.$countryIso.$mondialRelayConfig['apiKey']
-            ))
-        );
+                $mondialRelayConfig['enseigne'] . $relayId . $countryIso . $mondialRelayConfig['apiKey']
+            )),
+        ];
 
         $result = $client->WSI2_AdressePointRelais($reqParams);
 
@@ -346,6 +353,7 @@ class Mondialrelay extends RuleAbstract implements RuleInterface
                 ),
                 'Order'
             );
+
             return false;
         } else {
             return $result->WSI2_AdressePointRelaisResult;
@@ -362,10 +370,11 @@ class Mondialrelay extends RuleAbstract implements RuleInterface
                 return false;
             }
             $mondialRelayConfig = unserialize($mondialRelayConfig);
-            return array(
+
+            return [
                 'enseigne' => $mondialRelayConfig['MR_ENSEIGNE_WEBSERVICE'],
                 'apiKey' => $mondialRelayConfig['MR_KEY_WEBSERVICE'],
-            );
+            ];
         }
 
         $enseigne = Configuration::get('MONDIALRELAY_WEBSERVICE_ENSEIGNE');
@@ -376,14 +385,14 @@ class Mondialrelay extends RuleAbstract implements RuleInterface
             return false;
         }
 
-        return array(
+        return [
             'enseigne' => $enseigne,
             'apiKey' => $apiKey,
-        );
+        ];
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getConditions()
     {
@@ -391,7 +400,7 @@ class Mondialrelay extends RuleAbstract implements RuleInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getDescription()
     {

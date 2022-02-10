@@ -21,17 +21,15 @@
  * @copyright Copyright (c) 202-ecommerce
  * @license   Commercial license
  */
-
 if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-use ShoppingFeed\Feed\ProductGenerator;
 use ShoppingFeed\Feed\Product\Product;
-use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 use ShoppingfeedAddon\Services\SfProductGenerator;
+use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 
-class ShoppingfeedProductModuleFrontController  extends \ModuleFrontController
+class ShoppingfeedProductModuleFrontController extends \ModuleFrontController
 {
     protected $sfToken = null;
 
@@ -45,7 +43,7 @@ class ShoppingfeedProductModuleFrontController  extends \ModuleFrontController
         }
 
         if ($token === false) {
-            die();
+            exit();
         }
 
         $this->preparePreloading($token);
@@ -59,30 +57,30 @@ class ShoppingfeedProductModuleFrontController  extends \ModuleFrontController
             ->addMapper([$this, 'mapper']);
 
         $limit = 100;
-        $nb_iteration = ceil((new ShoppingfeedPreloading)->getPreloadingCount($token['id_shoppingfeed_token']) / $limit);
+        $nb_iteration = ceil((new ShoppingfeedPreloading())->getPreloadingCount($token['id_shoppingfeed_token']) / $limit);
         $productGenerator->open();
 
         for ($i = 0; $i < $nb_iteration; ++$i) {
-            $products = (new ShoppingfeedPreloading)->findAllByTokenId($token['id_shoppingfeed_token'], $i * $limit, $limit);
+            $products = (new ShoppingfeedPreloading())->findAllByTokenId($token['id_shoppingfeed_token'], $i * $limit, $limit);
             $productGenerator->appendProduct($products);
         }
 
         $productGenerator->close();
 
         Tools::redirect(
-            $this->getBaseLink($token['id_shop']). $fileXml,
+            $this->getBaseLink($token['id_shop']) . $fileXml,
             __PS_BASE_URI__,
             null,
-            array('HTTP/1.1 302 Moved Temporarily')
+            ['HTTP/1.1 302 Moved Temporarily']
         );
         exit;
     }
 
     private function getBaseLink($id_shop)
     {
-        $ssl_enable = (bool)Configuration::get('PS_SSL_ENABLED');
+        $ssl_enable = (bool) Configuration::get('PS_SSL_ENABLED');
         $shop = new Shop($id_shop);
-        $base = (($ssl_enable) ? 'https://'.$shop->domain_ssl : 'http://'.$shop->domain);
+        $base = (($ssl_enable) ? 'https://' . $shop->domain_ssl : 'http://' . $shop->domain);
 
         return $base . $shop->getBaseURI();
     }
@@ -127,7 +125,6 @@ class ShoppingfeedProductModuleFrontController  extends \ModuleFrontController
         if (empty($item['category']) !== true) {
             $product->setCategory($item['category']['name'], $item['category']['link']);
         }
-
 
         if (false === empty($item['specificPrices'])) {
             $discount = $this->calculDiscount($item['specificPrices']);
@@ -191,7 +188,7 @@ class ShoppingfeedProductModuleFrontController  extends \ModuleFrontController
             }
         } catch (Exception $e) {
             ProcessLoggerHandler::logError(
-                sprintf('Error while update a preloading products: $s. File: %s. Line: %d', $e->getMessage(), $e->getFile(), $e->getLine()),
+                sprintf('Error while update a preloading products: %s. File: %s. Line: %d', $e->getMessage(), $e->getFile(), $e->getLine()),
                 null,
                 null,
                 'ShoppingfeedProductModuleFrontController'
@@ -212,6 +209,7 @@ class ShoppingfeedProductModuleFrontController  extends \ModuleFrontController
 
     /**
      * @param array $specificPrices
+     *
      * @return float
      */
     protected function calculDiscount($specificPrices)
@@ -237,23 +235,23 @@ class ShoppingfeedProductModuleFrontController  extends \ModuleFrontController
                 continue;
             }
 
-            if (false === isset($specificPrice['id_shop']) || ((int)$specificPrice['id_shop'] !== 0 && $specificPrice['id_shop'] != $this->sfToken['id_shop'])) {
+            if (false === isset($specificPrice['id_shop']) || ((int) $specificPrice['id_shop'] !== 0 && $specificPrice['id_shop'] != $this->sfToken['id_shop'])) {
                 continue;
             }
 
-            if (false === isset($specificPrice['id_currency']) || ((int)$specificPrice['id_currency'] !== 0 && $specificPrice['id_currency'] != $this->sfToken['id_currency'])) {
+            if (false === isset($specificPrice['id_currency']) || ((int) $specificPrice['id_currency'] !== 0 && $specificPrice['id_currency'] != $this->sfToken['id_currency'])) {
                 continue;
             }
 
-            if (false === isset($specificPrice['id_group']) || (int)$specificPrice['id_group'] !== 0) {
+            if (false === isset($specificPrice['id_group']) || (int) $specificPrice['id_group'] !== 0) {
                 continue;
             }
 
-            if (false === isset($specificPrice['id_customer']) || (int)$specificPrice['id_customer'] !== 0) {
+            if (false === isset($specificPrice['id_customer']) || (int) $specificPrice['id_customer'] !== 0) {
                 continue;
             }
 
-            if (false === isset($specificPrice['id_country']) || (int)$specificPrice['id_country'] !== 0) {
+            if (false === isset($specificPrice['id_country']) || (int) $specificPrice['id_country'] !== 0) {
                 continue;
             }
 
@@ -271,7 +269,7 @@ class ShoppingfeedProductModuleFrontController  extends \ModuleFrontController
                 }
             }
 
-            return (float)$specificPrice['discount'];
+            return (float) $specificPrice['discount'];
         }
 
         return 0;
