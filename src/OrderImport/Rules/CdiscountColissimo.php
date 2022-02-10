@@ -38,7 +38,7 @@ use ShoppingfeedAddon\OrderImport\RuleInterface;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 use Tools;
 
-class CdiscountRelay extends RuleAbstract implements RuleInterface
+class CdiscountColissimo extends RuleAbstract implements RuleInterface
 {
     public function isApplicable(OrderResource $apiOrder)
     {
@@ -69,7 +69,7 @@ class CdiscountRelay extends RuleAbstract implements RuleInterface
         $orderData = $params['orderData'];
 
         $logPrefix = sprintf(
-            $this->l('[Order: %s]', 'CdiscountRelay'),
+            $this->l('[Order: %s]', 'CdiscountColissimo'),
             $params['apiOrder']->getId()
         );
         $logPrefix .= '[' . $params['apiOrder']->getReference() . '] ' . self::class . ' | ';
@@ -78,7 +78,7 @@ class CdiscountRelay extends RuleAbstract implements RuleInterface
 
         ProcessLoggerHandler::logInfo(
             $logPrefix .
-                $this->l('Rule triggered. Shipping address updated to set relay ID.', 'CdiscountRelay'),
+                $this->l('Rule triggered. Shipping address updated to set relay ID.', 'CdiscountColissimo'),
             'Order'
         );
     }
@@ -128,13 +128,13 @@ class CdiscountRelay extends RuleAbstract implements RuleInterface
         $apiOrder = $params['apiOrder'];
 
         $logPrefix = sprintf(
-            $this->l('[Order: %s]', 'Colissimo'),
+            $this->l('[Order: %s]', 'CdiscountColissimo'),
             $apiOrder->getId()
         );
         $logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
 
         ProcessLoggerHandler::logInfo(
-            $logPrefix . $this->l('Saving Colissimo pickup point.', 'CdiscountRelay'),
+            $logPrefix . $this->l('Saving Colissimo pickup point.', 'CdiscountColissimo'),
             'Order'
         );
 
@@ -168,7 +168,7 @@ class CdiscountRelay extends RuleAbstract implements RuleInterface
             ProcessLoggerHandler::logError(
                 $logPrefix .
                     sprintf(
-                        $this->l('Linking Colissimo pickup failed point %s to cart %s. Pickup point not found in the Colissimo module.', 'CdiscountRelay'),
+                        $this->l('Linking Colissimo pickup failed point %s to cart %s. Pickup point not found in the Colissimo module.', 'CdiscountColissimo'),
                         $colissimoPickupPointId,
                         $params['cart']->id
                     ),
@@ -181,7 +181,7 @@ class CdiscountRelay extends RuleAbstract implements RuleInterface
         ProcessLoggerHandler::logInfo(
             $logPrefix .
                 sprintf(
-                    $this->l('Linking Colissimo pickup point %s to cart %s.', 'CdiscountRelay'),
+                    $this->l('Linking Colissimo pickup point %s to cart %s.', 'CdiscountColissimo'),
                     $colissimoPickupPointId,
                     $params['cart']->id
                 ),
@@ -203,7 +203,7 @@ class CdiscountRelay extends RuleAbstract implements RuleInterface
      */
     public function getConditions()
     {
-        return $this->l('If the order is from CDiscount and the carrier is \'SO1\', \'REL\' or \'RCO\'.', 'CdiscountRelay');
+        return $this->l('If the order is from CDiscount and the carrier is \'SO1\', \'REL\' or \'RCO\'.', 'CdiscountColissimo');
     }
 
     /**
@@ -211,6 +211,6 @@ class CdiscountRelay extends RuleAbstract implements RuleInterface
      */
     public function getDescription()
     {
-        return $this->l('Retrieves  the relay ID from the \'lastname\' field and puts it in \'company\'. If a company is already set, appends it to \'address (2)\'. Fills the \'lastname\' field with everything after the first space from \'firstname\'.', 'CdiscountRelay');
+        return $this->l('Retrieves  the relay ID from the \'lastname\' field and puts it in \'company\'. If a company is already set, appends it to \'address (2)\'. Fills the \'lastname\' field with everything after the first space from \'firstname\'.', 'CdiscountColissimo');
     }
 }
