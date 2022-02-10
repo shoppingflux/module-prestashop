@@ -1,0 +1,19 @@
+version: "3.7"
+services:
+    prestashop:
+        build: 
+            dockerfile: $PWD/202/docker/Dockerfile
+            context: .
+            args:
+              - RUN_USER=www-data
+        environment:
+            PS_DOMAIN: "localhost"
+            RUN_USER: www-data
+        ports:
+            - 8080:80
+            - 8443:443
+        volumes:
+            - $PWD:/var/www/html/modules/shoppingfeed
+volumes:
+  data:
+
