@@ -323,7 +323,7 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
                                     },
                                     $sfCarriers
                                 ),
-                            ),
+                            ],
                             'carriers' => $this->getAvailableCarriers(),
                             'shoppingfeed_carriers' => $sfCarriers,
                         ],
@@ -620,8 +620,8 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
         $carriers = [
             [
                 'value' => 0,
-                'label' => $this->l('Select carrier', 'AdminShoppingfeedOrderImportRules')
-            ]
+                'label' => $this->l('Select carrier', 'AdminShoppingfeedOrderImportRules'),
+            ],
         ];
 
         foreach (Carrier::getCarriers(Context::getContext()->language->id, true, false, false, null, Carrier::ALL_CARRIERS) as $carrier) {
@@ -630,6 +630,7 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
                 'label' => $carrier['name'],
             ];
         }
+
         return $carriers;
     }
 }
