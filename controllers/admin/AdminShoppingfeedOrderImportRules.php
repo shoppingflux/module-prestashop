@@ -323,7 +323,7 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
                                     },
                                     $sfCarriers
                                 ),
-                            ),
+                            ],
                             'carriers' => $this->getAvailableCarriers(),
                             'shoppingfeed_carriers' => $sfCarriers,
                         ],
