@@ -97,7 +97,7 @@ class OrderData
         $this->itemsReferencesAliases = $apiOrder->getItemsReferencesAliases();
         // TODO : OrderResource should likely have a "getAdditionalFields" method
         $apiOrderData = $apiOrder->toArray();
-        $this->additionalFields = is_array($apiOrderData['additionalFields']) ? $apiOrderData['additionalFields'] : [];
+        $this->additionalFields = empty($apiOrderData['additionalFields']) === false ? $apiOrderData['additionalFields'] : [];
 
         /** @var \ShoppingFeed\Sdk\Api\Order\OrderItem $apiOrderItem */
         foreach ($apiOrder->getItems() as $apiOrderItem) {

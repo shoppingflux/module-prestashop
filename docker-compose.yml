@@ -5,10 +5,10 @@ services:
             dockerfile: $PWD/202/docker/Dockerfile
             context: .
             args:
-              - RUN_USER=www-data
+              - RUN_USER=clotaire
         environment:
-            PS_DOMAIN: "localhost"
-            RUN_USER: www-data
+            PS_DOMAIN: "172.28.0.2"
+            RUN_USER: clotaire
         ports:
             - 8080:80
             - 8443:443
