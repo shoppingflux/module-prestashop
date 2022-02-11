@@ -31,7 +31,7 @@ class OrderImportSimpleTest extends AbstractOrdeTestCase
      *
      * @return void
      */
-    public function testImportSimpleOrder(): void
+    public function testImportAmazon(): void
     {
         $apiOrder = $this->getOrderRessourceFromDataset('order-amazon.json');
 
@@ -85,7 +85,7 @@ class OrderImportSimpleTest extends AbstractOrdeTestCase
      *
      * @return void
      */
-    public function testImportSimpleOrderSameSecondTime(): void
+    public function testImportAmazonSecondTime(): void
     {
         $apiOrder = $this->getOrderRessourceFromDataset('order-amazon.json');
 
@@ -115,5 +115,38 @@ class OrderImportSimpleTest extends AbstractOrdeTestCase
 
         $conveyor = $handler->getConveyor();
         $this->assertEquals($conveyor['error'], 'Order not imported; already present.');
+    }
+    /**
+     * Test to import a standard order
+     *
+     * @return void
+     */
+    public function testImportNatureDecouverte(): void
+    {
+        $apiOrder = $this->getOrderRessourceFromDataset('order-naturedecouverte.json');
+
+        $handler = new ActionsHandler();
+        $handler->addActions(
+            'registerSpecificRules',
+            'verifyOrder',
+            'createOrderCart',
+            'validateOrder',
+            'acknowledgeOrder',
+            'recalculateOrderPrices',
+            'postProcess'
+        );
+
+        $handler->setConveyor(
+            [
+                'id_shop' => 1,
+                'id_token' => 1,
+                'apiOrder' => $apiOrder,
+            ]
+        );
+
+
+        $processResult = $handler->process('shoppingfeedOrderImport');
+
+        $this->assertTrue($processResult);
     }
 }

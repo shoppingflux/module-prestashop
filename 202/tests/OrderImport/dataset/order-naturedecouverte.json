@@ -31,7 +31,7 @@
    "itemsReferencesAliases":null,
    "items":[
       {
-         "reference":"1_1",
+         "reference":"1_2",
          "status":"",
          "quantity":1,
          "price":4.5,
@@ -55,7 +55,7 @@
        "mobilePhone":"0623456789",
        "email":"unique.id@netd.net"
    },
-   "billingAddress":{
+   "shippingAddress":{
       "firstName":"Gérard",
       "lastName":"Dumoulin",
       "company":"202 ecommerce",
