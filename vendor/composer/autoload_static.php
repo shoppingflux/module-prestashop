@@ -2268,7 +2268,7 @@ class ComposerStaticInit3fe85f86ff701f6bd7fd7d7a118b5533
         'Symfony\\Polyfill\\Php80\\Php80' => __DIR__ . '/..' . '/symfony/polyfill-php80/Php80.php',
         'Tests\\OrderImport\\AbstractOrdeTestCase' => __DIR__ . '/../..' . '/202/tests/OrderImport/AbstractOrdeTestCase.php',
         'Tests\\OrderImport\\OrderImportSimpleTest' => __DIR__ . '/../..' . '/202/tests/OrderImport/OrderImportSimpleTest.php',
-        'Tests\\OrderImport\\OrderRulesAmazonEbayTest' => __DIR__ . '/../..' . '/202/tests/OrderImport/OrderRulesAmazonEbayTest.php',
+        'Tests\\OrderImport\\OrderRulesTestingTest' => __DIR__ . '/../..' . '/202/tests/OrderImport/OrderRulesTestingTest.php',
         'TheSeer\\Tokenizer\\Exception' => __DIR__ . '/..' . '/theseer/tokenizer/src/Exception.php',
         'TheSeer\\Tokenizer\\NamespaceUri' => __DIR__ . '/..' . '/theseer/tokenizer/src/NamespaceUri.php',
         'TheSeer\\Tokenizer\\NamespaceUriException' => __DIR__ . '/..' . '/theseer/tokenizer/src/NamespaceUriException.php',

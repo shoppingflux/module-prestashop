@@ -2008,7 +2008,7 @@ return array(
     'Symfony\\Polyfill\\Php80\\Php80' => $vendorDir . '/symfony/polyfill-php80/Php80.php',
     'Tests\\OrderImport\\AbstractOrdeTestCase' => $baseDir . '/202/tests/OrderImport/AbstractOrdeTestCase.php',
     'Tests\\OrderImport\\OrderImportSimpleTest' => $baseDir . '/202/tests/OrderImport/OrderImportSimpleTest.php',
-    'Tests\\OrderImport\\OrderRulesAmazonEbayTest' => $baseDir . '/202/tests/OrderImport/OrderRulesAmazonEbayTest.php',
+    'Tests\\OrderImport\\OrderRulesTestingTest' => $baseDir . '/202/tests/OrderImport/OrderRulesTestingTest.php',
     'TheSeer\\Tokenizer\\Exception' => $vendorDir . '/theseer/tokenizer/src/Exception.php',
     'TheSeer\\Tokenizer\\NamespaceUri' => $vendorDir . '/theseer/tokenizer/src/NamespaceUri.php',
     'TheSeer\\Tokenizer\\NamespaceUriException' => $vendorDir . '/theseer/tokenizer/src/NamespaceUriException.php',
