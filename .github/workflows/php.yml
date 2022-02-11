@@ -1,4 +1,4 @@
-name: PHP tests
+name: Coding Standart
 on: [pull_request]
 jobs:
     # Check there is no syntax errors in the project
