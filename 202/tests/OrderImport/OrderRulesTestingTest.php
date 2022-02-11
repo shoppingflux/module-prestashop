@@ -31,12 +31,12 @@ class OrderRulesTestingTest extends AbstractOrdeTestCase
      *
      * @return void
      */
-    public function testSplitNameOk(): void
+    public function testIfOrderIsTest(): void
     {
         $apiOrder = $this->getOrderRessourceFromDataset('order-amazon.json');
 
         $rules = new TestingOrder();
-        $this->assertFalse($rules->isApplicable($apiOrder));
+        $this->assertTrue($rules->isApplicable($apiOrder));
     }
 
     /**

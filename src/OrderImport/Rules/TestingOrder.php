@@ -48,6 +48,8 @@ class TestingOrder extends RuleAbstract implements RuleInterface
         if ($orderRawData['isTest']) {
             return true;
         }
+
+        return false;
     }
 
     public function onPostProcess($params)
