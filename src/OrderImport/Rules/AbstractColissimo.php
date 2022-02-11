@@ -24,11 +24,11 @@ use ColissimoService;
 use ColissimoTools;
 use Exception;
 use Module;
-use Validate;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
+use Validate;
 
 abstract class AbstractColissimo extends RuleAbstract implements RuleInterface
 {
