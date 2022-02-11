@@ -19,11 +19,12 @@
 
 namespace ShoppingfeedAddon\OrderImport\Rules;
 
+use Carrier;
 use ColissimoService;
 use ColissimoTools;
 use Exception;
 use Module;
-use PrestaShop\PrestaShop\Adapter\Validate;
+use Validate;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;

@@ -96,6 +96,7 @@ class ZalandohexagonaColissimo extends AbstractColissimo implements RuleInterfac
         );
 
         // Retrieve necessary order data
+        $apiOrderData = $apiOrder->toArray();
         $productCode = $this->getProductCode($apiOrder);
         $colissimoPickupPointId = $this->getPointId($apiOrder);
 
