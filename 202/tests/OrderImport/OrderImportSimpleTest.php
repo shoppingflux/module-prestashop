@@ -116,6 +116,7 @@ class OrderImportSimpleTest extends AbstractOrdeTestCase
         $conveyor = $handler->getConveyor();
         $this->assertEquals($conveyor['error'], 'Order not imported; already present.');
     }
+
     /**
      * Test to import a standard order
      *
@@ -143,7 +144,6 @@ class OrderImportSimpleTest extends AbstractOrdeTestCase
                 'apiOrder' => $apiOrder,
             ]
         );
-
 
         $processResult = $handler->process('shoppingfeedOrderImport');
 
