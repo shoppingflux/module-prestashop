@@ -28,19 +28,14 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-use Carrier;
 use ColissimoCartPickupPoint;
 use ColissimoPickupPoint;
-use ColissimoService;
-use ColissimoTools;
 use Country;
-use Exception;
 use Module;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 use Tools;
-use Validate;
 
 /**
  * See ticket #30781
@@ -54,7 +49,7 @@ class ZalandohexagonaColissimo extends AbstractColissimo implements RuleInterfac
     {
         $apiOrderData = $apiOrder->toArray();
         $logPrefix = sprintf(
-            $this->l('[Order: %s]', 'ZalandohexagonaColissimo'),
+            $this->l('[Order: %s]', $this->getFileName()),
             $apiOrder->getId()
         );
         $logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
@@ -67,7 +62,7 @@ class ZalandohexagonaColissimo extends AbstractColissimo implements RuleInterfac
         ) {
             ProcessLoggerHandler::logInfo(
                 $logPrefix .
-                    $this->l('Rule triggered.', 'ZalandohexagonaColissimo'),
+                    $this->l('Rule triggered.', $this->getFileName()),
                 'Order'
             );
 
@@ -75,88 +70,6 @@ class ZalandohexagonaColissimo extends AbstractColissimo implements RuleInterfac
         }
 
         return false;
-    }
-
-    /**
-     * Retrieve and set the Colissimo carrier, and skip SF carrier creation.
-     */
-    public function onCarrierRetrieval($params)
-    {
-        if (class_exists(ColissimoService::class) === false || class_exists(ColissimoTools::class) === false) {
-            return;
-        }
-        /** @var ShoppingFeed\Sdk\Api\Order\OrderResource $apiOrder */
-        $apiOrder = $params['apiOrder'];
-
-        $logPrefix = sprintf(
-            $this->l('[Order: %s]', 'ZalandohexagonaColissimo'),
-            $apiOrder->getId()
-        );
-        $logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
-
-        ProcessLoggerHandler::logInfo(
-            $logPrefix . $this->l('Setting Colissimo carrier.', 'ZalandohexagonaColissimo'),
-            'Order'
-        );
-
-        // Retrieve necessary order data
-        $apiOrderData = $apiOrder->toArray();
-        list($productCode, $colissimoPickupPointId) = explode(':', $apiOrderData['additionalFields']['service_point_id']);
-
-        $shippingAddress = $apiOrder->getShippingAddress();
-        $destinationType = ColissimoTools::getDestinationTypeByIsoCountry($shippingAddress['country']);
-
-        // Retrieve ColissimoService using order data
-        $idColissimoService = ColissimoService::getServiceIdByProductCodeDestinationType(
-            $productCode,
-            $destinationType
-        );
-        if (!$idColissimoService) {
-            throw new Exception($logPrefix . sprintf($this->l('Could not retrieve ColissimoService from productCode %s and destinationType %s.', 'ZalandohexagonaColissimo'), $productCode, $destinationType));
-
-            return false;
-        }
-
-        ProcessLoggerHandler::logInfo(
-            $logPrefix .
-                sprintf(
-                    $this->l('Retrieved ColissimoService %s from productCode %s and destinationType %s.', 'ZalandohexagonaColissimo'),
-                        $idColissimoService,
-                        $productCode,
-                        $destinationType
-                ),
-            'Order'
-        );
-
-        // Retrieve colissimo Carrier from ColissimoService
-        $colissimoService = new ColissimoService($idColissimoService);
-        $colissimoCarrier = Carrier::getCarrierByReference($colissimoService->id_carrier);
-        if (!Validate::isLoadedObject($colissimoCarrier)) {
-            throw new Exception($logPrefix . sprintf($this->l('Could not retrieve Carrier with id_reference %s from ColissimoService %s with productCode %s and destinationType %s.', 'ZalandohexagonaColissimo'), $colissimoService->id_carrier, $colissimoService->id, $productCode, $destinationType));
-
-            return false;
-        }
-        if (!$colissimoCarrier->active || $colissimoCarrier->deleted) {
-            throw new Exception($logPrefix . sprintf($this->l('Retrieved Carrier with id_reference %s from ColissimoService %s with productCode %s and destinationType %s is inactive or deleted.', 'ZalandohexagonaColissimo'), $colissimoService->id_carrier, $colissimoService->id, $productCode, $destinationType));
-
-            return false;
-        }
-
-        ProcessLoggerHandler::logInfo(
-            $logPrefix .
-                sprintf(
-                    $this->l('Retrieved Colissimo carrier %s from ColissimoService %s.', 'ZalandohexagonaColissimo'),
-                    $colissimoService->id_carrier,
-                    $colissimoService->id
-                ),
-            'Order'
-        );
-
-        // Use retrieved carrier and skip SF carrier creation; Colissimo should decide by itself which carrier should be used
-        $params['carrier'] = $colissimoCarrier;
-        $params['skipSfCarrierCreation'] = true;
-
-        return true;
     }
 
     /**
@@ -172,19 +85,19 @@ class ZalandohexagonaColissimo extends AbstractColissimo implements RuleInterfac
         $apiOrder = $params['apiOrder'];
 
         $logPrefix = sprintf(
-            $this->l('[Order: %s]', 'ZalandohexagonaColissimo'),
+            $this->l('[Order: %s]', $this->getFileName()),
             $apiOrder->getId()
         );
         $logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
 
         ProcessLoggerHandler::logInfo(
-            $logPrefix . $this->l('Saving Colissimo pickup point.', 'ZalandohexagonaColissimo'),
+            $logPrefix . $this->l('Saving Colissimo pickup point.', $this->getFileName()),
             'Order'
         );
 
         // Retrieve necessary order data
-        $apiOrderData = $apiOrder->toArray();
-        list($productCode, $colissimoPickupPointId) = explode(':', $apiOrderData['additionalFields']['service_point_id']);
+        $productCode = $this->getProductCode($apiOrder);
+        $colissimoPickupPointId = $this->getPointId($apiOrder);
 
         $shippingAddress = $apiOrder->getShippingAddress();
 
@@ -209,7 +122,7 @@ class ZalandohexagonaColissimo extends AbstractColissimo implements RuleInterfac
         ProcessLoggerHandler::logInfo(
             $logPrefix .
                 sprintf(
-                    $this->l('Linking Colissimo pickup point %s to cart %s.', 'ZalandohexagonaColissimo'),
+                    $this->l('Linking Colissimo pickup point %s to cart %s.', $this->getFileName()),
                     $colissimoPickupPointId,
                     $params['cart']->id
                 ),
@@ -231,7 +144,7 @@ class ZalandohexagonaColissimo extends AbstractColissimo implements RuleInterfac
      */
     public function getConditions()
     {
-        return $this->l('If the order comes from Zalando and has non-empty "service_point_id" and "service_point_name" additional fields.', 'ZalandohexagonaColissimo');
+        return $this->l('If the order comes from Zalando and has non-empty "service_point_id" and "service_point_name" additional fields.', $this->getFileName());
     }
 
     /**
@@ -239,6 +152,22 @@ class ZalandohexagonaColissimo extends AbstractColissimo implements RuleInterfac
      */
     public function getDescription()
     {
-        return $this->l('Set the carrier to Colissimo Pickup Point and add necessary data in the colissimo module accordingly.', 'ZalandohexagonaColissimo');
+        return $this->l('Set the carrier to Colissimo Pickup Point and add necessary data in the colissimo module accordingly.', $this->getFileName());
+    }
+
+    protected function getProductCode(OrderResource $apiOrder)
+    {
+        $apiOrderData = $apiOrder->toArray();
+        list($productCode, $colissimoPickupPointId) = explode(':', $apiOrderData['additionalFields']['service_point_id']);
+
+        return $productCode;
+    }
+
+    protected function getPointId(OrderResource $apiOrder)
+    {
+        $apiOrderData = $apiOrder->toArray();
+        list($productCode, $colissimoPickupPointId) = explode(':', $apiOrderData['additionalFields']['service_point_id']);
+
+        return $colissimoPickupPointId;
     }
 }

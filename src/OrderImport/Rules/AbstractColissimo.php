@@ -19,20 +19,130 @@
 
 namespace ShoppingfeedAddon\OrderImport\Rules;
 
+use ColissimoService;
+use ColissimoTools;
+use Exception;
 use Module;
+use PrestaShop\PrestaShop\Adapter\Validate;
+use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
+use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 
 abstract class AbstractColissimo extends RuleAbstract implements RuleInterface
 {
     const COLISSIMO_MODULE_NAME = 'colissimo';
 
+    protected $colissimo;
+
+    protected $fileName;
+
+    public function __construct($configuration = [])
+    {
+        parent::__construct($configuration);
+
+        $this->colissimo = Module::getInstanceByName(self::COLISSIMO_MODULE_NAME);
+    }
+
     protected function isModuleColissimoEnabled()
     {
         try {
-            return Module::isEnabled(self::COLISSIMO_MODULE_NAME);
+            return Validate::isLoadedObject($this->colissimo) && $this->colissimo->active;
         } catch (\Throwable $e) {
             return false;
         }
     }
+
+    /**
+     * Retrieve and set the Colissimo carrier, and skip SF carrier creation.
+     *
+     * @throws Exception
+     */
+    public function onCarrierRetrieval($params)
+    {
+        if (class_exists(ColissimoService::class) === false || class_exists(ColissimoTools::class) === false) {
+            return;
+        }
+
+        /** @var OrderResource $apiOrder */
+        $apiOrder = $params['apiOrder'];
+
+        $logPrefix = sprintf(
+            $this->l('[Order: %s]', $this->getFileName()),
+            $apiOrder->getId()
+        );
+        $logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
+
+        ProcessLoggerHandler::logInfo(
+            $logPrefix . $this->l('Setting Colissimo carrier.', $this->getFileName()),
+            'Order'
+        );
+
+        // Retrieve necessary order data
+        $productCode = $this->getProductCode($apiOrder);
+        $shippingAddress = $apiOrder->getShippingAddress();
+        $destinationType = ColissimoTools::getDestinationTypeByIsoCountry($shippingAddress['country']);
+
+        // Retrieve ColissimoService using order data
+        $idColissimoService = ColissimoService::getServiceIdByProductCodeDestinationType(
+            $productCode,
+            $destinationType
+        );
+
+        if (!$idColissimoService) {
+            throw new Exception($logPrefix . sprintf($this->l('Could not retrieve ColissimoService from productCode %s and destinationType %s.', $this->getFileName()), $productCode, $destinationType));
+        }
+
+        ProcessLoggerHandler::logInfo(
+            $logPrefix .
+            sprintf(
+                $this->l('Retrieved ColissimoService %s from productCode %s and destinationType %s.', $this->getFileName()),
+                $idColissimoService,
+                $productCode,
+                $destinationType
+            ),
+            'Order'
+        );
+
+        // Retrieve colissimo Carrier from ColissimoService
+        $colissimoService = new ColissimoService($idColissimoService);
+        $colissimoCarrier = Carrier::getCarrierByReference($colissimoService->id_carrier);
+
+        if (!Validate::isLoadedObject($colissimoCarrier)) {
+            throw new Exception($logPrefix . sprintf($this->l('Could not retrieve Carrier with id_reference %s from ColissimoService %s with productCode %s and destinationType %s.', $this->getFileName()), $colissimoService->id_carrier, $colissimoService->id, $productCode, $destinationType));
+        }
+
+        if (!$colissimoCarrier->active || $colissimoCarrier->deleted) {
+            throw new Exception($logPrefix . sprintf($this->l('Retrieved Carrier with id_reference %s from ColissimoService %s with productCode %s and destinationType %s is inactive or deleted.', $this->getFileName()), $colissimoService->id_carrier, $colissimoService->id, $productCode, $destinationType));
+        }
+
+        ProcessLoggerHandler::logInfo(
+            $logPrefix .
+            sprintf(
+                $this->l('Retrieved Colissimo carrier %s from ColissimoService %s.', $this->getFileName()),
+                $colissimoService->id_carrier,
+                $colissimoService->id
+            ),
+            'Order'
+        );
+
+        // Use retrieved carrier and skip SF carrier creation; Colissimo should decide by itself which carrier should be used
+        $params['carrier'] = $colissimoCarrier;
+        $params['skipSfCarrierCreation'] = true;
+
+        return true;
+    }
+
+    protected function getFileName()
+    {
+        if (empty($this->fileName)) {
+            $this->fileName = pathinfo(__FILE__, PATHINFO_FILENAME);
+        }
+
+        return $this->fileName;
+    }
+
+    abstract protected function getProductCode(OrderResource $apiOrder);
+
+    abstract protected function getPointId(OrderResource $apiOrder);
 }

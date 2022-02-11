@@ -66,7 +66,7 @@ class CdiscountColissimo extends AbstractColissimo implements RuleInterface
         $orderData = $params['orderData'];
 
         $logPrefix = sprintf(
-            $this->l('[Order: %s]', 'CdiscountColissimo'),
+            $this->l('[Order: %s]', $this->getFileName()),
             $params['apiOrder']->getId()
         );
         $logPrefix .= '[' . $params['apiOrder']->getReference() . '] ' . self::class . ' | ';
@@ -75,7 +75,7 @@ class CdiscountColissimo extends AbstractColissimo implements RuleInterface
 
         ProcessLoggerHandler::logInfo(
             $logPrefix .
-                $this->l('Rule triggered. Shipping address updated to set relay ID.', 'CdiscountColissimo'),
+                $this->l('Rule triggered. Shipping address updated to set relay ID.', $this->getFileName()),
             'Order'
         );
     }
@@ -121,28 +121,28 @@ class CdiscountColissimo extends AbstractColissimo implements RuleInterface
         if (class_exists(ColissimoPickupPoint::class) === false || class_exists(ColissimoCartPickupPoint::class) === false) {
             return;
         }
-        /** @var ShoppingFeed\Sdk\Api\Order\OrderResource $apiOrder */
+        /** @var OrderResource $apiOrder */
         $apiOrder = $params['apiOrder'];
 
         $logPrefix = sprintf(
-            $this->l('[Order: %s]', 'CdiscountColissimo'),
+            $this->l('[Order: %s]', $this->getFileName()),
             $apiOrder->getId()
         );
         $logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
 
         ProcessLoggerHandler::logInfo(
-            $logPrefix . $this->l('Saving Colissimo pickup point.', 'CdiscountColissimo'),
+            $logPrefix . $this->l('Saving Colissimo pickup point.', $this->getFileName()),
             'Order'
         );
 
-        $shippingAddress = $apiOrder->getShippingAddress();
-        if (empty($shippingAddress['other']) === true) {
+        $colissimoPickupPointId = $this->getPointId($apiOrder);
+
+        if (empty($colissimoPickupPointId)) {
             return true;
         }
-        $colissimoPickupPointId = $shippingAddress['other'];
 
         $shippingAddress = $apiOrder->getShippingAddress();
-        $productCode = 'A2P'; // hack
+        $productCode = $this->getProductCode($apiOrder); // hack
 
         // Save/update Colissimo pickup point
         $pickupPointData = [
@@ -165,7 +165,7 @@ class CdiscountColissimo extends AbstractColissimo implements RuleInterface
             ProcessLoggerHandler::logError(
                 $logPrefix .
                     sprintf(
-                        $this->l('Linking Colissimo pickup failed point %s to cart %s. Pickup point not found in the Colissimo module.', 'CdiscountColissimo'),
+                        $this->l('Linking Colissimo pickup failed point %s to cart %s. Pickup point not found in the Colissimo module.', $this->getFileName()),
                         $colissimoPickupPointId,
                         $params['cart']->id
                     ),
@@ -178,7 +178,7 @@ class CdiscountColissimo extends AbstractColissimo implements RuleInterface
         ProcessLoggerHandler::logInfo(
             $logPrefix .
                 sprintf(
-                    $this->l('Linking Colissimo pickup point %s to cart %s.', 'CdiscountColissimo'),
+                    $this->l('Linking Colissimo pickup point %s to cart %s.', $this->getFileName()),
                     $colissimoPickupPointId,
                     $params['cart']->id
                 ),
@@ -200,7 +200,7 @@ class CdiscountColissimo extends AbstractColissimo implements RuleInterface
      */
     public function getConditions()
     {
-        return $this->l('If the order is from CDiscount and the carrier is \'SO1\', \'REL\' or \'RCO\'.', 'CdiscountColissimo');
+        return $this->l('If the order is from CDiscount and the carrier is \'SO1\', \'REL\' or \'RCO\'.', $this->getFileName());
     }
 
     /**
@@ -208,6 +208,28 @@ class CdiscountColissimo extends AbstractColissimo implements RuleInterface
      */
     public function getDescription()
     {
-        return $this->l('Retrieves  the relay ID from the \'lastname\' field and puts it in \'company\'. If a company is already set, appends it to \'address (2)\'. Fills the \'lastname\' field with everything after the first space from \'firstname\'.', 'CdiscountColissimo');
+        return $this->l('Retrieves  the relay ID from the \'lastname\' field and puts it in \'company\'. If a company is already set, appends it to \'address (2)\'. Fills the \'lastname\' field with everything after the first space from \'firstname\'.', $this->getFileName());
+    }
+
+    protected function getProductCode(OrderResource $apiOrder)
+    {
+        return 'A2P';
+    }
+
+    protected function getPointId(OrderResource $apiOrder)
+    {
+        $shippingAddress = $apiOrder->getShippingAddress();
+
+        if (empty($shippingAddress['other'])) {
+            return '';
+        }
+
+        return $shippingAddress['other'];
+    }
+
+    public function onCarrierRetrieval($params)
+    {
+        //todo: should set colissimo carrier as for other marketplace?
+        return;
     }
 }

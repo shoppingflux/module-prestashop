@@ -19,18 +19,32 @@
 
 namespace ShoppingfeedAddon\OrderImport\Rules;
 
+use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
+use Tools;
 
 class NatureEtDecouvertesColissimo extends AbstractColissimo implements RuleInterface
 {
+    const MARKET_PLACE = 'NatureEtDecouvertes';
+
     /**
      * {@inheritdoc}
      */
-    public function isApplicable(\ShoppingFeed\Sdk\Api\Order\OrderResource $apiOrder)
+    public function isApplicable(OrderResource $apiOrder)
     {
         if (false == $this->isModuleColissimoEnabled()) {
             return false;
         }
+
+        if (Tools::strtolower($apiOrder->getChannel()->getName()) != Tools::strtolower(self::MARKET_PLACE)) {
+            return false;
+        }
+
+        if (empty($this->getPointId($apiOrder))) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -38,7 +52,7 @@ class NatureEtDecouvertesColissimo extends AbstractColissimo implements RuleInte
      */
     public function getDescription()
     {
-        // TODO: Implement getDescription() method.
+        return $this->l('Set the carrier to Colissimo Pickup Point and add necessary data in the colissimo module accordingly.', 'NatureEtDecouvertesColissimo');
     }
 
     /**
@@ -46,6 +60,22 @@ class NatureEtDecouvertesColissimo extends AbstractColissimo implements RuleInte
      */
     public function getConditions()
     {
-        // TODO: Implement getConditions() method.
+        return $this->l('If the order is from NatureEtDecouvertes and has non-empty "shipping_pudo_id" additional fields.', 'NatureEtDecouvertesColissimo');
+    }
+
+    protected function getProductCode(OrderResource $apiOrder)
+    {
+        return 'A2P'; //todo: to verify correctness
+    }
+
+    protected function getPointId(OrderResource $apiOrder)
+    {
+        $apiOrderData = $apiOrder->toArray();
+
+        if (empty($apiOrderData['additionalFields']['shipping_pudo_id'])) {
+            return '';
+        }
+
+        return $apiOrderData['additionalFields']['shipping_pudo_id'];
     }
 }
