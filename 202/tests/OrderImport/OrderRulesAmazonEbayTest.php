@@ -27,7 +27,7 @@ use ShoppingfeedAddon\OrderImport\Rules\AmazonEbay;
 class OrderRulesAmazonEbayTest extends AbstractOrdeTestCase
 {
     /**
-     * Test to import a standard order
+     * Test to split name
      *
      * @return void
      */
@@ -59,7 +59,7 @@ class OrderRulesAmazonEbayTest extends AbstractOrdeTestCase
     }
 
     /**
-     * Test to import a standard order
+     * Test to split none avalailble marketpalce
      *
      * @return void
      */
@@ -69,5 +69,37 @@ class OrderRulesAmazonEbayTest extends AbstractOrdeTestCase
 
         $rules = new AmazonEbay();
         $this->assertFalse($rules->isApplicable($apiOrder));
+    }
+
+    /**
+     * Test to split name
+     *
+     * @return void
+     */
+    public function testSplitNameLaredoute(): void
+    {
+        $apiOrder = $this->getOrderRessourceFromDataset('order-laredoute.json');
+
+        $rules = new AmazonEbay();
+        $this->assertTrue($rules->isApplicable($apiOrder));
+        $address = $apiOrder->toArray()['billingAddress'];
+
+        $rules->updateAddress($address);
+
+        $expedtedAddress = [
+                'firstName' => 'CARRA',
+                'lastName' => 'CELINE',
+                'company' => '',
+                'street' => '25 RUE DES MARONNIERS',
+                'street2' => '',
+                'other' => '',
+                'postalCode' => '71250',
+                'city' => 'CLUNY',
+                'country' => 'FR',
+                'phone' => '',
+                'mobilePhone' => '',
+                'email' => 'mp+20220414342060+000010890@web.redoute.fr',
+        ];
+        $this->assertSame($address, $expedtedAddress);
     }
 }
