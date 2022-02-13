@@ -27,7 +27,7 @@ use ShoppingfeedClasslib\Actions\ActionsHandler;
 class OrderImportSimpleTest extends AbstractOrdeTestCase
 {
     /**
-     * Test to import a standard order
+     * Test to import a standard order Amazon
      *
      * @return void
      */
@@ -81,7 +81,7 @@ class OrderImportSimpleTest extends AbstractOrdeTestCase
     }
 
     /**
-     * Test to import a standard order
+     * Test to import a standard order a second time the same
      *
      * @return void
      */
@@ -118,7 +118,7 @@ class OrderImportSimpleTest extends AbstractOrdeTestCase
     }
 
     /**
-     * Test to import a standard order
+     * Test to import a standard order Nature & Decouverte
      *
      * @return void
      */
