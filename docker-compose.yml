@@ -1,17 +1,12 @@
 version: "3.7"
 services:
     prestashop:
-        build: 
-            dockerfile: $PWD/202/docker/Dockerfile
-            context: .
-            args:
-              - RUN_USER=clotaire
+        build: $PWD/202/docker
         environment:
-            PS_DOMAIN: "172.28.0.2"
-            RUN_USER: clotaire
+            PS_DOMAIN: "localhost"
+            RUN_USER: www-data
         ports:
             - 8080:80
-            - 8443:443
         volumes:
             - $PWD:/var/www/html/modules/shoppingfeed
 volumes:
