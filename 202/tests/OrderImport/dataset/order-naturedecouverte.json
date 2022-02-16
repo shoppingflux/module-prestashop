@@ -1,0 +1,97 @@
+{
+   "id":16858191201,
+   "storeId":28147,
+   "channelId":1569,
+   "reference":"ORDER-TEST-NETD",
+   "storeReference":"",
+   "isTest":false,
+   "acknowledgedAt":"2022-01-18T16:49:37+01:00",
+   "createdAt":"2022-01-17T10:53:49+01:00",
+   "updatedAt":"2022-01-17T11:51:11+01:00",
+   "status":"waiting_shipment",
+   "anonymized":false,
+   "payment":{
+      "shippingAmount":4.9,
+      "productAmount":4.5,
+      "totalAmount":9.4,
+      "currency":"EUR",
+      "method":"CarteBancaireHipay"
+   },
+   "shipment":{
+      "carrier":"Point Relais (Chrono Relais)",
+      "trackingNumber":""
+   },
+   "additionalFields":{
+      "order_status":"SHIPPING",
+      "shipping_pudo_id":"2827U"
+   },
+   "errors":[
+      
+   ],
+   "itemsReferencesAliases":null,
+   "items":[
+      {
+         "reference":"1_2",
+         "status":"",
+         "quantity":1,
+         "price":4.5,
+         "taxAmount":0,
+         "channelReference":"2201DBFVY-MP002320-A-1",
+         "name":"Hummingbird printed t-shirt",
+         "image":"http://localhost/img/p/1/1-small_default.jpg"
+      }
+   ],
+   "billingAddress":{
+       "firstName":"Gérard",
+       "lastName":"Dumoulin",
+       "company":"202 ecommerce",
+       "street":"10 rue Vivienne",
+       "street2":"",
+       "other":"",
+       "postalCode":"75002",
+       "city":"Paris",
+       "country":"FR",
+       "phone":"0123456789",
+       "mobilePhone":"0623456789",
+       "email":"unique.id@netd.net"
+   },
+   "shippingAddress":{
+      "firstName":"Gérard",
+      "lastName":"Dumoulin",
+      "company":"202 ecommerce",
+      "street":"10 rue Vivienne",
+      "street2":"",
+      "other":"",
+      "postalCode":"75002",
+      "city":"Paris",
+      "country":"FR",
+      "phone":"0123456789",
+      "mobilePhone":"0623456789",
+      "email":"unique.id@netd.net"
+   },
+   "_links":{
+      "self":{
+         "href":"/v1/store/28147/order/16858191201"
+      },
+      "store":{
+         "href":"/v1/store/28147"
+      }
+   },
+   "_embedded":{
+      "channel":{
+         "id":1569,
+         "name":"NatureEtDecouvertes",
+         "_links":{
+            "self":{
+               "href":"/v1/channel/1569"
+            },
+            "image":{
+               "href":"https://assets.shopping-feed.com/channel/logo/NatureEtDecouvertes.png"
+            }
+         }
+      },
+      "tag":[
+         
+      ]
+   }
+}

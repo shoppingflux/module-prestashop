@@ -16,7 +16,7 @@
       "optimize-autoloader": true,
       "prepend-autoloader": false,
       "platform": {
-          "php": "5.6"
+          "php": "7.4"
       }
   },
   "require": {
@@ -25,10 +25,12 @@
     "psr/http-message": "~1.0"
   },
   "require-dev": {
-      "prestashop/php-dev-tools": "^3.4"
+      "prestashop/php-dev-tools": "^3.4",
+      "php": "^7.3",
+      "phpunit/phpunit": "9.0"
   },
   "autoload": {
-    "exclude-from-classmap": ["classes/Compatibility"],
+    "exclude-from-classmap": ["classes/Compatibility", "vendor/symfony/polyfill-php80/Resources/stubs/Attribute.php"],
     "files": [
       "vendor/prefixed/guzzlehttp/guzzle/src/functions_include.php",
       "vendor/prefixed/guzzlehttp/psr7/src/functions_include.php",
@@ -36,7 +38,8 @@
     ],
     "classmap": [
       "classes/",
-      "controllers/"
+      "controllers/",
+      "shoppingfeed.php"
     ],
     "psr-4": {
       "ShoppingfeedClasslib\\":          "vendor/totpsclasslib/src/",
@@ -46,6 +49,11 @@
       "ShoppingFeed\\Sdk\\":             "vendor/prefixed/shoppingfeed/php-sdk/src/",
       "ShoppingfeedAddon\\":             "src"
     }
+  },
+  "autoload-dev": {
+      "psr-4": {
+          "Tests\\": "202/tests/"
+      }
   },
   "scripts": {
     "pre-autoload-dump": "if [ ${TOTPSCLASSLIB_DEV_PATH} ]; then php ${TOTPSCLASSLIB_DEV_PATH}/classlib/refresh.php .; fi"
