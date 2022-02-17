@@ -324,15 +324,7 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
                                     $sfCarriers
                                 ),
                             ],
-                            'carriers' => array_map(
-                                function ($c) {
-                                    return [
-                                        'value' => $c['id_reference'],
-                                        'label' => $c['name'],
-                                    ];
-                                },
-                                Carrier::getCarriers(Context::getContext()->language->id, true, false, false, null, Carrier::ALL_CARRIERS)
-                            ),
+                            'carriers' => $this->getAvailableCarriers(),
                             'shoppingfeed_carriers' => $sfCarriers,
                         ],
                         [
@@ -551,6 +543,7 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
         $order_sync_enabled = Tools::getValue(Shoppingfeed::ORDER_SYNC_ENABLED);
         $order_sync_test = Tools::getValue(Shoppingfeed::ORDER_IMPORT_TEST);
         $order_sync_shipped = Tools::getValue(Shoppingfeed::ORDER_IMPORT_SHIPPED);
+        $order_sync_shipped_marketplace = Tools::getValue(Shoppingfeed::ORDER_IMPORT_SHIPPED_MARKETPLACE);
 
         $shops = Shop::getShops();
         foreach ($shops as $shop) {
@@ -558,6 +551,13 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
             Configuration::updateValue(Shoppingfeed::ORDER_IMPORT_TEST, ($order_sync_test ? true : false), false, null, $shop['id_shop']);
             Configuration::updateValue(Shoppingfeed::ORDER_SYNC_ENABLED, ($order_sync_enabled ? true : false), false, null, $shop['id_shop']);
             Configuration::updateValue(Shoppingfeed::ORDER_IMPORT_SHIPPED, ($order_sync_shipped ? true : false), false, null, $shop['id_shop']);
+            Configuration::updateValue(
+                Shoppingfeed::ORDER_IMPORT_SHIPPED_MARKETPLACE,
+                ($order_sync_shipped_marketplace && $order_sync_shipped ? true : false),
+                false,
+                null,
+                $shop['id_shop']
+            );
         }
 
         $orderStatusesShipped = Tools::getValue('status_shipped_order');
@@ -621,5 +621,24 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
     protected function getSinceDateService()
     {
         return new SinceDate();
+    }
+
+    protected function getAvailableCarriers()
+    {
+        $carriers = [
+            [
+                'value' => 0,
+                'label' => $this->l('Select carrier', 'AdminShoppingfeedOrderImportRules'),
+            ],
+        ];
+
+        foreach (Carrier::getCarriers(Context::getContext()->language->id, true, false, false, null, Carrier::ALL_CARRIERS) as $carrier) {
+            $carriers[] = [
+                'value' => $carrier['id_reference'],
+                'label' => $carrier['name'],
+            ];
+        }
+
+        return $carriers;
     }
 }
