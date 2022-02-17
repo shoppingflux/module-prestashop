@@ -629,7 +629,7 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
             [
                 'value' => 0,
                 'label' => $this->l('Select carrier', 'AdminShoppingfeedOrderImportRules'),
-            ]
+            ],
         ];
 
         foreach (Carrier::getCarriers(Context::getContext()->language->id, true, false, false, null, Carrier::ALL_CARRIERS) as $carrier) {
