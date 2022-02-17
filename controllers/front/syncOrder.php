@@ -335,8 +335,6 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
                         'verifyOrder',
                         'createOrderCart',
                         'validateOrder',
-                        'acknowledgeOrder',
-                        'recalculateOrderPrices',
                         'postProcess'
                     );
 
@@ -346,6 +344,7 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
                         'apiOrder' => $apiOrder,
                     ]);
 
+                    Registry::set('shoppingfeedOrderImportHandler', $handler);
                     $processResult = $handler->process('shoppingfeedOrderImport');
                     if (!$processResult) {
                         $conveyor = $handler->getConveyor();

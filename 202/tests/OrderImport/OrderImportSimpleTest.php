@@ -19,7 +19,8 @@
 
 namespace Tests\OrderImport;
 
-use ShoppingfeedClasslib\Actions\ActionsHandler;
+use ShoppingfeedAddon\Actions\ActionsHandler;
+use ShoppingfeedClasslib\Registry;
 
 /**
  * Order Rules AmazonEbay Test
@@ -41,8 +42,6 @@ class OrderImportSimpleTest extends AbstractOrdeTestCase
             'verifyOrder',
             'createOrderCart',
             'validateOrder',
-            'acknowledgeOrder',
-            'recalculateOrderPrices',
             'postProcess'
         );
 
@@ -53,6 +52,7 @@ class OrderImportSimpleTest extends AbstractOrdeTestCase
                 'apiOrder' => $apiOrder,
             ]
         );
+        Registry::set('shoppingfeedOrderImportHandler', $handler);
         $processResult = $handler->process('shoppingfeedOrderImport');
 
         $this->assertTrue($processResult);
@@ -78,10 +78,31 @@ class OrderImportSimpleTest extends AbstractOrdeTestCase
         $this->assertEquals($psOrder->total_paid_tax_excl, 7.830000);
         $this->assertEquals($psOrder->total_products, 3.750000);
         $this->assertEquals($psOrder->total_shipping, 4.900000);
+
+        $invoices = $psOrder->getInvoicesCollection();
+        $this->assertEquals(count($invoices), 1);
+        foreach ($invoices as $invoice) {
+            $this->assertEquals($invoice->total_discount_tax_excl, 0.000000);
+            $this->assertEquals($invoice->total_discount_tax_incl, 0.000000);
+            $this->assertEquals($invoice->total_paid_tax_excl, 7.830000);
+            $this->assertEquals($invoice->total_paid_tax_incl, 9.400000);
+            $this->assertEquals($invoice->total_products, 3.750000);
+            $this->assertEquals($invoice->total_products_wt, 4.500000);
+            $this->assertEquals($invoice->total_shipping_tax_excl, 4.080000);
+            $this->assertEquals($invoice->total_shipping_tax_incl, 4.900000);
+            $this->assertEquals($invoice->shipping_tax_computation_method, 0);
+            $this->assertEquals($invoice->total_wrapping_tax_excl, 0.000000);
+            $this->assertEquals($invoice->total_wrapping_tax_incl, 0.000000);
+        }
+
+        $carrier = new \Carrier($psOrder->id_carrier);
+        $this->assertEquals($carrier->id_reference, 1);
     }
 
     /**
      * Test to import a standard order a second time the same
+     *
+     * @depends testImportAmazon
      *
      * @return void
      */
@@ -94,10 +115,7 @@ class OrderImportSimpleTest extends AbstractOrdeTestCase
             'registerSpecificRules',
             'verifyOrder',
             'createOrderCart',
-            'validateOrder',
-            'acknowledgeOrder',
-            'recalculateOrderPrices',
-            'postProcess'
+            'validateOrder'
         );
 
         $handler->setConveyor(
@@ -107,6 +125,7 @@ class OrderImportSimpleTest extends AbstractOrdeTestCase
                 'apiOrder' => $apiOrder,
             ]
         );
+        Registry::set('shoppingfeedOrderImportHandler', $handler);
 
         $processResult = $handler->process('shoppingfeedOrderImport');
 
@@ -131,10 +150,7 @@ class OrderImportSimpleTest extends AbstractOrdeTestCase
             'registerSpecificRules',
             'verifyOrder',
             'createOrderCart',
-            'validateOrder',
-            'acknowledgeOrder',
-            'recalculateOrderPrices',
-            'postProcess'
+            'validateOrder'
         );
 
         $handler->setConveyor(
@@ -144,9 +160,25 @@ class OrderImportSimpleTest extends AbstractOrdeTestCase
                 'apiOrder' => $apiOrder,
             ]
         );
+        Registry::set('shoppingfeedOrderImportHandler', $handler);
 
         $processResult = $handler->process('shoppingfeedOrderImport');
 
         $this->assertTrue($processResult);
+
+        $conveyor = $handler->getConveyor();
+        $psOrder = $conveyor['psOrder'];
+        $this->assertEquals($psOrder->current_state, _PS_OS_PAYMENT_);
+        $this->assertEquals($psOrder->payment, 'natureetdecouvertes');
+        $this->assertEquals($psOrder->module, 'sfpayment');
+        $this->assertEquals($psOrder->total_discounts, 0.000000);
+        $this->assertEquals($psOrder->total_paid, 9.400000);
+        $this->assertEquals($psOrder->total_paid_tax_incl, 9.400000);
+        $this->assertEquals($psOrder->total_paid_tax_excl, 7.830000);
+        $this->assertEquals($psOrder->total_products, 3.750000);
+        $this->assertEquals($psOrder->total_shipping, 4.900000);
+
+        $carrier = new \Carrier($psOrder->id_carrier);
+        $this->assertEquals($carrier->id_reference, 2);
     }
 }
