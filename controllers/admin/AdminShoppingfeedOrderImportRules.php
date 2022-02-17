@@ -280,7 +280,8 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
                         array(
                             'type' => 'switch',
                             'label' => $this->module->l('Allow import orders shipped by Marketplaces Amazon, CDiscount and Manomano', 'AdminShoppingfeedOrderImportRules'),
-                            'name' => Shoppingfeed::ORDER_IMPORT_SHIPPED_MARKETPLACE,
+                            'name' => 
+                            ,
                             'id' => 'shoppingfeed_order-import-switch',
                             'hint' => $this->module->l('Order will be imported regardless of its status on Shopping Feed side', 'AdminShoppingfeedOrderImportRules'),
                             'is_bool' => true,
@@ -476,7 +477,7 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
             Shoppingfeed::ORDER_IMPORT_ENABLED => !$order_import_available ? false : Configuration::get(Shoppingfeed::ORDER_IMPORT_ENABLED),
             Shoppingfeed::ORDER_IMPORT_TEST => !$order_import_test ? false : Configuration::get(Shoppingfeed::ORDER_IMPORT_TEST),
             Shoppingfeed::ORDER_IMPORT_SHIPPED => !$order_import_shipped ? false : Configuration::get(Shoppingfeed::ORDER_IMPORT_SHIPPED),
-            Shoppingfeed::ORDER_IMPORT_SHIPPED_MARKETPLACE => !$order_import_shipped ? false : Configuration::get(Shoppingfeed::ORDER_IMPORT_SHIPPED_MARKETPLACE),
+            Shoppingfeed::ORDER_IMPORT_SHIPPED_MARKETPLACE => Configuration::get(Shoppingfeed::ORDER_IMPORT_SHIPPED_MARKETPLACE),
             Shoppingfeed::ORDER_SYNC_ENABLED => !$order_sync_available ? false : Configuration::get(Shoppingfeed::ORDER_SYNC_ENABLED),
             Shoppingfeed::ORDER_DEFAULT_CARRIER_REFERENCE => Configuration::get(Shoppingfeed::ORDER_DEFAULT_CARRIER_REFERENCE),
             'tracking_timeshift' => Configuration::get(Shoppingfeed::ORDER_STATUS_TIME_SHIFT),
@@ -550,7 +551,7 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
             Configuration::updateValue(Shoppingfeed::ORDER_IMPORT_SHIPPED, ($order_sync_shipped ? true : false), false, null, $shop['id_shop']);
             Configuration::updateValue(
                 Shoppingfeed::ORDER_IMPORT_SHIPPED_MARKETPLACE,
-                ($order_sync_shipped_marketplace && $order_sync_shipped? true : false),
+                ($order_sync_shipped_marketplace ? true : false),
                 false,
                 null,
                 $shop['id_shop']
