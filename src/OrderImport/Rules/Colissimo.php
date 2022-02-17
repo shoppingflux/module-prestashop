@@ -62,7 +62,7 @@ class Colissimo extends RuleAbstract implements RuleInterface
 
         // Check marketplace, that the additional fields with the pickup point data are there and not empty, and that the "colissimo" module is installed and active
         $module_colissimo = Module::getInstanceByName('colissimo');
-        if ('zalandohexagona' === Tools::strtolower($apiOrder->getChannel()->getName())
+        if (preg_match('#^zalando#', Tools::strtolower($apiOrder->getChannel()->getName()))
             && !empty($apiOrderData['additionalFields']['service_point_id'])
             && !empty($apiOrderData['additionalFields']['service_point_name'])
             && $module_colissimo && $module_colissimo->active
