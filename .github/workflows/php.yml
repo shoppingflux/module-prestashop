@@ -1,15 +1,5 @@
 name: Coding Standart
-on:
-  pull_request:
-    branches-ignore:
-      - develop
-      - master
-      - 'release/**'
-  push:
-    branches:
-      - develop
-      - master
-      - 'release/**'
+on: [pull_request, push]
 jobs:
     # Check there is no syntax errors in the project
     php-linter:
