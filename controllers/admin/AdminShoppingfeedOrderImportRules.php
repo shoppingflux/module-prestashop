@@ -553,7 +553,7 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
             Configuration::updateValue(Shoppingfeed::ORDER_IMPORT_SHIPPED, ($order_sync_shipped ? true : false), false, null, $shop['id_shop']);
             Configuration::updateValue(
                 Shoppingfeed::ORDER_IMPORT_SHIPPED_MARKETPLACE,
-                ($order_sync_shipped_marketplace && $order_sync_shipped? true : false),
+                ($order_sync_shipped_marketplace && $order_sync_shipped ? true : false),
                 false,
                 null,
                 $shop['id_shop']
@@ -628,7 +628,7 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
         $carriers = [
             [
                 'value' => 0,
-                'label' => $this->l('Select carrier', 'AdminShoppingfeedOrderImportRules')
+                'label' => $this->l('Select carrier', 'AdminShoppingfeedOrderImportRules'),
             ]
         ];
 
@@ -638,6 +638,7 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
                 'label' => $carrier['name'],
             ];
         }
+
         return $carriers;
     }
 }
