@@ -280,8 +280,7 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
                         array(
                             'type' => 'switch',
                             'label' => $this->module->l('Allow import orders shipped by Marketplaces Amazon, CDiscount and Manomano', 'AdminShoppingfeedOrderImportRules'),
-                            'name' => 
-                            ,
+                            'name' => Shoppingfeed::ORDER_IMPORT_SHIPPED_MARKETPLACE,
                             'id' => 'shoppingfeed_order-import-switch',
                             'hint' => $this->module->l('Order will be imported regardless of its status on Shopping Feed side', 'AdminShoppingfeedOrderImportRules'),
                             'is_bool' => true,
