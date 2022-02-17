@@ -18,6 +18,7 @@
  */
 
 use ShoppingFeed\Sdk\Api\Order\OrderOperation;
+use ShoppingfeedAddon\Services\CarrierFinder;
 use ShoppingfeedClasslib\Actions\DefaultActions;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 use ShoppingfeedClasslib\Registry;
@@ -311,7 +312,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
                         'tracking_url' => '',
                     ];
 
-                    $carrier = new Carrier((int) $order->id_carrier);
+                    $carrier = $this->initCarrierFinder()->findByOrder($order);
                     if (!Validate::isLoadedObject($carrier)) {
                         ProcessLoggerHandler::logError(
                             $logPrefix . ' ' .
@@ -388,6 +389,11 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
         }
 
         return true;
+    }
+
+    protected function initCarrierFinder()
+    {
+        return new CarrierFinder();
     }
 
     public function sendTaskOrdersSyncStatus()
