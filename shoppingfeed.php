@@ -1121,46 +1121,36 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
      */
     public function hookActionValidateOrder($params)
     {
-        if (!Configuration::get(Shoppingfeed::ORDER_SYNC_ENABLED) || !self::isOrderSyncAvailable() || Configuration::get(self::ORDER_IMPORT_ENABLED)) {
+        $handler = \ShoppingfeedClasslib\Registry::get('shoppingfeedOrderImportHandler');
+        if ($handler === false) {
             return;
         }
-
         $currentOrder = $params['order'];
 
         // Only process orders added via the shoppingflux module
         if ($currentOrder->module != 'sfpayment') {
             return;
         }
-
         try {
-            \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logInfo(
-                sprintf(
-                    ShoppingfeedOrderSyncActions::getLogPrefix($currentOrder->id) . ' ' .
-                        $this->l('Start import Order %s ', 'ShoppingfeedOrderActions'),
-                    $currentOrder->id
-                ),
-                'Order',
-                $currentOrder->id
+            $handler->addActions(
+                'createSfOrder',
+                'acknowledgeOrder',
+                'recalculateOrderPrices'
             );
-
-            $handler = new \ShoppingfeedClasslib\Actions\ActionsHandler();
-            $processResult = $handler
-                ->setConveyor(['id_order' => $currentOrder->id])
-                ->addActions('saveOrder')
-                ->process('shoppingfeedOrderSync');
-
-            if (!$processResult) {
-                \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logError(
-                    ShoppingfeedOrderSyncActions::getLogPrefix($currentOrder->id) . ' ' .
-                        $this->l('Fail : An error occurred during process.')
-                );
-            }
+            $conveyor = $handler->getConveyor();
+            $conveyor['id_order'] = $currentOrder->id;
+            $conveyor['order_reference'] = $currentOrder->reference;
+            $conveyor['psOrder'] = $currentOrder;
+            $handler->setConveyor($conveyor);
+            $processResult = $handler->process('shoppingfeedOrderImport');
+            $conveyor = $handler->getConveyor();
+            $params['order'] = $conveyor['psOrder'];
         } catch (Exception $e) {
             \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logError(
                 sprintf(
                     ShoppingfeedOrderSyncActions::getLogPrefix() . ' ' .
                         $this->l('Order %s not imported : %s', 'ShoppingfeedOrderActions'),
-                    $params['id_order'],
+                        $currentOrder->id,
                     $e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine()
                 ),
                 'Order',

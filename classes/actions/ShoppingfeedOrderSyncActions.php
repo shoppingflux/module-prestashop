@@ -65,6 +65,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
         $newShoppingFeedOrder->name_marketplace = $order->payment;
         $newShoppingFeedOrder->id_order = $id_order;
         $newShoppingFeedOrder->payment_method = '-';
+        $newShoppingFeedOrder->id_shoppingfeed_token = '1';
         $newShoppingFeedOrder->save();
 
         ProcessLoggerHandler::logSuccess(

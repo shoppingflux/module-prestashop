@@ -20,6 +20,7 @@
 use ShoppingfeedAddon\OrderImport\OrderData;
 use ShoppingfeedClasslib\Actions\DefaultActions;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
+use ShoppingfeedClasslib\Registry;
 
 class ShoppingfeedOrderImportActions extends DefaultActions
 {
@@ -281,6 +282,9 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 $this->l('Step 2/11 : Order verified', 'ShoppingfeedOrderImportActions'),
             'Order'
         );
+        // force hook actionValidateOrder first for shoppingfeed
+        $actionValidateOrderHookId = Hook::getIdByName('actionValidateOrder');
+        $sfModule->updatePosition($actionValidateOrderHookId, 0, 1);
 
         return true;
     }
@@ -701,7 +705,8 @@ class ShoppingfeedOrderImportActions extends DefaultActions
 
         // Validate order with payment module
         // Change the customer mail before this, otherwise he'll get a confirmation mail
-        $customerEmail = $this->conveyor['customer']->email;
+        Registry::set('customerEmail', $this->conveyor['customer']->email);
+
         $this->conveyor['customer']->email = 'do-not-send@alerts-shopping-flux.com';
         $this->conveyor['customer']->update();
 
@@ -748,8 +753,23 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         }
 
         // Reset customer mail
-        $this->conveyor['customer']->email = $customerEmail;
+        $this->conveyor['customer']->email = Registry::get('customerEmail');
         $this->conveyor['customer']->update();
+
+        ProcessLoggerHandler::logSuccess(
+            $this->logPrefix .
+                $this->l('Order imported!', 'ShoppingfeedOrderImportActions'),
+            'Order',
+            empty($this->conveyor['sfOrder']) === false ? $this->conveyor['sfOrder']->id_order : ''
+        );
+
+        return true;
+    }
+
+    public function createSfOrder()
+    {
+        /** @var ShoppingFeed\Sdk\Api\Order\OrderResource $apiOrder */
+        $apiOrder = $this->conveyor['apiOrder'];
 
         // Create the ShoppingfeedOrder here; we need to know if it's been created
         // after this point
@@ -766,7 +786,6 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         if ($this->conveyor['orderData']->createdAt->getTimestamp() != 0) {
             $sfOrder->date_marketplace_creation = $this->conveyor['orderData']->createdAt->format('Y-m-d H:i:s');
         }
-
         $sfOrder->save();
         $this->conveyor['sfOrder'] = $sfOrder;
 
@@ -870,7 +889,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
     {
         /** @var ShoppingFeed\Sdk\Api\Order\OrderResource $apiOrder */
         $apiOrder = $this->conveyor['apiOrder'];
-        $psOrder = new Order((int) $this->conveyor['id_order']);
+        $psOrder = $this->conveyor['psOrder'];
 
         $this->initProcess($apiOrder);
 
@@ -907,7 +926,6 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 );
                 continue;
             }
-
             // The tax may not be defined for the country (linked to the invoice address)
             // Eg: Switzerland invoice address received in french shop (will depends of PS configuration)
             $tax_rate = $productOrderDetail['tax_rate'] === null ? 0 : $productOrderDetail['tax_rate'];
