@@ -353,14 +353,14 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
                     }
 
                     Hook::exec('actionShoppingfeedTracking', ['order' => $order, 'taskOrderPayload' => &$taskOrderPayload]);
-                    break;
+                    continue;
                 } elseif (in_array($idOrderState, $cancelled_status)) {
                     $taskOrderOperation = OrderOperation::TYPE_CANCEL;
-                    break;
+                    continue;
                 // The "reason" field is not supported (at least for now)
                 } elseif (in_array($idOrderState, $refunded_status)) {
                     $taskOrderOperation = OrderOperation::TYPE_REFUND;
-                    break;
+                    continue;
                     // No partial refund (at least for now), so no optional
                     // parameters to set.
                 }
@@ -588,11 +588,11 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
                         'Order',
                         $taskOrder->id_order
                     );
-                    break;
+                    continue 2;
                 case 'scheduled':
                 case 'running':
                     // Don't do anything, we'll just send them again later
-                    break;
+                    continue 2;
                 case 'canceled':
                     $this->conveyor['successfulTaskOrders'][] = $taskOrder;
                     ProcessLoggerHandler::logInfo(
@@ -605,7 +605,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
                         'Order',
                         $taskOrder->id_order
                     );
-                    break;
+                    continue 2;
                 case 'succeed':
                     $this->conveyor['successfulTaskOrders'][] = $taskOrder;
                     ProcessLoggerHandler::logSuccess(
@@ -617,7 +617,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
                         'Order',
                         $taskOrder->id_order
                     );
-                    break;
+                    continue 2;
             }
         }
 
