@@ -15,4 +15,4 @@ parameters:
     - '#Instantiated class RelaisColisInfo not found\.#'
     
   reportUnmatchedIgnoredErrors: false
-  level: 1
+  level: 2

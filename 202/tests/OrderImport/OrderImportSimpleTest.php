@@ -60,8 +60,8 @@ class OrderImportSimpleTest extends AbstractOrdeTestCase
         $conveyor = $handler->getConveyor();
 
         $customer = $conveyor['customer'];
-        $this->assertEquals($customer->lastname, 'Martin');
-        $this->assertEquals($customer->firstname, 'Bernard');
+        $this->assertEquals($customer->firstname, 'Martin');
+        $this->assertEquals($customer->lastname, 'Bernard');
 
         $sfOrder = $conveyor['sfOrder'];
         $this->assertEquals($sfOrder->name_marketplace, 'Amazon');
