@@ -1,11 +1,11 @@
 {
    "id":16858191201,
-   "storeId":28147,
+   "storeId":25125,
    "channelId":1569,
    "reference":"ORDER-TEST-NETD",
    "storeReference":"",
    "isTest":false,
-   "acknowledgedAt":"2022-01-18T16:49:37+01:00",
+   "acknowledgedAt":null,
    "createdAt":"2022-01-17T10:53:49+01:00",
    "updatedAt":"2022-01-17T11:51:11+01:00",
    "status":"waiting_shipment",
