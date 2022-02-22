@@ -19,9 +19,9 @@
 
 namespace Tests\OrderImport;
 
+use Cart;
 use ShoppingfeedAddon\OrderImport\OrderData;
 use ShoppingfeedAddon\OrderImport\Rules\ManomanoDpdRelais;
-use Cart;
 
 /**
  * Order Rules ManomanoDpdRelais Test
@@ -59,6 +59,5 @@ class OrderRulesManomanoDpdRelaisTest extends AbstractOrdeTestCase
                 'email' => 'm_bcaddf4fgca@message.manomano.com',
         ];
         $this->assertSame($expedtedAddress, $params['orderData']->shippingAddress);
-
     }
 }

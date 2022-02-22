@@ -262,8 +262,10 @@ class OrderImportSimpleTest extends AbstractOrdeTestCase
         $carrier = new \Carrier($psOrder->id_carrier);
         $this->assertEquals($carrier->id_reference, 1);
     }
+
     /**
      * Test to import a standard order  ManoMano with DPD Relais
+     *
      * @todo manage a specific carrier creation for tests
      *
      * @return void

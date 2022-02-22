@@ -4,11 +4,11 @@ namespace ShoppingfeedAddon\OrderImport\Rules;
 
 use Cart;
 use Module;
+use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use ShoppingfeedAddon\OrderImport\DpdAssociation;
 use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
-use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use Tools;
 use Validate;
 
@@ -82,7 +82,6 @@ class ManomanoDpdRelais extends RuleAbstract implements RuleInterface
         $explodedFullname = explode(' ', $fullname);
         $orderData->shippingAddress['firstName'] = array_shift($explodedFullname);
         $orderData->shippingAddress['lastName'] = implode(' ', $explodedFullname);
-
     }
 
     public function afterCartCreation($params)
