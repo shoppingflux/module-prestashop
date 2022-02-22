@@ -31,6 +31,7 @@ class OrderImportWithConfigTest extends AbstractOrdeTestCase
      */
     public function testImportAmazonAlreadyShipped(): void
     {
+        // Put here tests need different configuration before
         $this->assertTrue(true);
     }
 }

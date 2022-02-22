@@ -262,4 +262,87 @@ class OrderImportSimpleTest extends AbstractOrdeTestCase
         $carrier = new \Carrier($psOrder->id_carrier);
         $this->assertEquals($carrier->id_reference, 1);
     }
+    /**
+     * Test to import a standard order  ManoMano with DPD Relais
+     * @todo manage a specific carrier creation for tests
+     *
+     * @return void
+     */
+    public function testImportManoManoDpdRelais(): void
+    {
+        $apiOrder = $this->getOrderRessourceFromDataset('order-manomano.json');
+
+        $handler = new ActionsHandler();
+        $handler->addActions(
+            'registerSpecificRules',
+            'verifyOrder',
+            'createOrderCart',
+            'validateOrder',
+            'postProcess'
+        );
+
+        $handler->setConveyor(
+            [
+                'id_shop' => 1,
+                'id_token' => 1,
+                'apiOrder' => $apiOrder,
+            ]
+        );
+        Registry::set('shoppingfeedOrderImportHandler', $handler);
+
+        $processResult = $handler->process('shoppingfeedOrderImport');
+
+        $this->assertTrue($processResult);
+
+        $conveyor = $handler->getConveyor();
+
+        $customer = $conveyor['customer'];
+        $this->assertEquals($customer->lastname, 'lafont');
+        $this->assertEquals($customer->firstname, 'patrice');
+
+        $sfOrder = $conveyor['sfOrder'];
+        $this->assertEquals($sfOrder->name_marketplace, 'Monechelle');
+        $this->assertEquals($sfOrder->id_order_marketplace, 'MANOMANO-TEST-123');
+
+        $psOrder = new \Order((int) $conveyor['id_order']);
+
+        // it's a test > canceled
+        $this->assertEquals($psOrder->current_state, _PS_OS_PAYMENT_);
+        $this->assertEquals($psOrder->payment, 'monechelle');
+        $this->assertEquals($psOrder->module, 'sfpayment');
+        $this->assertEquals($psOrder->total_discounts, 0.000000);
+        $this->assertEquals($psOrder->total_paid, 14.600000);
+        $this->assertEquals($psOrder->total_paid_tax_incl, 14.600000);
+        $this->assertEquals($psOrder->total_paid_tax_excl, 12.166700);
+        $this->assertEquals($psOrder->total_paid_real, 14.600000);
+        $this->assertEquals($psOrder->total_products, 8.170000);
+        $this->assertEquals($psOrder->total_products_wt, 9.800000);
+        $this->assertEquals($psOrder->total_shipping, 4.800000);
+        $this->assertEquals($psOrder->carrier_tax_rate, 20.000);
+        $this->assertEquals($psOrder->id_carrier, 1);
+        $this->assertEquals($psOrder->total_wrapping, 0.000000);
+
+        $invoices = $psOrder->getInvoicesCollection();
+        $this->assertEquals(count($invoices), 1);
+        foreach ($invoices as $invoice) {
+            $this->assertEquals($invoice->total_discount_tax_excl, 0.000000);
+            $this->assertEquals($invoice->total_discount_tax_incl, 0.000000);
+            $this->assertEquals($invoice->total_paid_tax_excl, 12.166700);
+            $this->assertEquals($invoice->total_paid_tax_incl, 14.600000);
+            $this->assertEquals($invoice->total_products, 8.170000);
+            $this->assertEquals($invoice->total_products_wt, 9.800000);
+            $this->assertEquals($invoice->total_shipping_tax_excl, 4.000000);
+            $this->assertEquals($invoice->total_shipping_tax_incl, 4.800000);
+            $this->assertEquals($invoice->shipping_tax_computation_method, 0);
+            $this->assertEquals($invoice->total_wrapping_tax_excl, 0.000000);
+            $this->assertEquals($invoice->total_wrapping_tax_incl, 0.000000);
+        }
+
+        $carrier = new \Carrier($psOrder->id_carrier);
+        $this->assertEquals($carrier->id_reference, 1);
+
+        $dpdShippingService = \Dpdfrance::getService($psOrder, false);
+        $expectedValue = 'REL';
+        $this->assertEquals($expectedValue, $dpdShippingService);
+    }
 }
