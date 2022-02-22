@@ -19,8 +19,8 @@
 
 namespace Tests\OrderImport;
 
-use ShoppingfeedAddon\OrderImport\Rules\AmazonEbay;
 use ShoppingfeedAddon\OrderImport\OrderData;
+use ShoppingfeedAddon\OrderImport\Rules\AmazonEbay;
 
 /**
  * Order Rules AmazonEbay Test

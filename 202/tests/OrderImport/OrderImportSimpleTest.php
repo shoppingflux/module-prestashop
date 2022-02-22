@@ -262,5 +262,4 @@ class OrderImportSimpleTest extends AbstractOrdeTestCase
         $carrier = new \Carrier($psOrder->id_carrier);
         $this->assertEquals($carrier->id_reference, 1);
     }
-
 }

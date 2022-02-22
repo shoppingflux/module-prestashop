@@ -24,8 +24,8 @@
 
 namespace ShoppingfeedAddon\OrderImport;
 
-use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use OrderState;
+use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use Validate;
 
 if (!defined('_PS_VERSION_')) {
@@ -90,8 +90,9 @@ abstract class RuleAbstract implements RuleInterface
 
     /**
      * is Order State Valid
+     *
      * @param int $idOrderState
-     * 
+     *
      * @return bool
      */
     protected function isOrderStateValid(int $idOrderState)

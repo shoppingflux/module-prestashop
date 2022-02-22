@@ -19,9 +19,6 @@
 
 namespace Tests\OrderImport;
 
-use ShoppingfeedAddon\Actions\ActionsHandler;
-use ShoppingfeedClasslib\Registry;
-
 /**
  * Order Rules AmazonEbay Test
  */
@@ -36,5 +33,4 @@ class OrderImportWithConfigTest extends AbstractOrdeTestCase
     {
         $this->assertTrue(true);
     }
-
 }

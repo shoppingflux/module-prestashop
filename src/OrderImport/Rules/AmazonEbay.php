@@ -36,7 +36,6 @@ use Tools;
 
 class AmazonEbay extends RuleAbstract implements RuleInterface
 {
-
     /**
      * {@inheritdoc}
      */
@@ -77,11 +76,11 @@ class AmazonEbay extends RuleAbstract implements RuleInterface
         $logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
 
         $this->_updateAddress(
-            $orderData->shippingAddress, 
+            $orderData->shippingAddress,
             $apiOrder->getChannel()->getName()
         );
         $this->_updateAddress(
-            $orderData->billingAddress, 
+            $orderData->billingAddress,
             $apiOrder->getChannel()->getName()
         );
 
@@ -97,7 +96,7 @@ class AmazonEbay extends RuleAbstract implements RuleInterface
      *
      * @param array $address
      * @param string $channel
-     * 
+     *
      * @return void
      */
     private function _updateAddress(array &$address, string $channel)

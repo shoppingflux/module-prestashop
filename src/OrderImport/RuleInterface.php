@@ -46,8 +46,8 @@ interface RuleInterface
 
     /**
      * Returns true if a rule is applicable to an SF order
-     * 
-     * @param OrderResource $apiOrder 
+     *
+     * @param OrderResource $apiOrder
      *
      * @return bool
      */
