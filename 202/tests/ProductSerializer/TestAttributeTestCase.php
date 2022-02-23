@@ -19,10 +19,10 @@
 
 namespace Tests\OrderImport;
 
-use ShoppingfeedAddon\Actions\ActionsHandler;
 use PHPUnit\Framework\TestCase;
-use ShoppingfeedToken;
+use ShoppingfeedAddon\Actions\ActionsHandler;
 use ShoppingfeedPreloading;
+use ShoppingfeedToken;
 use Tools;
 
 class TestAttributeTestCase extends TestCase
@@ -33,7 +33,7 @@ class TestAttributeTestCase extends TestCase
         $token = (new ShoppingfeedToken())->getDefaultToken();
         $handler = new ActionsHandler();
         $handler->addActions('getBatch')
-                ->setConveyor(['id_token' => $token['id_shoppingfeed_token'],])
+                ->setConveyor(['id_token' => $token['id_shoppingfeed_token']])
                 ->process('ShoppingfeedProductSyncPreloading');
 
         $product = (new ShoppingfeedPreloading())->findByTokenIdAndProductId($token['id_shoppingfeed_token'], $id_product);
@@ -50,7 +50,7 @@ class TestAttributeTestCase extends TestCase
         $token = (new ShoppingfeedToken())->getDefaultToken();
         $handler = new ActionsHandler();
         $handler->addActions('getBatch')
-                ->setConveyor(['id_token' => $token['id_shoppingfeed_token'],])
+                ->setConveyor(['id_token' => $token['id_shoppingfeed_token']])
                 ->process('ShoppingfeedProductSyncPreloading');
 
         $product = (new ShoppingfeedPreloading())->findByTokenIdAndProductId($token['id_shoppingfeed_token'], $id_product);
@@ -67,14 +67,14 @@ class TestAttributeTestCase extends TestCase
         $token = (new ShoppingfeedToken())->getDefaultToken();
         $handler = new ActionsHandler();
         $handler->addActions('getBatch')
-                ->setConveyor(['id_token' => $token['id_shoppingfeed_token'],])
+                ->setConveyor(['id_token' => $token['id_shoppingfeed_token']])
                 ->process('ShoppingfeedProductSyncPreloading');
 
         $product = (new ShoppingfeedPreloading())->findByTokenIdAndProductId($token['id_shoppingfeed_token'], $id_product);
         $this->assertArrayHasKey('content', $product);
         $productContent = Tools::jsonDecode($product['content'], true);
         $this->assertArrayHasKey('variations', $productContent);
-        $this->assertArrayHasKey($id_product_attribute , $productContent['variations']);
+        $this->assertArrayHasKey($id_product_attribute, $productContent['variations']);
         $this->assertArrayHasKey('attributes', $productContent['variations'][$id_product_attribute]);
         $this->assertArrayHasKey('availability_label', $productContent['variations'][$id_product_attribute]['attributes']);
         $this->assertEquals($productContent['variations'][$id_product_attribute]['attributes']['availability_label'], 'non disponible');
@@ -87,14 +87,14 @@ class TestAttributeTestCase extends TestCase
         $token = (new ShoppingfeedToken())->getDefaultToken();
         $handler = new ActionsHandler();
         $handler->addActions('getBatch')
-                ->setConveyor(['id_token' => $token['id_shoppingfeed_token'],])
+                ->setConveyor(['id_token' => $token['id_shoppingfeed_token']])
                 ->process('ShoppingfeedProductSyncPreloading');
 
         $product = (new ShoppingfeedPreloading())->findByTokenIdAndProductId($token['id_shoppingfeed_token'], $id_product);
         $this->assertArrayHasKey('content', $product);
         $productContent = Tools::jsonDecode($product['content'], true);
         $this->assertArrayHasKey('variations', $productContent);
-        $this->assertArrayHasKey($id_product_attribute , $productContent['variations']);
+        $this->assertArrayHasKey($id_product_attribute, $productContent['variations']);
         $this->assertArrayHasKey('attributes', $productContent['variations'][$id_product_attribute]);
         $this->assertArrayNotHasKey('availability_label', $productContent['variations'][$id_product_attribute]['attributes']);
     }

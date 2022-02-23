@@ -193,6 +193,7 @@ class ShoppingfeedPreloading extends ObjectModel
 
         return Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($query);
     }
+
     /**
      * get content product in preloading table
      *
