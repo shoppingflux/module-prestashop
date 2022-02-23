@@ -64,7 +64,6 @@ abstract class AbstractColissimo extends RuleAbstract implements RuleInterface
         $module_colissimo = Module::getInstanceByName('colissimo');
         if ($module_colissimo && $module_colissimo->active
         ) {
-
             return true;
         }
 
