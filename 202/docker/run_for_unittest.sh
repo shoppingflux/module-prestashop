@@ -21,7 +21,13 @@ INSERT IGNORE INTO ps_shoppingfeed_token (id_shoppingfeed_token, id_shop, id_lan
 INSERT IGNORE INTO ps_shoppingfeed_carrier (id_shoppingfeed_carrier, name_marketplace, name_carrier, id_carrier_reference, is_new, date_add, date_upd) VALUES
 (1,	'Amazon',	'Colissimo',	1,	0,	'2022-02-17 00:00:00',	'2022-02-17 00:00:00'),
 (2,	'NatureEtDecouvertes',	'Point Relais (Chrono Relais)',	2,	0,	'2022-02-17 07:44:26',	'2022-02-17 00:00:00');
+UPDATE ps_product_lang set available_now = 'disponible', available_later = 'non disponible' where id_product = 1
+UPDATE ps_product_lang set available_now = 'disponible', available_later = 'non disponible' where id_product = 3;
+UPDATE ps_stock_available set quantity = 0 where id_product = 3 and id_product_attribute = 13;
+UPDATE ps_stock_available set quantity = 0 where id_product = 4 and id_product_attribute = 16;
 "
+
+
 cd /var/www/html/modules/shoppingfeed/
 
 vendor/bin/phpunit -c 202/phpunit.xml
