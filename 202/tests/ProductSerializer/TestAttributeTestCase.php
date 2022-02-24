@@ -27,18 +27,60 @@ use Tools;
 
 class TestAttributeTestCase extends TestCase
 {
+    public function testPrelodingTableContent()
+    {
+        $id_token = 1;
+        $handler = new ActionsHandler();
+        $handler->addActions('getBatch')
+                ->setConveyor(['id_token' => $id_token])
+                ->process('ShoppingfeedProductSyncPreloading');
+        $products = (new ShoppingfeedPreloading())->findAllByTokenId($id_token);
+        $this->assertEquals(count($products), 18);
+        foreach ($products as $product) {
+            $this->assertArrayHasKey('price', $product);
+            $this->assertArrayHasKey('quantity', $product);
+        }
+    }
+
+    public function testGetPriceAndQuantity()
+    {
+        $id_token = 1;
+        $id_product = 1;
+        $handler = new ActionsHandler();
+        $handler->addActions('getBatch')
+                ->setConveyor(['id_token' => $id_token])
+                ->process('ShoppingfeedProductSyncPreloading');
+        $product = (new ShoppingfeedPreloading())->findByTokenIdAndProductId($id_token, $id_product);
+        $productContent = Tools::jsonDecode($product['content'], true);
+        $this->assertIsArray($productContent);
+        $this->assertEquals($productContent['price'], 28.68);
+        $this->assertEquals($productContent['quantity'], 2399);
+    }
+
+    public function testPrelodingTablePrice()
+    {
+        $id_token = 1;
+        $handler = new ActionsHandler();
+        $handler->addActions('getBatch')
+                ->setConveyor(['id_token' => $id_token])
+                ->process('ShoppingfeedProductSyncPreloading');
+        $products = (new ShoppingfeedPreloading())->findAllByTokenId($id_token);
+        $this->assertEquals(count($products), 18);
+    }
+
     public function testGetProductAvailabilityLabelWithStockAndAvailableMessage(): void
     {
         $id_product = 1;
-        $token = (new ShoppingfeedToken())->getDefaultToken();
+        $id_token = 1;
         $handler = new ActionsHandler();
         $handler->addActions('getBatch')
-                ->setConveyor(['id_token' => $token['id_shoppingfeed_token']])
+                ->setConveyor(['id_token' => $id_token])
                 ->process('ShoppingfeedProductSyncPreloading');
 
-        $product = (new ShoppingfeedPreloading())->findByTokenIdAndProductId($token['id_shoppingfeed_token'], $id_product);
+        $product = (new ShoppingfeedPreloading())->findByTokenIdAndProductId($id_token, $id_product);
         $this->assertArrayHasKey('content', $product);
         $productContent = Tools::jsonDecode($product['content'], true);
+        $this->assertIsArray($productContent);
         $this->assertArrayHasKey('attributes', $productContent);
         $this->assertArrayHasKey('availability_label', $productContent['attributes']);
         $this->assertEquals($productContent['attributes']['availability_label'], 'disponible');
@@ -47,15 +89,16 @@ class TestAttributeTestCase extends TestCase
     public function testGetProductAvailabilityLabelWithStockAndNotAvailableMessage(): void
     {
         $id_product = 2;
-        $token = (new ShoppingfeedToken())->getDefaultToken();
+        $id_token = 1;
         $handler = new ActionsHandler();
         $handler->addActions('getBatch')
-                ->setConveyor(['id_token' => $token['id_shoppingfeed_token']])
+                ->setConveyor(['id_token' => $id_token])
                 ->process('ShoppingfeedProductSyncPreloading');
 
-        $product = (new ShoppingfeedPreloading())->findByTokenIdAndProductId($token['id_shoppingfeed_token'], $id_product);
+        $product = (new ShoppingfeedPreloading())->findByTokenIdAndProductId($id_token, $id_product);
         $this->assertArrayHasKey('content', $product);
         $productContent = Tools::jsonDecode($product['content'], true);
+        $this->assertIsArray($productContent);
         $this->assertArrayHasKey('attributes', $productContent);
         $this->assertArrayNotHasKey('availability_label', $productContent['attributes']);
     }
@@ -64,15 +107,16 @@ class TestAttributeTestCase extends TestCase
     {
         $id_product = 3;
         $id_product_attribute = 13;
-        $token = (new ShoppingfeedToken())->getDefaultToken();
+        $id_token = 1;
         $handler = new ActionsHandler();
         $handler->addActions('getBatch')
-                ->setConveyor(['id_token' => $token['id_shoppingfeed_token']])
+                ->setConveyor(['id_token' => $id_token])
                 ->process('ShoppingfeedProductSyncPreloading');
 
-        $product = (new ShoppingfeedPreloading())->findByTokenIdAndProductId($token['id_shoppingfeed_token'], $id_product);
+        $product = (new ShoppingfeedPreloading())->findByTokenIdAndProductId($id_token, $id_product);
         $this->assertArrayHasKey('content', $product);
         $productContent = Tools::jsonDecode($product['content'], true);
+        $this->assertIsArray($productContent);
         $this->assertArrayHasKey('variations', $productContent);
         $this->assertArrayHasKey($id_product_attribute, $productContent['variations']);
         $this->assertArrayHasKey('attributes', $productContent['variations'][$id_product_attribute]);
@@ -84,15 +128,16 @@ class TestAttributeTestCase extends TestCase
     {
         $id_product = 4;
         $id_product_attribute = 16;
-        $token = (new ShoppingfeedToken())->getDefaultToken();
+        $id_token = 1;
         $handler = new ActionsHandler();
         $handler->addActions('getBatch')
-                ->setConveyor(['id_token' => $token['id_shoppingfeed_token']])
+                ->setConveyor(['id_token' => $id_token])
                 ->process('ShoppingfeedProductSyncPreloading');
 
-        $product = (new ShoppingfeedPreloading())->findByTokenIdAndProductId($token['id_shoppingfeed_token'], $id_product);
+        $product = (new ShoppingfeedPreloading())->findByTokenIdAndProductId($id_token, $id_product);
         $this->assertArrayHasKey('content', $product);
         $productContent = Tools::jsonDecode($product['content'], true);
+        $this->assertIsArray($productContent);
         $this->assertArrayHasKey('variations', $productContent);
         $this->assertArrayHasKey($id_product_attribute, $productContent['variations']);
         $this->assertArrayHasKey('attributes', $productContent['variations'][$id_product_attribute]);
