@@ -1,11 +1,11 @@
 {
     "id":16984336913,
-    "storeId":43311,
+    "storeId":25125,
     "channelId":152,
     "reference":"1-2022.041.4342060",
     "storeReference":"6362",
     "isTest":false,
-    "acknowledgedAt":"2022-02-11T04:05:32+01:00",
+    "acknowledgedAt":null,
     "createdAt":"2022-02-10T23:59:16+01:00",
     "updatedAt":"2022-02-11T03:03:23+01:00",
     "status":"waiting_shipment",

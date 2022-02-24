@@ -1,0 +1,95 @@
+{
+    "id":1078495000000,
+    "storeId":25125,
+    "channelId":44,
+    "reference":"EBAY-REST-12345",
+    "storeReference":"100000",
+    "isTest":false,
+    "acknowledgedAt":null,
+    "createdAt":"2022-02-05T22:00:00+01:00",
+    "updatedAt":"2022-02-05T22:00:00+01:00",
+    "status":"waiting_shipment",
+    "anonymized":false,
+    "payment":{
+       "shippingAmount":5,
+       "productAmount":5.99,
+       "totalAmount":10.99,
+       "currency":"EUR",
+       "method":"CreditCard" 
+    },
+    "shipment":{
+       "carrier":"FR_ColiposteColissimoRecommended",
+       "trackingNumber":"" 
+    },
+    "additionalFields":{
+       "transaction_id":"1078495000000" 
+    },
+    "errors":[
+    ],
+    "itemsReferencesAliases":null,
+    "items":[
+       {
+          "reference":"6915",
+          "status":"",
+          "quantity":1,
+          "price":5.99,
+          "taxAmount":0,
+          "channelReference":"175071651403-2395587882007",
+          "name":"D\u00e9coration No\u00ebl Harry Potter - Fanion Poufsouffle",
+          "image":"https://lcoalhost/1-thickbox_default/decoration-noel-harry-potter-fanion-poufsouffle.jpg" 
+       }
+    ],
+    "shippingAddress":{
+       "firstName":"",
+       "lastName":"Jean-Pierre Le Rouge",
+       "company":"",
+       "street":"23 rue de la jetée",
+       "street2":"",
+       "other":"leg1520",
+       "postalCode":"06800",
+       "city":"Cagnes Sur Mer",
+       "country":"FR",
+       "phone":"065544332211",
+       "mobilePhone":"",
+       "email":"abcdefghijklmopq@members.ebay.com" 
+    },
+    "billingAddress":{
+       "firstName":"",
+       "lastName":"Jean-Pierre Le Rouge",
+       "company":"",
+       "street":"23 rue de la jetée",
+       "street2":"",
+       "other":"leg1520",
+       "postalCode":"06800",
+       "city":"Cagnes Sur Mer",
+       "country":"FR",
+       "phone":"065544332211",
+       "mobilePhone":"",
+       "email":"abcdefghijklmopq@members.ebay.com" 
+    },
+    "_links":{
+       "self":{
+          "href":"/v1/store/12863/order/1078495000000" 
+       },
+       "store":{
+          "href":"/v1/store/12863" 
+       }
+    },
+    "_embedded":{
+       "channel":{
+          "id":44,
+          "name":"eBay",
+          "_links":{
+             "self":{
+                "href":"/v1/channel/44" 
+             },
+             "image":{
+                "href":"https://assets.shopping-feed.com/channel/logo/eBay.png" 
+             }
+          }
+       },
+       "tag":[
+ 
+       ]
+    }
+ }

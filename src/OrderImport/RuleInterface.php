@@ -24,6 +24,8 @@
 
 namespace ShoppingfeedAddon\OrderImport;
 
+use ShoppingFeed\Sdk\Api\Order\OrderResource;
+
 if (!defined('_PS_VERSION_')) {
     exit;
 }
@@ -45,9 +47,11 @@ interface RuleInterface
     /**
      * Returns true if a rule is applicable to an SF order
      *
+     * @param OrderResource $apiOrder
+     *
      * @return bool
      */
-    public function isApplicable(\ShoppingFeed\Sdk\Api\Order\OrderResource $apiOrder);
+    public function isApplicable(OrderResource $apiOrder);
 
     /**
      * Returns an array with the rule's configuration

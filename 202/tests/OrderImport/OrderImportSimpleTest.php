@@ -60,8 +60,8 @@ class OrderImportSimpleTest extends AbstractOrdeTestCase
         $conveyor = $handler->getConveyor();
 
         $customer = $conveyor['customer'];
-        $this->assertEquals($customer->lastname, 'Martin');
-        $this->assertEquals($customer->firstname, 'Bernard');
+        $this->assertEquals($customer->firstname, 'Martin');
+        $this->assertEquals($customer->lastname, 'Bernard');
 
         $sfOrder = $conveyor['sfOrder'];
         $this->assertEquals($sfOrder->name_marketplace, 'Amazon');
@@ -115,7 +115,8 @@ class OrderImportSimpleTest extends AbstractOrdeTestCase
             'registerSpecificRules',
             'verifyOrder',
             'createOrderCart',
-            'validateOrder'
+            'validateOrder',
+            'postProcess'
         );
 
         $handler->setConveyor(
@@ -150,7 +151,8 @@ class OrderImportSimpleTest extends AbstractOrdeTestCase
             'registerSpecificRules',
             'verifyOrder',
             'createOrderCart',
-            'validateOrder'
+            'validateOrder',
+            'postProcess'
         );
 
         $handler->setConveyor(
@@ -180,5 +182,84 @@ class OrderImportSimpleTest extends AbstractOrdeTestCase
 
         $carrier = new \Carrier($psOrder->id_carrier);
         $this->assertEquals($carrier->id_reference, 2);
+    }
+
+    /**
+     * Test to import a standard order Zalando
+     *
+     * @return void
+     */
+    public function testImportZalando(): void
+    {
+        $apiOrder = $this->getOrderRessourceFromDataset('order-zalando.json');
+
+        $handler = new ActionsHandler();
+        $handler->addActions(
+            'registerSpecificRules',
+            'verifyOrder',
+            'createOrderCart',
+            'validateOrder',
+            'postProcess'
+        );
+
+        $handler->setConveyor(
+            [
+                'id_shop' => 1,
+                'id_token' => 1,
+                'apiOrder' => $apiOrder,
+            ]
+        );
+        Registry::set('shoppingfeedOrderImportHandler', $handler);
+
+        $processResult = $handler->process('shoppingfeedOrderImport');
+
+        $this->assertTrue($processResult);
+
+        $conveyor = $handler->getConveyor();
+
+        $customer = $conveyor['customer'];
+        $this->assertEquals($customer->lastname, 'PETIT-JEAN');
+        $this->assertEquals($customer->firstname, 'Corine');
+
+        $sfOrder = $conveyor['sfOrder'];
+        $this->assertEquals($sfOrder->name_marketplace, 'zalandoboniclassic');
+        $this->assertEquals($sfOrder->id_order_marketplace, '10301108385651');
+
+        $psOrder = new \Order((int) $conveyor['id_order']);
+
+        // it's a test > canceled
+        $this->assertEquals($psOrder->current_state, _PS_OS_PAYMENT_);
+        $this->assertEquals($psOrder->payment, 'zalandoboniclassic');
+        $this->assertEquals($psOrder->module, 'sfpayment');
+        $this->assertEquals($psOrder->total_discounts, 0.000000);
+        $this->assertEquals($psOrder->total_paid, 119.800000);
+        $this->assertEquals($psOrder->total_paid_tax_incl, 119.800000);
+        $this->assertEquals($psOrder->total_paid_tax_excl, 99.833300);
+        $this->assertEquals($psOrder->total_paid_real, 119.800000);
+        $this->assertEquals($psOrder->total_products, 99.830000);
+        $this->assertEquals($psOrder->total_products_wt, 119.800000);
+        $this->assertEquals($psOrder->total_shipping, 0.000000);
+        $this->assertEquals($psOrder->carrier_tax_rate, 20.000);
+        $this->assertEquals($psOrder->id_carrier, 1);
+        $this->assertEquals($psOrder->total_wrapping, 0.000000);
+
+        $invoices = $psOrder->getInvoicesCollection();
+        $this->assertEquals(count($invoices), 1);
+        foreach ($invoices as $invoice) {
+            $this->assertEquals($invoice->total_discount_tax_excl, 0.000000);
+            $this->assertEquals($invoice->total_discount_tax_incl, 0.000000);
+            $this->assertEquals($invoice->total_paid_tax_excl, 99.833300);
+            $this->assertEquals($invoice->total_paid_tax_incl, 119.800000);
+            $this->assertEquals($invoice->total_products, 99.830000);
+            $this->assertEquals($invoice->total_products_wt, 119.800000);
+            $this->assertEquals($invoice->total_shipping_tax_excl, 0.000000);
+            $this->assertEquals($invoice->total_shipping_tax_incl, 0.000000);
+            $this->assertEquals($invoice->shipping_tax_computation_method, 0);
+            $this->assertEquals($invoice->total_wrapping_tax_excl, 0.000000);
+            $this->assertEquals($invoice->total_wrapping_tax_incl, 0.000000);
+        }
+
+        $carrier = new \Carrier($psOrder->id_carrier);
+        $this->assertEquals($carrier->id_reference, 1);
     }
 }

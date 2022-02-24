@@ -1,0 +1,99 @@
+{
+   "id":17005067711,
+   "storeId":25125,
+   "channelId":66,
+   "reference":"TEST-AMZSHPPD-123456",
+   "storeReference":"62857",
+   "isTest":false,
+   "acknowledgedAt":null,
+   "createdAt":"2022-02-22T16:00:00+01:00",
+   "updatedAt":"2022-02-22T16:00:00+01:00",
+   "status":"shipped",
+   "anonymized":false,
+   "payment":{
+      "shippingAmount":9.6,
+      "productAmount":9.8,
+      "totalAmount":19.4,
+      "currency":"EUR",
+      "method":"MFN" 
+   },
+   "shipment":{
+      "carrier":"Std FR Dom_1",
+      "trackingNumber":"" 
+   },
+   "additionalFields":{
+      "is_prime":"",
+      "shipping_tax":"1.6",
+      "is_business_order":"",
+      "purchase_order_number":"" 
+   },
+   "errors":[
+
+   ],
+   "itemsReferencesAliases":null,
+   "items":[
+      {
+         "reference":"VA0008",
+         "status":"",
+         "quantity":2,
+         "price":4.9,
+         "taxAmount":1.64,
+         "channelReference":"19636411942987",
+         "name":"Nettoyant r\u00e9sine pour adoucisseur d\u0027eau",
+         "image":"https://localhost/2-marketplaces/nettoyant-resine-pour-adoucisseur.jpg" 
+      }
+   ],
+   "shippingAddress":{
+      "firstName":"",
+      "lastName":"Lameloise Edgar",
+      "company":"",
+      "street":"36 Place d'Armes",
+      "street2":"",
+      "other":"",
+      "postalCode":"71150",
+      "city":"CHAGNY",
+      "country":"FR",
+      "phone":"0385112233",
+      "mobilePhone":"",
+      "email":"gfwv9k7xvwfrg11@marketplace.amazon.fr" 
+   },
+   "billingAddress":{
+      "firstName":"",
+      "lastName":"Lameloise Edgar",
+      "company":"",
+      "street":"36 Place d'Armes",
+      "street2":"",
+      "other":"",
+      "postalCode":"71150",
+      "city":"CHAGNY",
+      "country":"FR",
+      "phone":"0385112233",
+      "mobilePhone":"",
+      "email":"gfwv9k7xvwfrg11@marketplace.amazon.fr" 
+   },
+   "_links":{
+      "self":{
+         "href":"/v1/store/40822/order/17005067732" 
+      },
+      "store":{
+         "href":"/v1/store/40822" 
+      }
+   },
+   "_embedded":{
+      "channel":{
+         "id":66,
+         "name":"Amazon",
+         "_links":{
+            "self":{
+               "href":"/v1/channel/66" 
+            },
+            "image":{
+               "href":"https://assets.shopping-feed.com/channel/logo/Amazon.png" 
+            }
+         }
+      },
+      "tag":[
+
+      ]
+   }
+}
