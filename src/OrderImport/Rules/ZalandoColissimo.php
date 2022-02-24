@@ -37,7 +37,6 @@ use Country;
 use Exception;
 use Module;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
-use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 use Tools;
@@ -49,27 +48,27 @@ use Validate;
  * the data for the pickup point are in the additional fields. The data must be set up in the "colissimo" module's table so that colissimo can treat it as a
  * standard order. The goal is to allow the merchant to generate labels with the "colissimo" module so that the standard shipping process can take place.
  */
-class Colissimo extends RuleAbstract implements RuleInterface
+class ZalandoColissimo extends AbstractColissimo implements RuleInterface
 {
     public function isApplicable(OrderResource $apiOrder)
     {
         $apiOrderData = $apiOrder->toArray();
         $logPrefix = sprintf(
-            $this->l('[Order: %s]', 'Colissimo'),
+            $this->l('[Order: %s]', 'ZalandoColissimo'),
             $apiOrder->getId()
         );
         $logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
 
         // Check marketplace, that the additional fields with the pickup point data are there and not empty, and that the "colissimo" module is installed and active
         $module_colissimo = Module::getInstanceByName('colissimo');
-        if ('zalandohexagona' === Tools::strtolower($apiOrder->getChannel()->getName())
+        if (preg_match('#^zalando#', Tools::strtolower($apiOrder->getChannel()->getName()))
             && !empty($apiOrderData['additionalFields']['service_point_id'])
             && !empty($apiOrderData['additionalFields']['service_point_name'])
             && $module_colissimo && $module_colissimo->active
         ) {
             ProcessLoggerHandler::logInfo(
                 $logPrefix .
-                    $this->l('Rule triggered.', 'Colissimo'),
+                    $this->l('Rule triggered.', 'ZalandoColissimo'),
                 'Order'
             );
 
@@ -91,13 +90,13 @@ class Colissimo extends RuleAbstract implements RuleInterface
         $apiOrder = $params['apiOrder'];
 
         $logPrefix = sprintf(
-            $this->l('[Order: %s]', 'Colissimo'),
+            $this->l('[Order: %s]', 'ZalandoColissimo'),
             $apiOrder->getId()
         );
         $logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
 
         ProcessLoggerHandler::logInfo(
-            $logPrefix . $this->l('Setting Colissimo carrier.', 'Colissimo'),
+            $logPrefix . $this->l('Setting Colissimo carrier.', 'ZalandoColissimo'),
             'Order'
         );
 
@@ -114,7 +113,7 @@ class Colissimo extends RuleAbstract implements RuleInterface
             $destinationType
         );
         if (!$idColissimoService) {
-            throw new Exception($logPrefix . sprintf($this->l('Could not retrieve ColissimoService from productCode %s and destinationType %s.', 'Colissimo'), $productCode, $destinationType));
+            throw new Exception($logPrefix . sprintf($this->l('Could not retrieve ColissimoService from productCode %s and destinationType %s.', 'ZalandoColissimo'), $productCode, $destinationType));
 
             return false;
         }
@@ -122,10 +121,10 @@ class Colissimo extends RuleAbstract implements RuleInterface
         ProcessLoggerHandler::logInfo(
             $logPrefix .
                 sprintf(
-                    $this->l('Retrieved ColissimoService %s from productCode %s and destinationType %s.', 'Colissimo'),
-                        $idColissimoService,
-                        $productCode,
-                        $destinationType
+                    $this->l('Retrieved ColissimoService %s from productCode %s and destinationType %s.', 'ZalandoColissimo'),
+                    $idColissimoService,
+                    $productCode,
+                    $destinationType
                 ),
             'Order'
         );
@@ -134,12 +133,12 @@ class Colissimo extends RuleAbstract implements RuleInterface
         $colissimoService = new ColissimoService($idColissimoService);
         $colissimoCarrier = Carrier::getCarrierByReference($colissimoService->id_carrier);
         if (!Validate::isLoadedObject($colissimoCarrier)) {
-            throw new Exception($logPrefix . sprintf($this->l('Could not retrieve Carrier with id_reference %s from ColissimoService %s with productCode %s and destinationType %s.', 'Colissimo'), $colissimoService->id_carrier, $colissimoService->id, $productCode, $destinationType));
+            throw new Exception($logPrefix . sprintf($this->l('Could not retrieve Carrier with id_reference %s from ColissimoService %s with productCode %s and destinationType %s.', 'ZalandoColissimo'), $colissimoService->id_carrier, $colissimoService->id, $productCode, $destinationType));
 
             return false;
         }
         if (!$colissimoCarrier->active || $colissimoCarrier->deleted) {
-            throw new Exception($logPrefix . sprintf($this->l('Retrieved Carrier with id_reference %s from ColissimoService %s with productCode %s and destinationType %s is inactive or deleted.', 'Colissimo'), $colissimoService->id_carrier, $colissimoService->id, $productCode, $destinationType));
+            throw new Exception($logPrefix . sprintf($this->l('Retrieved Carrier with id_reference %s from ColissimoService %s with productCode %s and destinationType %s is inactive or deleted.', 'ZalandoColissimo'), $colissimoService->id_carrier, $colissimoService->id, $productCode, $destinationType));
 
             return false;
         }
@@ -147,7 +146,7 @@ class Colissimo extends RuleAbstract implements RuleInterface
         ProcessLoggerHandler::logInfo(
             $logPrefix .
                 sprintf(
-                    $this->l('Retrieved Colissimo carrier %s from ColissimoService %s.', 'Colissimo'),
+                    $this->l('Retrieved Colissimo carrier %s from ColissimoService %s.', 'ZalandoColissimo'),
                     $colissimoService->id_carrier,
                     $colissimoService->id
                 ),
@@ -174,13 +173,13 @@ class Colissimo extends RuleAbstract implements RuleInterface
         $apiOrder = $params['apiOrder'];
 
         $logPrefix = sprintf(
-            $this->l('[Order: %s]', 'Colissimo'),
+            $this->l('[Order: %s]', 'ZalandoColissimo'),
             $apiOrder->getId()
         );
         $logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
 
         ProcessLoggerHandler::logInfo(
-            $logPrefix . $this->l('Saving Colissimo pickup point.', 'Colissimo'),
+            $logPrefix . $this->l('Saving Colissimo pickup point.', 'ZalandoColissimo'),
             'Order'
         );
 
@@ -211,7 +210,7 @@ class Colissimo extends RuleAbstract implements RuleInterface
         ProcessLoggerHandler::logInfo(
             $logPrefix .
                 sprintf(
-                    $this->l('Linking Colissimo pickup point %s to cart %s.', 'Colissimo'),
+                    $this->l('Linking Colissimo pickup point %s to cart %s.', 'ZalandoColissimo'),
                     $colissimoPickupPointId,
                     $params['cart']->id
                 ),
@@ -233,7 +232,7 @@ class Colissimo extends RuleAbstract implements RuleInterface
      */
     public function getConditions()
     {
-        return $this->l('If the order comes from Zalando and has non-empty "service_point_id" and "service_point_name" additional fields.', 'Colissimo');
+        return $this->l('If the order comes from Zalando and has non-empty "service_point_id" and "service_point_name" additional fields.', 'ZalandoColissimo');
     }
 
     /**
@@ -241,6 +240,6 @@ class Colissimo extends RuleAbstract implements RuleInterface
      */
     public function getDescription()
     {
-        return $this->l('Set the carrier to Colissimo Pickup Point and add necessary data in the colissimo module accordingly.', 'Colissimo');
+        return $this->l('Set the carrier to Colissimo Pickup Point and add necessary data in the colissimo module accordingly.', 'ZalandoColissimo');
     }
 }
