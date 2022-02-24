@@ -27,7 +27,7 @@
   "require-dev": {
       "prestashop/php-dev-tools": "^3.4",
       "php": "^7.3",
-      "phpunit/phpunit": "9.0"
+      "phpunit/phpunit": "^9.0"
   },
   "autoload": {
     "exclude-from-classmap": ["classes/Compatibility", "vendor/symfony/polyfill-php80/Resources/stubs/Attribute.php"],

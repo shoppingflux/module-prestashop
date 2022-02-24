@@ -6,6 +6,7 @@ set -x
 /etc/init.d/mariadb start
 
 php /var/www/html/bin/console prestashop:module install shoppingfeed -e prod
+php /var/www/html/bin/console prestashop:module install dpdfrance -e prod
 
 chown www-data:www-data /var/www/html/var -Rf
 
