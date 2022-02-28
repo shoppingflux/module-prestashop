@@ -29,12 +29,12 @@
             'dev_requirement' => true,
         ),
         'composer/xdebug-handler' => array(
-            'pretty_version' => '2.0.4',
-            'version' => '2.0.4.0',
+            'pretty_version' => '2.0.5',
+            'version' => '2.0.5.0',
             'type' => 'library',
             'install_path' => __DIR__ . '/./xdebug-handler',
             'aliases' => array(),
-            'reference' => '0c1a3925ec58a4ec98e992b9c7d171e9e184be0a',
+            'reference' => '9e36aeed4616366d2b690bdce11f71e9178c579a',
             'dev_requirement' => true,
         ),
         'doctrine/annotations' => array(
@@ -56,12 +56,12 @@
             'dev_requirement' => true,
         ),
         'doctrine/lexer' => array(
-            'pretty_version' => '1.2.2',
-            'version' => '1.2.2.0',
+            'pretty_version' => '1.2.3',
+            'version' => '1.2.3.0',
             'type' => 'library',
             'install_path' => __DIR__ . '/../doctrine/lexer',
             'aliases' => array(),
-            'reference' => '9c50f840f257bbb941e6f4a0e94ccf5db5c3f76c',
+            'reference' => 'c268e882d4dbdd85e36e4ad69e02dc284f89d229',
             'dev_requirement' => true,
         ),
         'friendsofphp/php-cs-fixer' => array(
@@ -200,12 +200,12 @@
             'dev_requirement' => true,
         ),
         'phpunit/php-timer' => array(
-            'pretty_version' => '3.1.4',
-            'version' => '3.1.4.0',
+            'pretty_version' => '5.0.3',
+            'version' => '5.0.3.0',
             'type' => 'library',
             'install_path' => __DIR__ . '/../phpunit/php-timer',
             'aliases' => array(),
-            'reference' => 'dc9368fae6ef2ffa57eba80a7410bcef81df6258',
+            'reference' => '5a63ce20ed1b5bf577850e2c4e87f4aa902afbd2',
             'dev_requirement' => true,
         ),
         'phpunit/php-token-stream' => array(
@@ -218,12 +218,12 @@
             'dev_requirement' => true,
         ),
         'phpunit/phpunit' => array(
-            'pretty_version' => '9.0.0',
-            'version' => '9.0.0.0',
+            'pretty_version' => '9.2.6',
+            'version' => '9.2.6.0',
             'type' => 'library',
             'install_path' => __DIR__ . '/../phpunit/phpunit',
             'aliases' => array(),
-            'reference' => 'a5be9621b19ee19dca5f150a5b159f48b5389547',
+            'reference' => '1c6a9e4312e209e659f1fce3ce88dd197c2448f6',
             'dev_requirement' => true,
         ),
         'prestashop/autoindex' => array(
@@ -309,6 +309,15 @@
             'provided' => array(
                 0 => '1.0',
             ),
+        ),
+        'sebastian/code-unit' => array(
+            'pretty_version' => '1.0.8',
+            'version' => '1.0.8.0',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../sebastian/code-unit',
+            'aliases' => array(),
+            'reference' => '1fc9f64c0927627ef78ba436c9b17d967e68e120',
+            'dev_requirement' => true,
         ),
         'sebastian/code-unit-reverse-lookup' => array(
             'pretty_version' => '2.0.3',
@@ -488,12 +497,12 @@
             ),
         ),
         'symfony/filesystem' => array(
-            'pretty_version' => 'v5.4.3',
-            'version' => '5.4.3.0',
+            'pretty_version' => 'v5.4.5',
+            'version' => '5.4.5.0',
             'type' => 'library',
             'install_path' => __DIR__ . '/../symfony/filesystem',
             'aliases' => array(),
-            'reference' => '0f0c4bf1840420f4aef3f32044a9dbb24682731b',
+            'reference' => '797680071ea8f71b94eb958680c50d0e002638f5',
             'dev_requirement' => true,
         ),
         'symfony/finder' => array(
@@ -569,12 +578,12 @@
             'dev_requirement' => true,
         ),
         'symfony/process' => array(
-            'pretty_version' => 'v5.4.3',
-            'version' => '5.4.3.0',
+            'pretty_version' => 'v5.4.5',
+            'version' => '5.4.5.0',
             'type' => 'library',
             'install_path' => __DIR__ . '/../symfony/process',
             'aliases' => array(),
-            'reference' => '553f50487389a977eb31cf6b37faae56da00f753',
+            'reference' => '95440409896f90a5f85db07a32b517ecec17fa4c',
             'dev_requirement' => true,
         ),
         'symfony/service-contracts' => array(
@@ -587,12 +596,12 @@
             'dev_requirement' => true,
         ),
         'symfony/stopwatch' => array(
-            'pretty_version' => 'v5.4.3',
-            'version' => '5.4.3.0',
+            'pretty_version' => 'v5.4.5',
+            'version' => '5.4.5.0',
             'type' => 'library',
             'install_path' => __DIR__ . '/../symfony/stopwatch',
             'aliases' => array(),
-            'reference' => '395220730edceb6bd745236ccb5c9125c748f779',
+            'reference' => '4d04b5c24f3c9a1a168a131f6cbe297155bc0d30',
             'dev_requirement' => true,
         ),
         'theseer/tokenizer' => array(

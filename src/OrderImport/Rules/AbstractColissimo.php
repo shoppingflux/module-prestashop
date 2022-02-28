@@ -23,18 +23,15 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-use Carrier;
 use ColissimoCartPickupPoint;
 use ColissimoPickupPoint;
-use ColissimoService;
-use ColissimoTools;
 use Country;
-use Exception;
 use Module;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
+use Tools;
 use Validate;
 
 abstract class AbstractColissimo extends RuleAbstract implements RuleInterface
@@ -61,17 +58,11 @@ abstract class AbstractColissimo extends RuleAbstract implements RuleInterface
         }
     }
 
-    /**
-     * Retrieve and set the Colissimo carrier, and skip SF carrier creation.
-     *
-     * @throws Exception
-     */
-    public function onCarrierRetrieval($params)
+    public function afterCartCreation($params)
     {
-        if (class_exists(ColissimoService::class) === false || class_exists(ColissimoTools::class) === false) {
+        if (class_exists(ColissimoPickupPoint::class) === false || class_exists(ColissimoCartPickupPoint::class) === false) {
             return;
         }
-
         /** @var OrderResource $apiOrder */
         $apiOrder = $params['apiOrder'];
 
@@ -82,71 +73,72 @@ abstract class AbstractColissimo extends RuleAbstract implements RuleInterface
         $logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
 
         ProcessLoggerHandler::logInfo(
-            $logPrefix . $this->l('Setting Colissimo carrier.', $this->getFileName()),
+            $logPrefix . $this->l('Saving Colissimo pickup point.', $this->getFileName()),
             'Order'
         );
+        $colissimoPickupPointId = $this->getPointId($apiOrder);
 
-        // Retrieve necessary order data
-        $productCode = $this->getProductCode($apiOrder);
+        if (empty($colissimoPickupPointId)) {
+            return true;
+        }
+
         $shippingAddress = $apiOrder->getShippingAddress();
-        $destinationType = ColissimoTools::getDestinationTypeByIsoCountry($shippingAddress['country']);
+        $productCode = $this->getProductCode($apiOrder); // hack
 
-        // Retrieve ColissimoService using order data
-        $idColissimoService = ColissimoService::getServiceIdByProductCodeDestinationType(
-            $productCode,
-            $destinationType
-        );
+        // Save/update Colissimo pickup point
+        $pickupPointData = [
+            'colissimo_id' => $colissimoPickupPointId,
+            'company_name' => $shippingAddress['lastName'],
+            'address1' => $shippingAddress['street'],
+            'address2' => $shippingAddress['street2'],
+            'city' => $shippingAddress['city'],
+            'zipcode' => $shippingAddress['postalCode'],
+            'country' => Tools::strtoupper(Country::getNameById($params['cart']->id_lang, Country::getByIso($shippingAddress['country']))),
+            'iso_country' => $shippingAddress['country'],
+            'product_code' => $productCode,
+            'network' => '', //TODO; how do we get this field ? It's not in the data sent by SF. Ask Colissimo directly ? Then again, it's not required.
+        ];
+        $pickupPoint = ColissimoPickupPoint::getPickupPointByIdColissimo($colissimoPickupPointId);
+        $pickupPoint->hydrate(array_map('pSQL', $pickupPointData));
+        $pickupPoint->save();
 
-        if (!$idColissimoService) {
-            throw new Exception($logPrefix . sprintf($this->l('Could not retrieve ColissimoService from productCode %s and destinationType %s.', $this->getFileName()), $productCode, $destinationType));
+        if (empty($pickupPoint) === true) {
+            ProcessLoggerHandler::logError(
+                $logPrefix .
+                    sprintf(
+                        $this->l('Linking Colissimo pickup failed point %s to cart %s. Pickup point not found in the Colissimo module.', $this->getFileName()),
+                        $colissimoPickupPointId,
+                        $params['cart']->id
+                    ),
+                'Order'
+            );
+
+            return true;
         }
 
         ProcessLoggerHandler::logInfo(
             $logPrefix .
-            sprintf(
-                $this->l('Retrieved ColissimoService %s from productCode %s and destinationType %s.', $this->getFileName()),
-                $idColissimoService,
-                $productCode,
-                $destinationType
-            ),
+                sprintf(
+                    $this->l('Linking Colissimo pickup point %s to cart %s.', $this->getFileName()),
+                    $colissimoPickupPointId,
+                    $params['cart']->id
+                ),
             'Order'
         );
 
-        // Retrieve colissimo Carrier from ColissimoService
-        $colissimoService = new ColissimoService($idColissimoService);
-        $colissimoCarrier = Carrier::getCarrierByReference($colissimoService->id_carrier);
-
-        if (!Validate::isLoadedObject($colissimoCarrier)) {
-            throw new Exception($logPrefix . sprintf($this->l('Could not retrieve Carrier with id_reference %s from ColissimoService %s with productCode %s and destinationType %s.', $this->getFileName()), $colissimoService->id_carrier, $colissimoService->id, $productCode, $destinationType));
-        }
-
-        if (!$colissimoCarrier->active || $colissimoCarrier->deleted) {
-            throw new Exception($logPrefix . sprintf($this->l('Retrieved Carrier with id_reference %s from ColissimoService %s with productCode %s and destinationType %s is inactive or deleted.', $this->getFileName()), $colissimoService->id_carrier, $colissimoService->id, $productCode, $destinationType));
-        }
-
-        ProcessLoggerHandler::logInfo(
-            $logPrefix .
-            sprintf(
-                $this->l('Retrieved Colissimo carrier %s from ColissimoService %s.', $this->getFileName()),
-                $colissimoService->id_carrier,
-                $colissimoService->id
-            ),
+        // Save pickup point/cart association
+        ColissimoCartPickupPoint::updateCartPickupPoint(
+            (int) $params['cart']->id,
+            (int) $pickupPoint->id,
+            !empty($shippingAddress['mobilePhone']) ? $shippingAddress['mobilePhone'] : ''
         );
-
-        // Use retrieved carrier and skip SF carrier creation; Colissimo should decide by itself which carrier should be used
-        $params['carrier'] = $colissimoCarrier;
-        $params['skipSfCarrierCreation'] = true;
 
         return true;
     }
 
     protected function getFileName()
     {
-        if (empty($this->fileName)) {
-            $this->fileName = pathinfo(__FILE__, PATHINFO_FILENAME);
-        }
-
-        return $this->fileName;
+        return get_class($this);
     }
 
     abstract protected function getProductCode(OrderResource $apiOrder);
