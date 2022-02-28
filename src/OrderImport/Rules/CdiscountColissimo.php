@@ -33,17 +33,15 @@ use ColissimoPickupPoint;
 use Country;
 use Module;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
-use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 use Tools;
 
-class CdiscountRelay extends RuleAbstract implements RuleInterface
+class CdiscountColissimo extends AbstractColissimo implements RuleInterface
 {
     public function isApplicable(OrderResource $apiOrder)
     {
         // Check marketplace, that the additional fields with the pickup point data are there and not empty, and that the "colissimo" module is installed and active
-        $module_colissimo = Module::getInstanceByName('colissimo');
         $apiOrderShipment = $apiOrder->getShipment();
 
         return preg_match('#^cdiscount$#', Tools::strtolower($apiOrder->getChannel()->getName()))
@@ -52,8 +50,7 @@ class CdiscountRelay extends RuleAbstract implements RuleInterface
                 || $apiOrderShipment['carrier'] === 'REL'
                 || $apiOrderShipment['carrier'] === 'RCO'
             )
-            && $module_colissimo
-            && $module_colissimo->active
+            && $this->isModuleColissimoEnabled()
         ;
     }
 
@@ -69,7 +66,7 @@ class CdiscountRelay extends RuleAbstract implements RuleInterface
         $orderData = $params['orderData'];
 
         $logPrefix = sprintf(
-            $this->l('[Order: %s]', 'CdiscountRelay'),
+            $this->l('[Order: %s]', $this->getFileName()),
             $params['apiOrder']->getId()
         );
         $logPrefix .= '[' . $params['apiOrder']->getReference() . '] ' . self::class . ' | ';
@@ -78,7 +75,7 @@ class CdiscountRelay extends RuleAbstract implements RuleInterface
 
         ProcessLoggerHandler::logInfo(
             $logPrefix .
-                $this->l('Rule triggered. Shipping address updated to set relay ID.', 'CdiscountRelay'),
+                $this->l('Rule triggered. Shipping address updated to set relay ID.', $this->getFileName()),
             'Order'
         );
     }
@@ -124,28 +121,28 @@ class CdiscountRelay extends RuleAbstract implements RuleInterface
         if (class_exists(ColissimoPickupPoint::class) === false || class_exists(ColissimoCartPickupPoint::class) === false) {
             return;
         }
-        /** @var ShoppingFeed\Sdk\Api\Order\OrderResource $apiOrder */
+        /** @var OrderResource $apiOrder */
         $apiOrder = $params['apiOrder'];
 
         $logPrefix = sprintf(
-            $this->l('[Order: %s]', 'Colissimo'),
+            $this->l('[Order: %s]', $this->getFileName()),
             $apiOrder->getId()
         );
         $logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
 
         ProcessLoggerHandler::logInfo(
-            $logPrefix . $this->l('Saving Colissimo pickup point.', 'CdiscountRelay'),
+            $logPrefix . $this->l('Saving Colissimo pickup point.', $this->getFileName()),
             'Order'
         );
 
-        $shippingAddress = $apiOrder->getShippingAddress();
-        if (empty($shippingAddress['other']) === true) {
+        $colissimoPickupPointId = $this->getPointId($apiOrder);
+
+        if (empty($colissimoPickupPointId)) {
             return true;
         }
-        $colissimoPickupPointId = $shippingAddress['other'];
 
         $shippingAddress = $apiOrder->getShippingAddress();
-        $productCode = 'A2P'; // hack
+        $productCode = $this->getProductCode($apiOrder); // hack
 
         // Save/update Colissimo pickup point
         $pickupPointData = [
@@ -168,7 +165,7 @@ class CdiscountRelay extends RuleAbstract implements RuleInterface
             ProcessLoggerHandler::logError(
                 $logPrefix .
                     sprintf(
-                        $this->l('Linking Colissimo pickup failed point %s to cart %s. Pickup point not found in the Colissimo module.', 'CdiscountRelay'),
+                        $this->l('Linking Colissimo pickup failed point %s to cart %s. Pickup point not found in the Colissimo module.', $this->getFileName()),
                         $colissimoPickupPointId,
                         $params['cart']->id
                     ),
@@ -181,7 +178,7 @@ class CdiscountRelay extends RuleAbstract implements RuleInterface
         ProcessLoggerHandler::logInfo(
             $logPrefix .
                 sprintf(
-                    $this->l('Linking Colissimo pickup point %s to cart %s.', 'CdiscountRelay'),
+                    $this->l('Linking Colissimo pickup point %s to cart %s.', $this->getFileName()),
                     $colissimoPickupPointId,
                     $params['cart']->id
                 ),
@@ -203,7 +200,7 @@ class CdiscountRelay extends RuleAbstract implements RuleInterface
      */
     public function getConditions()
     {
-        return $this->l('If the order is from CDiscount and the carrier is \'SO1\', \'REL\' or \'RCO\'.', 'CdiscountRelay');
+        return $this->l('If the order is from CDiscount and the carrier is \'SO1\', \'REL\' or \'RCO\'.', $this->getFileName());
     }
 
     /**
@@ -211,6 +208,28 @@ class CdiscountRelay extends RuleAbstract implements RuleInterface
      */
     public function getDescription()
     {
-        return $this->l('Retrieves  the relay ID from the \'lastname\' field and puts it in \'company\'. If a company is already set, appends it to \'address (2)\'. Fills the \'lastname\' field with everything after the first space from \'firstname\'.', 'CdiscountRelay');
+        return $this->l('Retrieves  the relay ID from the \'lastname\' field and puts it in \'company\'. If a company is already set, appends it to \'address (2)\'. Fills the \'lastname\' field with everything after the first space from \'firstname\'.', $this->getFileName());
+    }
+
+    protected function getProductCode(OrderResource $apiOrder)
+    {
+        return 'A2P';
+    }
+
+    protected function getPointId(OrderResource $apiOrder)
+    {
+        $shippingAddress = $apiOrder->getShippingAddress();
+
+        if (empty($shippingAddress['other'])) {
+            return '';
+        }
+
+        return $shippingAddress['other'];
+    }
+
+    public function onCarrierRetrieval($params)
+    {
+        //todo: should set colissimo carrier as for other marketplace?
+        return;
     }
 }
