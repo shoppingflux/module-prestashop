@@ -19,9 +19,16 @@
 
 namespace ShoppingfeedAddon\OrderImport\Rules;
 
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
 use Carrier;
+use ColissimoCartPickupPoint;
+use ColissimoPickupPoint;
 use ColissimoService;
 use ColissimoTools;
+use Country;
 use Exception;
 use Module;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
@@ -124,7 +131,6 @@ abstract class AbstractColissimo extends RuleAbstract implements RuleInterface
                 $colissimoService->id_carrier,
                 $colissimoService->id
             ),
-            'Order'
         );
 
         // Use retrieved carrier and skip SF carrier creation; Colissimo should decide by itself which carrier should be used

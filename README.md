@@ -1,6 +1,6 @@
 # Shoppingfeed PrestaShop Addons
 
-[![PHP tests](https://github.com/shoppingflux/module-prestashop/actions/workflows/php.yml/badge.svg)](https://github.com/shoppingfeed/module-prestashop/actions/workflows/php.yml)
+[![Coding Standart](https://github.com/shoppingflux/module-prestashop/actions/workflows/php.yml/badge.svg?branch=release%2F1.7.x)](https://github.com/shoppingflux/module-prestashop/actions/workflows/php.yml) [![Unit test](https://github.com/shoppingflux/module-prestashop/actions/workflows/phpunit.yml/badge.svg?branch=release%2F1.7.x)](https://github.com/shoppingflux/module-prestashop/actions/workflows/phpunit.yml)
 
 ## About
 
@@ -101,6 +101,16 @@ You need a docker container to launch phpstan
 # launch phpstan
 ~modules/shoppingfeed$ docker run --rm --volumes-from temp-ps -v $PWD:/var/www/html/modules/shoppingfeed -e _PS_ROOT_DIR_=/var/www/html --workdir=/var/www/html/modules/shoppingfeed phpstan/phpstan:0.12 analyse --configuration=/var/www/html/modules/shoppingfeed/202/phpstan/phpstan.neon
 ```
+
+### phpunit
+
+You need a docker container to launch phpunit
+
+```
+docker run -tid --rm -v $PWD:/var/www/html/modules/shoppingfeed --name temp-unittest-ps 202ecommerce/prestashop:1.7.8.3
+docker exec -t temp-unittest-ps sh /var/www/html/modules/shoppingfeed/202/docker/run_for_unittest.sh
+```
+
 
 
 [1]: https://devdocs.prestashop.com/1.7/development/coding-standards/

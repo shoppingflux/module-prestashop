@@ -46,6 +46,8 @@ class ShoppingfeedOrder extends ObjectModel
     /** @var bool Status command send */
     public $shipped_sent;
 
+    public $date_marketplace_creation;
+
     public $date_add;
     public $date_upd;
 

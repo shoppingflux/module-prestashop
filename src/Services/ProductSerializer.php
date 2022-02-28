@@ -424,7 +424,7 @@ class ProductSerializer
             foreach ($this->_getAttributeImageAssociations($id) as $image) {
                 if (empty($image)) {
                     $image_child = false;
-                    break;
+                    continue;
                 }
 
                 $variation['images'][] = Tools::getCurrentUrlProtocolPrefix() . $this->link->getImageLink($this->product->link_rewrite, $this->product->id . '-' . $image, $this->configurations[Shoppingfeed::PRODUCT_FEED_IMAGE_FORMAT]);

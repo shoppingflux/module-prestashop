@@ -136,16 +136,16 @@ class ShoppingfeedPreloading extends ObjectModel
                         case self::ACTION_SYNC_ALL:
                         default:
                             $this->content = Tools::jsonEncode($productSerialize->serialize(), JSON_UNESCAPED_UNICODE);
-                            break;
+                            continue 2;
                         case self::ACTION_SYNC_PRICE:
                             $this->content = Tools::jsonEncode($productSerialize->serializePrice(Tools::jsonDecode($this->content, true)), JSON_UNESCAPED_UNICODE);
-                            break;
+                            continue 2;
                         case self::ACTION_SYNC_STOCK:
                             $this->content = Tools::jsonEncode($productSerialize->serializeStock(Tools::jsonDecode($this->content, true)), JSON_UNESCAPED_UNICODE);
-                            break;
+                            continue 2;
                         case self::ACTION_SYNC_CATEGORY:
                             $this->content = Tools::jsonEncode($productSerialize->serializeCategory(Tools::jsonDecode($this->content, true)), JSON_UNESCAPED_UNICODE);
-                            break;
+                            continue 2;
                     }
                 }
             }

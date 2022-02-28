@@ -18,6 +18,7 @@
  */
 
 use ShoppingFeed\Sdk\Api\Order\OrderOperation;
+use ShoppingfeedAddon\Services\CarrierFinder;
 use ShoppingfeedClasslib\Actions\DefaultActions;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 use ShoppingfeedClasslib\Registry;
@@ -65,6 +66,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
         $newShoppingFeedOrder->name_marketplace = $order->payment;
         $newShoppingFeedOrder->id_order = $id_order;
         $newShoppingFeedOrder->payment_method = '-';
+        $newShoppingFeedOrder->id_shoppingfeed_token = '1';
         $newShoppingFeedOrder->save();
 
         ProcessLoggerHandler::logSuccess(
@@ -311,7 +313,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
                         'tracking_url' => '',
                     ];
 
-                    $carrier = new Carrier((int) $order->id_carrier);
+                    $carrier = $this->initCarrierFinder()->findByOrder($order);
                     if (!Validate::isLoadedObject($carrier)) {
                         ProcessLoggerHandler::logError(
                             $logPrefix . ' ' .
@@ -352,14 +354,14 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
                     }
 
                     Hook::exec('actionShoppingfeedTracking', ['order' => $order, 'taskOrderPayload' => &$taskOrderPayload]);
-                    break;
+                    continue;
                 } elseif (in_array($idOrderState, $cancelled_status)) {
                     $taskOrderOperation = OrderOperation::TYPE_CANCEL;
-                    break;
+                    continue;
                 // The "reason" field is not supported (at least for now)
                 } elseif (in_array($idOrderState, $refunded_status)) {
                     $taskOrderOperation = OrderOperation::TYPE_REFUND;
-                    break;
+                    continue;
                     // No partial refund (at least for now), so no optional
                     // parameters to set.
                 }
@@ -388,6 +390,11 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
         }
 
         return true;
+    }
+
+    protected function initCarrierFinder()
+    {
+        return new CarrierFinder();
     }
 
     public function sendTaskOrdersSyncStatus()
@@ -587,11 +594,11 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
                         'Order',
                         $taskOrder->id_order
                     );
-                    break;
+                    continue 2;
                 case 'scheduled':
                 case 'running':
                     // Don't do anything, we'll just send them again later
-                    break;
+                    continue 2;
                 case 'canceled':
                     $this->conveyor['successfulTaskOrders'][] = $taskOrder;
                     ProcessLoggerHandler::logInfo(
@@ -604,7 +611,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
                         'Order',
                         $taskOrder->id_order
                     );
-                    break;
+                    continue 2;
                 case 'succeed':
                     $this->conveyor['successfulTaskOrders'][] = $taskOrder;
                     ProcessLoggerHandler::logSuccess(
@@ -616,7 +623,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
                         'Order',
                         $taskOrder->id_order
                     );
-                    break;
+                    continue 2;
             }
         }
 

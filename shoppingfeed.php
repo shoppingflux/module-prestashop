@@ -729,24 +729,24 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
                 switch ($product_filter_type) {
                     case 'products':
                         $sqlFilter[] = 'ps.id_product IN (' . $product_filter . ')';
-                        break;
+                        continue 2;
                     case 'attributes':
                         $sqlFilter[] = 'ps.id_product IN (select id_product from ' . _DB_PREFIX_ . 'product_attribute pa JOIN ' . _DB_PREFIX_ . 'product_attribute_combination pac on pa.id_product_attribute = pac.id_product_attribute where pac.id_attribute IN (' . $product_filter . '))';
-                        break;
+                        continue 2;
                     case 'manufacturers':
                         $sqlFilter[] = 'ps.id_product IN (select id_product from ' . _DB_PREFIX_ . 'product where id_manufacturer IN (' . $product_filter . '))';
-                        break;
+                        continue 2;
                     case 'categories':
                         $sqlFilter[] = 'ps.id_category_default IN (' . $product_filter . ')';
-                        break;
+                        continue 2;
                     case 'suppliers':
                         $sqlFilter[] = 'ps.id_product IN (select id_product from ' . _DB_PREFIX_ . 'product_supplier where id_supplier IN (' . $product_filter . '))';
-                        break;
+                        continue 2;
                     case 'features':
                         $sqlFilter[] = 'ps.id_product IN (select id_product from ' . _DB_PREFIX_ . 'feature_product where id_feature IN (' . $product_filter . '))';
-                        break;
+                        continue 2;
                     default:
-                        break;
+                        continue 2;
                 }
             }
         }
@@ -1121,46 +1121,36 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
      */
     public function hookActionValidateOrder($params)
     {
-        if (!Configuration::get(Shoppingfeed::ORDER_SYNC_ENABLED) || !self::isOrderSyncAvailable() || Configuration::get(self::ORDER_IMPORT_ENABLED)) {
+        $handler = \ShoppingfeedClasslib\Registry::get('shoppingfeedOrderImportHandler');
+        if ($handler === false) {
             return;
         }
-
         $currentOrder = $params['order'];
 
         // Only process orders added via the shoppingflux module
         if ($currentOrder->module != 'sfpayment') {
             return;
         }
-
         try {
-            \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logInfo(
-                sprintf(
-                    ShoppingfeedOrderSyncActions::getLogPrefix($currentOrder->id) . ' ' .
-                        $this->l('Start import Order %s ', 'ShoppingfeedOrderActions'),
-                    $currentOrder->id
-                ),
-                'Order',
-                $currentOrder->id
+            $handler->addActions(
+                'createSfOrder',
+                'acknowledgeOrder',
+                'recalculateOrderPrices'
             );
-
-            $handler = new \ShoppingfeedClasslib\Actions\ActionsHandler();
-            $processResult = $handler
-                ->setConveyor(['id_order' => $currentOrder->id])
-                ->addActions('saveOrder')
-                ->process('shoppingfeedOrderSync');
-
-            if (!$processResult) {
-                \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logError(
-                    ShoppingfeedOrderSyncActions::getLogPrefix($currentOrder->id) . ' ' .
-                        $this->l('Fail : An error occurred during process.')
-                );
-            }
+            $conveyor = $handler->getConveyor();
+            $conveyor['id_order'] = $currentOrder->id;
+            $conveyor['order_reference'] = $currentOrder->reference;
+            $conveyor['psOrder'] = $currentOrder;
+            $handler->setConveyor($conveyor);
+            $processResult = $handler->process('shoppingfeedOrderImport');
+            $conveyor = $handler->getConveyor();
+            $params['order'] = $conveyor['psOrder'];
         } catch (Exception $e) {
             \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logError(
                 sprintf(
                     ShoppingfeedOrderSyncActions::getLogPrefix() . ' ' .
                         $this->l('Order %s not imported : %s', 'ShoppingfeedOrderActions'),
-                    $params['id_order'],
+                        $currentOrder->id,
                     $e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine()
                 ),
                 'Order',
@@ -1260,7 +1250,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             ShoppingfeedAddon\OrderImport\Rules\TestingOrder::class,
             ShoppingfeedAddon\OrderImport\Rules\SymbolConformity::class,
             ShoppingfeedAddon\OrderImport\Rules\ManomanoDpdRelais::class,
-            ShoppingfeedAddon\OrderImport\Rules\ZalandohexagonaColissimo::class,
+            ShoppingfeedAddon\OrderImport\Rules\ZalandoColissimo::class,
         ];
 
         foreach ($defaultRulesClassNames as $ruleClassName) {
