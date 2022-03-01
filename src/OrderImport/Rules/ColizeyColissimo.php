@@ -45,7 +45,7 @@ class ColizeyColissimo extends AbstractColissimo implements RuleInterface
     {
         $apiOrderData = $apiOrder->toArray();
         $logPrefix = sprintf(
-            $this->l('[Order: %s]', $this->getFileName()),
+            $this->l('[Order: %s]', 'ColizeyColissimo'),
             $apiOrder->getId()
         );
         $logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
@@ -58,7 +58,7 @@ class ColizeyColissimo extends AbstractColissimo implements RuleInterface
         ) {
             ProcessLoggerHandler::logInfo(
                 $logPrefix .
-                    $this->l('Rule triggered.', $this->getFileName()),
+                    $this->l('Rule triggered.', 'ColizeyColissimo'),
                 'Order'
             );
 
@@ -69,19 +69,26 @@ class ColizeyColissimo extends AbstractColissimo implements RuleInterface
     }
 
     /**
-     * {@inheritdoc}
+     * We have to do this on preprocess, as the fields may be used in various
+     * steps
+     *
+     * @param array $params
      */
-    public function getConditions()
+    public function onPreProcess($params)
     {
-        return $this->l('If the order comes from Zalando and has non-empty "service_point_id" and "service_point_name" additional fields.', 'ZalandoColissimo');
+        $apiOrder = $params['apiOrder'];
+        $orderData = $params['orderData'];
+        $address = $apiOrder->getShippingAddress();
+        $address['other'] = $this->getPointId($apiOrder);
+        $orderData->shippingAddress = $address;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getDescription()
+    public function getConditions()
     {
-        return $this->l('Set the carrier to Colissimo Pickup Point and add necessary data in the colissimo module accordingly.', 'ZalandoColissimo');
+        return $this->l('If the order comes from Colizey and has non-empty "service_point_id" and "service_point_name" additional fields.', 'ColizeyColissimo');
     }
 
     protected function getProductCode(OrderResource $apiOrder)

@@ -45,7 +45,7 @@ class ZalandoColissimo extends AbstractColissimo implements RuleInterface
     {
         $apiOrderData = $apiOrder->toArray();
         $logPrefix = sprintf(
-            $this->l('[Order: %s]', $this->getFileName()),
+            $this->l('[Order: %s]', 'ZalandoColissimo'),
             $apiOrder->getId()
         );
         $logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
@@ -57,7 +57,7 @@ class ZalandoColissimo extends AbstractColissimo implements RuleInterface
         ) {
             ProcessLoggerHandler::logInfo(
                 $logPrefix .
-                    $this->l('Rule triggered.', $this->getFileName()),
+                    $this->l('Rule triggered.', 'ZalandoColissimo'),
                 'Order'
             );
 
@@ -65,6 +65,36 @@ class ZalandoColissimo extends AbstractColissimo implements RuleInterface
         }
 
         return false;
+    }
+
+    /**
+     * We have to do this on preprocess, as the fields may be used in various
+     * steps
+     *
+     * @param array $params
+     */
+    public function onPreProcess($params)
+    {
+        $apiOrder = $params['apiOrder'];
+        $orderData = $params['orderData'];
+
+        $address = $apiOrder->getShippingAddress();
+        $address['address2'] = $address['company'];
+        $address['company'] = $orderData->additionalFields['service_point_name'];
+        $address['other'] = $this->getPointId($apiOrder);
+
+        $orderData->shippingAddress = $address;
+
+        $logPrefix = sprintf(
+            $this->l('[Order: %s]', 'ZalandoColissimo'),
+            $apiOrder->getId()
+        );
+        $logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
+        ProcessLoggerHandler::logInfo(
+            $logPrefix .
+                $this->l('Rule triggered. Shipping address updated to set relay ID.', 'ZalandoColissimo'),
+            'Order'
+        );
     }
 
     /**
@@ -87,8 +117,8 @@ class ZalandoColissimo extends AbstractColissimo implements RuleInterface
     {
         $apiOrderData = $apiOrder->toArray();
         $service_point_id = explode(':', $apiOrderData['additionalFields']['service_point_id']);
-        if (count($service_point_id) > 1) {
-            return $service_point_id[1];
+        if (count($service_point_id) > 0) {
+            return $service_point_id[0];
         }
 
         return 'A2P';
@@ -97,8 +127,11 @@ class ZalandoColissimo extends AbstractColissimo implements RuleInterface
     protected function getPointId(OrderResource $apiOrder)
     {
         $apiOrderData = $apiOrder->toArray();
-        list($colissimoPickupPointId) = explode(':', $apiOrderData['additionalFields']['service_point_id']);
+        $service_point_id = explode(':', $apiOrderData['additionalFields']['service_point_id']);
+        if (count($service_point_id) > 0) {
+            return $service_point_id[1];
+        }
 
-        return $colissimoPickupPointId;
+        return $apiOrderData['additionalFields']['service_point_id'];
     }
 }

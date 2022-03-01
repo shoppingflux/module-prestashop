@@ -265,7 +265,13 @@ class OrderImportSimpleTest extends AbstractOrdeTestCase
 
         $this->assertArrayHasKey('cart', $conveyor);
         $this->assertNotNull($conveyor['cart']->id);
-        $this->assertNotEquals(ColissimoCartPickupPoint::getByCartId($conveyor['cart']->id), 0);
+        $idColissimoPickupPoint = ColissimoCartPickupPoint::getByCartId($conveyor['cart']->id);
+        $pickupPoint = new \ColissimoPickupPoint((int) $idColissimoPickupPoint);
+
+        $this->assertEquals($pickupPoint->colissimo_id, '100562');
+        $this->assertEquals($pickupPoint->company_name, 'PRIMAVERA');
+        $this->assertEquals($pickupPoint->product_code, 'BPR');
+        $this->assertEquals($pickupPoint->city, 'MARSEILLE');
     }
 
     public function testImportColizey(): void
@@ -343,6 +349,13 @@ class OrderImportSimpleTest extends AbstractOrdeTestCase
         $this->assertArrayHasKey('cart', $conveyor);
         $this->assertNotNull($conveyor['cart']->id);
         $this->assertNotEquals(ColissimoCartPickupPoint::getByCartId($conveyor['cart']->id), 0);
+
+        $idColissimoPickupPoint = ColissimoCartPickupPoint::getByCartId($conveyor['cart']->id);
+        $pickupPoint = new \ColissimoPickupPoint((int) $idColissimoPickupPoint);
+        $this->assertEquals($pickupPoint->colissimo_id, '060559');
+        $this->assertEquals($pickupPoint->company_name, 'BUREAU DE POSTE COLAYRAC LPRC RP');
+        $this->assertEquals($pickupPoint->product_code, 'A2P');
+        $this->assertEquals($pickupPoint->city, 'COLAYRAC ST CIRQ');
     }
 
     /**

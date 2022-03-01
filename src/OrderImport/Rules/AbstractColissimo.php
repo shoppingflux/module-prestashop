@@ -65,15 +65,17 @@ abstract class AbstractColissimo extends RuleAbstract implements RuleInterface
         }
         /** @var OrderResource $apiOrder */
         $apiOrder = $params['apiOrder'];
+        $cart = $params['cart'];
+        $shippingAddressObj = new \Address($cart->id_address_delivery);
 
         $logPrefix = sprintf(
-            $this->l('[Order: %s]', $this->getFileName()),
+            $this->l('[Order: %s]', 'AbstractColissimo'),
             $apiOrder->getId()
         );
         $logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
 
         ProcessLoggerHandler::logInfo(
-            $logPrefix . $this->l('Saving Colissimo pickup point.', $this->getFileName()),
+            $logPrefix . $this->l('Saving Colissimo pickup point.', 'AbstractColissimo'),
             'Order'
         );
         $colissimoPickupPointId = $this->getPointId($apiOrder);
@@ -87,12 +89,12 @@ abstract class AbstractColissimo extends RuleAbstract implements RuleInterface
 
         // Save/update Colissimo pickup point
         $pickupPointData = [
-            'colissimo_id' => $colissimoPickupPointId,
-            'company_name' => $shippingAddress['lastName'],
-            'address1' => $shippingAddress['street'],
-            'address2' => $shippingAddress['street2'],
-            'city' => $shippingAddress['city'],
-            'zipcode' => $shippingAddress['postalCode'],
+            'colissimo_id' => $shippingAddressObj->other,
+            'company_name' => $shippingAddressObj->company,
+            'address1' => $shippingAddressObj->address1,
+            'address2' => $shippingAddressObj->address2,
+            'city' => $shippingAddressObj->city,
+            'zipcode' => $shippingAddressObj->postcode,
             'country' => Tools::strtoupper(Country::getNameById($params['cart']->id_lang, Country::getByIso($shippingAddress['country']))),
             'iso_country' => $shippingAddress['country'],
             'product_code' => $productCode,
@@ -106,7 +108,7 @@ abstract class AbstractColissimo extends RuleAbstract implements RuleInterface
             ProcessLoggerHandler::logError(
                 $logPrefix .
                     sprintf(
-                        $this->l('Linking Colissimo pickup failed point %s to cart %s. Pickup point not found in the Colissimo module.', $this->getFileName()),
+                        $this->l('Linking Colissimo pickup failed point %s to cart %s. Pickup point not found in the Colissimo module.', 'AbstractColissimo'),
                         $colissimoPickupPointId,
                         $params['cart']->id
                     ),
@@ -119,7 +121,7 @@ abstract class AbstractColissimo extends RuleAbstract implements RuleInterface
         ProcessLoggerHandler::logInfo(
             $logPrefix .
                 sprintf(
-                    $this->l('Linking Colissimo pickup point %s to cart %s.', $this->getFileName()),
+                    $this->l('Linking Colissimo pickup point %s to cart %s.', 'AbstractColissimo'),
                     $colissimoPickupPointId,
                     $params['cart']->id
                 ),
@@ -130,15 +132,18 @@ abstract class AbstractColissimo extends RuleAbstract implements RuleInterface
         ColissimoCartPickupPoint::updateCartPickupPoint(
             (int) $params['cart']->id,
             (int) $pickupPoint->id,
-            !empty($shippingAddress['mobilePhone']) ? $shippingAddress['mobilePhone'] : ''
+            !empty($shippingAddressObj->phone_mobile) ? $shippingAddressObj->phone_mobile : ''
         );
 
         return true;
     }
 
-    protected function getFileName()
+    /**
+     * {@inheritdoc}
+     */
+    public function getDescription()
     {
-        return get_class($this);
+        return $this->l('Set the carrier to Colissimo Pickup Point and add necessary data in the colissimo module accordingly.', 'ColizeyColissimo');
     }
 
     abstract protected function getProductCode(OrderResource $apiOrder);
