@@ -83,7 +83,7 @@ abstract class RuleAbstract implements RuleInterface
     /**
      * {@inheritdoc}
      */
-    protected function l(string $msg, string $domain)
+    protected function l($msg, $domain)
     {
         return \Translate::getModuleTranslation('shoppingfeed', $msg, $domain);
     }
@@ -95,7 +95,7 @@ abstract class RuleAbstract implements RuleInterface
      *
      * @return bool
      */
-    protected function isOrderStateValid(int $idOrderState)
+    protected function isOrderStateValid($idOrderState)
     {
         try {
             $orderState = new OrderState($idOrderState);

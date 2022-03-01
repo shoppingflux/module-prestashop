@@ -99,7 +99,7 @@ class AmazonEbay extends RuleAbstract implements RuleInterface
      *
      * @return void
      */
-    private function _updateAddress(array &$address, string $channel)
+    private function _updateAddress(array &$address, $channel)
     {
         $address['firstName'] = trim($address['firstName']);
         $address['lastName'] = trim($address['lastName']);
