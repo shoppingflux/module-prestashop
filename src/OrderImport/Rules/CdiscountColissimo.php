@@ -28,9 +28,6 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-use ColissimoCartPickupPoint;
-use ColissimoPickupPoint;
-use Country;
 use Module;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
@@ -66,7 +63,7 @@ class CdiscountColissimo extends AbstractColissimo implements RuleInterface
         $orderData = $params['orderData'];
 
         $logPrefix = sprintf(
-            $this->l('[Order: %s]', $this->getFileName()),
+            $this->l('[Order: %s]', 'CdiscountColissimo'),
             $params['apiOrder']->getId()
         );
         $logPrefix .= '[' . $params['apiOrder']->getReference() . '] ' . self::class . ' | ';
@@ -75,7 +72,7 @@ class CdiscountColissimo extends AbstractColissimo implements RuleInterface
 
         ProcessLoggerHandler::logInfo(
             $logPrefix .
-                $this->l('Rule triggered. Shipping address updated to set relay ID.', $this->getFileName()),
+                $this->l('Rule triggered. Shipping address updated to set relay ID.', 'CdiscountColissimo'),
             'Order'
         );
     }
@@ -112,95 +109,11 @@ class CdiscountColissimo extends AbstractColissimo implements RuleInterface
     }
 
     /**
-     * refs #32011
-     * Add Colissimo pickup point in colissimo module DB table; add pickup point/cart association in colissimo module DB table.
-     * If these data are properly entered, the colissimo module should be able to handle the rest using the order process native hooks.
-     */
-    public function afterCartCreation($params)
-    {
-        if (class_exists(ColissimoPickupPoint::class) === false || class_exists(ColissimoCartPickupPoint::class) === false) {
-            return;
-        }
-        /** @var OrderResource $apiOrder */
-        $apiOrder = $params['apiOrder'];
-
-        $logPrefix = sprintf(
-            $this->l('[Order: %s]', $this->getFileName()),
-            $apiOrder->getId()
-        );
-        $logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
-
-        ProcessLoggerHandler::logInfo(
-            $logPrefix . $this->l('Saving Colissimo pickup point.', $this->getFileName()),
-            'Order'
-        );
-
-        $colissimoPickupPointId = $this->getPointId($apiOrder);
-
-        if (empty($colissimoPickupPointId)) {
-            return true;
-        }
-
-        $shippingAddress = $apiOrder->getShippingAddress();
-        $productCode = $this->getProductCode($apiOrder); // hack
-
-        // Save/update Colissimo pickup point
-        $pickupPointData = [
-            'colissimo_id' => $colissimoPickupPointId,
-            'company_name' => $shippingAddress['lastName'],
-            'address1' => $shippingAddress['street'],
-            'address2' => $shippingAddress['street2'],
-            'city' => $shippingAddress['city'],
-            'zipcode' => $shippingAddress['postalCode'],
-            'country' => Tools::strtoupper(Country::getNameById($params['cart']->id_lang, Country::getByIso($shippingAddress['country']))),
-            'iso_country' => $shippingAddress['country'],
-            'product_code' => $productCode,
-            'network' => '', //TODO; how do we get this field ? It's not in the data sent by SF. Ask Colissimo directly ? Then again, it's not required.
-        ];
-        $pickupPoint = ColissimoPickupPoint::getPickupPointByIdColissimo($colissimoPickupPointId);
-        $pickupPoint->hydrate(array_map('pSQL', $pickupPointData));
-        $pickupPoint->save();
-
-        if (empty($pickupPoint) === true) {
-            ProcessLoggerHandler::logError(
-                $logPrefix .
-                    sprintf(
-                        $this->l('Linking Colissimo pickup failed point %s to cart %s. Pickup point not found in the Colissimo module.', $this->getFileName()),
-                        $colissimoPickupPointId,
-                        $params['cart']->id
-                    ),
-                'Order'
-            );
-
-            return true;
-        }
-
-        ProcessLoggerHandler::logInfo(
-            $logPrefix .
-                sprintf(
-                    $this->l('Linking Colissimo pickup point %s to cart %s.', $this->getFileName()),
-                    $colissimoPickupPointId,
-                    $params['cart']->id
-                ),
-            'Order'
-        );
-
-        // Save pickup point/cart association
-        ColissimoCartPickupPoint::updateCartPickupPoint(
-            (int) $params['cart']->id,
-            (int) $pickupPoint->id,
-            !empty($shippingAddress['mobilePhone']) ? $shippingAddress['mobilePhone'] : ''
-        );
-
-        return true;
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function getConditions()
     {
-        return $this->l('If the order is from CDiscount and the carrier is \'SO1\', \'REL\' or \'RCO\'.', $this->getFileName());
+        return $this->l('If the order is from CDiscount and the carrier is \'SO1\', \'REL\' or \'RCO\'.', 'CdiscountColissimo');
     }
 
     /**
@@ -208,7 +121,7 @@ class CdiscountColissimo extends AbstractColissimo implements RuleInterface
      */
     public function getDescription()
     {
-        return $this->l('Retrieves  the relay ID from the \'lastname\' field and puts it in \'company\'. If a company is already set, appends it to \'address (2)\'. Fills the \'lastname\' field with everything after the first space from \'firstname\'.', $this->getFileName());
+        return $this->l('Retrieves  the relay ID from the \'lastname\' field and puts it in \'company\'. If a company is already set, appends it to \'address (2)\'. Fills the \'lastname\' field with everything after the first space from \'firstname\'.', 'CdiscountColissimo');
     }
 
     protected function getProductCode(OrderResource $apiOrder)

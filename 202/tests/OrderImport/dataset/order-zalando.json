@@ -26,7 +26,7 @@
        "order_status":"shipped",
        "customer_number":"11111531622",
        "return_tracking":"",
-       "service_point_id":"100562",
+       "service_point_id":"BPR:100562",
        "service_point_name":"PRIMAVERA"
     },
     "errors":[

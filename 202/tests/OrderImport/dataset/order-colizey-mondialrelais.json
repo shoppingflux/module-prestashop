@@ -1,0 +1,95 @@
+      {
+        "id": 17060023013,
+        "storeId":25125,
+        "channelId": 32095,
+        "reference": "fb4d807c-f248-49c7-ac23-e8bc70c9a8d7",
+        "storeReference": "36635",
+        "isTest": false,
+        "acknowledgedAt": "2022-02-27T19:53:50+01:00",
+        "createdAt": "2022-02-27T19:09:29+01:00",
+        "updatedAt": "2022-02-27T19:09:29+01:00",
+        "status": "shipped",
+        "anonymized": false,
+        "payment": {
+          "shippingAmount": 4,
+          "productAmount": 63,
+          "totalAmount": 67,
+          "currency": "EUR",
+          "method": "" 
+        },
+        "shipment": {
+          "carrier": "Mondial Relay",
+          "trackingNumber": "03384911" 
+        },
+        "additionalFields": {
+          "orderNumber": "CLZ2202305317",
+          "order_status": "3",
+          "shippingRelayId": "012082",
+          "line_status_6831f0f6-97f8-11ec-ba89-42010a840002": "5" 
+        },
+        "errors": [],
+        "itemsReferencesAliases": {},
+        "items": [
+          {
+            "reference": "DH4754 Y59-T6 / XL",
+            "status": "shipped",
+            "quantity": 1,
+            "price": 63,
+            "taxAmount": 0,
+            "channelReference": "6831f0f6-97f8-11ec-ba89-42010a840002",
+            "name": null,
+            "image": null
+          }
+        ],
+        "shippingAddress": {
+          "firstName": "STEPHANE",
+          "lastName": "ROULAI",
+          "company": "CARREFOUR EXPRESS",
+          "street": "ESPL. SAINTE-GERMAINE",
+          "street2": "",
+          "other": "",
+          "postalCode": "31820",
+          "city": "PIBRAC",
+          "country": "FR",
+          "phone": "0677777777",
+          "mobilePhone": "",
+          "email": "client-bclz22023053171d@colizey.com" 
+        },
+        "billingAddress": {
+          "firstName": "STEPHANE",
+          "lastName": "ROULAI",
+          "company": "",
+          "street": "3 RUE NAPOLEON BONAPARTE",
+          "street2": "",
+          "other": "",
+          "postalCode": "91070",
+          "city": "PLAISANCE DU TOUCH",
+          "country": "FR",
+          "phone": "0677777777",
+          "mobilePhone": "",
+          "email": "client-bclz22023053171d@colizey.com" 
+        },
+        "_links": {
+          "self": {
+            "href": "/v1/store/43599/order/17060023013" 
+          },
+          "store": {
+            "href": "/v1/store/43599" 
+          }
+        },
+        "_embedded": {
+          "channel": {
+            "id": 32095,
+            "name": "Colizey",
+            "_links": {
+              "self": {
+                "href": "/v1/channel/32095" 
+              },
+              "image": {
+                "href": "https://assets.shopping-feed.com/channel/logo/Colizey.png" 
+              }
+            }
+          },
+          "tag": []
+        }
+      }
