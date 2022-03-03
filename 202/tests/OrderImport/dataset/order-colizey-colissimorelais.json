@@ -1,0 +1,95 @@
+ {
+        "id": 17060404724,
+        "storeId":25125,
+        "channelId": 32095,
+        "reference": "216e3d99-3c73-4d1b-a178-110e0b0369f6",
+        "storeReference": "35510",
+        "isTest": false,
+        "acknowledgedAt": "2022-02-27T22:31:03+01:00",
+        "createdAt": "2022-02-27T21:03:13+01:00",
+        "updatedAt": "2022-02-27T21:03:13+01:00",
+        "status": "waiting_shipment",
+        "anonymized": false,
+        "payment": {
+          "shippingAmount": 0,
+          "productAmount": 89,
+          "totalAmount": 89,
+          "currency": "EUR",
+          "method": "" 
+        },
+        "shipment": {
+          "carrier": "Colissimo Relais",
+          "trackingNumber": "6H12434811732" 
+        },
+        "additionalFields": {
+          "orderNumber": "CLZ2202132001",
+          "order_status": "3",
+          "shippingRelayId": "060559",
+          "line_status_4b432e50-9808-11ec-aabf-42010a840002": "5" 
+        },
+        "errors": [],
+        "itemsReferencesAliases": {},
+        "items": [
+          {
+            "reference":"2_12",
+            "status": "shipped",
+            "quantity": 1,
+            "price": 89,
+            "taxAmount": 0,
+            "channelReference": "4b432e50-9808-11ec-aabf-42010a840002",
+            "name": "MAILLOT HOMME XV DE FRANCE - BLANC - 2021/2022 - COQ SPORTIF",
+            "image": "https://localhost/17081-large_default/maillot-homme-xv-de-france-blanc-2021-2022-coq-sportif-boutique-rugby-corner.jpg" 
+          }
+        ],
+        "shippingAddress": {
+          "firstName": "Godfroy",
+          "lastName": "Taquin",
+          "company": "BUREAU DE POSTE COLAYRAC LPRC RP",
+          "street": "246 AVENUE DE LA LIBERATION",
+          "street2": "",
+          "other": "",
+          "postalCode": "47450",
+          "city": "COLAYRAC ST CIRQ",
+          "country": "FR",
+          "phone": "0777777777",
+          "mobilePhone": "",
+          "email": "client-aclz2202132001bb@colizey.com" 
+        },
+        "billingAddress": {
+          "firstName": "Godfroy",
+          "lastName": "Taquin",
+          "company": "",
+          "street": "place de l'eglise",
+          "street2": "",
+          "other": "",
+          "postalCode": "23270",
+          "city": "Clugnat",
+          "country": "FR",
+          "phone": "0777777777",
+          "mobilePhone": "",
+          "email": "client-aclz2202132001bb@colizey.com" 
+        },
+        "_links": {
+          "self": {
+            "href": "/v1/store/9590/order/17060404724" 
+          },
+          "store": {
+            "href": "/v1/store/9590" 
+          }
+        },
+        "_embedded": {
+          "channel": {
+            "id": 32095,
+            "name": "Colizey",
+            "_links": {
+              "self": {
+                "href": "/v1/channel/32095" 
+              },
+              "image": {
+                "href": "https://assets.shopping-feed.com/channel/logo/Colizey.png" 
+              }
+            }
+          },
+          "tag": []
+        }
+      }

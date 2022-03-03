@@ -19,6 +19,7 @@
 
 namespace Tests\OrderImport;
 
+use ShoppingfeedAddon\OrderImport\OrderData;
 use ShoppingfeedAddon\OrderImport\Rules\AmazonEbay;
 
 /**
@@ -37,13 +38,14 @@ class OrderRulesAmazonEbayTest extends AbstractOrdeTestCase
 
         $rules = new AmazonEbay();
         $this->assertTrue($rules->isApplicable($apiOrder));
-        $address = $apiOrder->toArray()['billingAddress'];
 
-        $rules->updateAddress($address);
+        $params['orderData'] = new OrderData($apiOrder);
+        $params['apiOrder'] = $apiOrder;
+        $rules->onPreProcess($params);
 
         $expedtedAddress = [
-                'firstName' => 'Bernard',
-                'lastName' => 'Martin',
+                'firstName' => 'Martin',
+                'lastName' => 'Bernard',
                 'company' => '202 ecommerce',
                 'street' => '10 rue Vivienne',
                 'street2' => '',
@@ -55,7 +57,7 @@ class OrderRulesAmazonEbayTest extends AbstractOrdeTestCase
                 'mobilePhone' => '0623456789',
                 'email' => 'unique.id@test.net',
         ];
-        $this->assertSame($address, $expedtedAddress);
+        $this->assertSame($expedtedAddress, $params['orderData']->billingAddress);
     }
 
     /**
@@ -82,13 +84,14 @@ class OrderRulesAmazonEbayTest extends AbstractOrdeTestCase
 
         $rules = new AmazonEbay();
         $this->assertTrue($rules->isApplicable($apiOrder));
-        $address = $apiOrder->toArray()['billingAddress'];
 
-        $rules->updateAddress($address);
+        $params['orderData'] = new OrderData($apiOrder);
+        $params['apiOrder'] = $apiOrder;
+        $rules->onPreProcess($params);
 
         $expedtedAddress = [
-                'firstName' => 'CARRA',
-                'lastName' => 'CELINE',
+                'firstName' => 'CELINE',
+                'lastName' => 'CARRA',
                 'company' => '',
                 'street' => '25 RUE DES MARONNIERS',
                 'street2' => '',
@@ -100,6 +103,71 @@ class OrderRulesAmazonEbayTest extends AbstractOrdeTestCase
                 'mobilePhone' => '',
                 'email' => 'mp+20220414342060+000010890@web.redoute.fr',
         ];
-        $this->assertSame($address, $expedtedAddress);
+        $this->assertSame($expedtedAddress, $params['orderData']->billingAddress);
+    }
+
+    /**
+     * Test to split name
+     *
+     * @return void
+     */
+    public function testSplitNameEbay(): void
+    {
+        $apiOrder = $this->getOrderRessourceFromDataset('order-ebay.json');
+
+        $rules = new AmazonEbay();
+        $this->assertTrue($rules->isApplicable($apiOrder));
+
+        $params['orderData'] = new OrderData($apiOrder);
+        $params['apiOrder'] = $apiOrder;
+        $rules->onPreProcess($params);
+
+        $expedtedAddress = [
+                'firstName' => 'Jean-Pierre',
+                'lastName' => 'Le Rouge',
+                'company' => '',
+                'street' => '23 rue de la jetée',
+                'street2' => '',
+                'other' => 'leg1520',
+                'postalCode' => '06800',
+                'city' => 'Cagnes Sur Mer',
+                'country' => 'FR',
+                'phone' => '065544332211',
+                'mobilePhone' => '',
+                'email' => 'abcdefghijklmopq@members.ebay.com',
+        ];
+        $this->assertSame($expedtedAddress, $params['orderData']->billingAddress);
+    }
+
+    /**
+     * Test to split name
+     *
+     * @return void
+     */
+    public function testSplitNameAmazon(): void
+    {
+        $apiOrder = $this->getOrderRessourceFromDataset('order-amazon-shipped.json');
+
+        $rules = new AmazonEbay();
+        $this->assertTrue($rules->isApplicable($apiOrder));
+        $params['orderData'] = new OrderData($apiOrder);
+        $params['apiOrder'] = $apiOrder;
+        $rules->onPreProcess($params);
+
+        $expedtedAddress = [
+                'firstName' => 'Edgar',
+                'lastName' => 'Lameloise',
+                'company' => '',
+                'street' => '36 Place d\'Armes',
+                'street2' => '',
+                'other' => '',
+                'postalCode' => '71150',
+                'city' => 'CHAGNY',
+                'country' => 'FR',
+                'phone' => '0385112233',
+                'mobilePhone' => '',
+                'email' => 'gfwv9k7xvwfrg11@marketplace.amazon.fr',
+        ];
+        $this->assertSame($expedtedAddress, $params['orderData']->billingAddress);
     }
 }

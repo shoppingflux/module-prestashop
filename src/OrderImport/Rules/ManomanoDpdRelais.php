@@ -4,6 +4,7 @@ namespace ShoppingfeedAddon\OrderImport\Rules;
 
 use Cart;
 use Module;
+use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use ShoppingfeedAddon\OrderImport\DpdAssociation;
 use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
@@ -23,7 +24,7 @@ class ManomanoDpdRelais extends RuleAbstract implements RuleInterface
     /**
      * {@inheritdoc}
      */
-    public function isApplicable(\ShoppingFeed\Sdk\Api\Order\OrderResource $apiOrder)
+    public function isApplicable(OrderResource $apiOrder)
     {
         $this->dpdfrance = Module::getInstanceByName('dpdfrance');
 
@@ -35,7 +36,7 @@ class ManomanoDpdRelais extends RuleAbstract implements RuleInterface
             return false;
         }
 
-        if (empty($this->getRelayIdFromOrder($apiOrder))) {
+        if (empty($this->getRelayIdFromOrder($apiOrder)) === true) {
             return false;
         }
 
@@ -56,6 +57,31 @@ class ManomanoDpdRelais extends RuleAbstract implements RuleInterface
     public function getConditions()
     {
         return $this->l('If the order is from ManoMano with ”DPD Relay”', 'Shoppingfeed.Rule');
+    }
+
+    /**
+     * We have to do this on pre process, as the fields may be used in various
+     * steps
+     *
+     * @param array $params
+     */
+    public function onPreProcess($params)
+    {
+        /** @var \ShoppingfeedAddon\OrderImport\OrderData $orderData */
+        $orderData = $params['orderData'];
+        $apiOrder = $params['apiOrder'];
+
+        $orderData->shippingAddress['firstName'] = trim($orderData->shippingAddress['firstName']);
+        $orderData->shippingAddress['lastName'] = trim($orderData->shippingAddress['lastName']);
+
+        $fullname = $orderData->shippingAddress['firstName'];
+        $relayID = $this->getRelayIdFromOrder($apiOrder);
+        $orderData->shippingAddress['other'] = $relayID;
+        $orderData->shippingAddress['company'] = $orderData->shippingAddress['lastName'] . ' (' . $relayID . ')';
+
+        $explodedFullname = explode(' ', $fullname);
+        $orderData->shippingAddress['firstName'] = array_shift($explodedFullname);
+        $orderData->shippingAddress['lastName'] = implode(' ', $explodedFullname);
     }
 
     public function afterCartCreation($params)
@@ -119,7 +145,7 @@ class ManomanoDpdRelais extends RuleAbstract implements RuleInterface
         return new DpdAssociation();
     }
 
-    protected function getRelayIdFromOrder(\ShoppingFeed\Sdk\Api\Order\OrderResource $apiOrder)
+    protected function getRelayIdFromOrder(OrderResource $apiOrder)
     {
         $address = $apiOrder->getShippingAddress();
 

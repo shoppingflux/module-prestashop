@@ -1240,7 +1240,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             ShoppingfeedAddon\OrderImport\Rules\AmazonEbay::class,
             ShoppingfeedAddon\OrderImport\Rules\AmazonPrime::class,
             ShoppingfeedAddon\OrderImport\Rules\Cdiscount::class,
-            ShoppingfeedAddon\OrderImport\Rules\CdiscountRelay::class,
+            ShoppingfeedAddon\OrderImport\Rules\CdiscountColissimo::class,
             ShoppingfeedAddon\OrderImport\Rules\Mondialrelay::class,
             ShoppingfeedAddon\OrderImport\Rules\RueducommerceMondialrelay::class,
             ShoppingfeedAddon\OrderImport\Rules\Socolissimo::class,
@@ -1250,7 +1250,8 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             ShoppingfeedAddon\OrderImport\Rules\TestingOrder::class,
             ShoppingfeedAddon\OrderImport\Rules\SymbolConformity::class,
             ShoppingfeedAddon\OrderImport\Rules\ManomanoDpdRelais::class,
-            ShoppingfeedAddon\OrderImport\Rules\Colissimo::class,
+            ShoppingfeedAddon\OrderImport\Rules\ZalandoColissimo::class,
+            ShoppingfeedAddon\OrderImport\Rules\ColizeyColissimo::class,
         ];
 
         foreach ($defaultRulesClassNames as $ruleClassName) {
