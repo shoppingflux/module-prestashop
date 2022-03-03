@@ -113,12 +113,7 @@ class ShoppingfeedPreloading extends ObjectModel
     public function saveProduct($id_product, $id_token, $id_lang, $id_shop, $id_currency)
     {
         $productSerialize = new ProductSerializer((int) $id_product, $id_lang, $id_shop, $id_currency);
-        $query = (new DbQuery())
-            ->select('*')
-            ->from(self::$definition['table'])
-            ->where('id_token = ' . (int) $id_token)
-            ->where('id_product = ' . (int) $id_product);
-        $shoppingfeedPreloading = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($query);
+        $shoppingfeedPreloading = $this->findByTokenIdAndProductId($id_token, $id_product);
         if ($shoppingfeedPreloading === false) {
             $this->id = null;
             $this->id_token = $id_token;
@@ -185,6 +180,18 @@ class ShoppingfeedPreloading extends ObjectModel
         }
 
         return $result;
+    }
+
+    public function findByTokenIdAndProductId($id_token, $id_product)
+    {
+        $result = [];
+        $query = (new DbQuery())
+                ->select('*')
+                ->from(self::$definition['table'])
+                ->where('id_token = ' . (int) $id_token)
+                ->where('id_product = ' . (int) $id_product);
+
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($query);
     }
 
     /**
