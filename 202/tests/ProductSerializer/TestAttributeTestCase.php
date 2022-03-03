@@ -22,7 +22,6 @@ namespace Tests\OrderImport;
 use PHPUnit\Framework\TestCase;
 use ShoppingfeedAddon\Actions\ActionsHandler;
 use ShoppingfeedPreloading;
-use ShoppingfeedToken;
 use Tools;
 
 class TestAttributeTestCase extends TestCase
