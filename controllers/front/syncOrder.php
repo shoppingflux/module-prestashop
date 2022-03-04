@@ -27,8 +27,8 @@ if (!defined('_PS_VERSION_')) {
 
 require_once _PS_MODULE_DIR_ . 'shoppingfeed/vendor/autoload.php';
 
-use ShoppingfeedClasslib\Actions\ActionsHandler;
 use ShoppingfeedAddon\Actions\ActionsHandler as SfActionsHandler;
+use ShoppingfeedClasslib\Actions\ActionsHandler;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 use ShoppingfeedClasslib\Registry;
 

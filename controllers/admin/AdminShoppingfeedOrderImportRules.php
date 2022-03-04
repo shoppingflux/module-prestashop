@@ -251,9 +251,11 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
                             'disabled' => !Configuration::get(Shoppingfeed::ORDER_IMPORT_ENABLED),
                             'values' => [
                                 [
+                                    'id' => 'shoppingfeed_order-import-switch-1',
                                     'value' => 1,
                                 ],
                                 [
+                                    'id' => 'shoppingfeed_order-import-switch-0',
                                     'value' => 0,
                                 ],
                             ],
@@ -288,9 +290,11 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
                             'disabled' => !Configuration::get(Shoppingfeed::ORDER_IMPORT_ENABLED),
                             'values' => [
                                 [
+                                    'id' => 'shoppingfeed_order-import-switch-1',
                                     'value' => 1,
                                 ],
                                 [
+                                    'id' => 'shoppingfeed_order-import-switch-0',
                                     'value' => 0,
                                 ],
                             ],
@@ -338,6 +342,7 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
                         ],
                         [
                             'type' => 'switch',
+                            'id' => Shoppingfeed::ORDER_SYNC_ENABLED . '-switch',
                             'is_bool' => true,
                             'disabled' => !$order_sync_available,
                             'hint' => $this->module->l('The order post-import synchronization allows you to manage the following order statuses : shipped, cancelled, refunded.', 'AdminShoppingfeedOrderImportRules'),

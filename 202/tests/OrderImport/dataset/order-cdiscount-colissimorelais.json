@@ -1,0 +1,107 @@
+{
+    "id":7130000000,
+    "storeId":25125,
+    "channelId":111,
+    "reference":"TEST-70625LDVJE",
+    "storeReference":"200000",
+    "isTest":false,
+    "acknowledgedAt":"",
+    "createdAt":"2020-02-27T06:00:00+00:00",
+    "updatedAt":"",
+    "status":"waiting_shipment",
+    "anonymized":true,
+    "payment":{
+       "shippingAmount":0,
+       "productAmount":40.75,
+       "totalAmount":40.75,
+       "currency":"EUR",
+       "method":""
+    },
+    "shipment":{
+       "carrier":"SO1",
+       "trackingNumber":""
+    },
+    "additionalFields":{
+       "INTERETBCA":"0.95",
+       "CorporationCode":"CDSB2C"
+    },
+    "errors":[
+       
+    ],
+    "itemsReferencesAliases":null,
+    "items":[
+       {
+          "reference":"1_3",
+          "status":"new",
+          "quantity":1,
+          "price":1.9,
+          "taxAmount":0,
+          "channelReference":"1",
+          "name":"Rallonge de soutien gorge extensible noir 2 crochets",
+          "image":"https://localhost/11676-thickbox_default/rallonge-de-soutien-gorge-extensible-noir-2-crochets.jpg"
+       },
+       {
+          "reference":"1_5",
+          "status":"new",
+          "quantity":1,
+          "price":37.9,
+          "taxAmount":0,
+          "channelReference":"0",
+          "name":"Body gainant rayé sans bonnets Shape chic Noir",
+          "image":"https://localhostr/17467-thickbox_default/body-gainant-raye-sans-bonnets-shape-chic-noir.jpg"
+       }
+    ],
+    "shippingAddress":{
+       "firstName":"CLAUDIA GIRARD",
+       "lastName":"Relais Pickup L ATELIER BIS",
+       "company":"",
+       "street":"18BIS RUE DU GENIE",
+       "street2":"",
+       "other":"096772",
+       "postalCode":"50220",
+       "city":"DUCEY",
+       "country":"FR",
+       "phone":"",
+       "mobilePhone":"0678978900",
+       "email":"cdiscount123456@sftest.fr"
+    },
+    "billingAddress":{
+       "firstName":"CLAUDIA",
+       "lastName":"GIRARD",
+       "company":"",
+       "street":"12 rue de la levée",
+       "street2":"",
+       "other":"",
+       "postalCode":"50240",
+       "city":"Saint James",
+       "country":"FR",
+       "phone":"",
+       "mobilePhone":"0678978900",
+       "email":"cdiscount123456@sftest.fr"
+    },
+    "_links":{
+       "self":{
+          "href":"/v1/store/25125/order/7130000000"
+       },
+       "store":{
+          "href":"/v1/store/25125"
+       }
+    },
+    "_embedded":{
+       "channel":{
+          "id":111,
+          "name":"CDiscount",
+          "_links":{
+             "self":{
+                "href":"/v1/channel/111"
+             },
+             "image":{
+                "href":"https://assets.shopping-feed.com/channel/logo/CDiscount.png"
+             }
+          }
+       },
+       "tag":[
+          
+       ]
+    }
+ }

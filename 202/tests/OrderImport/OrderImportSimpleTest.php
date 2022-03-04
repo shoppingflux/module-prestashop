@@ -223,14 +223,14 @@ class OrderImportSimpleTest extends AbstractOrdeTestCase
         $this->assertEquals($customer->firstname, 'Corine');
 
         $sfOrder = $conveyor['sfOrder'];
-        $this->assertEquals($sfOrder->name_marketplace, 'zalandoboniclassic');
+        $this->assertEquals($sfOrder->name_marketplace, 'zalandomyunittest');
         $this->assertEquals($sfOrder->id_order_marketplace, '10301108385651');
 
         $psOrder = new \Order((int) $conveyor['id_order']);
 
         // it's a test > canceled
         $this->assertEquals($psOrder->current_state, _PS_OS_PAYMENT_);
-        $this->assertEquals($psOrder->payment, 'zalandoboniclassic');
+        $this->assertEquals($psOrder->payment, 'zalandomyunittest');
         $this->assertEquals($psOrder->module, 'sfpayment');
         $this->assertEquals($psOrder->total_discounts, 0.000000);
         $this->assertEquals($psOrder->total_paid, 119.800000);
