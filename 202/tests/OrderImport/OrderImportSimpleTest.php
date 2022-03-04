@@ -344,7 +344,7 @@ class OrderImportSimpleTest extends AbstractOrdeTestCase
         }
 
         $carrier = new \Carrier($psOrder->id_carrier);
-        $this->assertEquals($carrier->id_reference, 1);
+        $this->assertEquals($carrier->id_reference, 7);
 
         $this->assertArrayHasKey('cart', $conveyor);
         $this->assertNotNull($conveyor['cart']->id);
