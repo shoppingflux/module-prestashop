@@ -117,7 +117,7 @@ class ZalandoColissimo extends AbstractColissimo implements RuleInterface
     {
         $apiOrderData = $apiOrder->toArray();
         $service_point_id = explode(':', $apiOrderData['additionalFields']['service_point_id']);
-        if (count($service_point_id) > 0) {
+        if (count($service_point_id) > 1) {
             return $service_point_id[0];
         }
 
@@ -128,7 +128,7 @@ class ZalandoColissimo extends AbstractColissimo implements RuleInterface
     {
         $apiOrderData = $apiOrder->toArray();
         $service_point_id = explode(':', $apiOrderData['additionalFields']['service_point_id']);
-        if (count($service_point_id) > 0) {
+        if (count($service_point_id) > 1) {
             return $service_point_id[1];
         }
 
