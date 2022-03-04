@@ -1,6 +1,6 @@
 # Shoppingfeed PrestaShop Addons
 
-[![Coding Standart](https://github.com/shoppingflux/module-prestashop/actions/workflows/php.yml/badge.svg?branch=master)](https://github.com/shoppingflux/module-prestashop/actions/workflows/php.yml) [![Unit test](https://github.com/shoppingflux/module-prestashop/actions/workflows/phpunit.yml/badge.svg?branch=master)](https://github.com/shoppingflux/module-prestashop/actions/workflows/phpunit.yml)
+[![Coding Standart](https://github.com/shoppingflux/module-prestashop/actions/workflows/php.yml/badge.svg)](https://github.com/shoppingflux/module-prestashop/actions/workflows/php.yml) [![Unit test](https://github.com/shoppingflux/module-prestashop/actions/workflows/phpunit.yml/badge.svg)](https://github.com/shoppingflux/module-prestashop/actions/workflows/phpunit.yml)
 
 ## About
 
