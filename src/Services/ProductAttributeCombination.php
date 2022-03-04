@@ -24,7 +24,6 @@
 
 namespace ShoppingfeedAddon\Services;
 
-
 use Cache;
 use Combination;
 use Context;
@@ -70,6 +69,7 @@ class ProductAttributeCombination
             ->select('agl.`name` AS group_name')
             ->select('al.`name` AS attribute_name')
             ->select('a.`id_attribute`')
+            ->select('a.color')
             ->from('product_attribute', 'pa')
             ->innerJoin('product_attribute_shop', 'pas', 'pa.id_product_attribute = pas.id_product_attribute')
             ->leftJoin('product_attribute_combination', 'pac', 'pac.`id_product_attribute` = pa.`id_product_attribute`')
@@ -77,10 +77,10 @@ class ProductAttributeCombination
             ->leftJoin('attribute_group', 'ag', 'ag.`id_attribute_group` = a.`id_attribute_group`')
             ->leftJoin('attribute_lang', 'al', 'a.`id_attribute` = al.`id_attribute`')
             ->leftJoin('attribute_group_lang', 'agl', 'ag.`id_attribute_group` = agl.`id_attribute_group`')
-            ->where('pas.id_shop = ' . (int)$idShop)
-            ->where('al.id_lang = ' . (int)$idLang)
-            ->where('agl.id_lang = ' . (int)$idLang)
-            ->where('pa.id_product = ' . (int)$product->id)
+            ->where('pas.id_shop = ' . (int) $idShop)
+            ->where('al.id_lang = ' . (int) $idLang)
+            ->where('agl.id_lang = ' . (int) $idLang)
+            ->where('pa.id_product = ' . (int) $product->id)
             ->orderBy('pa.`id_product_attribute`')
         ;
 
@@ -116,6 +116,14 @@ class ProductAttributeCombination
             }
 
             $combinations[$idProductAttribute]['attributes'][$row['group_name']] = $row['attribute_name'];
+
+            if ($row['is_color_group'] == 1) {
+                $combinations[$idProductAttribute]['attributes'][$row['group_name'] . '-hexa'] = $row['color'];
+                $path = 'co/' . $row['id_attribute'] . '.jpg';
+                if (file_exists(_PS_IMG_DIR_ . $path) === true) {
+                    $combinations[$idProductAttribute]['attributes'][$row['group_name'] . '-texture'] = _PS_BASE_URL_ . __PS_BASE_URI__ . 'img/' . $path;
+                }
+            }
         }
 
         return $combinations;

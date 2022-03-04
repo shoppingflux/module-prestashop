@@ -28,33 +28,29 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-use Module;
-use ShoppingfeedAddon\Services\IsoConvertor;
-use Symfony\Component\VarDumper\VarDumper;
-use Tools;
-use Configuration;
-use DbQuery;
-use Db;
 use Address;
-use Country;
-use Carrier;
-use SoapClient;
-use Order;
 use Cart;
-use Validate;
+use Configuration;
+use Country;
 use Exception;
+use Module;
+use Order;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
+use ShoppingfeedAddon\Services\IsoConvertor;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
+use Tools;
+use Validate;
 
 class RelaisColisRule extends RuleAbstract implements RuleInterface
 {
-    /** @var \Relaiscolis*/
+    /** @var \Relaiscolis */
     protected $relaisColis;
 
     /**
      * @param OrderResource $apiOrder
+     *
      * @return bool
      */
     public function isApplicable(OrderResource $apiOrder)
@@ -79,7 +75,7 @@ class RelaisColisRule extends RuleAbstract implements RuleInterface
             return false;
         }
 
-        /** @var Cart $cart*/
+        /** @var Cart $cart */
         $cart = $params['cart'];
 
         if (false == $cart instanceof Cart) {
@@ -87,10 +83,10 @@ class RelaisColisRule extends RuleAbstract implements RuleInterface
         }
 
         $relaisColisCarriers = [
-            (int)Configuration::getGlobalValue('RELAISCOLIS_ID'),
-            (int)Configuration::getGlobalValue('RELAISCOLIS_ID_HOME'),
-            (int)Configuration::getGlobalValue('RELAISCOLIS_ID_MAX'),
-            (int)Configuration::getGlobalValue('RELAISCOLIS_ID_HOME_PLUS')
+            (int) Configuration::getGlobalValue('RELAISCOLIS_ID'),
+            (int) Configuration::getGlobalValue('RELAISCOLIS_ID_HOME'),
+            (int) Configuration::getGlobalValue('RELAISCOLIS_ID_MAX'),
+            (int) Configuration::getGlobalValue('RELAISCOLIS_ID_HOME_PLUS'),
         ];
 
         // Return if not Relais Colis
@@ -131,6 +127,7 @@ class RelaisColisRule extends RuleAbstract implements RuleInterface
                 $logPrefix .
                 $this->l('Failed to create a relais colis info object', 'Shoppingfeed.Rule')
             );
+
             return false;
         }
 
@@ -178,14 +175,14 @@ class RelaisColisRule extends RuleAbstract implements RuleInterface
         $sfAddressShipping = $apiOrder->getShippingAddress();
         $sfAddressBilling = $apiOrder->getBillingAddress();
         $addressShipping->lastname = $sfAddressShipping['lastName'];
-        $addressShipping->address1 = $sfAddressBilling['lastName'].' '.$sfAddressBilling['firstName'];
+        $addressShipping->address1 = $sfAddressBilling['lastName'] . ' ' . $sfAddressBilling['firstName'];
         $addressShipping->address2 = Tools::substr($sfAddressShipping['street'], 0, 128);
 
         return $addressShipping->save();
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getDescription()
     {
@@ -193,7 +190,7 @@ class RelaisColisRule extends RuleAbstract implements RuleInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getConditions()
     {
@@ -216,7 +213,7 @@ class RelaisColisRule extends RuleAbstract implements RuleInterface
         }
 
         $addresses = array_keys($deliveryOption);
-        $idDeliveryAddress = (int)array_pop($addresses);
+        $idDeliveryAddress = (int) array_pop($addresses);
         $address = new Address($idDeliveryAddress);
         $isoCountry = $this->getIsoConvertor()->toISO3(Country::getIsoById($address->id_country));
 

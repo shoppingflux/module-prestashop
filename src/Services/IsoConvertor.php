@@ -1,8 +1,6 @@
 <?php
 
-
 namespace ShoppingfeedAddon\Services;
-
 
 class IsoConvertor
 {
@@ -18,6 +16,7 @@ class IsoConvertor
 
     /**
      * @param string $iso2
+     *
      * @return string
      */
     public function toISO3($iso2)

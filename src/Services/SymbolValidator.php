@@ -1,13 +1,12 @@
 <?php
 
-
 namespace ShoppingfeedAddon\Services;
-
 
 class SymbolValidator
 {
     /**
      * replace invalid symbol
+     *
      * @param string $input
      * @param callable $callback validation rule. Must return bool
      * @param string $replaceSymbol for replace invalid symbol

@@ -21,7 +21,6 @@
  * @copyright Copyright (c) 202-ecommerce
  * @license   Commercial license
  */
-
 function upgrade_module_1_4_5($module)
 {
     $sql = 'TRUNCATE ' . _DB_PREFIX_ . 'shoppingfeed_preloading';

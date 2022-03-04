@@ -16,7 +16,6 @@
  * @copyright Since 2019 Shopping Feed
  * @license   https://opensource.org/licenses/AFL-3.0  Academic Free License (AFL 3.0)
  */
-
 if (!defined('_PS_VERSION_')) {
     exit;
 }
@@ -30,11 +29,12 @@ use ShoppingfeedClasslib\Registry;
  * - Respect the override path override/modules/shoppingfeed/classes/actions/ShoppingfeedProductSyncPriceActions.php
  * - Name your override class ShoppingfeedProductSyncPriceActionsOverride
  *   extended with ShoppingfeedProductSyncPriceActions
+ *
  * @see ShoppingfeedDefaultActions
  */
 class ShoppingfeedProductSyncPriceActions extends ShoppingfeedProductSyncActions
 {
-    /** @inheritdoc */
+    /** {@inheritdoc} */
     protected $no_forward_after_save = true;
 
     /**
@@ -44,7 +44,7 @@ class ShoppingfeedProductSyncPriceActions extends ShoppingfeedProductSyncActions
      */
     public function prepareBatch()
     {
-        $this->conveyor['preparedBatch'] = array();
+        $this->conveyor['preparedBatch'] = [];
         /** @var Shoppingfeed $sfModule */
         $sfModule = Module::getInstanceByName('shoppingfeed');
         $token = new ShoppingfeedToken($this->conveyor['id_token']);
@@ -67,7 +67,7 @@ class ShoppingfeedProductSyncPriceActions extends ShoppingfeedProductSyncActions
                 $sfProduct,
                 $token->id_shop,
                 [
-                    'price_with_reduction' => true
+                    'price_with_reduction' => true,
                 ]
             );
             if (false === $price) {
@@ -75,11 +75,11 @@ class ShoppingfeedProductSyncPriceActions extends ShoppingfeedProductSyncActions
                 continue;
             }
 
-            $newData = array(
+            $newData = [
                 'reference' => $sfReference,
                 'price' => $price,
                 'sfProduct' => $sfProduct,
-            );
+            ];
 
             $this->conveyor['preparedBatch'][$newData['reference']] = $newData;
         }
@@ -102,6 +102,7 @@ class ShoppingfeedProductSyncPriceActions extends ShoppingfeedProductSyncActions
                 'Product'
             );
             Registry::increment('errors');
+
             return false;
         }
         $limit = Configuration::getGlobalValue(Shoppingfeed::STOCK_SYNC_MAX_PRODUCTS);
@@ -109,13 +110,13 @@ class ShoppingfeedProductSyncPriceActions extends ShoppingfeedProductSyncActions
 
         foreach (array_chunk($preparedBatch, $limit, true) as $products) {
             $res = $shoppingfeedApi->updateMainStorePrices($products);
-            /**
+            /*
              * If we send a product reference that isn't in SF's catalog, the API
              * doesn't send a confirmation for this product.
              * This means we must make a diff between what we sent and what we
              * received to know which product wasn't updated.
              */
-            /** @var ShoppingFeed\Sdk\Api\Catalog\InventoryResource $inventoryResource */
+            /* @var ShoppingFeed\Sdk\Api\Catalog\InventoryResource $inventoryResource */
             foreach ($res as $pricingResource) {
                 $reference = $pricingResource->getReference();
                 $sfProduct = $products[$reference]['sfProduct'];

@@ -16,22 +16,20 @@
  * @copyright Since 2019 Shopping Feed
  * @license   https://opensource.org/licenses/AFL-3.0  Academic Free License (AFL 3.0)
  */
-
 if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-use ShoppingfeedAddon\OrderImport\SinceDate;
-use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
-
-use ShoppingFeed\Sdk\Http\Adapter\Guzzle6Adapter;
-use ShoppingFeed\Sdk\Credential\Token;
-use ShoppingFeed\Sdk\Credential\Password;
-use ShoppingFeed\Sdk\Client\Client;
-use ShoppingFeed\Sdk\Client\ClientOptions;
 use ShoppingFeed\Sdk\Api\Catalog\InventoryUpdate;
 use ShoppingFeed\Sdk\Api\Catalog\PricingUpdate;
 use ShoppingFeed\Sdk\Api\Order\OrderOperation;
+use ShoppingFeed\Sdk\Client\Client;
+use ShoppingFeed\Sdk\Client\ClientOptions;
+use ShoppingFeed\Sdk\Credential\Password;
+use ShoppingFeed\Sdk\Credential\Token;
+use ShoppingFeed\Sdk\Http\Adapter\Guzzle6Adapter;
+use ShoppingfeedAddon\OrderImport\SinceDate;
+use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 
 /**
  * This class is a singleton, which is responsible for calling the SF API using
@@ -42,7 +40,7 @@ class ShoppingfeedApi
     /** @var ShoppingfeedApi */
     private static $instance = null;
 
-    /** @var \ShoppingFeed\Sdk\Api\Session\SessionResource $session */
+    /** @var \ShoppingFeed\Sdk\Api\Session\SessionResource */
     private $session = null;
 
     private function __construct($session)
@@ -56,20 +54,19 @@ class ShoppingfeedApi
      *
      * @param $id_token the shop to use (one token per shop)
      * @param $token the token to use, if no shop is specified
+     *
      * @return ShoppingfeedApi
      */
     public static function getInstanceByToken($id_token = null, $token = null)
     {
         if (static::$instance && static::$instance->getToken() == $token) {
-
             return static::$instance;
         }
 
         if (!$token && !$id_token) {
-
             return false;
         } elseif ($id_token) {
-            $sft =  new ShoppingfeedToken($id_token);
+            $sft = new ShoppingfeedToken($id_token);
             $token = $sft->content;
         }
 
@@ -83,6 +80,7 @@ class ShoppingfeedApi
             $session = Client::createSession($credential, $clientOptions);
 
             static::$instance = new ShoppingfeedApi($session);
+
             return static::$instance;
         } catch (Exception $e) {
             ProcessLoggerHandler::logError(
@@ -102,6 +100,7 @@ class ShoppingfeedApi
      *
      * @param $username
      * @param $password
+     *
      * @return ShoppingfeedApi
      */
     public static function getInstanceByCredentials($username, $password)
@@ -124,6 +123,7 @@ class ShoppingfeedApi
                     $e->getMessage()
                 )
             );
+
             return false;
         }
     }
@@ -135,19 +135,21 @@ class ShoppingfeedApi
 
     /**
      * Makes the call to update the SF inventory
+     *
      * @param array $products an array of product's references and quantities
-     * <pre>
-     * Array(
-     *      Array(
-     *          'reference' => 'ref1',
-     *          'quantity' => 7
-     *      ),
-     *      Array(
-     *          'reference' => 'ref2',
-     *          'quantity' => 1
-     *      ),
-     * )
-     * </pre>
+     *                        <pre>
+     *                        Array(
+     *                        Array(
+     *                        'reference' => 'ref1',
+     *                        'quantity' => 7
+     *                        ),
+     *                        Array(
+     *                        'reference' => 'ref2',
+     *                        'quantity' => 1
+     *                        ),
+     *                        )
+     *                        </pre>
+     *
      * @return ShoppingFeed\Sdk\Api\Catalog\InventoryCollection
      */
     public function updateMainStoreInventory($products)
@@ -167,25 +169,28 @@ class ShoppingfeedApi
                     $e->getMessage()
                 )
             );
+
             return false;
         }
     }
 
     /**
      * Makes the call to update the SF prices
+     *
      * @param array $products an array of product's references and prices
-     * <pre>
-     * Array(
-     *      Array(
-     *          'reference' => 'ref1',
-     *          'price' => 7.2
-     *      ),
-     *      Array(
-     *          'reference' => 'ref2',
-     *          'price' => 1.4
-     *      ),
-     * )
-     * </pre>
+     *                        <pre>
+     *                        Array(
+     *                        Array(
+     *                        'reference' => 'ref1',
+     *                        'price' => 7.2
+     *                        ),
+     *                        Array(
+     *                        'reference' => 'ref2',
+     *                        'price' => 1.4
+     *                        ),
+     *                        )
+     *                        </pre>
+     *
      * @return ShoppingFeed\Sdk\Api\Catalog\InventoryCollection
      */
     public function updateMainStorePrices($products)
@@ -205,12 +210,14 @@ class ShoppingfeedApi
                     $e->getMessage()
                 )
             );
+
             return false;
         }
     }
 
     /**
      * Makes the call to request updates of the SF orders statuses
+     *
      * @param array $taskOrders
      */
     public function updateMainStoreOrdersStatus($taskOrders)
@@ -229,19 +236,19 @@ class ShoppingfeedApi
                             $taskOrder['payload']['tracking_number'],
                             $taskOrder['payload']['tracking_url']
                         );
-                        break;
+                        continue 2;
                     case OrderOperation::TYPE_CANCEL:
                         $operation->cancel(
                             $taskOrder['reference_marketplace'],
                             $taskOrder['marketplace']
                         );
-                        break;
+                        continue 2;
                     case OrderOperation::TYPE_REFUND:
                         $operation->refund(
                             $taskOrder['reference_marketplace'],
                             $taskOrder['marketplace']
                         );
-                        break;
+                        continue 2;
                 }
             }
 
@@ -253,6 +260,7 @@ class ShoppingfeedApi
                     $e->getMessage()
                 )
             );
+
             return false;
         }
     }
@@ -268,12 +276,13 @@ class ShoppingfeedApi
                     $e->getMessage()
                 )
             );
+
             return false;
         }
 
         // There's no method to retrieve tickets in bulk using an array
         // of ticket numbers, so get them one by one...
-        $tickets = array();
+        $tickets = [];
         foreach ($taskOrders as $taskOrder) {
             try {
                 $ticket = $ticketApi->getOne($taskOrder['ticket_number']);
@@ -315,7 +324,7 @@ class ShoppingfeedApi
                 $orderTask->delete();
             }
 
-            if (!$ticket || !$ticket->getId()) {
+            if (empty($ticket) || !$ticket->getId()) {
                 continue;
             }
             $tickets[] = $ticket;
@@ -339,7 +348,7 @@ class ShoppingfeedApi
                 // created, waiting_store_acceptance, refused, waiting_shipment, shipped,
                 // cancelled, refunded, partially_refunded, partially_shipped
                 'status' => $status,
-                'since' => $this->getSinceDateService()->get(SinceDate::DATE_FORMAT_SF)
+                'since' => $this->getSinceDateService()->get(SinceDate::DATE_FORMAT_SF),
             ],
         ];
 
@@ -363,6 +372,7 @@ class ShoppingfeedApi
                     $ex->getMessage()
                 )
             );
+
             return false;
         }
 
@@ -372,7 +382,7 @@ class ShoppingfeedApi
             return is_array($orders) ? $orders : iterator_to_array($orders);
         }
 
-        $filteredOrders = array();
+        $filteredOrders = [];
         foreach ($orders as $order) {
             $orderRawData = $order->toArray();
             if (!$orderRawData['isTest']) {
@@ -390,9 +400,9 @@ class ShoppingfeedApi
             $operation = new \ShoppingFeed\Sdk\Api\Order\OrderOperation();
             $operation
                 ->acknowledge(
-                    (string)$id_order_marketplace,
-                    (string)$name_marketplace,
-                    (string)$id_order_prestashop,
+                    (string) $id_order_marketplace,
+                    (string) $name_marketplace,
+                    (string) $id_order_prestashop,
                     ($is_success === true) ? 'success' : 'error',
                     $message
                 );
@@ -405,6 +415,7 @@ class ShoppingfeedApi
                     $e->getMessage()
                 )
             );
+
             return false;
         }
     }
@@ -415,18 +426,19 @@ class ShoppingfeedApi
     public static function ping()
     {
         if (!interface_exists(SfGuzzle\GuzzleHttp\ClientInterface::class)) {
-            throw new Exception("Shoppingfeed : Guzzle does not seem to be installed.");
+            throw new Exception('Shoppingfeed : Guzzle does not seem to be installed.');
         }
 
         if (version_compare(SfGuzzle\GuzzleHttp\ClientInterface::VERSION, '6', '<')
             || version_compare(SfGuzzle\GuzzleHttp\ClientInterface::VERSION, '7', '>=')
         ) {
-            throw new Exception("Shoppingfeed : the module only supports Guzzle v6.");
+            throw new Exception('Shoppingfeed : the module only supports Guzzle v6.');
         }
 
         $clientOptions = new ClientOptions();
         $clientOptions->setHttpAdapter(new Guzzle6Adapter());
         $client = new Client($clientOptions);
+
         return $client->ping();
     }
 

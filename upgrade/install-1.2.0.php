@@ -47,9 +47,9 @@ function upgrade_module_1_2_0($module)
     $module->setConfigurationDefault(Shoppingfeed::REAL_TIME_SYNCHRONIZATION, false);
     $module->setConfigurationDefault(Shoppingfeed::ORDER_STATUS_TIME_SHIFT, 5);
     $module->setConfigurationDefault(Shoppingfeed::ORDER_STATUS_MAX_ORDERS, 100);
-    $module->setConfigurationDefault(Shoppingfeed::SHIPPED_ORDERS, json_encode(array()));
-    $module->setConfigurationDefault(Shoppingfeed::CANCELLED_ORDERS, json_encode(array()));
-    $module->setConfigurationDefault(Shoppingfeed::REFUNDED_ORDERS, json_encode(array()));
+    $module->setConfigurationDefault(Shoppingfeed::SHIPPED_ORDERS, json_encode([]));
+    $module->setConfigurationDefault(Shoppingfeed::CANCELLED_ORDERS, json_encode([]));
+    $module->setConfigurationDefault(Shoppingfeed::REFUNDED_ORDERS, json_encode([]));
 
     return true;
 }

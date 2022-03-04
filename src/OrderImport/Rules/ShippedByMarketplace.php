@@ -28,30 +28,24 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-use Exception;
-use Module;
-use Db;
-use Address;
-use Country;
 use Configuration;
-use Carrier;
+use Exception;
 use Order;
 use OrderHistory;
 use OrderState;
-use Tools;
-use StockAvailable;
-use Validate;
+use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
-use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
+use StockAvailable;
+use Validate;
 
 /**
-* For orders managed directly by a marketplace, the product quantity
-* should not be impacted on Prestashop.
-* Therefore, we'll increase the stock so that it won't be decreased
-* after validating the order.
-*/
+ * For orders managed directly by a marketplace, the product quantity
+ * should not be impacted on Prestashop.
+ * Therefore, we'll increase the stock so that it won't be decreased
+ * after validating the order.
+ */
 class ShippedByMarketplace extends RuleAbstract implements RuleInterface
 {
     public function isApplicable(OrderResource $apiOrder)
@@ -75,7 +69,7 @@ class ShippedByMarketplace extends RuleAbstract implements RuleInterface
                 $this->logSkipImport($apiOrder);
                 $params['isSkipImport'] = true;
             }
-        } else if ($apiOrder->getStatus() == 'shipped' && Configuration::get(\Shoppingfeed::ORDER_IMPORT_SHIPPED) === false) {
+        } elseif ($apiOrder->getStatus() == 'shipped' && Configuration::get(\Shoppingfeed::ORDER_IMPORT_SHIPPED) === false) {
             $this->logSkipImport($apiOrder);
             $params['isSkipImport'] = true;
         }
@@ -139,8 +133,9 @@ class ShippedByMarketplace extends RuleAbstract implements RuleInterface
                     $idOrder
                 ),
                 'Order',
-                (int)$params['sfOrder']->id_order
+                (int) $params['sfOrder']->id_order
             );
+
             return;
         }
 
@@ -155,11 +150,12 @@ class ShippedByMarketplace extends RuleAbstract implements RuleInterface
                 $logPrefix .
                 sprintf(
                     $this->l('Invalid order state. ID: %d', 'ShippedByMarketplace'),
-                    (int)$changeStateId
+                    (int) $changeStateId
                 ),
                 'Order',
                 $idOrder
             );
+
             return;
         }
 
@@ -183,7 +179,7 @@ class ShippedByMarketplace extends RuleAbstract implements RuleInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getConditions()
     {
@@ -191,7 +187,7 @@ class ShippedByMarketplace extends RuleAbstract implements RuleInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getDescription()
     {
@@ -199,7 +195,7 @@ class ShippedByMarketplace extends RuleAbstract implements RuleInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getConfigurationSubform()
     {
@@ -211,15 +207,13 @@ class ShippedByMarketplace extends RuleAbstract implements RuleInterface
         ]);
         $states[] = [
             'type' => 'select',
-            'label' =>
-                $this->l('After a shipped order or an order shipped by Amazon, CDiscount or Manomano import, turn this order status into', 'ShippedByMarketplace'),
-            'desc' =>
-                $this->l('By default: Delivered &', 'ShippedByMarketplace'),
+            'label' => $this->l('After a shipped order or an order shipped by Amazon, CDiscount or Manomano import, turn this order status into', 'ShippedByMarketplace'),
+            'desc' => $this->l('By default: Delivered &', 'ShippedByMarketplace'),
             'name' => 'end_order_state_shipped',
             'options' => [
                 'query' => $statuses,
                 'id' => 'id_order_state',
-                'name' => 'name'
+                'name' => 'name',
             ],
             'required' => false,
         ];
@@ -229,6 +223,7 @@ class ShippedByMarketplace extends RuleAbstract implements RuleInterface
 
     /**
      * @param OrderResource $apiOrder
+     *
      * @return bool
      */
     protected function isShippedAmazon(OrderResource $apiOrder)
@@ -242,6 +237,7 @@ class ShippedByMarketplace extends RuleAbstract implements RuleInterface
 
     /**
      * @param OrderResource $apiOrder
+     *
      * @return bool
      */
     protected function isShippedCdiscount(OrderResource $apiOrder)
@@ -255,6 +251,7 @@ class ShippedByMarketplace extends RuleAbstract implements RuleInterface
 
     /**
      * @param OrderResource $apiOrder
+     *
      * @return bool
      */
     protected function isShippedManomano(OrderResource $apiOrder)

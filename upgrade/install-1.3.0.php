@@ -39,7 +39,7 @@ function upgrade_module_1_3_0($module)
 
     // Update the ShoppingfeedProduct Model
     $installer->installObjectModel('ShoppingfeedOrder');
-    
+
     // Install the new ShoppingfeedCarrier Model
     $installer->installObjectModel('ShoppingfeedCarrier');
 

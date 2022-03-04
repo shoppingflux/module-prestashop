@@ -21,7 +21,6 @@
  * @copyright Copyright (c) 202-ecommerce
  * @license   Commercial license
  */
-
 if (!defined('_PS_VERSION_')) {
     exit;
 }
@@ -30,31 +29,29 @@ require_once _PS_MODULE_DIR_ . 'shoppingfeed/vendor/autoload.php';
 
 use ShoppingfeedAddon\Exception\ProcessLockedException;
 use ShoppingfeedClasslib\Extensions\ProcessMonitor\Controllers\Front\CronController;
-use ShoppingfeedClasslib\Actions\ActionsHandler;
-use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
-use ShoppingfeedClasslib\Registry;
 use ShoppingfeedClasslib\Extensions\ProcessMonitor\ProcessMonitorHandler;
 
 /**
  * This front controller receives the HTTP call for the CRON. It is used to
  * synchronize the ShoppingfeedProduct's stocks and prices.
+ *
  * @see ShoppingfeedClasslib\Extensions\ProcessMonitor\CronController
  */
 class ShoppingfeedSyncAllModuleFrontController extends ShoppingfeedCronController
 {
-    /** @var ShoppingfeedSyncProductModuleFrontController*/
+    /** @var ShoppingfeedSyncProductModuleFrontController */
     protected $syncProductCron;
 
-    /** @var ShoppingfeedSyncOrderModuleFrontController*/
+    /** @var ShoppingfeedSyncOrderModuleFrontController */
     protected $syncOrderCron;
 
-    public $taskDefinition = array(
+    public $taskDefinition = [
         'name' => 'shoppingfeed:syncAll',
-        'title' => array(
+        'title' => [
             'en' => 'Sync shoppingfeed products and orders',
-            'fr' => 'Sync produits et commandes shoppingfeed'
-        ),
-    );
+            'fr' => 'Sync produits et commandes shoppingfeed',
+        ],
+    ];
 
     public function __construct()
     {
@@ -62,7 +59,6 @@ class ShoppingfeedSyncAllModuleFrontController extends ShoppingfeedCronControlle
 
         $this->syncOrderCron = new ShoppingfeedSyncOrderModuleFrontController();
         $this->syncProductCron = new ShoppingfeedSyncProductModuleFrontController();
-
     }
 
     protected function processCron($data)
@@ -79,7 +75,9 @@ class ShoppingfeedSyncAllModuleFrontController extends ShoppingfeedCronControlle
 
     /**
      * @param CronController $cron
+     *
      * @return void
+     *
      * @throws ProcessLockedException
      * @throws Exception
      */
@@ -94,20 +92,20 @@ class ShoppingfeedSyncAllModuleFrontController extends ShoppingfeedCronControlle
         try {
             Hook::exec(
                 'actionProcessMonitorExecution',
-                array(
+                [
                     'processName' => $processName,
                     'processData' => $data,
-                ),
+                ],
                 null,
                 true
             );
 
             Hook::exec(
                 'actionShoppingfeedProcessMonitorExecution',
-                array(
+                [
                     'processName' => $processName,
                     'processData' => $data,
-                ),
+                ],
                 null,
                 true
             );
@@ -125,7 +123,7 @@ class ShoppingfeedSyncAllModuleFrontController extends ShoppingfeedCronControlle
     protected function handleExeption(Exception $e)
     {
         if ($e instanceof ProcessLockedException) {
-            $return = array('success' => false, 'error' => $e->getMessage());
+            $return = ['success' => false, 'error' => $e->getMessage()];
             $this->ajaxDie(Tools::jsonEncode($return));
         } else {
             throw $e;

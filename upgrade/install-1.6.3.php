@@ -21,18 +21,13 @@
  * @copyright Copyright (c) 202-ecommerce
  * @license   Commercial license
  */
-
-use ShoppingfeedClasslib\Install\Installer;
-use ShoppingfeedClasslib\Install\ModuleInstaller;
-use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerExtension;
-
 function upgrade_module_1_6_3($module)
 {
     if (Shop::isFeatureActive()) {
         foreach (Shop::getShops() as $shop) {
             Configuration::updateValue(
                 Shoppingfeed::ORDER_IMPORT_SHIPPED_MARKETPLACE,
-                (int)Configuration::get(Shoppingfeed::ORDER_IMPORT_SHIPPED, null, null, $shop['id_shop']),
+                (int) Configuration::get(Shoppingfeed::ORDER_IMPORT_SHIPPED, null, null, $shop['id_shop']),
                 false,
                 null,
                 $shop['id_shop']
@@ -41,7 +36,7 @@ function upgrade_module_1_6_3($module)
     } else {
         Configuration::updateValue(
             Shoppingfeed::ORDER_IMPORT_SHIPPED_MARKETPLACE,
-            (int)Configuration::get(Shoppingfeed::ORDER_IMPORT_SHIPPED)
+            (int) Configuration::get(Shoppingfeed::ORDER_IMPORT_SHIPPED)
         );
     }
 

@@ -25,7 +25,7 @@
 namespace ShoppingfeedAddon\OrderImport;
 
 use OrderState;
-use ShoppingfeedAddon\OrderImport\RuleInterface;
+use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use Validate;
 
 if (!defined('_PS_VERSION_')) {
@@ -41,9 +41,9 @@ abstract class RuleAbstract implements RuleInterface
     protected $configuration;
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
-    public function __construct($configuration = array())
+    public function __construct($configuration = [])
     {
         if (empty($configuration)) {
             $configuration = $this->getDefaultConfiguration();
@@ -52,12 +52,12 @@ abstract class RuleAbstract implements RuleInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
-    abstract public function isApplicable(\ShoppingFeed\Sdk\Api\Order\OrderResource $apiOrder);
+    abstract public function isApplicable(OrderResource $apiOrder);
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getConfiguration()
     {
@@ -65,33 +65,40 @@ abstract class RuleAbstract implements RuleInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     protected function getDefaultConfiguration()
     {
-        return array();
+        return [];
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getConfigurationSubform()
     {
-        return array();
+        return [];
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     protected function l($msg, $domain)
     {
         return \Translate::getModuleTranslation('shoppingfeed', $msg, $domain);
     }
 
+    /**
+     * is Order State Valid
+     *
+     * @param int $idOrderState
+     *
+     * @return bool
+     */
     protected function isOrderStateValid($idOrderState)
     {
         try {
-            $orderState = new OrderState((int)$idOrderState);
+            $orderState = new OrderState($idOrderState);
         } catch (\Throwable $e) {
             return false;
         }
@@ -100,12 +107,12 @@ abstract class RuleAbstract implements RuleInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     abstract public function getDescription();
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     abstract public function getConditions();
 }

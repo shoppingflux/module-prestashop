@@ -1,0 +1,37 @@
+name: Unit test
+on: [pull_request]
+jobs:
+    # Run PHPUnit against the module and a PrestaShop release
+    phpunit:
+        name: PHPUnit
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                presta-versions: ['1.7.8.3']
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v2.0.0
+
+            # Add vendor folder in cache to make next builds faster
+            - name: Cache vendor folder
+              uses: actions/cache@v1
+              with:
+                  path: vendor
+                  key: php-${{ hashFiles('composer.lock') }}
+
+            # Add composer local folder in cache to make next builds faster
+            - name: Cache composer folder
+              uses: actions/cache@v1
+              with:
+                  path: ~/.composer/cache
+                  key: php-composer-cache
+
+            - run: composer update
+
+            # Get Docker images 202ecommerce/prestashop
+            - name: Get PrestaShop 202 Image (Tag ${{ matrix.presta-versions }})
+              run: docker run -tid --rm -v $PWD:/var/www/html/modules/shoppingfeed --name temp-unittest-ps 202ecommerce/prestashop:${{ matrix.presta-versions }}
+
+            # Clear previous instance of the module in the PrestaShop volume
+            - name: Install module and play unit test
+              run: docker exec -t temp-unittest-ps sh /var/www/html/modules/shoppingfeed/202/docker/run_for_unittest.sh

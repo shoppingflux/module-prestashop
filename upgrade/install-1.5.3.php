@@ -23,7 +23,6 @@
  */
 
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
-use ShoppingfeedClasslib\Install\Installer;
 
 require_once _PS_MODULE_DIR_ . 'shoppingfeed/classes/ShoppingfeedPreloading.php';
 require_once _PS_MODULE_DIR_ . 'shoppingfeed/classes/ShoppingfeedToken.php';
@@ -43,7 +42,7 @@ function upgrade_module_1_5_3($module)
             ->from(ShoppingfeedPreloading::$definition['table'], 'sfp')
             ->leftJoin('specific_price', 'sp', 'sfp.id_product=sp.id_product')
             ->where('sp.id_specific_price IS NOT NULL')
-            ->where('sfp.id_token=' . (int)$token['id_shoppingfeed_token'])
+            ->where('sfp.id_token=' . (int) $token['id_shoppingfeed_token'])
             ->select('DISTINCT(sfp.id_product)');
 
         try {
@@ -61,13 +60,12 @@ function upgrade_module_1_5_3($module)
             );
         }
 
-
         if (empty($products)) {
             continue;
         }
 
         $ids = array_map(
-            function($product) {
+            function ($product) {
                 return $product['id_product'];
             },
             $products
