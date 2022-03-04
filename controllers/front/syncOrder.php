@@ -28,6 +28,7 @@ if (!defined('_PS_VERSION_')) {
 require_once _PS_MODULE_DIR_ . 'shoppingfeed/vendor/autoload.php';
 
 use ShoppingfeedClasslib\Actions\ActionsHandler;
+use ShoppingfeedAddon\Actions\ActionsHandler as SfActionsHandler;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 use ShoppingfeedClasslib\Registry;
 
@@ -329,7 +330,7 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
 
                 try {
                     /** @var ShoppingfeedHandler $handler */
-                    $handler = new ActionsHandler();
+                    $handler = new SfActionsHandler();
                     $handler->addActions(
                         'registerSpecificRules',
                         'verifyOrder',
