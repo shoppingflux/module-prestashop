@@ -324,7 +324,7 @@ class OrderImportSimpleTest extends AbstractOrdeTestCase
         $this->assertEquals($psOrder->total_products_wt, 89.000000);
         $this->assertEquals($psOrder->total_shipping, 0.000000);
         $this->assertEquals($psOrder->carrier_tax_rate, 0.000);
-        $this->assertEquals($psOrder->id_carrier, 1);
+        $this->assertEquals($psOrder->id_carrier, 7);
         $this->assertEquals($psOrder->total_wrapping, 0.000000);
 
         $invoices = $psOrder->getInvoicesCollection();
