@@ -9,8 +9,6 @@ php /var/www/html/bin/console prestashop:module install shoppingfeed -e prod
 php /var/www/html/bin/console prestashop:module install dpdfrance -e prod
 php /var/www/html/bin/console prestashop:module install colissimo -e prod
 
-chown www-data:www-data /var/www/html/var -Rf
-
 echo "Add data fixtures for Unit Tests"
 
 mysql -h localhost -u root prestashop -e "
@@ -25,7 +23,9 @@ INSERT IGNORE INTO ps_shoppingfeed_token (id_shoppingfeed_token, id_shop, id_lan
 
 REPLACE INTO ps_shoppingfeed_carrier (id_shoppingfeed_carrier, name_marketplace, name_carrier, id_carrier_reference, is_new, date_add, date_upd) VALUES
 (1,	'Amazon',	'Colissimo',	1,	0,	'2022-02-17 00:00:00',	'2022-02-17 00:00:00'),
-(2,	'NatureEtDecouvertes',	'Point Relais (Chrono Relais)',	2,	0,	'2022-02-17 07:44:26',	'2022-02-17 00:00:00');
+(2,	'NatureEtDecouvertes',	'Point Relais (Chrono Relais)',	2,	0,	'2022-02-17 00:00:00',	'2022-02-17 00:00:00'),
+(3,	'Colizey', 'Colissimo Relais',	7,	0,	'2022-02-17 00:00:00',	'2022-02-17 00:00:00'),
+(4,	'CDiscount', 'SO1',	7,	0,	'2022-02-17 00:00:00',	'2022-02-17 00:00:00');
 
 UPDATE ps_product_lang SET available_now = 'disponible', available_later = 'non disponible' WHERE id_product = 1;
 UPDATE ps_product_lang SET available_now = 'disponible', available_later = 'non disponible' WHERE id_product = 3;
@@ -35,7 +35,8 @@ UPDATE ps_stock_available SET quantity = 0 WHERE id_product = 4 and id_product_a
 TRUNCATE ps_colissimo_pickup_point;
 "
 
-
 cd /var/www/html/modules/shoppingfeed/
 
 vendor/bin/phpunit -c 202/phpunit.xml
+
+chown www-data:www-data /var/www/html/var -Rf

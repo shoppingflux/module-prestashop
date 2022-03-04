@@ -17,7 +17,7 @@
  * @license   https://opensource.org/licenses/AFL-3.0  Academic Free License (AFL 3.0)
  */
 
-namespace Tests\OrderImport;
+namespace Tests\ProductSerializer;
 
 use PHPUnit\Framework\TestCase;
 use ShoppingfeedAddon\Actions\ActionsHandler;
@@ -52,8 +52,33 @@ class TestAttributeTestCase extends TestCase
         $product = (new ShoppingfeedPreloading())->findByTokenIdAndProductId($id_token, $id_product);
         $productContent = Tools::jsonDecode($product['content'], true);
         $this->assertIsArray($productContent);
+
         $this->assertEquals($productContent['price'], 28.68);
-        $this->assertEquals($productContent['quantity'], 2399);
+        $this->assertEquals($productContent['category']['name'], 'Root > Home > Clothes > Men');
+        $this->assertEquals($productContent['brand']['name'], 'Studio Design');
+        $this->assertEquals($productContent['weight'], 0.300000);
+        $this->assertEquals($productContent['shipping']['amount'], 0);
+        $this->assertEquals($productContent['reference'], 1);
+        $this->assertEquals($productContent['name'], 'Hummingbird printed t-shirt');
+        $this->assertEquals($productContent['vat'], 20);
+        $this->assertEquals($productContent['attributes']['vat'], 20);
+        $this->assertEquals($productContent['attributes']['available_for_order'], 1);
+        $this->assertEquals($productContent['attributes']['on_sale'], 0);
+        $this->assertEquals($productContent['attributes']['hierararchy'], 'parent');
+        $this->assertEquals($productContent['attributes']['mpn'], 'demo_1');
+        $this->assertEquals($productContent['attributes']['supplier'], 'Fashion supplier');
+        $this->assertIsString($productContent['attributes']['supplier_link']);
+        $this->assertIsArray($productContent['images']);
+        $this->assertEquals($productContent['attributes']['Composition'], 'Cotton');
+        $this->assertEquals($productContent['attributes']['Property'], 'Short sleeves');
+        $this->assertEquals($productContent['attributes']['availability_label'], 'disponible');
+
+        $this->assertEquals(count($productContent['variations']), 8);
+        $this->assertEquals($productContent['variations'][1]['reference'], '1_1');
+        $this->assertEquals($productContent['variations'][1]['attributes']['hierararchy'], 'child');
+        $this->assertEquals($productContent['variations'][1]['attributes']['Colorhexa'], '#ffffff');
+        $this->assertEquals($productContent['variations'][1]['attributes']['Size'], 'S');
+        $this->assertEquals($productContent['variations'][1]['attributes']['Color'], 'White');
     }
 
     public function testPrelodingTablePrice()
@@ -115,6 +140,7 @@ class TestAttributeTestCase extends TestCase
         $product = (new ShoppingfeedPreloading())->findByTokenIdAndProductId($id_token, $id_product);
         $this->assertArrayHasKey('content', $product);
         $productContent = Tools::jsonDecode($product['content'], true);
+
         $this->assertIsArray($productContent);
         $this->assertArrayHasKey('variations', $productContent);
         $this->assertArrayHasKey($id_product_attribute, $productContent['variations']);

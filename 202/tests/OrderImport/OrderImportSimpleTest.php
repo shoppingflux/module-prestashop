@@ -223,14 +223,14 @@ class OrderImportSimpleTest extends AbstractOrdeTestCase
         $this->assertEquals($customer->firstname, 'Corine');
 
         $sfOrder = $conveyor['sfOrder'];
-        $this->assertEquals($sfOrder->name_marketplace, 'zalandoboniclassic');
+        $this->assertEquals($sfOrder->name_marketplace, 'zalandomyunittest');
         $this->assertEquals($sfOrder->id_order_marketplace, '10301108385651');
 
         $psOrder = new \Order((int) $conveyor['id_order']);
 
         // it's a test > canceled
         $this->assertEquals($psOrder->current_state, _PS_OS_PAYMENT_);
-        $this->assertEquals($psOrder->payment, 'zalandoboniclassic');
+        $this->assertEquals($psOrder->payment, 'zalandomyunittest');
         $this->assertEquals($psOrder->module, 'sfpayment');
         $this->assertEquals($psOrder->total_discounts, 0.000000);
         $this->assertEquals($psOrder->total_paid, 119.800000);
@@ -323,8 +323,8 @@ class OrderImportSimpleTest extends AbstractOrdeTestCase
         $this->assertEquals($psOrder->total_products, 74.170000);
         $this->assertEquals($psOrder->total_products_wt, 89.000000);
         $this->assertEquals($psOrder->total_shipping, 0.000000);
-        $this->assertEquals($psOrder->carrier_tax_rate, 20.000);
-        $this->assertEquals($psOrder->id_carrier, 1);
+        $this->assertEquals($psOrder->carrier_tax_rate, 0.000);
+        $this->assertEquals($psOrder->id_carrier, 7);
         $this->assertEquals($psOrder->total_wrapping, 0.000000);
 
         $invoices = $psOrder->getInvoicesCollection();
@@ -344,7 +344,7 @@ class OrderImportSimpleTest extends AbstractOrdeTestCase
         }
 
         $carrier = new \Carrier($psOrder->id_carrier);
-        $this->assertEquals($carrier->id_reference, 1);
+        $this->assertEquals($carrier->id_reference, 7);
 
         $this->assertArrayHasKey('cart', $conveyor);
         $this->assertNotNull($conveyor['cart']->id);
