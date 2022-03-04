@@ -21,7 +21,6 @@
  * @copyright Copyright (c) 202-ecommerce
  * @license   Commercial license
  */
-
 function upgrade_module_1_5_6($module)
 {
     return Db::getInstance()->execute('TRUNCATE ' . _DB_PREFIX_ . ShoppingfeedPreloading::$definition['table']);

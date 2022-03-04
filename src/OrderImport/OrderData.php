@@ -43,48 +43,47 @@ use ShoppingFeed\Sdk\Api\Order\OrderResource;
  */
 class OrderData
 {
-
-    /** @var null|string $storeReference */
+    /** @var string|null */
     public $storeReference;
 
-    /** @var string $status */
+    /** @var string */
     public $status;
 
-    /** @var null|\DateTimeImmutable $acknowledgedAt */
+    /** @var \DateTimeImmutable|null */
     public $acknowledgedAt;
 
-    /** @var null|\DateTimeImmutable $updatedAt */
+    /** @var \DateTimeImmutable|null */
     public $updatedAt;
 
-    /** @var \DateTimeImmutable $createdAt */
+    /** @var \DateTimeImmutable */
     public $createdAt;
 
-    /** @var array $shippingAddress */
+    /** @var array */
     public $shippingAddress;
 
-    /** @var array $billingAddress */
+    /** @var array */
     public $billingAddress;
 
-    /** @var array $payment */
+    /** @var array */
     public $payment;
 
-    /** @var array $shipment */
+    /** @var array */
     public $shipment;
 
-    /** @var array $items An array of \ShoppingfeedAddon\OrderImport\OrderItemData */
+    /** @var array An array of \ShoppingfeedAddon\OrderImport\OrderItemData */
     public $items = [];
 
-    /** @var array $itemsReferencesAliases An array of \ShoppingfeedAddon\OrderImport\OrderItemData */
+    /** @var array An array of \ShoppingfeedAddon\OrderImport\OrderItemData */
     public $itemsReferencesAliases = [];
 
-    /** @var array $additionalFields */
+    /** @var array */
     public $additionalFields;
 
     protected $isoCountryMap = [
-        'UK' => 'GB'
+        'UK' => 'GB',
     ];
 
-    public function __construct(\ShoppingFeed\Sdk\Api\Order\OrderResource $apiOrder)
+    public function __construct(OrderResource $apiOrder)
     {
         $this->storeReference = $apiOrder->getStoreReference();
         $this->status = $apiOrder->getStatus();
@@ -98,7 +97,7 @@ class OrderData
         $this->itemsReferencesAliases = $apiOrder->getItemsReferencesAliases();
         // TODO : OrderResource should likely have a "getAdditionalFields" method
         $apiOrderData = $apiOrder->toArray();
-        $this->additionalFields = is_array($apiOrderData['additionalFields']) ? $apiOrderData['additionalFields'] : array();
+        $this->additionalFields = empty($apiOrderData['additionalFields']) === false ? $apiOrderData['additionalFields'] : [];
 
         /** @var \ShoppingFeed\Sdk\Api\Order\OrderItem $apiOrderItem */
         foreach ($apiOrder->getItems() as $apiOrderItem) {
@@ -108,6 +107,7 @@ class OrderData
 
     /**
      * @param array $address
+     *
      * @return array
      */
     protected function validateISO($address)

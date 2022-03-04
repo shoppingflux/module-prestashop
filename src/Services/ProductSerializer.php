@@ -19,26 +19,25 @@
 
 namespace ShoppingfeedAddon\Services;
 
-use Context;
-use Configuration;
-use DbQuery;
-use ShoppingfeedProduct;
-use Tools;
 use Carrier;
-use Shop;
+use Cart;
+use Configuration;
+use Context;
+use Country;
+use DateTime;
 use Db;
+use DbQuery;
 use Link;
 use Product;
-use Country;
-use Cart;
-use Tax;
-use Tag;
-use SpecificPrice;
-use Validate;
-use DateTime;
 use ProductCore;
+use Shop;
 use Shoppingfeed;
+use ShoppingfeedProduct;
+use SpecificPrice;
 use StockAvailable;
+use Tag;
+use Tools;
+use Validate;
 
 if (version_compare(_PS_VERSION_, '1.7.7', '<')) {
     require_once _PS_MODULE_DIR_ . 'shoppingfeed/classes/Compatibility/SpecificPriceFormatter.php';
@@ -53,6 +52,8 @@ class ProductSerializer
     private $id_shop;
     private $id_lang;
     private $id_currency;
+    private $productCoreFields;
+    private $productCategory;
 
     public function __construct($id_product, $id_lang, $id_shop, $id_currency)
     {
@@ -62,7 +63,6 @@ class ProductSerializer
         $this->id_lang = $id_lang;
         $this->id_currency = $id_currency;
         if (Validate::isLoadedObject($this->product) === false) {
-
             throw new \Exception('product must be a valid product');
         }
         $this->link = new Link();
@@ -88,8 +88,8 @@ class ProductSerializer
 
     private function getCarrier()
     {
-        $carrier = Carrier::getCarrierByReference((int)$this->configurations[Shoppingfeed::PRODUCT_FEED_CARRIER_REFERENCE]);
-        $carrier = is_object($carrier) ? $carrier : new Carrier((int)$this->configurations[Shoppingfeed::PRODUCT_FEED_CARRIER_REFERENCE]);
+        $carrier = Carrier::getCarrierByReference((int) $this->configurations[Shoppingfeed::PRODUCT_FEED_CARRIER_REFERENCE]);
+        $carrier = is_object($carrier) ? $carrier : new Carrier((int) $this->configurations[Shoppingfeed::PRODUCT_FEED_CARRIER_REFERENCE]);
 
         return $carrier;
     }
@@ -158,10 +158,10 @@ class ProductSerializer
 
         if (isset($contentUpdate['variations']) && false === empty($contentUpdate['variations'])) {
             foreach ($contentUpdate['variations'] as $idProductAttribute => $variation) {
-                $sfp->id_product_attribute = (int)$idProductAttribute;
+                $sfp->id_product_attribute = (int) $idProductAttribute;
                 $variationPrice = $this->sfModule->mapProductPrice($sfp, $this->id_shop);
                 $contentUpdate['variations'][$idProductAttribute]['price'] = $variationPrice;
-                $contentUpdate['variations'][$idProductAttribute]['specificPrices'] = $this->getSpecificPrices($address, $product_tax_calculator, $id_group,  $variationPrice, (int)$idProductAttribute);
+                $contentUpdate['variations'][$idProductAttribute]['specificPrices'] = $this->getSpecificPrices($address, $product_tax_calculator, $id_group, $variationPrice, (int) $idProductAttribute);
 
                 if (isset($contentUpdate['variations'][$idProductAttribute]['shipping'])) {
                     $weight = @$contentUpdate['variations'][$idProductAttribute]['attributes']['weight'];
@@ -188,9 +188,20 @@ class ProductSerializer
     public function serializeStock($content)
     {
         $contentUpdate = $content;
-        $contentUpdate['quantity'] = StockAvailable::getQuantityAvailableByProduct($this->product->id);
+        $contentUpdate['quantity'] = $quantity = (int) StockAvailable::getQuantityAvailableByProduct($this->product->id);
+
+        if ($quantity > 0 && empty($this->product->available_now) === false) {
+            $contentUpdate['attributes']['availability_label'] = $this->product->available_now;
+        } elseif ($quantity < 1 && empty($this->product->available_later) === false) {
+            $contentUpdate['attributes']['availability_label'] = $this->product->available_later;
+        }
         foreach ($contentUpdate['variations'] as $id_product_attribute => &$variation) {
-            $variation['quantity'] = StockAvailable::getQuantityAvailableByProduct($this->product->id, $id_product_attribute);
+            $variation['quantity'] = $quantity = StockAvailable::getQuantityAvailableByProduct($this->product->id, $id_product_attribute);
+            if ($quantity > 0 && empty($this->product->available_now) === false) {
+                $variation['attributes']['availability_label'] = $this->product->available_now;
+            } elseif ($quantity < 1 && empty($this->product->available_later) === false) {
+                $variation['attributes']['availability_label'] = $this->product->available_later;
+            }
         }
 
         \Hook::exec('shoppingfeedSerializeStock', [
@@ -206,18 +217,16 @@ class ProductSerializer
     public function serializeCategory($content)
     {
         if ((int) $this->product->id_category_default === 0) {
-
             return $content;
         }
         $cat = $this->_getCategory();
         if ($cat === false) {
-
             return $content;
         }
         $link = new Link();
         $contentUpdate = $content;
         $contentUpdate['category'] = [
-            'name' => ($this->configurations[\Shoppingfeed::PRODUCT_FEED_CATEGORY_DISPLAY] === 'default_category')? $cat: $this->_getFilAriane(),
+            'name' => ($this->configurations[\Shoppingfeed::PRODUCT_FEED_CATEGORY_DISPLAY] === 'default_category') ? $cat : $this->_getFilAriane(),
             'link' => $link->getCategoryLink($this->product->id_category_default, null, $this->id_lang),
         ];
 
@@ -298,7 +307,7 @@ class ProductSerializer
         if (empty($tabTags[$this->id_lang])) {
             return '';
         } else {
-            return implode("|", $tabTags[$this->id_lang]);
+            return implode('|', $tabTags[$this->id_lang]);
         }
     }
 
@@ -310,7 +319,7 @@ class ProductSerializer
             'out_of_stock' => $this->product->out_of_stock,
             'ecotax' => $this->product->ecotax,
             'vat' => $this->product->tax_rate,
-            'on_sale' => (int)$this->product->on_sale,
+            'on_sale' => (int) $this->product->on_sale,
             'hierararchy' => 'parent',
         ];
         if (empty($this->product->meta_title) === false) {
@@ -376,7 +385,6 @@ class ProductSerializer
             $attributes['file-' . ++$fileNumber] = $link;
         }
 
-
         return $attributes;
     }
 
@@ -401,8 +409,8 @@ class ProductSerializer
                     'label' => $carrier->delay[$this->id_lang],
                 ],
                 'attributes' => [
-                    'hierararchy' => 'child'
-                ]
+                    'hierararchy' => 'child',
+                ],
             ];
 
             if (empty($combination['ean13']) === false) {
@@ -413,8 +421,7 @@ class ProductSerializer
             }
             if (empty($combination['weight']) === false && $combination['weight'] != 0) {
                 $variation['attributes']['weight'] = $combination['weight'];
-                $variation['attributes']['weight'] = (float)$this->product->weight + (float)$combination['weight'];
-
+                $variation['attributes']['weight'] = (float) $this->product->weight + (float) $combination['weight'];
             }
             if (empty($combination['wholesale_price']) === false && $combination['wholesale_price'] != 0) {
                 $variation['attributes']['wholesale_price'] = $combination['wholesale_price'];
@@ -423,25 +430,25 @@ class ProductSerializer
                 $variation['attributes']['ref-constructeur'] = $combination['reference'];
             }
 
-            $variation['attributes']['link-variation'] = Context::getContext()->link->getProductLink($this->product, null, null, null, $this->id_lang, $this->id_shop, (int)$id, false, false, true);
+            $variation['attributes']['link-variation'] = Context::getContext()->link->getProductLink($this->product, null, null, null, $this->id_lang, $this->id_shop, (int) $id, false, false, true);
 
             foreach ($this->_getAttributeImageAssociations($id) as $image) {
                 if (empty($image)) {
                     $image_child = false;
-                    break;
+                    continue;
                 }
 
-                $variation['images'][] = Tools::getCurrentUrlProtocolPrefix(). $this->link->getImageLink($this->product->link_rewrite, $this->product->id.'-'.$image, $this->configurations[Shoppingfeed::PRODUCT_FEED_IMAGE_FORMAT]);
+                $variation['images'][] = Tools::getCurrentUrlProtocolPrefix() . $this->link->getImageLink($this->product->link_rewrite, $this->product->id . '-' . $image, $this->configurations[Shoppingfeed::PRODUCT_FEED_IMAGE_FORMAT]);
             }
             if ($image_child === false) {
                 foreach ($this->product->getImages($this->id_lang) as $images) {
-                    $ids = $this->product->id.'-'.$images['id_image'];
-                    $variation['images'][] = Tools::getCurrentUrlProtocolPrefix().$this->link->getImageLink($this->product->link_rewrite, $ids, $this->configurations[Shoppingfeed::PRODUCT_FEED_IMAGE_FORMAT]);
+                    $ids = $this->product->id . '-' . $images['id_image'];
+                    $variation['images'][] = Tools::getCurrentUrlProtocolPrefix() . $this->link->getImageLink($this->product->link_rewrite, $ids, $this->configurations[Shoppingfeed::PRODUCT_FEED_IMAGE_FORMAT]);
                 }
             }
             foreach ($combination['attributes'] as $attributeName => $attributeValue) {
                 $attributeName = $this->_clean($attributeName);
-                if ( empty($attributeName) === false && ( empty($attributeValue) === false || $attributeValue === '0' ) ) {
+                if (empty($attributeName) === false && (empty($attributeValue) === false || $attributeValue === '0')) {
                     $variation['attributes'][$attributeName] = $attributeValue;
                 }
             }
@@ -494,7 +501,7 @@ class ProductSerializer
         ];
 
         return $cart->getPackageShippingCost(
-            (int)$carrier->id,
+            (int) $carrier->id,
             true,
             $country,
             [$product],
@@ -505,6 +512,7 @@ class ProductSerializer
     protected function _getCategory()
     {
         $category = new \Category($this->product->id_category_default, $this->id_lang, $this->id_shop);
+
         return $category->name;
     }
 
@@ -512,7 +520,7 @@ class ProductSerializer
     {
         $sql = (new DbQuery())
             ->from('image', 'i')
-            ->leftJoin('image_lang', 'il', 'il.id_image = i.id_image AND il.id_lang = ' . (int)$id_lang)
+            ->leftJoin('image_lang', 'il', 'il.id_image = i.id_image AND il.id_lang = ' . (int) $id_lang)
             ->where('i.id_product = ' . $this->product->id)
             ->orderBy('i.cover DESC, i.`position` ASC')
             ->select('i.cover, i.id_image, il.legend, i.position');
@@ -520,7 +528,7 @@ class ProductSerializer
         if ($this->id_shop) {
             $sql
                 ->leftJoin('image_shop', 'is', 'i.id_image = is.id_image')
-                ->where('is.id_shop = ' . (int)$this->id_shop);
+                ->where('is.id_shop = ' . (int) $this->id_shop);
         }
 
         return Db::getInstance()->executeS($sql);
@@ -529,7 +537,8 @@ class ProductSerializer
     protected function _clean($string)
     {
         $regexStr = preg_replace('/[^A-Za-z0-9]/', '', $string);
-        return preg_replace("/^(\d+)/i", "car-$1", $regexStr);
+
+        return preg_replace("/^(\d+)/i", 'car-$1', $regexStr);
     }
 
     protected function getOverrideFields()
@@ -553,24 +562,24 @@ class ProductSerializer
 
     protected function _getAttributeImageAssociations($id_product_attribute)
     {
-        $combinationImages = array();
+        $combinationImages = [];
         $sql = (new DbQuery())
             ->select('pai.id_image')
             ->from('product_attribute_image', 'pai')
             ->leftJoin('image', 'i', 'pai.id_image = i.id_image')
-            ->where('pai.id_product_attribute =' . (int)$id_product_attribute)
+            ->where('pai.id_product_attribute =' . (int) $id_product_attribute)
             ->orderBy('i.cover DESC, i.position ASC');
 
         if ($this->id_shop) {
             $sql
                 ->leftJoin('image_shop', 'is', 'i.id_image = is.id_image')
-                ->where('is.id_shop = ' . (int)$this->id_shop);
+                ->where('is.id_shop = ' . (int) $this->id_shop);
         }
 
         $data = Db::getInstance()->executeS($sql);
 
         foreach ($data as $row) {
-            $combinationImages[] = (int)($row['id_image']);
+            $combinationImages[] = (int) ($row['id_image']);
         }
 
         return $combinationImages;
@@ -587,11 +596,11 @@ class ProductSerializer
             $id_category = $id_category;
         } else {
             $row = Db::getInstance(_PS_USE_SQL_SLAVE_)->ExecuteS('
-            SELECT cl.`name`, p.`id_category_default` as id_category, c.`id_parent` FROM `'._DB_PREFIX_.'product` p
-            LEFT JOIN `'._DB_PREFIX_.'category_lang` cl ON (p.`id_category_default` = cl.`id_category`)
-            LEFT JOIN `'._DB_PREFIX_.'category` c ON (p.`id_category_default` = c.`id_category`)
-            WHERE p.`id_product` = '.(int)$id_product.'
-            AND cl.`id_lang` = '.(int)$id_lang);
+            SELECT cl.`name`, p.`id_category_default` as id_category, c.`id_parent` FROM `' . _DB_PREFIX_ . 'product` p
+            LEFT JOIN `' . _DB_PREFIX_ . 'category_lang` cl ON (p.`id_category_default` = cl.`id_category`)
+            LEFT JOIN `' . _DB_PREFIX_ . 'category` c ON (p.`id_category_default` = c.`id_category`)
+            WHERE p.`id_product` = ' . (int) $id_product . '
+            AND cl.`id_lang` = ' . (int) $id_lang);
 
             foreach ($row as $val) {
                 $ret[$val['id_category']] = $val['name'];
@@ -602,25 +611,25 @@ class ProductSerializer
 
         while ($id_parent != 0 && $id_category != $id_parent) {
             $row = Db::getInstance(_PS_USE_SQL_SLAVE_)->ExecuteS('
-                SELECT cl.`name`, c.`id_category`, c.`id_parent` FROM `'._DB_PREFIX_.'category_lang` cl
-                LEFT JOIN `'._DB_PREFIX_.'category` c ON (c.`id_category` = '.(int)$id_parent.')
-                WHERE cl.`id_category` = '.(int)$id_parent.'
-                AND cl.`id_lang` = '.(int)$id_lang);
+                SELECT cl.`name`, c.`id_category`, c.`id_parent` FROM `' . _DB_PREFIX_ . 'category_lang` cl
+                LEFT JOIN `' . _DB_PREFIX_ . 'category` c ON (c.`id_category` = ' . (int) $id_parent . ')
+                WHERE cl.`id_category` = ' . (int) $id_parent . '
+                AND cl.`id_lang` = ' . (int) $id_lang);
 
-            if (! sizeof($row)) {
+            if (!sizeof($row)) {
                 // There is a problem with the category parent, let's try another category
                 $this->productCategory = Db::getInstance(_PS_USE_SQL_SLAVE_)->ExecuteS('
                         SELECT DISTINCT c.`id_category`, cl.`name`,
-                            c.`id_parent` FROM `'._DB_PREFIX_.'category_product` cp
-                        LEFT JOIN `'._DB_PREFIX_.'category_lang` cl ON (cp.`id_category` = cl.`id_category`)
-                        LEFT JOIN `'._DB_PREFIX_.'category` c ON (cp.`id_category` = c.`id_category`)
-                        WHERE cp.`id_product` = '.(int)$id_product.'
-                        AND cp.`id_category` NOT IN ('.$id_category.')
-                        AND cl.`id_lang` = '.(int)$id_lang.'
+                            c.`id_parent` FROM `' . _DB_PREFIX_ . 'category_product` cp
+                        LEFT JOIN `' . _DB_PREFIX_ . 'category_lang` cl ON (cp.`id_category` = cl.`id_category`)
+                        LEFT JOIN `' . _DB_PREFIX_ . 'category` c ON (cp.`id_category` = c.`id_category`)
+                        WHERE cp.`id_product` = ' . (int) $id_product . '
+                        AND cp.`id_category` NOT IN (' . $id_category . ')
+                        AND cl.`id_lang` = ' . (int) $id_lang . '
                         ORDER BY level_depth DESC');
 
-                if (! sizeof($this->productCategory)) {
-                    return array();
+                if (!sizeof($this->productCategory)) {
+                    return [];
                 }
 
                 return $this->_getProductFilAriane($id_product, $id_lang, $this->productCategory[0]['id_category'], $this->productCategory[0]['id_parent'], $this->productCategory[0]['name']);
@@ -637,20 +646,19 @@ class ProductSerializer
         return $ret;
     }
 
+    protected static function _getScoreQuery($id_product, $id_shop, $id_currency, $id_country, $id_group, $id_customer)
+    {
+        $select = '(';
 
-	protected static function _getScoreQuery($id_product, $id_shop, $id_currency, $id_country, $id_group, $id_customer)
-	{
-		$select = '(';
-
-		$priority = SpecificPrice::getPriority($id_product);
-		foreach (array_reverse($priority) as $k => $field) {
-			if (!empty($field)) {
-				$select .= ' IF (`'.bqSQL($field).'` = '.(int)$$field.', '.pow(2, $k + 1).', 0) + ';
+        $priority = SpecificPrice::getPriority($id_product);
+        foreach (array_reverse($priority) as $k => $field) {
+            if (!empty($field)) {
+                $select .= ' IF (`' . bqSQL($field) . '` = ' . (int) $$field . ', ' . pow(2, $k + 1) . ', 0) + ';
             }
         }
 
-		return rtrim($select, ' +').') AS `score`';
-	}
+        return rtrim($select, ' +') . ') AS `score`';
+    }
 
     /**
      * Can not use SpecificPrice::getByProductId() because that method does not take into
@@ -663,11 +671,11 @@ class ProductSerializer
         $query = (new DbQuery())
             ->select('*, ' . self::_getScoreQuery($this->product->id, $this->id_shop, $this->id_currency, $id_country, $id_group, null))
             ->from('specific_price')
-            ->where(sprintf('id_product IN (%d, 0)', (int)$this->product->id))
-            ->where(sprintf('id_shop IN (%d, 0)', (int)$this->id_shop))
-            ->where(sprintf('id_currency IN (%d, 0)', (int)$this->id_currency))
-            ->where(sprintf('id_country IN (%d, 0)', (int)$id_country))
-            ->where(sprintf('id_group IN (%d, 0)', (int)$id_group))
+            ->where(sprintf('id_product IN (%d, 0)', (int) $this->product->id))
+            ->where(sprintf('id_shop IN (%d, 0)', (int) $this->id_shop))
+            ->where(sprintf('id_currency IN (%d, 0)', (int) $this->id_currency))
+            ->where(sprintf('id_country IN (%d, 0)', (int) $id_country))
+            ->where(sprintf('id_group IN (%d, 0)', (int) $id_group))
             ->where(sprintf('IF(from_quantity > 1, from_quantity, 0) <= %d', 1))
             ->orderBy('`id_product_attribute` DESC')
             ->orderBy('`id_cart` DESC')
@@ -678,7 +686,7 @@ class ProductSerializer
             ->orderBy('`from` DESC');
 
         if ($id_product_attribute) {
-            $query->where('id_product_attribute = ' . (int)$id_product_attribute);
+            $query->where('id_product_attribute = ' . (int) $id_product_attribute);
         }
 
         return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($query);
@@ -705,15 +713,15 @@ class ProductSerializer
         foreach ($specificPrices as $specificPrice) {
             $skip = false;
 
-            if ((int)$specificPrice['id_product_attribute'] !== 0) {
-                if ((int)$id_product_attribute !== (int)$specificPrice['id_product_attribute']) {
+            if ((int) $specificPrice['id_product_attribute'] !== 0) {
+                if ((int) $id_product_attribute !== (int) $specificPrice['id_product_attribute']) {
                     $skip = true;
                 }
             }
 
             // Apply a specific price of a default variation for a product
-            if ((int)$id_product_attribute === 0 && $skip) {
-                if ($this->product->getDefaultIdProductAttribute() === (int)$specificPrice['id_product_attribute']) {
+            if ((int) $id_product_attribute === 0 && $skip) {
+                if ($this->product->getDefaultIdProductAttribute() === (int) $specificPrice['id_product_attribute']) {
                     $skip = false;
                 }
             }

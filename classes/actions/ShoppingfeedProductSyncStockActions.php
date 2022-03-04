@@ -16,7 +16,6 @@
  * @copyright Since 2019 Shopping Feed
  * @license   https://opensource.org/licenses/AFL-3.0  Academic Free License (AFL 3.0)
  */
-
 if (!defined('_PS_VERSION_')) {
     exit;
 }
@@ -30,6 +29,7 @@ use ShoppingfeedClasslib\Registry;
  * - Respect the override path override/modules/shoppingfeed/classes/actions/ShoppingfeedProductSyncStockActions.php
  * - Name your override class ShoppingfeedProductSyncStockActionsOverride
  *   extended with ShoppingfeedProductSyncStockActions
+ *
  * @see ShoppingfeedDefaultActions
  */
 class ShoppingfeedProductSyncStockActions extends ShoppingfeedProductSyncActions
@@ -41,7 +41,7 @@ class ShoppingfeedProductSyncStockActions extends ShoppingfeedProductSyncActions
      */
     public function prepareBatch()
     {
-        $this->conveyor['preparedBatch'] = array();
+        $this->conveyor['preparedBatch'] = [];
         $sfModule = Module::getInstanceByName('shoppingfeed');
         $token = new ShoppingfeedToken($this->conveyor['id_token']);
 
@@ -56,7 +56,7 @@ class ShoppingfeedProductSyncStockActions extends ShoppingfeedProductSyncActions
                 continue;
             }
 
-            $newData = array(
+            $newData = [
                 'reference' => $sfReference,
                 'quantity' => StockAvailable::getQuantityAvailableByProduct(
                     $sfProduct->id_product,
@@ -64,7 +64,7 @@ class ShoppingfeedProductSyncStockActions extends ShoppingfeedProductSyncActions
                     $token->id_shop
                 ),
                 'sfProduct' => $sfProduct,
-            );
+            ];
 
             $this->conveyor['preparedBatch'][$newData['reference']] = $newData;
         }
@@ -94,7 +94,7 @@ class ShoppingfeedProductSyncStockActions extends ShoppingfeedProductSyncActions
         $preparedBatch = $this->conveyor['preparedBatch'];
         foreach (array_chunk($preparedBatch, $limit, true) as $products) {
             $res = $shoppingfeedApi->updateMainStoreInventory($products);
-            /**
+            /*
              * If we send a product reference that isn't in SF's catalog, the API
              * doesn't send a confirmation for this product.
              * This means we must make a diff between what we sent and what we

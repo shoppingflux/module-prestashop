@@ -24,6 +24,8 @@
 
 namespace ShoppingfeedAddon\OrderImport;
 
+use ShoppingFeed\Sdk\Api\Order\OrderResource;
+
 if (!defined('_PS_VERSION_')) {
     exit;
 }
@@ -40,14 +42,16 @@ interface RuleInterface
      *
      * @param array $configuration
      */
-    public function __construct($configuration = array());
+    public function __construct($configuration = []);
 
     /**
      * Returns true if a rule is applicable to an SF order
      *
+     * @param OrderResource $apiOrder
+     *
      * @return bool
      */
-    public function isApplicable(\ShoppingFeed\Sdk\Api\Order\OrderResource $apiOrder);
+    public function isApplicable(OrderResource $apiOrder);
 
     /**
      * Returns an array with the rule's configuration
@@ -60,7 +64,7 @@ interface RuleInterface
      * Gets the configuration subform for a rule. This subform will be included
      * in the module's specific rules page.
      *
-     * @return array an array of arrays formatted as inputs for HelperForm.
+     * @return array an array of arrays formatted as inputs for HelperForm
      */
     public function getConfigurationSubform();
 

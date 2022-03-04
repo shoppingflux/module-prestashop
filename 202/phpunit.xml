@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- https://phpunit.de/manual/current/en/appendixes.configuration.html -->
+
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="http://schema.phpunit.de/5.7/phpunit.xsd"        
+		 backupGlobals="false"
+		 colors="true"
+         bootstrap="phpunit_bootstrap.php"
+
+>
+	<php>
+		<ini name="error_reporting" value="-1" />
+			    <env name="SYMFONY_DEPRECATIONS_HELPER" value="disabled" />
+	</php>
+	<testsuites>
+		<testsuite name="ShoppingFeed">
+			<directory suffix=".php">tests</directory>
+		</testsuite>
+	</testsuites>
+</phpunit>

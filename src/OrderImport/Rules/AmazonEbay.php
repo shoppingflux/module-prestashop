@@ -28,15 +28,17 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-use Tools;
+use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
-use ShoppingFeed\Sdk\Api\Order\OrderResource;
-
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
+use Tools;
 
 class AmazonEbay extends RuleAbstract implements RuleInterface
 {
+    /**
+     * {@inheritdoc}
+     */
     public function isApplicable(OrderResource $apiOrder)
     {
         if (empty($this->configuration['enabled'])) {
@@ -73,8 +75,14 @@ class AmazonEbay extends RuleAbstract implements RuleInterface
         );
         $logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
 
-        $this->updateAddress($orderData->shippingAddress);
-        $this->updateAddress($orderData->billingAddress);
+        $this->_updateAddress(
+            $orderData->shippingAddress,
+            $apiOrder->getChannel()->getName()
+        );
+        $this->_updateAddress(
+            $orderData->billingAddress,
+            $apiOrder->getChannel()->getName()
+        );
 
         ProcessLoggerHandler::logInfo(
             $logPrefix .
@@ -83,7 +91,15 @@ class AmazonEbay extends RuleAbstract implements RuleInterface
         );
     }
 
-    public function updateAddress(&$address)
+    /**
+     * Update address by splitting firstname and lastname
+     *
+     * @param array $address
+     * @param string $channel
+     *
+     * @return void
+     */
+    private function _updateAddress(array &$address, $channel)
     {
         $address['firstName'] = trim($address['firstName']);
         $address['lastName'] = trim($address['lastName']);
@@ -94,15 +110,18 @@ class AmazonEbay extends RuleAbstract implements RuleInterface
             $fullname = $address['firstName'];
         }
 
-        $explodedFullname = explode(" ", $fullname);
-        if (isset($explodedFullname[0])) {
+        $explodedFullname = explode(' ', $fullname);
+        if (empty($explodedFullname[0]) === false && preg_match('#^(ebay)$#', Tools::strtolower($channel))) {
             $address['firstName'] = array_shift($explodedFullname);
             $address['lastName'] = implode(' ', $explodedFullname);
+        } else {
+            $address['lastName'] = array_shift($explodedFullname);
+            $address['firstName'] = implode(' ', $explodedFullname);
         }
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getConditions()
     {
@@ -110,7 +129,7 @@ class AmazonEbay extends RuleAbstract implements RuleInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getDescription()
     {
@@ -118,36 +137,35 @@ class AmazonEbay extends RuleAbstract implements RuleInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getConfigurationSubform()
     {
-        return array(
-            array(
+        return [
+            [
                 'type' => 'switch',
-                'label' =>
-                $this->l('Parse firstname/lastname for Amazon and Ebay orders.', 'AmazonEbay'),
+                'label' => $this->l('Parse firstname/lastname for Amazon and Ebay orders.', 'AmazonEbay'),
                 'name' => 'enabled',
                 'is_bool' => true,
-                'values' => array(
-                    array(
+                'values' => [
+                    [
                         'id' => 'ok',
                         'value' => 1,
-                    ),
-                    array(
+                    ],
+                    [
                         'id' => 'ko',
                         'value' => 0,
-                    )
-                ),
-            )
-        );
+                    ],
+                ],
+            ],
+        ];
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getDefaultConfiguration()
     {
-        return array('enabled' => true);
+        return ['enabled' => true];
     }
 }

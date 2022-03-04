@@ -21,45 +21,48 @@
  * @copyright Copyright (c) 202-ecommerce
  * @license   Commercial license
  */
-
 if (!defined('_PS_VERSION_')) {
     exit;
 }
 
 require_once _PS_MODULE_DIR_ . 'shoppingfeed/vendor/autoload.php';
 
+use ShoppingfeedAddon\Actions\ActionsHandler as SfActionsHandler;
 use ShoppingfeedClasslib\Actions\ActionsHandler;
-use ShoppingfeedClasslib\Extensions\ProcessMonitor\Controllers\Front\CronController;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 use ShoppingfeedClasslib\Registry;
 
 class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronController
 {
-    public $taskDefinition = array(
+    public $taskDefinition = [
         'name' => 'shoppingfeed:syncOrder',
-        'title' => array(
+        'title' => [
             'en' => 'Synchronize orders on Shopping Feed',
-            'fr' => 'Synchronisation des commandes sur Shopping Feed'
-        ),
-    );
+            'fr' => 'Synchronisation des commandes sur Shopping Feed',
+        ],
+    ];
 
     /**
      * Executed by the CRON
+     *
      * @param $data the data saved for this CRON (see totpsclasslib doc)
+     *
      * @return mixed
+     *
      * @throws Exception
      */
     protected function processCron($data)
     {
-        if (Configuration::get(ShoppingFeed::ORDER_IMPORT_ENABLED)) {
+        if (Configuration::get(Shoppingfeed::ORDER_IMPORT_ENABLED)) {
             $this->importOrders();
         }
 
-        if (Configuration::get(ShoppingFeed::ORDER_SYNC_ENABLED)) {
+        if (Configuration::get(Shoppingfeed::ORDER_SYNC_ENABLED)) {
             $this->syncOrderStatus();
         }
 
         ProcessLoggerHandler::closeLogger();
+
         return $data;
     }
 
@@ -73,7 +76,7 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
         foreach ($tokens as $token) {
             $logPrefix = '[Shop ' . $token['id_shop'] . ']';
 
-            if (!ShoppingFeed::isOrderSyncAvailable($token['id_shop'])) {
+            if (!Shoppingfeed::isOrderSyncAvailable($token['id_shop'])) {
                 ProcessLoggerHandler::logInfo(
                     $logPrefix . ' ' .
                         $this->module->l('Synchronization error : the Shopping Feed Official module (shoppingfluxexport) is enabled for the post-import synchronization. The “Order shipment” & “Order cancellation” options must be disabled in the official module for enabling this type of synchronization in the new module.', 'syncOrder'),
@@ -90,18 +93,18 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
                 $this->processMonitor->getProcessObjectModelId()
             );
 
-            $failedTicketsStatusTaskOrders = array();
-            $successfulTicketsStatusTaskOrders = array();
+            $failedTicketsStatusTaskOrders = [];
+            $successfulTicketsStatusTaskOrders = [];
             try {
                 Registry::set('ticketsErrors', 0);
 
                 /** @var ShoppingfeedHandler $ticketsHandler */
                 $ticketsHandler = new ActionsHandler();
-                $ticketsHandler->setConveyor(array(
+                $ticketsHandler->setConveyor([
                     'id_shop' => $token['id_shop'],
                     'id_token' => $token['id_shoppingfeed_token'],
                     'order_action' => ShoppingfeedTaskOrder::ACTION_CHECK_TICKET_SYNC_STATUS,
-                ));
+                ]);
                 $ticketsHandler->addActions(
                     'getTaskOrders',
                     'prepareTaskOrdersCheckTicketsSyncStatus',
@@ -111,8 +114,8 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
 
                 if ($ticketsHandler->process('ShoppingfeedOrderSync')) {
                     $processData = $ticketsHandler->getConveyor();
-                    $failedTicketsStatusTaskOrders = isset($processData['failedTaskOrders']) ? $processData['failedTaskOrders'] : array();
-                    $successfulTicketsStatusTaskOrders = isset($processData['successfulTaskOrders']) ? $processData['successfulTaskOrders'] : array();
+                    $failedTicketsStatusTaskOrders = isset($processData['failedTaskOrders']) ? $processData['failedTaskOrders'] : [];
+                    $successfulTicketsStatusTaskOrders = isset($processData['successfulTaskOrders']) ? $processData['successfulTaskOrders'] : [];
 
                     ProcessLoggerHandler::logSuccess(
                         sprintf(
@@ -149,18 +152,18 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
                 $this->processMonitor->getProcessObjectModelId()
             );
 
-            $failedSyncStatusTaskOrders = array();
-            $successfulSyncTaskOrders = array();
+            $failedSyncStatusTaskOrders = [];
+            $successfulSyncTaskOrders = [];
             try {
                 Registry::set('syncStatusErrors', 0);
 
                 /** @var ShoppingfeedHandler $orderStatusHandler */
                 $orderStatusHandler = new ActionsHandler();
-                $orderStatusHandler->setConveyor(array(
+                $orderStatusHandler->setConveyor([
                     'id_shop' => $token['id_shop'],
                     'id_token' => $token['id_shoppingfeed_token'],
                     'order_action' => ShoppingfeedTaskOrder::ACTION_SYNC_STATUS,
-                ));
+                ]);
                 $orderStatusHandler->addActions(
                     'getTaskOrders',
                     'prepareTaskOrdersSyncStatus',
@@ -169,8 +172,8 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
 
                 if ($orderStatusHandler->process('ShoppingfeedOrderSync')) {
                     $processData = $orderStatusHandler->getConveyor();
-                    $failedSyncStatusTaskOrders = isset($processData['failedTaskOrders']) ? $processData['failedTaskOrders'] : array();
-                    $successfulSyncTaskOrders = isset($processData['successfulTaskOrders']) ? $processData['successfulTaskOrders'] : array();
+                    $failedSyncStatusTaskOrders = isset($processData['failedTaskOrders']) ? $processData['failedTaskOrders'] : [];
+                    $successfulSyncTaskOrders = isset($processData['successfulTaskOrders']) ? $processData['successfulTaskOrders'] : [];
 
                     ProcessLoggerHandler::logSuccess(
                         sprintf(
@@ -206,11 +209,11 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
 
                 if (!empty($failedTaskOrders)) {
                     $errorMailHandler = new ActionsHandler();
-                    $errorMailHandler->setConveyor(array(
+                    $errorMailHandler->setConveyor([
                         'id_shop' => $token['id_shop'],
                         'id_token' => $token['id_shoppingfeed_token'],
                         'failedTaskOrders' => $failedTaskOrders,
-                    ));
+                    ]);
                     $errorMailHandler->addActions(
                         'sendFailedTaskOrdersMail'
                     );
@@ -248,12 +251,12 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
             $handler = new ActionsHandler();
 
             foreach ($failedTicketsStatusTaskOrders as $failedTicket) {
-                /** @var ShoppingfeedTaskOrder $failedTicket*/
+                /* @var ShoppingfeedTaskOrder $failedTicket*/
                 $handler
-                    ->setConveyor(array(
+                    ->setConveyor([
                         'id_order' => $failedTicket->id_order,
                         'order_action' => ShoppingfeedTaskOrder::ACTION_SYNC_STATUS,
-                    ))
+                    ])
                     ->addActions('saveTaskOrder');
                 $handler->process('shoppingfeedOrderSync');
             }
@@ -266,11 +269,12 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
 
         $sft = new ShoppingfeedToken();
         $tokens = $sft->findAllActive();
+        $result = [];
         foreach ($tokens as $token) {
             $id_shop = (int) $token['id_shop'];
 
             // If order import is not available
-            if (!ShoppingFeed::isOrderImportAvailable($id_shop)) {
+            if (!Shoppingfeed::isOrderImportAvailable($id_shop)) {
                 ProcessLoggerHandler::logInfo(
                     $this->module->l('The Shopping Feed module (shoppingfluxexport) is installed on your shop for enabling the orders import synchronization. The “Order importation” option must be disabled in the module for enabling this type of synchronization in this module. If you disable the options in the shoppingfluxexport\'s module and you enable it again later the button "New orders import" will be disabled automatically in the Shopping feed 15 min module.', 'syncOrder'),
                     $this->processMonitor->getProcessObjectModelName(),
@@ -286,6 +290,7 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
                         $this->processMonitor->getProcessObjectModelName(),
                         $this->processMonitor->getProcessObjectModelId()
                     );
+
                     return false;
                 }
 
@@ -302,9 +307,10 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
                     $this->processMonitor->getProcessObjectModelName(),
                     $this->processMonitor->getProcessObjectModelId()
                 );
+
                 return false;
             }
-            if (!count($result)) {
+            if (empty($result) === true) {
                 ProcessLoggerHandler::logInfo(
                     $this->module->l('No orders to import.', 'syncOrder'),
                     $this->processMonitor->getProcessObjectModelName(),
@@ -323,25 +329,23 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
                 $logPrefix .= '[' . $apiOrder->getReference() . '] ';
 
                 try {
-
                     /** @var ShoppingfeedHandler $handler */
-                    $handler = new ActionsHandler();
+                    $handler = new SfActionsHandler();
                     $handler->addActions(
                         'registerSpecificRules',
                         'verifyOrder',
                         'createOrderCart',
                         'validateOrder',
-                        'acknowledgeOrder',
-                        'recalculateOrderPrices',
                         'postProcess'
                     );
 
-                    $handler->setConveyor(array(
+                    $handler->setConveyor([
                         'id_shop' => $id_shop,
                         'id_token' => $token['id_shoppingfeed_token'],
                         'apiOrder' => $apiOrder,
-                    ));
+                    ]);
 
+                    Registry::set('shoppingfeedOrderImportHandler', $handler);
                     $processResult = $handler->process('shoppingfeedOrderImport');
                     if (!$processResult) {
                         $conveyor = $handler->getConveyor();

@@ -16,7 +16,6 @@
  * @copyright Since 2019 Shopping Feed
  * @license   https://opensource.org/licenses/AFL-3.0  Academic Free License (AFL 3.0)
  */
-
 if (!defined('_PS_VERSION_')) {
     exit;
 }
@@ -52,64 +51,65 @@ class ShoppingfeedTaskOrder extends ObjectModel
     public $date_add;
     public $date_upd;
 
-    public static $definition = array(
+    public static $definition = [
         'table' => 'shoppingfeed_task_order',
         'primary' => 'id_shoppingfeed_task_order',
-        'fields' => array(
-            'action' => array(
+        'fields' => [
+            'action' => [
                 'type' => ObjectModel::TYPE_STRING,
                 'validate' => 'isGenericName',
                 'required' => true,
                 'unique' => true,
-                'values' => array(self::ACTION_SYNC_STATUS, self::ACTION_CHECK_TICKET_SYNC_STATUS),
-            ),
-            'id_order' => array(
+                'values' => [self::ACTION_SYNC_STATUS, self::ACTION_CHECK_TICKET_SYNC_STATUS],
+            ],
+            'id_order' => [
                 'type' => ObjectModel::TYPE_INT,
                 'validate' => 'isUnsignedInt',
                 'required' => true,
-                'unique'   => true
-            ),
-            'ticket_number' => array(
+                'unique' => true,
+            ],
+            'ticket_number' => [
                 'type' => ObjectModel::TYPE_STRING,
                 'validate' => 'isString',
                 'size' => 50,
                 'allow_null' => true,
-                'unique'    => true
-            ),
-            'batch_id' => array(
+                'unique' => true,
+            ],
+            'batch_id' => [
                 'type' => ObjectModel::TYPE_STRING,
                 'validate' => 'isString',
                 'size' => 50,
-                'allow_null' => true
-            ),
-            'update_at'=> array(
+                'allow_null' => true,
+            ],
+            'update_at' => [
                 'type' => self::TYPE_DATE,
                 'validate' => 'isDate',
                 'allow_null' => true,
-            ),
-            'date_add' => array(
+            ],
+            'date_add' => [
                 'type' => self::TYPE_DATE,
-                'validate' => 'isDate'
-            ),
-            'date_upd' => array(
+                'validate' => 'isDate',
+            ],
+            'date_upd' => [
                 'type' => self::TYPE_DATE,
-                'validate' => 'isDate'
-            ),
-        ),
-        'associations' => array(
-            'orders' => array(
+                'validate' => 'isDate',
+            ],
+        ],
+        'associations' => [
+            'orders' => [
                 'type' => ObjectModel::HAS_ONE,
                 'object' => 'Order',
                 'association' => 'order_shoppingfeedtask',
                 'field' => 'id_order',
                 'multishop' => true,
-            ),
-        ),
-    );
+            ],
+        ],
+    ];
 
     /**
      * Attempts to retrieve an object using its id_order and action. Returns
      * false if none was found.
+     *
      * @param $id_order
      * @param $action
      *
@@ -123,8 +123,8 @@ class ShoppingfeedTaskOrder extends ObjectModel
         $sql = new DbQuery();
         $sql->select('id_shoppingfeed_task_order')
             ->from(self::$definition['table'])
-            ->where('id_order = ' . (int)$id_order)
-            ->where("action = '" . pSQL($action). "'");
+            ->where('id_order = ' . (int) $id_order)
+            ->where("action = '" . pSQL($action) . "'");
 
         $id = Db::getInstance()->getValue($sql);
         if ($id) {
@@ -136,6 +136,7 @@ class ShoppingfeedTaskOrder extends ObjectModel
 
     /**
      * @param string $ticket
+     *
      * @return self
      */
     public static function getFromTicketNumber($ticket)

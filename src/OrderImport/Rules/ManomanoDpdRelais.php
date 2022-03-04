@@ -1,10 +1,10 @@
 <?php
 
-
 namespace ShoppingfeedAddon\OrderImport\Rules;
 
 use Cart;
 use Module;
+use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use ShoppingfeedAddon\OrderImport\DpdAssociation;
 use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
@@ -18,13 +18,13 @@ if (!defined('_PS_VERSION_')) {
 
 class ManomanoDpdRelais extends RuleAbstract implements RuleInterface
 {
-    /** @var Module*/
+    /** @var Module */
     protected $dpdfrance;
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
-    public function isApplicable(\ShoppingFeed\Sdk\Api\Order\OrderResource $apiOrder)
+    public function isApplicable(OrderResource $apiOrder)
     {
         $this->dpdfrance = Module::getInstanceByName('dpdfrance');
 
@@ -32,11 +32,11 @@ class ManomanoDpdRelais extends RuleAbstract implements RuleInterface
             return false;
         }
 
-        if ("monechelle" !== Tools::strtolower($apiOrder->getChannel()->getName())) {
+        if ('monechelle' !== Tools::strtolower($apiOrder->getChannel()->getName())) {
             return false;
         }
 
-        if (empty($this->getRelayIdFromOrder($apiOrder))) {
+        if (empty($this->getRelayIdFromOrder($apiOrder)) === true) {
             return false;
         }
 
@@ -44,7 +44,7 @@ class ManomanoDpdRelais extends RuleAbstract implements RuleInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getDescription()
     {
@@ -52,11 +52,36 @@ class ManomanoDpdRelais extends RuleAbstract implements RuleInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getConditions()
     {
         return $this->l('If the order is from ManoMano with ”DPD Relay”', 'Shoppingfeed.Rule');
+    }
+
+    /**
+     * We have to do this on pre process, as the fields may be used in various
+     * steps
+     *
+     * @param array $params
+     */
+    public function onPreProcess($params)
+    {
+        /** @var \ShoppingfeedAddon\OrderImport\OrderData $orderData */
+        $orderData = $params['orderData'];
+        $apiOrder = $params['apiOrder'];
+
+        $orderData->shippingAddress['firstName'] = trim($orderData->shippingAddress['firstName']);
+        $orderData->shippingAddress['lastName'] = trim($orderData->shippingAddress['lastName']);
+
+        $fullname = $orderData->shippingAddress['firstName'];
+        $relayID = $this->getRelayIdFromOrder($apiOrder);
+        $orderData->shippingAddress['other'] = $relayID;
+        $orderData->shippingAddress['company'] = $orderData->shippingAddress['lastName'] . ' (' . $relayID . ')';
+
+        $explodedFullname = explode(' ', $fullname);
+        $orderData->shippingAddress['firstName'] = array_shift($explodedFullname);
+        $orderData->shippingAddress['lastName'] = implode(' ', $explodedFullname);
     }
 
     public function afterCartCreation($params)
@@ -65,7 +90,7 @@ class ManomanoDpdRelais extends RuleAbstract implements RuleInterface
             return false;
         }
 
-        /** @var Cart $cart*/
+        /** @var Cart $cart */
         $cart = $params['cart'];
 
         if (false == $cart instanceof Cart) {
@@ -98,13 +123,12 @@ class ManomanoDpdRelais extends RuleAbstract implements RuleInterface
             )
         );
 
-
-
         if (false == $this->associateWithDpd($cart, $relayID)) {
             ProcessLoggerHandler::logInfo(
                 $logPrefix .
                 $this->l('Failed to associate an order with dpdfrance module', 'Shoppingfeed.Rule')
             );
+
             return false;
         }
 
@@ -121,7 +145,7 @@ class ManomanoDpdRelais extends RuleAbstract implements RuleInterface
         return new DpdAssociation();
     }
 
-    protected function getRelayIdFromOrder(\ShoppingFeed\Sdk\Api\Order\OrderResource $apiOrder)
+    protected function getRelayIdFromOrder(OrderResource $apiOrder)
     {
         $address = $apiOrder->getShippingAddress();
 

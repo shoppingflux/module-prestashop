@@ -10,7 +10,7 @@ name: 1. Requirements and install
 
 | PrestaShop version | Module version |  Repo               | Doc                |  PHP Version |
 |--------------------|----------------|---------------------|--------------------|--------------|
-| 1.6.0.x            | 1.x            |  [release/1.4.x]    | [module documentation][module-doc] |   5.6 or greater    |
+| 1.6.0.x            | 1.x            |  [master]           | [module documentation][module-doc] |   5.6 or greater    |
 | 1.7.7.x            | 1.x            |  [master]           | [module documentation][module-doc] |   7.1 or greater    |
 
 
@@ -20,7 +20,7 @@ name: 1. Requirements and install
 [Shopping Feed's PHP SDK](https://github.com/shoppingflux/php-sdk); this module
 uses version `0.2.4`, which creates some [problems](/#2-problem-guzzle-trouble).
 
-[Shopping Feed's PHP SDK](https://github.com/shoppingflux/php-feed-generator); this module
+[Shopping Feed's PHP Feed Generator](https://github.com/shoppingflux/php-feed-generator); this module
 uses version `1.2.0`.
 
 
@@ -31,7 +31,7 @@ Running `composer dump-autoload` should be fine, though.
 ## Installation for merchands
 
 To install module on PrestaShop, download zip package supply by ShoppingFeed customer service or the zip file
-named [v1.x.x-prod-shoppingfeed.zip](https://github.com/shoppingflux/module-prestashop/tags) attached on each detail release page.
+named [v1.x.x-prod-shoppingfeed.zip](https://github.com/shoppingflux/module-prestashop/releases) attached on each detail release page.
 
 ## Installation for developpers
 
@@ -39,6 +39,8 @@ If you are a developper, this module contain composer.json.dist file. If you clo
 repository, run the ```composer install``` is not necessary. You can see why on [module documentation][module-doc] on "Guzzle trouble".
 
 See the [composer documentation][composer-doc] to learn more about the composer.json file.
+
+You can also use docker compose to install the module on a fresh ready to use PrestaShop version.
 
 ## Compiling assets
 **For development**

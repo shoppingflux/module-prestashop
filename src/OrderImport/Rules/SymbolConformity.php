@@ -28,22 +28,19 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-use ShoppingfeedAddon\Services\SymbolValidator;
-use Tools;
+use Address;
+use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
-use ShoppingFeed\Sdk\Api\Order\OrderResource;
-
+use ShoppingfeedAddon\Services\SymbolValidator;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
-use Validate;
-use Address;
 
 class SymbolConformity extends RuleAbstract implements RuleInterface
 {
-    /** @var SymbolValidator*/
+    /** @var SymbolValidator */
     protected $validator;
 
-    public function __construct($configuration = array())
+    public function __construct($configuration = [])
     {
         parent::__construct($configuration);
 
@@ -88,7 +85,7 @@ class SymbolConformity extends RuleAbstract implements RuleInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getConditions()
     {
@@ -96,7 +93,7 @@ class SymbolConformity extends RuleAbstract implements RuleInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getDescription()
     {
@@ -104,39 +101,37 @@ class SymbolConformity extends RuleAbstract implements RuleInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getConfigurationSubform()
     {
-        return array(
-            array(
+        return [
+            [
                 'type' => 'switch',
-                'label' =>
-                $this->l('Conformity of characters', 'SymbolConformity'),
-                'desc' =>
-                    $this->l('By activating this option, special characters prohibited by Prestashop will be removed from the order information. Be careful, this could falsify the delivery or billing data.', 'SymbolConformity'),
+                'label' => $this->l('Conformity of characters', 'SymbolConformity'),
+                'desc' => $this->l('By activating this option, special characters prohibited by Prestashop will be removed from the order information. Be careful, this could falsify the delivery or billing data.', 'SymbolConformity'),
                 'name' => 'enabled',
                 'is_bool' => true,
-                'values' => array(
-                    array(
+                'values' => [
+                    [
                         'id' => 'ok',
                         'value' => 1,
-                    ),
-                    array(
+                    ],
+                    [
                         'id' => 'ko',
                         'value' => 0,
-                    )
-                ),
-            )
-        );
+                    ],
+                ],
+            ],
+        ];
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getDefaultConfiguration()
     {
-        return array('enabled' => false);
+        return ['enabled' => false];
     }
 
     protected function updateAddress(&$address)
@@ -145,63 +140,63 @@ class SymbolConformity extends RuleAbstract implements RuleInterface
             $address['firstName'],
             [
                 'Validate',
-                Address::$definition['fields']['firstname']['validate']
+                Address::$definition['fields']['firstname']['validate'],
             ]
         );
         $this->validator->validate(
             $address['lastName'],
             [
                 'Validate',
-                Address::$definition['fields']['lastname']['validate']
+                Address::$definition['fields']['lastname']['validate'],
             ]
         );
         $this->validator->validate(
             $address['company'],
             [
                 'Validate',
-                Address::$definition['fields']['company']['validate']
+                Address::$definition['fields']['company']['validate'],
             ]
         );
         $this->validator->validate(
             $address['street'],
             [
                 'Validate',
-                Address::$definition['fields']['address1']['validate']
+                Address::$definition['fields']['address1']['validate'],
             ]
         );
         $this->validator->validate(
             $address['street2'],
             [
                 'Validate',
-                Address::$definition['fields']['address2']['validate']
+                Address::$definition['fields']['address2']['validate'],
             ]
         );
         $this->validator->validate(
             $address['postalCode'],
             [
                 'Validate',
-                Address::$definition['fields']['postcode']['validate']
+                Address::$definition['fields']['postcode']['validate'],
             ]
         );
         $this->validator->validate(
             $address['city'],
             [
                 'Validate',
-                Address::$definition['fields']['city']['validate']
+                Address::$definition['fields']['city']['validate'],
             ]
         );
         $this->validator->validate(
             $address['phone'],
             [
                 'Validate',
-                Address::$definition['fields']['phone']['validate']
+                Address::$definition['fields']['phone']['validate'],
             ]
         );
         $this->validator->validate(
             $address['mobilePhone'],
             [
                 'Validate',
-                Address::$definition['fields']['phone_mobile']['validate']
+                Address::$definition['fields']['phone_mobile']['validate'],
             ]
         );
     }
