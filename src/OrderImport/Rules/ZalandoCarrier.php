@@ -44,7 +44,7 @@ class ZalandoCarrier extends RuleAbstract implements RuleInterface
         );
         $logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
         if (strcasecmp('zalandoboniclassic', $apiOrder->getChannel()->getName()) !== 0
-            && empty($apiOrderData['shipment']['carrier']) !== false) {
+            || empty($apiOrderData['shipment']['carrier']) === false) {
             return false;
         }
 
