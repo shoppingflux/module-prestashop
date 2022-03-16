@@ -32,6 +32,7 @@ use Module;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
+use Tools;
 
 /**
  * See ticket #30781
@@ -51,7 +52,8 @@ class ZalandoColissimo extends AbstractColissimo implements RuleInterface
         $logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
 
         // Check marketplace, that the additional fields with the pickup point data are there and not empty, and that the "colissimo" module is installed and active
-        if ($this->isModuleColissimoEnabled()
+        if (preg_match('#^zalando#', Tools::strtolower($apiOrder->getChannel()->getName()))
+            && $this->isModuleColissimoEnabled()
             && !empty($apiOrderData['additionalFields']['service_point_id'])
             && !empty($apiOrderData['additionalFields']['service_point_name'])
         ) {
