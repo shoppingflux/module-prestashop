@@ -21,6 +21,7 @@
  * @copyright Copyright (c) 202-ecommerce
  * @license   Commercial license
  */
+
 function upgrade_module_1_6_3($module)
 {
     if (Shop::isFeatureActive()) {
