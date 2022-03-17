@@ -37,7 +37,7 @@ class RelaisColis extends AbstractHook
     public function actionShoppingfeedTracking($params)
     {
         if ($this->isRelaisColisEnabled() == false) {
-            //return;
+            return;
         }
 
         if (empty($params[0]['order']) || $params[0]['order'] instanceof Order == false) {
