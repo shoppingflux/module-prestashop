@@ -327,18 +327,6 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
                     $orderShipping = $order->getShipping();
                     if (!empty($orderShipping[0])) {
                         $trackingNumber = $orderShipping[0]['tracking_number'];
-                        // Getting a tracking number for relaiscolis carrier
-                        if ($carrier->external_module_name == 'relaiscolis' && class_exists(RelaisColisOrder::class)) {
-                            //import the necessary classes
-                            Module::getInstanceByName('relaiscolis');
-                            $order = new Order($order->id);
-                            $idRelaisColisOrder = (int) RelaisColisOrder::getRelaisColisOrderId((int) $order->id);
-                            $relaisColisOrder = new RelaisColisOrder($idRelaisColisOrder);
-
-                            if (Validate::isLoadedObject($relaisColisOrder)) {
-                                $trackingNumber = Tools::substr($relaisColisOrder->pdf_number, 2, 10);
-                            }
-                        }
                         // From the old module. Not sure if it's all useful, but
                         // we'll suppose it knows better.
                         // Build the tracking url.
