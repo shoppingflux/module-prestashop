@@ -21,6 +21,7 @@ namespace Tests\OrderImport;
 
 use ColissimoCartPickupPoint;
 use ShoppingfeedAddon\Actions\ActionsHandler;
+use ShoppingfeedCarrier;
 use ShoppingfeedClasslib\Registry;
 
 /**
@@ -272,6 +273,11 @@ class OrderImportSimpleTest extends AbstractOrdeTestCase
         $this->assertEquals($pickupPoint->company_name, 'PRIMAVERA');
         $this->assertEquals($pickupPoint->product_code, 'BPR');
         $this->assertEquals($pickupPoint->city, 'MARSEILLE');
+        $sfCarrier = ShoppingfeedCarrier::getByMarketplaceAndName(
+                        'zalandomyunittest',
+                        'pickup'
+                    );
+        $this->assertNotEquals($sfCarrier, false);
     }
 
     public function testImportColizey(): void

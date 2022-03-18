@@ -45,7 +45,7 @@ class ZalandoCarrier extends RuleAbstract implements RuleInterface
         );
         $logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
         if (preg_match('#^zalando#', Tools::strtolower($apiOrder->getChannel()->getName()))
-            && empty($apiOrderData['shipment']['carrier']) === false) {
+            && empty($apiOrderData['shipment']['carrier'])) {
             ProcessLoggerHandler::logInfo(
                     $logPrefix .
                         $this->l('Rule triggered.', 'ZalandoCarrier'),
