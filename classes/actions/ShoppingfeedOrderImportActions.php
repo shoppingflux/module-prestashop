@@ -107,6 +107,23 @@ class ShoppingfeedOrderImportActions extends DefaultActions
 
         // See old module checkData()
 
+        // Vefify the order currency
+        if (empty($this->conveyor['orderData']->payment['currency'])) {
+            $this->conveyor['error'] = $this->l('Skip an order import since the currency info is missing', 'ShoppingfeedOrderImportActions');
+            ProcessLoggerHandler::logInfo($this->logPrefix . $this->conveyor['error'], 'Order');
+            $this->forward('acknowledgeOrder');
+
+            return false;
+        }
+
+        if (false == Currency::getIdByIsoCode((string) $this->conveyor['orderData']->payment['currency'])) {
+            $this->conveyor['error'] = $this->l('Skip an order import because of the unsupported currency', 'ShoppingfeedOrderImportActions');
+            ProcessLoggerHandler::logInfo($this->logPrefix . $this->conveyor['error'], 'Order');
+            $this->forward('acknowledgeOrder');
+
+            return false;
+        }
+
         // Check if order already exists
         if (ShoppingfeedOrder::existsInternalId($apiOrder->getId())) {
             $this->conveyor['error'] = $this->l('Order not imported; already present.', 'ShoppingfeedOrderImportActions');
