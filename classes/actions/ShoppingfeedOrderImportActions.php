@@ -110,7 +110,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         // Vefify the order currency
         if (empty($this->conveyor['orderData']->payment['currency']) || false == Currency::getIdByIsoCode((string) $this->conveyor['orderData']->payment['currency'])) {
             $this->conveyor['error'] = $this->l('Skip an order import because of the unsupported currency', 'ShoppingfeedOrderImportActions');
-            ProcessLoggerHandler::logInfo($this->logPrefix . $this->conveyor['error'], 'Order');
+            ProcessLoggerHandler::logError($this->logPrefix . $this->conveyor['error'], 'Order');
             $this->forward('acknowledgeOrder');
 
             return false;
