@@ -19,23 +19,18 @@
 
 namespace Tests\OrderImport;
 
-use Currency;
-use ShoppingFeed\Sdk\Api\Order\OrderResource;
-use ShoppingFeed\Sdk\Hal\HalResource;
 use ShoppingfeedAddon\Actions\ActionsHandler;
 use ShoppingfeedClasslib\Registry;
-use Tools;
 
 /**
  * Order Rules CDiscount Test
  */
 class OrderImportVerifyCurrencyTest extends AbstractOrdeTestCase
 {
-    /**
-     * @dataProvider providerApiOrder
-     */
-    public function testCurrencyVerification($apiOrder, $vefificationResult): void
+    public function testCurrencyVerification(): void
     {
+        $apiOrder = $this->getOrderRessourceFromDataset('order-amazon-currency-gbp.json');
+
         $handler = new ActionsHandler();
         $handler->addActions(
             'registerSpecificRules',
@@ -51,58 +46,7 @@ class OrderImportVerifyCurrencyTest extends AbstractOrdeTestCase
         );
         Registry::set('shoppingfeedOrderImportHandler', $handler);
         $processResult = $handler->process('shoppingfeedOrderImport');
-        $this->assertEquals($vefificationResult, $processResult);
-    }
 
-    public function providerApiOrder()
-    {
-        $dataset = $this->getDataSet();
-        $client = $this->createMock(\ShoppingFeed\Sdk\Hal\HalClient::class);
-
-        $dataset['payment']['currency'] = $this->getSupportedCurrency();
-        $halResourceValid = $this
-            ->getMockBuilder(HalResource::class)
-            ->setConstructorArgs([$client, $dataset, $dataset['_links'], $dataset['_embedded']])
-            ->setMethods(['getFirstResources'])
-            ->getMock();
-
-        $dataset['payment']['currency'] = $this->getUnsupportedCurrency();
-        $halResourceInvalid = $this
-            ->getMockBuilder(HalResource::class)
-            ->setConstructorArgs([$client, $dataset, $dataset['_links'], $dataset['_embedded']])
-            ->setMethods(['getFirstResources'])
-            ->getMock();
-
-        $apiOrderValid = new OrderResource($halResourceValid);
-        $apiOrderInvalid = new OrderResource($halResourceInvalid);
-
-        return [
-            'supportedCurrency' => [
-                $apiOrderValid,
-                true,
-            ],
-            'unsupportedCurrency' => [
-                $apiOrderInvalid,
-                false,
-            ],
-        ];
-    }
-
-    protected function getDataSet()
-    {
-        return json_decode(
-            file_get_contents(__DIR__ . '/dataset/order-cdiscount-colissimorelais.json'),
-            true
-        );
-    }
-
-    protected function getSupportedCurrency()
-    {
-        return Tools::strtoupper(Currency::getDefaultCurrency()->iso_code);
-    }
-
-    protected function getUnsupportedCurrency()
-    {
-        return 'INVALID_ISO_CURRENCY';
+        $this->assertFalse($processResult);
     }
 }
