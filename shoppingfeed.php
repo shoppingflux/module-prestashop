@@ -1256,6 +1256,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             ShoppingfeedAddon\OrderImport\Rules\SymbolConformity::class,
             ShoppingfeedAddon\OrderImport\Rules\ManomanoDpdRelais::class,
             ShoppingfeedAddon\OrderImport\Rules\ZalandoColissimo::class,
+            ShoppingfeedAddon\OrderImport\Rules\ZalandoCarrier::class,
             ShoppingfeedAddon\OrderImport\Rules\ColizeyColissimo::class,
         ];
 
