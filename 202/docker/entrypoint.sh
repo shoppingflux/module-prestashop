@@ -30,6 +30,18 @@ INSERT IGNORE INTO ps_shoppingfeed_token (id_shoppingfeed_token, id_shop, id_lan
 INSERT IGNORE INTO ps_shoppingfeed_carrier (id_shoppingfeed_carrier, name_marketplace, name_carrier, id_carrier_reference, is_new, date_add, date_upd) VALUES
 (1,	'Amazon',	'Colissimo',	1,	0,	'2022-02-17 00:00:00',	'2022-02-17 00:00:00'),
 (2,	'NatureEtDecouvertes',	'Point Relais (Chrono Relais)',	2,	0,	'2022-02-17 07:44:26',	'2022-02-17 00:00:00');
+INSERT IGNORE INTO ps_tax (id_tax, rate, active, deleted) VALUES
+(40, 0.190, 1, 0);
+INSERT IGNORE INTO ps_tax_lang (id_tax, id_lang, name) VALUES
+(40, 1, 'TPH'), (40, 2, 'TPH');
+INSERT IGNORE INTO ps_tax_rules_group (id_tax_rules_group, name, active, deleted, date_add, date_upd) VALUES
+(10, 'TVA + TPH', 1, 0, NOW(), NOW());
+INSERT IGNORE INTO ps_tax_rules_group_shop (id_tax_rules_group, id_shop) VALUES (10, 1);
+INSERT IGNORE INTO ps_tax_rule (id_tax_rules_group, id_country, id_state, zipcode_from, zipcode_to, id_tax, behavior) VALUES
+(10, 8, 0, 0, 0, 40, 2),
+(10, 8, 0, 0, 0, 1, 2);
+UPDATE ps_product SET id_tax_rules_group = 10 WHERE id_product = 18;
+UPDATE ps_product_shop SET id_tax_rules_group = 10 WHERE id_product = 18;
 "
 
 chown $RUN_USER:$RUN_USER /var/www/html -Rf
