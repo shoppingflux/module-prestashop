@@ -451,7 +451,7 @@ class OrderImportSimpleTest extends AbstractOrdeTestCase
         //refs#34500
         $detail = $psOrder->getProductsDetail()[0];
         $detailTaxes = \OrderDetail::getTaxListStatic($detail['id_order_detail']);
-        $this->assertEquals($detailTaxes[0]['total_amount'], 1.620000);
+        $this->assertEquals($detailTaxes[0]['total_amount'], 1.630000);
         $this->assertEquals($detailTaxes[0]['id_tax'], 1);
         $this->assertEquals($detailTaxes[1]['total_amount'], 0.010000);
         $this->assertEquals($detailTaxes[1]['id_tax'], 40);
