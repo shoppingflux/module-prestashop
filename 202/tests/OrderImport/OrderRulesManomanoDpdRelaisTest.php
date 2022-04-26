@@ -69,7 +69,6 @@ class OrderRulesManomanoDpdRelaisTest extends AbstractOrdeTestCase
     public function testSplitManoManoProRelais(): void
     {
         $params['apiOrder'] = $this->getOrderRessourceFromDataset('order-manomanopro.json');
-        $params['cart'] = new Cart();
 
         $rules = new ManomanoDpdRelais();
         $this->assertTrue($rules->isApplicable($params['apiOrder']));
