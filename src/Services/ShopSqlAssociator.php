@@ -32,17 +32,23 @@ class ShopSqlAssociator
             $idShop = Shop::getContextShopID();
         }
 
+        $table = pSQL($table);
+        $alias = pSQL($alias);
         $table_alias = $table . '_shop';
+
         if (strpos($table, '.') !== false) {
             list($table_alias, $table) = explode('.', $table);
         }
 
         $asso_table = Shop::getAssoTable($table);
+
         if ($asso_table === false || $asso_table['type'] != 'shop') {
             return;
         }
+
         $sql = (($inner_join) ? ' INNER' : ' LEFT') . ' JOIN ' . _DB_PREFIX_ . $table . '_shop ' . $table_alias . '
         ON (' . $table_alias . '.id_' . $table . ' = ' . $alias . '.id_' . $table;
+
         if ((int) $idShop) {
             $sql .= ' AND ' . $table_alias . '.id_shop = ' . (int) $idShop;
         } elseif (Shop::checkIdShopDefault($table) && !$force_not_default) {
@@ -50,6 +56,7 @@ class ShopSqlAssociator
         } else {
             $sql .= ' AND ' . $table_alias . '.id_shop IN (' . implode(', ', Shop::getContextListShopID()) . ')';
         }
+
         $sql .= (($on) ? ' AND ' . $on : '') . ')';
 
         return $sql;
