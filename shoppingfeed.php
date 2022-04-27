@@ -609,6 +609,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             'ShoppingfeedReverseProductReference', // hook_name
             [
                 'sfProductReference' => &$sfProductReference,
+                'id_shop' => $id_shop,
             ] // hook_args
         );
 
@@ -626,6 +627,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             [
                 'sfProductReference' => &$sfProductReference,
                 'product' => &$product,
+                'id_shop' => $id_shop,
             ] // hook_args
         );
 
