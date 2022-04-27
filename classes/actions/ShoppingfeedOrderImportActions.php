@@ -720,6 +720,16 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         $this->conveyor['customer']->update();
 
         $amount_paid = (float) Tools::ps_round((float) $cart->getOrderTotal(true, Cart::BOTH), 2);
+        if ($cart->nbProducts() === 0) {
+            $this->conveyor['error'] = sprintf(
+                    $this->l('Could not add product to cart : %s', 'ShoppingfeedOrderImportActions'),
+                    $cart->id
+                );
+            ProcessLoggerHandler::logError($this->logPrefix . $this->conveyor['error'], 'Order');
+            $this->forward('acknowledgeOrder');
+
+            return false;
+        }
         try {
             $paymentModule->validateOrder(
                 (int) $cart->id,
