@@ -16,6 +16,9 @@
  * @copyright Since 2019 Shopping Feed
  * @license   https://opensource.org/licenses/AFL-3.0  Academic Free License (AFL 3.0)
  */
+
+use ShoppingfeedAddon\Services\ShopSqlAssociator;
+
 if (!defined('_PS_VERSION_')) {
     exit;
 }
@@ -142,6 +145,11 @@ class ShoppingfeedProduct extends ObjectModel
         return is_string($reference) ? trim($reference) : '';
     }
 
+    protected function getShopAssociator()
+    {
+        return new ShopSqlAssociator();
+    }
+
     /**
      * Returns the product id and combination ID from Shopping Feed reference
      *
@@ -149,7 +157,7 @@ class ShoppingfeedProduct extends ObjectModel
      *
      * @return string
      */
-    public function getReverseShoppingfeedReference($sfReference)
+    public function getReverseShoppingfeedReference($sfReference, $idShop = null)
     {
         $reference_format = Configuration::get(Shoppingfeed::PRODUCT_FEED_REFERENCE_FORMAT);
 
@@ -160,7 +168,22 @@ class ShoppingfeedProduct extends ObjectModel
             $sql = new DbQuery();
             $sql->select('p.`id_product`, pa.`id_product_attribute`');
             $sql->from('product', 'p');
-            $sql->join(Shop::addSqlAssociation('product', 'p'));
+
+            if ($idShop) {
+                $sql->join(
+                    $this->getShopAssociator()->addAssociation(
+                        'product',
+                        'p',
+                        true,
+                        null,
+                        false,
+                        $idShop
+                    )
+                );
+            } else {
+                $sql->join($this->getShopAssociator()->addAssociation('product', 'p'));
+            }
+
             $sql->leftJoin('product_attribute', 'pa', 'pa.`id_product` = p.`id_product`');
 
             if ($reference_format === 'supplier_reference') {
@@ -171,6 +194,7 @@ class ShoppingfeedProduct extends ObjectModel
             } else {
                 $where = 'pa.`' . pSQL($reference_format) . '` = "' . pSQL($sfReference) . '"';
             }
+
             $sql->where($where);
             $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql);
 
@@ -181,7 +205,22 @@ class ShoppingfeedProduct extends ObjectModel
 
         $sql = new DbQuery();
         $sql->from('product', 'p');
-        $sql->join(Shop::addSqlAssociation('product', 'p'));
+
+        if ($idShop) {
+            $sql->join(
+                $this->getShopAssociator()->addAssociation(
+                    'product',
+                    'p',
+                    true,
+                    null,
+                    false,
+                    $idShop
+                )
+            );
+        } else {
+            $sql->join($this->getShopAssociator()->addAssociation('product', 'p'));
+        }
+
         $sql->select('p.`id_product`');
         if ($reference_format === 'supplier_reference') {
             $where = 'EXISTS(

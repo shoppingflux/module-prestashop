@@ -28,7 +28,7 @@ class HookDispatcher extends AbstractHookDispatcher
         RelaisColis::class,
     ];
 
-    public function dispatch($hookName, $params = [])
+    public function dispatch($hookName, array $params = [])
     {
         $hookName = preg_replace('~^hook~', '', $hookName);
         $hookName = lcfirst($hookName);
