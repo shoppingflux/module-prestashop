@@ -22,7 +22,6 @@ if (!defined('_PS_VERSION_')) {
 
 require_once _PS_MODULE_DIR_ . 'shoppingfeed/vendor/autoload.php';
 
-use ShoppingfeedAddon\Hook\HookDispatcher;
 
 // Set this as comment so Classlib will import the files; but don't uncomment !
 // Installation will fail on PS 1.6 if "use" statements are in the main module file
@@ -33,6 +32,7 @@ use ShoppingfeedAddon\Hook\HookDispatcher;
 // use ShoppingfeedClasslib\Registry;
 // use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerExtension;
 // use ShoppingfeedClasslib\Extensions\ProcessMonitor\ProcessMonitorExtension;
+// use ShoppingfeedAddon\Hook\HookDispatcher;
 
 /**
  * The base module class
@@ -386,7 +386,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             ];
         }
 
-        $this->hookDispatcher = new HookDispatcher($this);
+        $this->hookDispatcher = new \ShoppingfeedAddon\Hook\HookDispatcher($this);
         $this->hooks = array_merge($this->hooks, $this->hookDispatcher->getAvailableHooks());
     }
 
