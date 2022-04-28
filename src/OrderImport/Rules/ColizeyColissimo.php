@@ -88,7 +88,7 @@ class ColizeyColissimo extends AbstractColissimo implements RuleInterface
      */
     public function getConditions()
     {
-        return $this->l('If the order comes from Colizey and has non-empty "service_point_id" and "service_point_name" additional fields.', 'ColizeyColissimo');
+        return $this->l('If the order comes from Colizey and has non-empty \'service_point_id\' and \'service_point_name\' additional fields.', 'ColizeyColissimo');
     }
 
     protected function getProductCode(OrderResource $apiOrder)

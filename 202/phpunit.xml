@@ -6,8 +6,32 @@
 		 backupGlobals="false"
 		 colors="true"
          bootstrap="phpunit_bootstrap.php"
-
 >
+    <filter>
+        <whitelist>
+            <directory>../</directory>
+            <exclude>
+                <directory>../202</directory>
+                <directory>../translations</directory>
+                <directory>../views</directory>
+                <directory>../css</directory>
+                <directory>../js</directory>
+                <directory>../img</directory>
+                <directory>../override</directory>
+                <directory>../upgrade</directory>
+                <directory>../vendor</directory>
+                <directory>../controllers</directory>
+                <directory suffix="cli.php">../</directory>
+                <directory suffix="index.php">../</directory>
+                <directory suffix="index.php">../*/</directory>
+                <directory suffix="index.php">../*/*/</directory>
+            </exclude>
+        </whitelist>
+    </filter>
+
+<logging>
+  <log type="coverage-html" target="/var/www/html/202/cover/" lowUpperBound="35" highLowerBound="70"/>
+</logging>
 	<php>
 		<ini name="error_reporting" value="-1" />
 			    <env name="SYMFONY_DEPRECATIONS_HELPER" value="disabled" />

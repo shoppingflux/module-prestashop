@@ -143,7 +143,7 @@ abstract class AbstractColissimo extends RuleAbstract implements RuleInterface
      */
     public function getDescription()
     {
-        return $this->l('Set the carrier to Colissimo Pickup Point and add necessary data in the colissimo module accordingly.', 'ColizeyColissimo');
+        return $this->l('Set the carrier to Colissimo Pickup Point and add necessary data in the colissimo module accordingly.', 'AbstractColissimo');
     }
 
     abstract protected function getProductCode(OrderResource $apiOrder);

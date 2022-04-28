@@ -313,8 +313,11 @@ class ShoppingfeedOrderImportActions extends DefaultActions
 
         // Try to retrieve customer using the billing address mail
         $apiBillingAddress = &$this->conveyor['orderData']->billingAddress;
+        $apiShippingAddress = &$this->conveyor['orderData']->shippingAddress;
         if (Validate::isEmail($apiBillingAddress['email'])) {
             $customerEmail = $apiBillingAddress['email'];
+        } elseif (Validate::isEmail($apiShippingAddress['email'])) {
+            $customerEmail = $apiShippingAddress['email'];
         } else {
             $customerEmail = $apiOrder->getId()
                 . '@' . $apiOrder->getChannel()->getName()

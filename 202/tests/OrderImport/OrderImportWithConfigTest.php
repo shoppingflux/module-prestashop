@@ -70,7 +70,7 @@ class OrderImportWithConfigTest extends AbstractOrdeTestCase
         $customer = $conveyor['customer'];
         $this->assertEquals($customer->firstname, 'CAROLINE');
         $this->assertEquals($customer->lastname, 'STEFANINI');
-        //$this->assertEquals($customer->email, 'caroline@domain.fr');
+        $this->assertEquals($customer->email, 'caroline@domain.fr');
 
         $sfOrder = $conveyor['sfOrder'];
         $this->assertEquals($sfOrder->name_marketplace, 'Veepeegroup');

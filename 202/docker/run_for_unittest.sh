@@ -52,6 +52,6 @@ TRUNCATE ps_colissimo_pickup_point;
 
 cd /var/www/html/modules/shoppingfeed/
 
-php -dmemory_limit=512M vendor/bin/phpunit -c 202/phpunit.xml
+php -dmemory_limit=512M -dxdebug.mode=coverage vendor/bin/phpunit -c 202/phpunit.xml
 
 chown www-data:www-data /var/www/html/var -Rf
