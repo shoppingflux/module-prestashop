@@ -20,6 +20,19 @@ UPDATE ps_configuration SET value = '[\"6\"]' WHERE name = 'SHOPPINGFEED_CANCELL
 UPDATE ps_configuration SET value = '[\"7\"]' WHERE name = 'SHOPPINGFEED_REFUNDED_ORDERS';
 UPDATE ps_configuration SET value = '{\"ShoppingfeedAddon\\OrderImport\\Rules\\AmazonEbay\":{\"enabled\":\"1\"},\"ShoppingfeedAddon\\OrderImport\\Rules\\ChangeStateOrder\":{\"end_order_state\":\"\"},\"ShoppingfeedAddon\\OrderImport\\Rules\\ShippedByMarketplace\":{\"end_order_state_shipped\":\"5\"},\"ShoppingfeedAddon\\OrderImport\\Rules\\SymbolConformity\":{\"enabled\":\"1\"}}' WHERE name = 'SHOPPINGFEED_ORDER_IMPORT_SPECIFIC_RULES_CONFIGURATION';
 
+INSERT IGNORE INTO ps_tax (id_tax, rate, active, deleted) VALUES
+(40, 0.190, 1, 0);
+INSERT IGNORE INTO ps_tax_lang (id_tax, id_lang, name) VALUES
+(40, 1, 'TPH'), (40, 2, 'TPH');
+INSERT IGNORE INTO ps_tax_rules_group (id_tax_rules_group, name, active, deleted, date_add, date_upd) VALUES
+(10, 'TVA + TPH', 1, 0, NOW(), NOW());
+INSERT IGNORE INTO ps_tax_rules_group_shop (id_tax_rules_group, id_shop) VALUES (10, 1);
+INSERT IGNORE INTO ps_tax_rule (id_tax_rules_group, id_country, id_state, zipcode_from, zipcode_to, id_tax, behavior) VALUES
+(10, 8, 0, 0, 0, 40, 2),
+(10, 8, 0, 0, 0, 1, 2);
+UPDATE ps_product SET id_tax_rules_group = 10 WHERE id_product = 18;
+UPDATE ps_product_shop SET id_tax_rules_group = 10 WHERE id_product = 18;
+
 INSERT IGNORE INTO ps_shoppingfeed_token (id_shoppingfeed_token, id_shop, id_lang, id_currency, content, active, date_add, date_upd) VALUES
 (1, 1, 1, 1, 'token-shoppingfeed-api', 1, NOW(), NOW());
 

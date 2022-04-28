@@ -913,7 +913,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             $psProduct = $this->conveyor['prestashopProducts'][$apiProduct->reference];
 
             $query = new DbQuery();
-            $query->select('tax.rate AS tax_rate, od.id_order_detail, od.id_order')
+            $query->select('tax.rate AS tax_rate, od.id_order_detail, od.id_order, odt.id_tax')
                 ->from('order_detail', 'od')
                 ->leftJoin('orders', 'o', 'o.id_order = od.id_order')
                 ->leftJoin('order_detail_tax', 'odt', 'odt.id_order_detail = od.id_order_detail')
@@ -924,6 +924,8 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             if ($psProduct->id_product_attribute) {
                 $query->where('product_attribute_id = ' . (int) $psProduct->id_product_attribute);
             }
+            $query->orderBy('tax.rate DESC');
+
             $productOrderDetail = Db::getInstance()->getRow($query);
 
             if (!$productOrderDetail) {
@@ -985,10 +987,10 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                     'unit_amount' => Tools::ps_round((float) ((float) $apiProduct->unitPrice - ((float) $apiProduct->unitPrice / (1 + ($tax_rate / 100)))), 2),
                     'total_amount' => Tools::ps_round((float) (((float) $apiProduct->unitPrice - ((float) $apiProduct->unitPrice / (1 + ($tax_rate / 100)))) * $apiProduct->quantity), 2),
                 ];
-                Db::getInstance()->update(
+                $res = Db::getInstance()->update(
                     'order_detail_tax',
                     $updateOrderDetailTax,
-                    '`id_order_detail` = ' . (int) $productOrderDetail['id_order_detail']
+                    '`id_order_detail` = ' . (int) $productOrderDetail['id_order_detail'] . ' AND id_tax = ' . (int) $productOrderDetail['id_tax']
                 );
             } else {
                 // delete tax so that it does not appear in tax details block in invoice
@@ -998,7 +1000,6 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 );
             }
         }
-
         $carrier = $this->conveyor['carrier'];
         $paymentInformation = &$this->conveyor['orderData']->payment;
 
