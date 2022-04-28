@@ -18,6 +18,7 @@
  */
 
 namespace Tests\OrderImport;
+
 use ShoppingfeedAddon\Actions\ActionsHandler;
 use ShoppingfeedClasslib\Registry;
 
