@@ -22,7 +22,6 @@ if (!defined('_PS_VERSION_')) {
 
 require_once _PS_MODULE_DIR_ . 'shoppingfeed/vendor/autoload.php';
 
-
 // Set this as comment so Classlib will import the files; but don't uncomment !
 // Installation will fail on PS 1.6 if "use" statements are in the main module file
 
