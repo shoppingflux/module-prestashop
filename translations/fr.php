@@ -53,6 +53,10 @@ $_MODULE['<{shoppingfeed}prestashop>adminprocessmonitorcontroller_f1b81e4990e4ad
 $_MODULE['<{shoppingfeed}prestashop>adminprocessmonitorcontroller_bc33aa1314e7dcd3472db72472b909b2'] = 'Une erreur s\'est produite lors de la suppression.';
 $_MODULE['<{shoppingfeed}prestashop>adminprocessmonitorcontroller_7f290594963a303db17a5e21dc4cf0b7'] = 'Une erreur s\'est produite lors de la suppression de l\'objet';
 $_MODULE['<{shoppingfeed}prestashop>adminprocessmonitorcontroller_77ae44aa6c998166fcf1a87496278ad5'] = '(impossible de charger l\'objet)';
+$_MODULE['<{shoppingfeed}prestashop>zalandocarrier_0cc1e925b5703e8da52b7c3e91829499'] = '[Commande: %s]';
+$_MODULE['<{shoppingfeed}prestashop>zalandocarrier_43b6ade8fd758b0597ad2f31c9cd1b41'] = 'Règle déclenchée.';
+$_MODULE['<{shoppingfeed}prestashop>zalandocarrier_9b03904408244323647649bf095e6b72'] = 'Si la commande provient de Zalando.';
+$_MODULE['<{shoppingfeed}prestashop>zalandocarrier_c080a57a1eec56e1f84db6783c85e7d9'] = 'Régler le transporteur.';
 $_MODULE['<{shoppingfeed}prestashop>amazonebay_0cc1e925b5703e8da52b7c3e91829499'] = '[Commande: %s]';
 $_MODULE['<{shoppingfeed}prestashop>amazonebay_6efbd4474b0556a3e01989218a4c4745'] = 'Règle déclenchée. Adresses mises à jour.';
 $_MODULE['<{shoppingfeed}prestashop>amazonebay_e1b9234f8eb2fc5b1bc1c05bbac9fb2e'] = 'Si la commande provient d\'Amazon OU Ebay OU Laredoute et que le ”prénom” ou le ”nom” est vide dans l\'adresse';
@@ -64,6 +68,7 @@ $_MODULE['<{shoppingfeed}prestashop>relaiscolisrule_12b2a9e1007d6213de0f4bc4d999
 $_MODULE['<{shoppingfeed}prestashop>relaiscolisrule_78865ba70061c4c52ec49cc70f93bb9f'] = 'Impossible de créer l\'objet info du Relais Colis.';
 $_MODULE['<{shoppingfeed}prestashop>relaiscolisrule_45ebbc37feac231b303e2e6b26d956b4'] = 'Règle déclenchée. Adresse d\'expédition non valide.';
 $_MODULE['<{shoppingfeed}prestashop>relaiscolisrule_4d11ce6d1b3bf012fa625df68a7ce2c3'] = 'Règle déclenchée. Mise à jour de l\'adresse d\'expédition.';
+$_MODULE['<{shoppingfeed}prestashop>colizeycolissimo_0ada85f7fb82c287ceabfb0aee405cd4'] = 'Si une commande provient de Colizey et dispose d\'un champs additionnel non vide \'service_point_id\' and \'service_point_name\'.';
 $_MODULE['<{shoppingfeed}prestashop>relaiscolisrule_4447b0476e74682abfd0eed0ac07c83d'] = 'Ajoute la commande dans la table du module Relais Colis.';
 $_MODULE['<{shoppingfeed}prestashop>relaiscolisrule_91a513e2642537f871e499426027f2dc'] = 'Si la commande \'Laredoute\' comme nom de marketplace.';
 $_MODULE['<{shoppingfeed}prestashop>colizeycolissimo_0cc1e925b5703e8da52b7c3e91829499'] = '[Commande: %s]';
@@ -397,6 +402,7 @@ $_MODULE['<{shoppingfeed}prestashop>shoppingfeedproductsyncpriceactions_4930df58
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedproductsyncpriceactions_73c1f14a52d64e32c681f6bc2b587189'] = 'Mise à jour du produit %s prix : %s';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedproductsyncpriceactions_88f3784c2963bc004558697d67f77e1d'] = '%s non référencé dans le catalogue Shopping Feed - prix : %s';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_0cc1e925b5703e8da52b7c3e91829499'] = '[Commande: %s]';
+$_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_4528e2041b7be1a9241cbcbc2835b51d'] = 'Sauter un import de commande à cause d\'une devise non supportée.';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_a11762ead4c38afafe9cd9fcc729e17f'] = 'Aucune donnée trouvée dans l\'apiOrder';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_0de7fd990e38ad9216de83e95f5446ce'] = 'Commande non importée; Déjà importée.';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_2d507cd78ac89b9255ac05fcbb8ed6df'] = 'Aucun items trouvés sur la commande provenant de Shopping feed.';
