@@ -1,7 +1,7 @@
 <?php
 
 global $_MODULE;
-$_MODULE = array();
+$_MODULE = [];
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeed_b9d1b8558d2d7145794f697158b6f253'] = 'Shoppingfeed Prestashop Plugin (Feed&Order)';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeed_08c9126c100fb53b59dbfedb1ba37cda'] = 'Accélérez la vitesse de synchronisation des stocks Marketplaces de votre module Shopping Feed.';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeed_876f23178c29dc2552c0b48bf23cd9bd'] = 'Êtes vous sûr de vouloir désinstaller le module ?';
