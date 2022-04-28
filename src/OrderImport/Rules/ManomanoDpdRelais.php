@@ -1,4 +1,21 @@
 <?php
+/**
+ * Copyright since 2019 Shopping Feed
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Academic Free License (AFL 3.0)
+ * that is bundled with this package in the file LICENSE.md.
+ * It is also available through the world-wide-web at this URL:
+ * https://opensource.org/licenses/AFL-3.0
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to tech@202-ecommerce.com so we can send you a copy immediately.
+ *
+ * @author    202 ecommerce <tech@202-ecommerce.com>
+ * @copyright Since 2019 Shopping Feed
+ * @license   https://opensource.org/licenses/AFL-3.0  Academic Free License (AFL 3.0)
+ */
 
 namespace ShoppingfeedAddon\OrderImport\Rules;
 
@@ -32,7 +49,8 @@ class ManomanoDpdRelais extends RuleAbstract implements RuleInterface
             return false;
         }
 
-        if ('monechelle' !== Tools::strtolower($apiOrder->getChannel()->getName())) {
+        if ('monechelle' !== Tools::strtolower($apiOrder->getChannel()->getName())
+            && 'manomanopro' !== Tools::strtolower($apiOrder->getChannel()->getName())) {
             return false;
         }
 
@@ -48,7 +66,7 @@ class ManomanoDpdRelais extends RuleAbstract implements RuleInterface
      */
     public function getDescription()
     {
-        return $this->l('Retrieves the relay ID and fill in the table ”dpdfrance_shipping” as expected by ”DPD France” Addons.', 'Shoppingfeed.Rule');
+        return $this->l('Retrieves the relay ID and fill in the table ”dpdfrance_shipping” as expected by ”DPD France” Addons.', 'ManomanoDpdRelais');
     }
 
     /**
@@ -56,7 +74,7 @@ class ManomanoDpdRelais extends RuleAbstract implements RuleInterface
      */
     public function getConditions()
     {
-        return $this->l('If the order is from ManoMano with ”DPD Relay”', 'Shoppingfeed.Rule');
+        return $this->l('If the order is from ManoMano with ”DPD Relay”', 'ManomanoDpdRelais');
     }
 
     /**
@@ -101,7 +119,7 @@ class ManomanoDpdRelais extends RuleAbstract implements RuleInterface
         $relayID = $this->getRelayIdFromOrder($apiOrder);
 
         $logPrefix = sprintf(
-            $this->l('[Order: %s]', 'Shoppingfeed.Rule'),
+            $this->l('[Order: %s]', 'ManomanoDpdRelais'),
             $apiOrder->getId()
         );
         $logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
@@ -109,7 +127,7 @@ class ManomanoDpdRelais extends RuleAbstract implements RuleInterface
         if (empty($relayID)) {
             ProcessLoggerHandler::logInfo(
                 $logPrefix .
-                $this->l('Rule triggered. No relay ID found in shipping address \'RelayId\' field', 'Shoppingfeed.Rule')
+                $this->l('Rule triggered. No relay ID found in shipping address \'RelayId\' field', 'ManomanoDpdRelais')
             );
 
             return false;
@@ -118,7 +136,7 @@ class ManomanoDpdRelais extends RuleAbstract implements RuleInterface
         ProcessLoggerHandler::logInfo(
             sprintf(
                 $logPrefix .
-                $this->l('Rule triggered. Id Relay : %s', 'Shoppingfeed.Rule'),
+                $this->l('Rule triggered. Id Relay : %s', 'ManomanoDpdRelais'),
                 $relayID
             )
         );
@@ -126,7 +144,7 @@ class ManomanoDpdRelais extends RuleAbstract implements RuleInterface
         if (false == $this->associateWithDpd($cart, $relayID)) {
             ProcessLoggerHandler::logInfo(
                 $logPrefix .
-                $this->l('Failed to associate an order with dpdfrance module', 'Shoppingfeed.Rule')
+                $this->l('Failed to associate an order with dpdfrance module', 'ManomanoDpdRelais')
             );
 
             return false;

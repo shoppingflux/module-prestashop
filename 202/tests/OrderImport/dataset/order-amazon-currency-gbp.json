@@ -1,0 +1,101 @@
+{
+  "id":123456789,
+  "storeId":25125,
+  "channelId":66,
+  "reference":"125-13456-123456",
+  "storeReference":"",
+  "isTest":false,
+  "acknowledgedAt":"2022-03-09T17:50:01+01:00",
+  "createdAt":"2022-03-09T15:37:11+01:00",
+  "updatedAt":"2022-03-09T18:25:13+01:00",
+  "status":"shipped",
+  "anonymized":false,
+  "payment":{
+    "shippingAmount":15,
+    "productAmount":67.19,
+    "totalAmount":82.19,
+    "currency":"GBP",
+    "method":"MFN"
+  },
+  "shipment":{
+    "carrier":"Std UK Dom_2",
+    "trackingNumber":""
+  },
+  "additionalFields":{
+    "is_prime":"",
+    "shipping_tax":"2.5",
+    "is_business_order":"",
+    "purchase_order_number":""
+  },
+  "errors":[
+
+  ],
+  "itemsReferencesAliases":{
+
+  },
+  "items":[
+    {
+      "reference":"1_11",
+      "status":"",
+      "quantity":1,
+      "price":67.19,
+      "taxAmount":11.2,
+      "channelReference":"123",
+      "name":"Sac à langer Biscuit",
+      "image":"https://localhost/5465-large_default/sac-a-langer-biscuit-pasito-a-pasito.jpg"
+    }
+  ],
+  "shippingAddress":{
+    "firstName":"",
+    "lastName":"Sophie English",
+    "company":"",
+    "street":"6 BIGBEN STREET",
+    "street2":"",
+    "other":"",
+    "postalCode":"SS15 6JJ",
+    "city":"LONDON",
+    "country":"GB",
+    "phone":"0123456789",
+    "mobilePhone":"",
+    "email":"aaabbbcccdddeee@marketplace.amazon.co.uk"
+  },
+  "billingAddress":{
+    "firstName":"",
+    "lastName":"Sophie English",
+    "company":"",
+    "street":"6 BIGBEN STREET",
+    "street2":"",
+    "other":"",
+    "postalCode":"SS15 6JJ",
+    "city":"LONDON",
+    "country":"GB",
+    "phone":"0123456789",
+    "mobilePhone":"",
+    "email":"aaabbbcccdddeee@marketplace.amazon.co.uk"
+  },
+  "_links":{
+    "self":{
+      "href":"/v1/store/44220/order/17115191843"
+    },
+    "store":{
+      "href":"/v1/store/44220"
+    }
+  },
+  "_embedded":{
+    "channel":{
+      "id":66,
+      "name":"Amazon",
+      "_links":{
+        "self":{
+          "href":"/v1/channel/66"
+        },
+        "image":{
+          "href":"https://assets.shopping-feed.com/channel/logo/Amazon.png"
+        }
+      }
+    },
+    "tag":[
+
+    ]
+  }
+}

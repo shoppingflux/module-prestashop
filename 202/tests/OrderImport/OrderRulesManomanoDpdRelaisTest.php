@@ -60,4 +60,17 @@ class OrderRulesManomanoDpdRelaisTest extends AbstractOrdeTestCase
         ];
         $this->assertSame($expedtedAddress, $params['orderData']->shippingAddress);
     }
+
+    /**
+     * Test to split name
+     *
+     * @return void
+     */
+    public function testSplitManoManoProRelais(): void
+    {
+        $params['apiOrder'] = $this->getOrderRessourceFromDataset('order-manomanopro.json');
+
+        $rules = new ManomanoDpdRelais();
+        $this->assertTrue($rules->isApplicable($params['apiOrder']));
+    }
 }

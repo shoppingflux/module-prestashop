@@ -1,6 +1,6 @@
 includes:
 	- %currentWorkingDirectory%/vendor/prestashop/php-dev-tools/phpstan/ps-module-extension.neon
-    
+
 parameters:
   paths:
   # We consider that the extension file will be stored the folder test/phpstan
@@ -13,6 +13,8 @@ parameters:
       - ../../upgrade
   ignoreErrors:
     - '#Instantiated class RelaisColisInfo not found\.#'
-    
+    - '#Instantiated class RelaisColisOrder not found\.#'
+    - '#Call to static method getRelaisColisOrderId\(\) on an unknown class RelaisColisOrder\.#'
+
   reportUnmatchedIgnoredErrors: false
   level: 1

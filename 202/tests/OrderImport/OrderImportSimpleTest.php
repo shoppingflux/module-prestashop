@@ -21,6 +21,7 @@ namespace Tests\OrderImport;
 
 use ColissimoCartPickupPoint;
 use ShoppingfeedAddon\Actions\ActionsHandler;
+use ShoppingfeedCarrier;
 use ShoppingfeedClasslib\Registry;
 
 /**
@@ -272,6 +273,11 @@ class OrderImportSimpleTest extends AbstractOrdeTestCase
         $this->assertEquals($pickupPoint->company_name, 'PRIMAVERA');
         $this->assertEquals($pickupPoint->product_code, 'BPR');
         $this->assertEquals($pickupPoint->city, 'MARSEILLE');
+        $sfCarrier = ShoppingfeedCarrier::getByMarketplaceAndName(
+                        'zalandomyunittest',
+                        'pickup'
+                    );
+        $this->assertNotEquals($sfCarrier, false);
     }
 
     public function testImportColizey(): void
@@ -365,7 +371,7 @@ class OrderImportSimpleTest extends AbstractOrdeTestCase
      *
      * @return void
      */
-    public function testImportManoManoDpdRelais(): void
+    public function testImportManoManoDpdRelaisWithDoubleTaxOnProduct(): void
     {
         $apiOrder = $this->getOrderRessourceFromDataset('order-manomano.json');
 
@@ -441,5 +447,13 @@ class OrderImportSimpleTest extends AbstractOrdeTestCase
         $dpdShippingService = \Dpdfrance::getService($psOrder, false);
         $expectedValue = 'REL';
         $this->assertEquals($expectedValue, $dpdShippingService);
+
+        //refs#34500
+        $detail = $psOrder->getProductsDetail()[0];
+        $detailTaxes = \OrderDetail::getTaxListStatic($detail['id_order_detail']);
+        $this->assertEquals($detailTaxes[0]['total_amount'], 1.620000);
+        $this->assertEquals($detailTaxes[0]['id_tax'], 1);
+        $this->assertEquals($detailTaxes[1]['total_amount'], 0.010000);
+        $this->assertEquals($detailTaxes[1]['id_tax'], 40);
     }
 }

@@ -1,0 +1,100 @@
+{
+    "id":1723502500,
+    "storeId":25125,
+    "channelId":32052,
+    "reference":"M220443420511",
+    "storeReference":"67118",
+    "isTest":false,
+    "acknowledgedAt":"2022-04-01T00:10:17+02:00",
+    "createdAt":"2022-04-01T00:37:16+02:00",
+    "updatedAt":"2022-04-01T00:37:16+02:00",
+    "status":"waiting_shipment",
+    "anonymized":false,
+    "payment":{
+       "shippingAmount":6,
+       "productAmount":49.35,
+       "totalAmount":55.35,
+       "currency":"EUR",
+       "method":"1X"
+    },
+    "shipment":{
+       "carrier":"DPD Pickup",
+       "trackingNumber":""
+    },
+    "additionalFields":{
+       "env":"default",
+       "fiscalnb":"38191140300065",
+       "order_status":"3"
+    },
+    "errors":[
+       
+    ],
+    "itemsReferencesAliases": {
+        "TH0064":"3"
+    },
+    "items":[
+       {
+          "reference":"TH0064",
+          "status":"",
+          "quantity":3,
+          "price":16.45,
+          "taxAmount":2.74,
+          "channelReference":"0",
+          "name":"Test TH - Test dureté eau",
+          "image":"https://localhost/7651-marketplaces/test-th-test-durete-eau.jpg"
+       }
+    ],
+    "shippingAddress":{
+       "firstName":"Regis DUMONT",
+       "lastName":"LE CORNER",
+       "company":"",
+       "street":"41 RUE DU GENERAL DE GAULLE",
+       "street2":"",
+       "other":"P30911",
+       "postalCode":"62120",
+       "city":"Witternesse",
+       "country":"FR",
+       "phone":"",
+       "mobilePhone":"+33623456789",
+       "email":""
+    },
+    "billingAddress":{
+       "firstName":"Regis",
+       "lastName":"DUMONT",
+       "company":"REGIS DUMONT",
+       "street":"17 rue du stade",
+       "street2":"",
+       "other":"",
+       "postalCode":"62120",
+       "city":"Quernes",
+       "country":"FR",
+       "phone":"",
+       "mobilePhone":"+33623456789",
+       "email":"m_AZERTY@message.manomano.com"
+    },
+    "_links":{
+       "self":{
+          "href":"/v1/store/40822/order/1723502500"
+       },
+       "store":{
+          "href":"/v1/store/25125"
+       }
+    },
+    "_embedded":{
+       "channel":{
+          "id":32052,
+          "name":"Manomanopro",
+          "_links":{
+             "self":{
+                "href":"/v1/channel/32052"
+             },
+             "image":{
+                "href":"https://assets.shopping-feed.com/channel/logo/Manomanopro.png"
+             }
+          }
+       },
+       "tag":[
+          
+       ]
+    }
+ }

@@ -28,39 +28,29 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-use Module;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
+use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
+use Tools;
 
-/**
- * See ticket #30781
- * This is for the "colissimo" module, not to be confused with "soflexibilite" or "soliberte". When an order from Zalando uses Pickup Point shipping with Colissimo,
- * the data for the pickup point are in the additional fields. The data must be set up in the "colissimo" module's table so that colissimo can treat it as a
- * standard order. The goal is to allow the merchant to generate labels with the "colissimo" module so that the standard shipping process can take place.
- */
-class ColizeyColissimo extends AbstractColissimo implements RuleInterface
+class ZalandoCarrier extends RuleAbstract implements RuleInterface
 {
     public function isApplicable(OrderResource $apiOrder)
     {
         $apiOrderData = $apiOrder->toArray();
         $logPrefix = sprintf(
-            $this->l('[Order: %s]', 'ColizeyColissimo'),
+            $this->l('[Order: %s]', 'ZalandoCarrier'),
             $apiOrder->getId()
         );
         $logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
-
-        // Check marketplace, that the additional fields with the pickup point data are there and not empty, and that the "colissimo" module is installed and active
-        $module_colissimo = Module::getInstanceByName('colissimo');
-        if (strcasecmp('colizey', $apiOrder->getChannel()->getName() === 0)
-            && !empty($apiOrderData['additionalFields']['shippingRelayId'])
-            && $module_colissimo && $module_colissimo->active
-        ) {
+        if (preg_match('#^zalando#', Tools::strtolower($apiOrder->getChannel()->getName()))
+            && empty($apiOrderData['shipment']['carrier'])) {
             ProcessLoggerHandler::logInfo(
-                $logPrefix .
-                    $this->l('Rule triggered.', 'ColizeyColissimo'),
-                'Order'
-            );
+                    $logPrefix .
+                        $this->l('Rule triggered.', 'ZalandoCarrier'),
+                    'Order'
+                );
 
             return true;
         }
@@ -74,13 +64,23 @@ class ColizeyColissimo extends AbstractColissimo implements RuleInterface
      *
      * @param array $params
      */
-    public function onPreProcess($params)
+    public function onCarrierRetrieval($params)
     {
         $apiOrder = $params['apiOrder'];
-        $orderData = $params['orderData'];
-        $address = $apiOrder->getShippingAddress();
-        $address['other'] = $this->getPointId($apiOrder);
-        $orderData->shippingAddress = $address;
+        $apiOrderData = $apiOrder->toArray();
+        $carrier = (empty($apiOrderData['additionalFields']['service_point_id'])) ? 'standard' : 'pickup';
+        $params['apiOrderShipment']['carrier'] = $carrier;
+
+        $logPrefix = sprintf(
+            $this->l('[Order: %s]', 'ZalandoCarrier'),
+            $apiOrder->getId()
+        );
+        $logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
+        ProcessLoggerHandler::logInfo(
+            $logPrefix .
+                $this->l("Rule triggered. Carrier set to $carrier", 'ZalandoCarrier'),
+            'Order'
+        );
     }
 
     /**
@@ -88,18 +88,14 @@ class ColizeyColissimo extends AbstractColissimo implements RuleInterface
      */
     public function getConditions()
     {
-        return $this->l('If the order comes from Colizey and has non-empty \'service_point_id\' and \'service_point_name\' additional fields.', 'ColizeyColissimo');
+        return $this->l('If the order comes from Zalando', 'ZalandoCarrier');
     }
 
-    protected function getProductCode(OrderResource $apiOrder)
+    /**
+     * {@inheritdoc}
+     */
+    public function getDescription()
     {
-        return 'A2P';
-    }
-
-    protected function getPointId(OrderResource $apiOrder)
-    {
-        $apiOrderData = $apiOrder->toArray();
-
-        return $apiOrderData['additionalFields']['shippingRelayId'];
+        return $this->l('Set the carrier.', 'ZalandoCarrier');
     }
 }

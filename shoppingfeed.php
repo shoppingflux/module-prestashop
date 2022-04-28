@@ -22,6 +22,8 @@ if (!defined('_PS_VERSION_')) {
 
 require_once _PS_MODULE_DIR_ . 'shoppingfeed/vendor/autoload.php';
 
+use ShoppingfeedAddon\Hook\HookDispatcher;
+
 // Set this as comment so Classlib will import the files; but don't uncomment !
 // Installation will fail on PS 1.6 if "use" statements are in the main module file
 
@@ -383,6 +385,9 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
                 ],
             ];
         }
+
+        $this->hookDispatcher = new HookDispatcher($this);
+        $this->hooks = array_merge($this->hooks, $this->hookDispatcher->getAvailableHooks());
     }
 
     /**
@@ -598,12 +603,13 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     public function mapPrestashopProduct($sfProductReference, $id_shop, ...$arguments)
     {
         $sfProduct = new ShoppingfeedProduct();
-        $sfProductReference = $sfProduct->getReverseShoppingfeedReference($sfProductReference);
+        $sfProductReference = $sfProduct->getReverseShoppingfeedReference($sfProductReference, $id_shop);
 
         Hook::exec(
             'ShoppingfeedReverseProductReference', // hook_name
             [
                 'sfProductReference' => &$sfProductReference,
+                'id_shop' => $id_shop,
             ] // hook_args
         );
 
@@ -621,6 +627,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             [
                 'sfProductReference' => &$sfProductReference,
                 'product' => &$product,
+                'id_shop' => $id_shop,
             ] // hook_args
         );
 
@@ -1251,6 +1258,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             ShoppingfeedAddon\OrderImport\Rules\SymbolConformity::class,
             ShoppingfeedAddon\OrderImport\Rules\ManomanoDpdRelais::class,
             ShoppingfeedAddon\OrderImport\Rules\ZalandoColissimo::class,
+            ShoppingfeedAddon\OrderImport\Rules\ZalandoCarrier::class,
             ShoppingfeedAddon\OrderImport\Rules\ColizeyColissimo::class,
         ];
 
@@ -1318,5 +1326,19 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         }
 
         return Db::getInstance()->execute('TRUNCATE ' . _DB_PREFIX_ . ShoppingfeedPreloading::$definition['table']);
+    }
+
+    public function __call($name, $arguments)
+    {
+        $result = false;
+        // execute module hooks
+        if ($this->hookDispatcher != null) {
+            $moduleHookResult = $this->hookDispatcher->dispatch($name, $arguments);
+            if ($moduleHookResult != null) {
+                $result = $moduleHookResult;
+            }
+        }
+
+        return $result;
     }
 }
