@@ -12,6 +12,8 @@ php /var/www/html/bin/console prestashop:module install colissimo -e prod
 echo "Add data fixtures for Unit Tests"
 
 mysql -h localhost -u root prestashop -e "
+UPDATE ps_product_attribute SET reference = 'demo_17_white' WHERE id_product = 11 AND default_on = 1;
+
 TRUNCATE ps_shoppingfeed_order;
 UPDATE ps_configuration SET value = '[\"5\",\"4\"]' WHERE name = 'SHOPPINGFEED_SHIPPED_ORDERS';
 UPDATE ps_configuration SET value = '[\"6\"]' WHERE name = 'SHOPPINGFEED_CANCELLED_ORDERS';
@@ -37,6 +39,6 @@ TRUNCATE ps_colissimo_pickup_point;
 
 cd /var/www/html/modules/shoppingfeed/
 
-vendor/bin/phpunit -c 202/phpunit.xml
+php -dmemory_limit=512M vendor/bin/phpunit -c 202/phpunit.xml
 
 chown www-data:www-data /var/www/html/var -Rf

@@ -4,7 +4,7 @@ set -e
 set -x
 
 if [ "${RUN_USER}" != "www-data" ]; then 
-useradd -m $RUN_USER; 
+id -u $RUN_USER >/dev/null 2>&1 || useradd -m $RUN_USER;
 echo "export APACHE_RUN_USER=$RUN_USER \
 export APACHE_RUN_GROUP=$RUN_USER" >> /etc/apache2/envvars 
 fi

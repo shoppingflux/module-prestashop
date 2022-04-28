@@ -603,12 +603,13 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     public function mapPrestashopProduct($sfProductReference, $id_shop, ...$arguments)
     {
         $sfProduct = new ShoppingfeedProduct();
-        $sfProductReference = $sfProduct->getReverseShoppingfeedReference($sfProductReference);
+        $sfProductReference = $sfProduct->getReverseShoppingfeedReference($sfProductReference, $id_shop);
 
         Hook::exec(
             'ShoppingfeedReverseProductReference', // hook_name
             [
                 'sfProductReference' => &$sfProductReference,
+                'id_shop' => $id_shop,
             ] // hook_args
         );
 
@@ -626,6 +627,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             [
                 'sfProductReference' => &$sfProductReference,
                 'product' => &$product,
+                'id_shop' => $id_shop,
             ] // hook_args
         );
 
