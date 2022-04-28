@@ -1,0 +1,93 @@
+{
+"id": 17328877316,
+"storeId": 25125,
+"channelId": 35639,
+"reference": "200000VEEPEE200000",
+"storeReference": "5514",
+"isTest": false,
+"acknowledgedAt":  null,
+"createdAt": "2022-04-27T13:03:13+02:00",
+"updatedAt": "2022-04-27T13:03:13+02:00",
+"status": "waiting_shipment",
+"anonymized": false,
+"payment": {
+    "shippingAmount": 19,
+    "productAmount": 259,
+    "totalAmount": 278,
+    "currency": "EUR",
+    "method": "" 
+},
+"shipment": {
+    "carrier": "GLS",
+    "trackingNumber": "" 
+},
+"additionalFields": {
+    "order_id": "8112799",
+    "order_status": "PENDING" 
+},
+"errors": [],
+"itemsReferencesAliases": {},
+"items": [
+    {
+    "reference": "demo_17_white",
+    "status": "",
+    "quantity": 1,
+    "price": 259,
+    "taxAmount": 0,
+    "channelReference": "6755401",
+    "name": "Hummingbird cushion (color: white)",
+    "image": "https://localhost/133-large_default/matelas-a-memoire-de-forme-maxi-epaisseur-balmoral.jpg" 
+    }
+],
+"shippingAddress": {
+    "firstName": "CAROLINE",
+    "lastName": "STEFANINI",
+    "company": "",
+    "street": "9 RUE FRANCOIS D'ASSISE",
+    "street2": "",
+    "other": "",
+    "postalCode": "31240",
+    "city": "ST JEAN",
+    "country": "FR",
+    "phone": "0707070707",
+    "mobilePhone": "",
+    "email": "caroline@domain.fr"
+},
+"billingAddress": {
+    "firstName": "CAROLINE",
+    "lastName": "STEFANINI",
+    "company": "",
+    "street": "9 RUE FRANCOIS D'ASSISE",
+    "street2": "",
+    "other": "",
+    "postalCode": "31240",
+    "city": "ST JEAN",
+    "country": "FR",
+    "phone": "0707070707",
+    "mobilePhone": "",
+    "email": "" 
+},
+"_links": {
+    "self": {
+    "href": "/v1/store/43902/order/17328877316" 
+    },
+    "store": {
+    "href": "/v1/store/43902" 
+    }
+},
+"_embedded": {
+    "channel": {
+    "id": 35639,
+    "name": "Veepeegroup",
+    "_links": {
+        "self": {
+        "href": "/v1/channel/35639" 
+        },
+        "image": {
+        "href": "https://assets.shopping-feed.com/channel/logo/Veepeegroup.png" 
+        }
+    }
+    },
+    "tag": []
+}
+}
