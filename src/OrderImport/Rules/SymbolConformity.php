@@ -31,7 +31,7 @@ if (!defined('_PS_VERSION_')) {
 use Address;
 use Customer;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
-use ShoppingfeedAddon\OrderImport\OrderCustomerData;
+use ShoppingfeedAddon\OrderImport\OrderData;
 use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
 use ShoppingfeedAddon\Services\SymbolValidator;
@@ -78,7 +78,7 @@ class SymbolConformity extends RuleAbstract implements RuleInterface
 
         $this->updateAddress($orderData->shippingAddress);
         $this->updateAddress($orderData->billingAddress);
-        $this->updateCustomer($orderData->getCustomerData());
+        $this->updateCustomer($orderData);
 
         ProcessLoggerHandler::logInfo(
             $logPrefix .
@@ -204,8 +204,9 @@ class SymbolConformity extends RuleAbstract implements RuleInterface
         );
     }
 
-    protected function updateCustomer(OrderCustomerData &$customerData)
+    protected function updateCustomer(OrderData &$orderData)
     {
+        $customerData = $orderData->getCustomerData();
         $firstName = $customerData->getFirstName();
         $lastName = $customerData->getLastName();
 
@@ -230,5 +231,7 @@ class SymbolConformity extends RuleAbstract implements RuleInterface
             );
             $customerData->setLastName($lastName);
         }
+
+        $orderData->setCustomerData($customerData);
     }
 }

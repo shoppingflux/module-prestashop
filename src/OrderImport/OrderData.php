@@ -169,4 +169,9 @@ class OrderData
     {
         return $this->customer;
     }
+
+    public function setCustomerData(OrderCustomerData $customerData)
+    {
+        $this->customer = $customerData;
+    }
 }
