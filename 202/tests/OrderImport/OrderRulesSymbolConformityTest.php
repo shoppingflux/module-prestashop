@@ -42,7 +42,7 @@ class OrderRulesSymbolConformityTest extends AbstractOrdeTestCase
         $params['orderData'] = new OrderData($apiOrder);
         $params['apiOrder'] = $apiOrder;
         $rules->onPreProcess($params);
-        $customerData = $params['orderData']->getCustomerData();
+        $customerData = $params['orderData']->getCustomer();
         $apiBillingAddress = $params['orderData']->billingAddress;
 
         $customer = new Customer();

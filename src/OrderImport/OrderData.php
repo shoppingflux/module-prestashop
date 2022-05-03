@@ -88,6 +88,9 @@ class OrderData
     /** @var OrderCustomerData */
     protected $customer;
 
+    /** @var OrderResource */
+    protected $apiOrder;
+
     public function __construct(OrderResource $apiOrder)
     {
         $this->storeReference = $apiOrder->getStoreReference();
@@ -100,10 +103,10 @@ class OrderData
         $this->payment = $apiOrder->getPaymentInformation();
         $this->shipment = $apiOrder->getShipment();
         $this->itemsReferencesAliases = $apiOrder->getItemsReferencesAliases();
+        $this->apiOrder = $apiOrder;
         // TODO : OrderResource should likely have a "getAdditionalFields" method
         $apiOrderData = $apiOrder->toArray();
         $this->additionalFields = empty($apiOrderData['additionalFields']) === false ? $apiOrderData['additionalFields'] : [];
-        $this->customer = $this->getCustomer($apiOrder);
 
         /** @var \ShoppingFeed\Sdk\Api\Order\OrderItem $apiOrderItem */
         foreach ($apiOrder->getItems() as $apiOrderItem) {
@@ -134,43 +137,40 @@ class OrderData
         return $address;
     }
 
-    protected function getCustomer(OrderResource $apiOrder)
+    public function getCustomer()
     {
-        $billingAddress = $apiOrder->getBillingAddress();
-        $shippingAddress = $apiOrder->getShippingAddress();
-        $customer = new OrderCustomerData();
+        if ($this->customer instanceof OrderCustomerData) {
+            return $this->customer;
+        }
 
-        if (false == empty($billingAddress['firstName'])) {
-            $firstName = Tools::substr($billingAddress['firstName'], 0, 32);
+        $this->customer = new OrderCustomerData();
+
+        if (false == empty($this->billingAddress['firstName'])) {
+            $firstName = Tools::substr($this->billingAddress['firstName'], 0, 32);
             // Numbers are forbidden in firstname / lastname
             $firstName = preg_replace('/\-?\d+/', '', $firstName);
-            $customer->setFirstName($firstName);
+            $this->customer->setFirstName($firstName);
         }
 
-        if (false == empty($billingAddress['lastName'])) {
-            $lastName = Tools::substr($billingAddress['lastName'], 0, 32);
+        if (false == empty($this->billingAddress['lastName'])) {
+            $lastName = Tools::substr($this->billingAddress['lastName'], 0, 32);
             // Numbers are forbidden in firstname / lastname
             $lastName = preg_replace('/\-?\d+/', '', $lastName);
-            $customer->setLastName($lastName);
+            $this->customer->setLastName($lastName);
         }
 
-        if (Validate::isEmail($billingAddress['email'])) {
-            $customer->setEmail($billingAddress['email']);
-        } elseif (Validate::isEmail($shippingAddress['email'])) {
-            $customer->setEmail($shippingAddress['email']);
+        if (Validate::isEmail($this->billingAddress['email'])) {
+            $this->customer->setEmail($this->billingAddress['email']);
+        } elseif (Validate::isEmail($this->shippingAddress['email'])) {
+            $this->customer->setEmail($this->shippingAddress['email']);
         } else {
-            $customer->setEmail($apiOrder->getId() . '@' . $apiOrder->getChannel()->getName() . '.sf');
+            $this->customer->setEmail($this->apiOrder->getId() . '@' . $this->apiOrder->getChannel()->getName() . '.sf');
         }
 
-        return $customer;
-    }
-
-    public function getCustomerData()
-    {
         return $this->customer;
     }
 
-    public function setCustomerData(OrderCustomerData $customerData)
+    public function setCustomer(OrderCustomerData $customerData)
     {
         $this->customer = $customerData;
     }

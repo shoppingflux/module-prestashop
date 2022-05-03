@@ -76,9 +76,11 @@ class SymbolConformity extends RuleAbstract implements RuleInterface
         );
         $logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
 
+        // Update customer method should be performed before an update address methods
+        // since this method is based on the address data which can be modified
+        $this->updateCustomer($orderData);
         $this->updateAddress($orderData->shippingAddress);
         $this->updateAddress($orderData->billingAddress);
-        $this->updateCustomer($orderData);
 
         ProcessLoggerHandler::logInfo(
             $logPrefix .
@@ -206,7 +208,7 @@ class SymbolConformity extends RuleAbstract implements RuleInterface
 
     protected function updateCustomer(OrderData &$orderData)
     {
-        $customerData = $orderData->getCustomerData();
+        $customerData = $orderData->getCustomer();
         $firstName = $customerData->getFirstName();
         $lastName = $customerData->getLastName();
 
@@ -232,6 +234,6 @@ class SymbolConformity extends RuleAbstract implements RuleInterface
             $customerData->setLastName($lastName);
         }
 
-        $orderData->setCustomerData($customerData);
+        $orderData->setCustomer($customerData);
     }
 }
