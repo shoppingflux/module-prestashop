@@ -2005,6 +2005,7 @@ class ComposerStaticInit3fe85f86ff701f6bd7fd7d7a118b5533
         'ShoppingfeedAddon\\Hook\\ActionShoppingfeedTracking\\RelaisColis' => __DIR__ . '/../..' . '/src/Hook/ActionShoppingfeedTracking/RelaisColis.php',
         'ShoppingfeedAddon\\Hook\\HookDispatcher' => __DIR__ . '/../..' . '/src/Hook/HookDispatcher.php',
         'ShoppingfeedAddon\\OrderImport\\DpdAssociation' => __DIR__ . '/../..' . '/src/OrderImport/DpdAssociation.php',
+        'ShoppingfeedAddon\\OrderImport\\OrderCustomerData' => __DIR__ . '/../..' . '/src/OrderImport/OrderCustomerData.php',
         'ShoppingfeedAddon\\OrderImport\\OrderData' => __DIR__ . '/../..' . '/src/OrderImport/OrderData.php',
         'ShoppingfeedAddon\\OrderImport\\OrderItemData' => __DIR__ . '/../..' . '/src/OrderImport/OrderItemData.php',
         'ShoppingfeedAddon\\OrderImport\\RuleAbstract' => __DIR__ . '/../..' . '/src/OrderImport/RuleAbstract.php',

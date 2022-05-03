@@ -1745,6 +1745,7 @@ return array(
     'ShoppingfeedAddon\\Hook\\ActionShoppingfeedTracking\\RelaisColis' => $baseDir . '/src/Hook/ActionShoppingfeedTracking/RelaisColis.php',
     'ShoppingfeedAddon\\Hook\\HookDispatcher' => $baseDir . '/src/Hook/HookDispatcher.php',
     'ShoppingfeedAddon\\OrderImport\\DpdAssociation' => $baseDir . '/src/OrderImport/DpdAssociation.php',
+    'ShoppingfeedAddon\\OrderImport\\OrderCustomerData' => $baseDir . '/src/OrderImport/OrderCustomerData.php',
     'ShoppingfeedAddon\\OrderImport\\OrderData' => $baseDir . '/src/OrderImport/OrderData.php',
     'ShoppingfeedAddon\\OrderImport\\OrderItemData' => $baseDir . '/src/OrderImport/OrderItemData.php',
     'ShoppingfeedAddon\\OrderImport\\RuleAbstract' => $baseDir . '/src/OrderImport/RuleAbstract.php',

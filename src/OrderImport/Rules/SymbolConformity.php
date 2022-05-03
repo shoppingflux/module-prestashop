@@ -29,7 +29,9 @@ if (!defined('_PS_VERSION_')) {
 }
 
 use Address;
+use Customer;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
+use ShoppingfeedAddon\OrderImport\OrderCustomerData;
 use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
 use ShoppingfeedAddon\Services\SymbolValidator;
@@ -76,6 +78,7 @@ class SymbolConformity extends RuleAbstract implements RuleInterface
 
         $this->updateAddress($orderData->shippingAddress);
         $this->updateAddress($orderData->billingAddress);
+        $this->updateCustomer($orderData->getCustomerData());
 
         ProcessLoggerHandler::logInfo(
             $logPrefix .
@@ -199,5 +202,33 @@ class SymbolConformity extends RuleAbstract implements RuleInterface
                 Address::$definition['fields']['phone_mobile']['validate'],
             ]
         );
+    }
+
+    protected function updateCustomer(OrderCustomerData &$customerData)
+    {
+        $firstName = $customerData->getFirstName();
+        $lastName = $customerData->getLastName();
+
+        if ($firstName) {
+            $this->validator->validate(
+                $firstName,
+                [
+                    'Validate',
+                    Customer::$definition['fields']['firstname']['validate']
+                ]
+            );
+            $customerData->setFirstName($firstName);
+        }
+
+        if ($lastName) {
+            $this->validator->validate(
+                $lastName,
+                [
+                    'Validate',
+                    Customer::$definition['fields']['firstname']['validate']
+                ]
+            );
+            $customerData->setLastName($lastName);
+        }
     }
 }

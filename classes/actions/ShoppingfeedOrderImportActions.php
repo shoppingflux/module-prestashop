@@ -314,34 +314,22 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         // Try to retrieve customer using the billing address mail
         $apiBillingAddress = &$this->conveyor['orderData']->billingAddress;
         $apiShippingAddress = &$this->conveyor['orderData']->shippingAddress;
-        if (Validate::isEmail($apiBillingAddress['email'])) {
-            $customerEmail = $apiBillingAddress['email'];
-        } elseif (Validate::isEmail($apiShippingAddress['email'])) {
-            $customerEmail = $apiShippingAddress['email'];
-        } else {
-            $customerEmail = $apiOrder->getId()
-                . '@' . $apiOrder->getChannel()->getName()
-                . '.sf';
-        }
-
+        /** @var \ShoppingfeedAddon\OrderImport\OrderCustomerData $orderCustomerData*/
+        $orderCustomerData = $this->conveyor['orderData']->getCustomerData();
         // see old module _getCustomer()
         $customer = new Customer();
-        $customer->getByEmail($customerEmail);
+        $customer->getByEmail($orderCustomerData->getEmail());
 
         // Create customer if it doesn't exist
         if (!Validate::isLoadedObject($customer)) {
             $customer = new Customer();
-            $customer->lastname = !empty($apiBillingAddress['lastName']) ? Tools::substr($apiBillingAddress['lastName'], 0, 32) : '-';
-            $customer->firstname = !empty($apiBillingAddress['firstName']) ? Tools::substr($apiBillingAddress['firstName'], 0, 32) : '-';
+            $customer->lastname = !empty($orderCustomerData->getLastName()) ? $orderCustomerData->getLastName() : '-';
+            $customer->firstname = !empty($orderCustomerData->getFirstName()) ? $orderCustomerData->getFirstName() : '-';
             $customer->passwd = md5(pSQL(_COOKIE_KEY_ . rand()));
             $customer->id_default_group = Configuration::get('PS_UNIDENTIFIED_GROUP');
-            $customer->email = $customerEmail;
+            $customer->email = $orderCustomerData->getEmail();
             $customer->newsletter = 0;
             $customer->id_shop = $this->getIdShop();
-
-            // Numbers are forbidden in firstname / lastname
-            $customer->lastname = preg_replace('/\-?\d+/', '', $customer->lastname);
-            $customer->firstname = preg_replace('/\-?\d+/', '', $customer->firstname);
 
             // Specific rules
             $this->specificRulesManager->applyRules(
