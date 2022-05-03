@@ -314,7 +314,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         // Try to retrieve customer using the billing address mail
         $apiBillingAddress = &$this->conveyor['orderData']->billingAddress;
         $apiShippingAddress = &$this->conveyor['orderData']->shippingAddress;
-        /** @var \ShoppingfeedAddon\OrderImport\OrderCustomerData $orderCustomerData*/
+        /** @var \ShoppingfeedAddon\OrderImport\OrderCustomerData $orderCustomerData */
         $orderCustomerData = $this->conveyor['orderData']->getCustomerData();
         // see old module _getCustomer()
         $customer = new Customer();

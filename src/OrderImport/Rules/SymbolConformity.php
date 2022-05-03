@@ -214,7 +214,7 @@ class SymbolConformity extends RuleAbstract implements RuleInterface
                 $firstName,
                 [
                     'Validate',
-                    Customer::$definition['fields']['firstname']['validate']
+                    Customer::$definition['fields']['firstname']['validate'],
                 ]
             );
             $customerData->setFirstName($firstName);
@@ -225,7 +225,7 @@ class SymbolConformity extends RuleAbstract implements RuleInterface
                 $lastName,
                 [
                     'Validate',
-                    Customer::$definition['fields']['firstname']['validate']
+                    Customer::$definition['fields']['firstname']['validate'],
                 ]
             );
             $customerData->setLastName($lastName);

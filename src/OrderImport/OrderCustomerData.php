@@ -1,6 +1,5 @@
 <?php
 /**
- *
  *  Copyright since 2019 Shopping Feed
  *
  *  NOTICE OF LICENSE
@@ -16,11 +15,9 @@
  *  @author    202 ecommerce <tech@202-ecommerce.com>
  *  @copyright Since 2019 Shopping Feed
  *  @license   https://opensource.org/licenses/AFL-3.0  Academic Free License (AFL 3.0)
- *
  */
 
 namespace ShoppingfeedAddon\OrderImport;
-
 
 class OrderCustomerData
 {
@@ -38,16 +35,18 @@ class OrderCustomerData
      */
     public function getFirstName()
     {
-        return (string)$this->firstName;
+        return (string) $this->firstName;
     }
 
     /**
      * @param string $firstName
+     *
      * @return OrderCustomerData
      */
     public function setFirstName($firstName)
     {
         $this->firstName = $firstName;
+
         return $this;
     }
 
@@ -56,16 +55,18 @@ class OrderCustomerData
      */
     public function getLastName()
     {
-        return (string)$this->lastName;
+        return (string) $this->lastName;
     }
 
     /**
      * @param string $lastName
+     *
      * @return OrderCustomerData
      */
     public function setLastName($lastName)
     {
         $this->lastName = $lastName;
+
         return $this;
     }
 
@@ -74,16 +75,18 @@ class OrderCustomerData
      */
     public function getEmail()
     {
-        return (string)$this->email;
+        return (string) $this->email;
     }
 
     /**
      * @param string $email
+     *
      * @return OrderCustomerData
      */
     public function setEmail($email)
     {
         $this->email = $email;
+
         return $this;
     }
 }

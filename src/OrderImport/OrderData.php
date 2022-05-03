@@ -29,8 +29,8 @@ if (!defined('_PS_VERSION_')) {
 }
 
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
-use Validate;
 use Tools;
+use Validate;
 
 /**
  * This class is a mutable copy of \ShoppingFeed\Sdk\Api\Order\OrderResource. Its
@@ -85,7 +85,7 @@ class OrderData
         'UK' => 'GB',
     ];
 
-    /** @var OrderCustomerData*/
+    /** @var OrderCustomerData */
     protected $customer;
 
     public function __construct(OrderResource $apiOrder)
