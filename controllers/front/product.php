@@ -45,16 +45,12 @@ class ShoppingfeedProductModuleFrontController extends \ModuleFrontController
         if ($token === false) {
             exit();
         }
-
+        header('Content-type: text/xml');
         $this->preparePreloading($token);
-
         $this->sfToken = $token;
-        $fileXml = sprintf('file-%d.xml', $token['id_shoppingfeed_token']);
-        ProcessLoggerHandler::logSuccess(sprintf('Generate file %s for token %s:.', $fileXml, $token['content']), null, null, 'ShoppingfeedProductModuleFrontController');
-        ProcessLoggerHandler::closeLogger();
-        $productGenerator = new SfProductGenerator($fileXml, 'xml');
+        $productGenerator = new SfProductGenerator('php://output', 'xml');
         $productGenerator->setPlatform('Prestashop', _PS_VERSION_)
-            ->addMapper([$this, 'mapper']);
+                         ->addMapper([$this, 'mapper']);
 
         $limit = 100;
         $nb_iteration = ceil((new ShoppingfeedPreloading())->getPreloadingCount($token['id_shoppingfeed_token']) / $limit);
@@ -67,12 +63,6 @@ class ShoppingfeedProductModuleFrontController extends \ModuleFrontController
 
         $productGenerator->close();
 
-        Tools::redirect(
-            $this->getBaseLink($token['id_shop']) . $fileXml,
-            __PS_BASE_URI__,
-            null,
-            ['HTTP/1.1 302 Moved Temporarily']
-        );
         exit;
     }
 
