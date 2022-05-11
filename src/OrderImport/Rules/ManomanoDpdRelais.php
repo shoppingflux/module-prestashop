@@ -44,8 +44,14 @@ class ManomanoDpdRelais extends RuleAbstract implements RuleInterface
     public function isApplicable(OrderResource $apiOrder)
     {
         $this->dpdfrance = Module::getInstanceByName('dpdfrance');
+        $moduleColissimo = Module::getInstanceByName('colissimo');
 
         if (false == Validate::isLoadedObject($this->dpdfrance) || false == $this->dpdfrance->active) {
+            return false;
+        }
+
+        // To avoid a conflict with the rules ManomanoColissimo and MonechelleColissimo
+        if (Validate::isLoadedObject($moduleColissimo) && $moduleColissimo->active) {
             return false;
         }
 
