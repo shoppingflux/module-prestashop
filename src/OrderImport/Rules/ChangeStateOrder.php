@@ -42,11 +42,6 @@ class ChangeStateOrder extends RuleAbstract implements RuleInterface
 {
     public function isApplicable(OrderResource $apiOrder)
     {
-        if (empty($this->configuration['end_order_state'])
-            || $this->configuration['end_order_state'] === Configuration::get('PS_OS_PAYMENT')) {
-            return false;
-        }
-
         return true;
     }
 
@@ -56,6 +51,7 @@ class ChangeStateOrder extends RuleAbstract implements RuleInterface
         $orderData = $params['orderData'];
         $apiOrder = $params['apiOrder'];
         $idOrder = $params['id_order'];
+        $idOrderState = $this->getIdOrderState();
 
         $logPrefix = sprintf(
             $this->l('[Order: %s]', 'ChangeStateOrder'),
@@ -78,12 +74,12 @@ class ChangeStateOrder extends RuleAbstract implements RuleInterface
             return;
         }
 
-        if (false == $this->isOrderStateValid($this->configuration['end_order_state'])) {
+        if (false == $this->isOrderStateValid($idOrderState)) {
             ProcessLoggerHandler::logError(
                 $logPrefix .
                 sprintf(
                     $this->l('Invalid order state. ID: %d', 'ChangeStateOrder'),
-                    (int) $this->configuration['end_order_state']
+                    (int) $idOrderState
                 ),
                 'Order',
                 $idOrder
@@ -102,11 +98,15 @@ class ChangeStateOrder extends RuleAbstract implements RuleInterface
             $idOrder
         );
 
+        if ($psOrder->current_state == $idOrderState) {
+            return;
+        }
+
         // Set order to CANCELED
         $history = new OrderHistory();
         $history->id_order = $idOrder;
         $use_existings_payment = true;
-        $history->changeIdOrderState((int) $this->configuration['end_order_state'], $psOrder, $use_existings_payment);
+        $history->changeIdOrderState((int) $idOrderState, $psOrder, $use_existings_payment);
         // Save all changes
         $history->addWithemail();
     }
@@ -152,5 +152,14 @@ class ChangeStateOrder extends RuleAbstract implements RuleInterface
                 'required' => false,
             ],
         ];
+    }
+
+    protected function getIdOrderState()
+    {
+        if (false == empty($this->configuration['end_order_state'])) {
+            return (int) $this->configuration['end_order_state'];
+        }
+
+        return (int) Configuration::get('PS_OS_PAYMENT');
     }
 }
