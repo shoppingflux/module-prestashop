@@ -44,14 +44,8 @@ class ManomanoDpdRelais extends RuleAbstract implements RuleInterface
     public function isApplicable(OrderResource $apiOrder)
     {
         $this->dpdfrance = Module::getInstanceByName('dpdfrance');
-        $moduleColissimo = Module::getInstanceByName('colissimo');
 
         if (false == Validate::isLoadedObject($this->dpdfrance) || false == $this->dpdfrance->active) {
-            return false;
-        }
-
-        // To avoid a conflict with the rules ManomanoColissimo and MonechelleColissimo
-        if (Validate::isLoadedObject($moduleColissimo) && $moduleColissimo->active) {
             return false;
         }
 
@@ -61,6 +55,10 @@ class ManomanoDpdRelais extends RuleAbstract implements RuleInterface
         }
 
         if (empty($this->getRelayIdFromOrder($apiOrder)) === true) {
+            return false;
+        }
+
+        if (false == $this->isDpdCarrier($apiOrder)) {
             return false;
         }
 
@@ -182,5 +180,16 @@ class ManomanoDpdRelais extends RuleAbstract implements RuleInterface
         }
 
         return '';
+    }
+
+    protected function isDpdCarrier(OrderResource $apiOrder)
+    {
+        $shipment = $apiOrder->getShipment();
+
+        if (empty($shipment['carrier'])) {
+            return false;
+        }
+
+        return (bool) preg_match('/dpd/i', $shipment['carrier']);
     }
 }
