@@ -19,6 +19,7 @@
 
 use ShoppingFeed\Sdk\Api\Order\OrderOperation;
 use ShoppingfeedAddon\Services\CarrierFinder;
+use ShoppingfeedAddon\Services\TaskOrderCleaner;
 use ShoppingfeedClasslib\Actions\DefaultActions;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 use ShoppingfeedClasslib\Registry;
@@ -187,6 +188,8 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
             return false;
         }
         $id_shop = (int) $this->conveyor['id_shop'];
+        //Remove old tasks
+        $this->initTaskCleaner()->clean();
 
         if (empty($this->conveyor['order_action'])) {
             ProcessLoggerHandler::logInfo(
@@ -804,5 +807,10 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
         }
 
         return true;
+    }
+
+    protected function initTaskCleaner()
+    {
+        return new TaskOrderCleaner();
     }
 }

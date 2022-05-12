@@ -2038,6 +2038,7 @@ class ComposerStaticInit3fe85f86ff701f6bd7fd7d7a118b5533
         'ShoppingfeedAddon\\Services\\ShopSqlAssociator' => __DIR__ . '/../..' . '/src/Services/ShopSqlAssociator.php',
         'ShoppingfeedAddon\\Services\\SpecificPriceService' => __DIR__ . '/../..' . '/src/Services/SpecificPriceService.php',
         'ShoppingfeedAddon\\Services\\SymbolValidator' => __DIR__ . '/../..' . '/src/Services/SymbolValidator.php',
+        'ShoppingfeedAddon\\Services\\TaskOrderCleaner' => __DIR__ . '/../..' . '/src/Services/TaskOrderCleaner.php',
         'ShoppingfeedAdminController' => __DIR__ . '/../..' . '/classes/ShoppingfeedAdminController.php',
         'ShoppingfeedApi' => __DIR__ . '/../..' . '/classes/ShoppingfeedApi.php',
         'ShoppingfeedCarrier' => __DIR__ . '/../..' . '/classes/ShoppingfeedCarrier.php',

@@ -1778,6 +1778,7 @@ return array(
     'ShoppingfeedAddon\\Services\\ShopSqlAssociator' => $baseDir . '/src/Services/ShopSqlAssociator.php',
     'ShoppingfeedAddon\\Services\\SpecificPriceService' => $baseDir . '/src/Services/SpecificPriceService.php',
     'ShoppingfeedAddon\\Services\\SymbolValidator' => $baseDir . '/src/Services/SymbolValidator.php',
+    'ShoppingfeedAddon\\Services\\TaskOrderCleaner' => $baseDir . '/src/Services/TaskOrderCleaner.php',
     'ShoppingfeedAdminController' => $baseDir . '/classes/ShoppingfeedAdminController.php',
     'ShoppingfeedApi' => $baseDir . '/classes/ShoppingfeedApi.php',
     'ShoppingfeedCarrier' => $baseDir . '/classes/ShoppingfeedCarrier.php',
