@@ -95,6 +95,11 @@ class ShoppingfeedOrder extends ObjectModel
                 'required' => true,
                 'allow_null' => true,
             ],
+            'failed_ticket' => [
+                'type' => ObjectModel::TYPE_INT,
+                'validate' => 'isInt',
+                'allow_null' => true,
+            ],
             'date_add' => [
                 'type' => self::TYPE_DATE,
                 'validate' => 'isDate',
