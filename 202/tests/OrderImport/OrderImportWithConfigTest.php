@@ -76,7 +76,8 @@ class OrderImportWithConfigTest extends AbstractOrdeTestCase
         $this->assertEquals($sfOrder->name_marketplace, 'Veepeegroup');
         $this->assertEquals($sfOrder->id_order_marketplace, '200000VEEPEE200000');
 
-        $psOrder = $conveyor['psOrder'];
+        //Order data can be changed in the order import rules after, psOrder in conveyor can be not actual
+        $psOrder = new \Order($conveyor['psOrder']->id);
         $this->assertEquals($psOrder->current_state, _PS_OS_PAYMENT_);
     }
 

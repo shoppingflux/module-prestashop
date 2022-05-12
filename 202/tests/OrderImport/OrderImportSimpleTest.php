@@ -171,7 +171,8 @@ class OrderImportSimpleTest extends AbstractOrdeTestCase
         $this->assertTrue($processResult);
 
         $conveyor = $handler->getConveyor();
-        $psOrder = $conveyor['psOrder'];
+        //Order data can be changed in the order import rules after, psOrder in conveyor can be not actual
+        $psOrder = new \Order($conveyor['psOrder']->id);
         $this->assertEquals($psOrder->current_state, _PS_OS_PAYMENT_);
         $this->assertEquals($psOrder->payment, 'natureetdecouvertes');
         $this->assertEquals($psOrder->module, 'sfpayment');

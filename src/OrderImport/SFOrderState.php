@@ -69,6 +69,7 @@ class SFOrderState
 
         $orderState = new OrderState($this->db->getValue($query));
         $orderState->module_name = 'shoppingfeed';
+        $orderState->color = '#f8c600';
         $orderState->logable = true;
         $orderState->name = [];
 
