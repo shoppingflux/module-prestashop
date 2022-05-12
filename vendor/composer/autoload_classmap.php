@@ -1768,6 +1768,7 @@ return array(
     'ShoppingfeedAddon\\OrderImport\\Rules\\TestingOrder' => $baseDir . '/src/OrderImport/Rules/TestingOrder.php',
     'ShoppingfeedAddon\\OrderImport\\Rules\\ZalandoCarrier' => $baseDir . '/src/OrderImport/Rules/ZalandoCarrier.php',
     'ShoppingfeedAddon\\OrderImport\\Rules\\ZalandoColissimo' => $baseDir . '/src/OrderImport/Rules/ZalandoColissimo.php',
+    'ShoppingfeedAddon\\OrderImport\\SFOrderState' => $baseDir . '/src/OrderImport/SFOrderState.php',
     'ShoppingfeedAddon\\OrderImport\\SinceDate' => $baseDir . '/src/OrderImport/SinceDate.php',
     'ShoppingfeedAddon\\Services\\CarrierFinder' => $baseDir . '/src/Services/CarrierFinder.php',
     'ShoppingfeedAddon\\Services\\ImageLink' => $baseDir . '/src/Services/ImageLink.php',
