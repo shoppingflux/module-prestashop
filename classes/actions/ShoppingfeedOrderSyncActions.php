@@ -655,13 +655,27 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
 
         // Get order data
         $failedTaskOrdersMailData = [];
+
         foreach ($failedTaskOrders as $taskOrder) {
             $order = new Order($taskOrder->id_order);
             $orderState = new OrderState($order->current_state);
+            $sfOrder = ShoppingfeedOrder::getByIdOrder($order->id);
+
+            // Send mail only once
+            if ($sfOrder->failed_ticket == 1) {
+                continue;
+            }
+
+            $sfOrder->failed_ticket = 1;
+            $sfOrder->save();
             $failedTaskOrdersMailData[] = [
                 'reference' => $order->reference,
                 'status' => !empty($orderState->name[$id_lang]) ? $orderState->name[$id_lang] : reset($orderState->name),
             ];
+        }
+
+        if (empty($failedTaskOrdersMailData)) {
+            return true;
         }
 
         $listFailuresHtml = $this->getEmailTemplateContent(

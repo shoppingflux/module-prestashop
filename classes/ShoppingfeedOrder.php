@@ -51,6 +51,8 @@ class ShoppingfeedOrder extends ObjectModel
     public $date_add;
     public $date_upd;
 
+    public $failed_ticket;
+
     public static $definition = [
         'table' => 'shoppingfeed_order',
         'primary' => 'id_shoppingfeed_order',
