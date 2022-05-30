@@ -46,6 +46,7 @@ class ShoppingfeedProductModuleFrontController extends \ModuleFrontController
             exit();
         }
         header('Content-type: text/xml');
+        header('Etag: ' . ShoppingfeedPreloading::getEtag($token['id_shoppingfeed_token']));
         $this->preparePreloading($token);
         $this->sfToken = $token;
         $productGenerator = new SfProductGenerator('php://output', 'xml');

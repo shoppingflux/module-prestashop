@@ -44,6 +44,8 @@ class ShoppingfeedPreloading extends ObjectModel
 
     public $actions;
 
+    public $etag;
+
     public static $definition = [
         'table' => 'shoppingfeed_preloading',
         'primary' => 'id_shoppingfeed_preloading',
@@ -67,6 +69,11 @@ class ShoppingfeedPreloading extends ObjectModel
                 'type' => ObjectModel::TYPE_STRING,
                 'validate' => 'isString',
                 'allow_null' => true,
+            ],
+            'etag' => [
+                'type' => ObjectModel::TYPE_STRING,
+                'validate' => 'isString',
+                'allow_null' => false,
             ],
             'date_add' => [
                 'type' => self::TYPE_DATE,
@@ -146,6 +153,7 @@ class ShoppingfeedPreloading extends ObjectModel
             }
         }
         $this->actions = null;
+        $this->etag = md5(date('Y-m-d') . $this->content);
 
         return $this->save();
     }
@@ -299,5 +307,15 @@ class ShoppingfeedPreloading extends ObjectModel
         $sql = 'TRUNCATE ' . _DB_PREFIX_ . self::$definition['table'];
 
         return Db::getInstance()->execute($sql);
+    }
+
+    public static function getEtag($id_token)
+    {
+        $query = (new DbQuery())->select('etag')
+        ->from(self::$definition['table'])
+        ->where('id_token = ' . (int) $id_token)
+        ->orderBy('date_upd DESC');
+
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($query);
     }
 }
