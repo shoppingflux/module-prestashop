@@ -36,7 +36,7 @@ function upgrade_module_1_8_0($module)
             ADD COLUMN `etag` VARCHAR(255) NOT NULL;';
         Db::getInstance()->execute($sql);
     }
-    
+
     $tokens = (new ShoppingfeedToken())->findAllActive();
     foreach ($tokens as $token) {
         $fileXml = sprintf(_PS_ROOT_DIR_ . '/file-%d.xml', $token['id_shoppingfeed_token']);
@@ -47,6 +47,6 @@ function upgrade_module_1_8_0($module)
 
     $sql = 'UPDATE `' . _DB_PREFIX_ . ShoppingfeedPreloading::$definition['table'] . '` SET etag = md5(CONCAT(CURRENT_DATE, content))';
     Db::getInstance()->execute($sql);
-    
+
     return true;
 }
