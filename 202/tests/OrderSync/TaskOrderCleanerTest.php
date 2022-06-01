@@ -19,18 +19,18 @@
 
 namespace Tests\OrderSync;
 
+use DateTime;
+use Db;
+use DbQuery;
 use PHPUnit\Framework\TestCase;
 use ShoppingfeedAddon\Services\TaskOrderCleaner;
 use ShoppingfeedTaskOrder;
-use Db;
-use DbQuery;
-use DateTime;
 
 class TaskOrderCleanerTest extends TestCase
 {
     public function testTaskOrderCleaner()
     {
-        $sql = (new DbQuery())->select('count(*)')->from(ShoppingfeedTaskOrder::$definition['table']);;
+        $sql = (new DbQuery())->select('count(*)')->from(ShoppingfeedTaskOrder::$definition['table']);
         $countTaskOrder = Db::getInstance()->getValue($sql);
         $taskOrderCleaner = new TaskOrderCleaner();
 
