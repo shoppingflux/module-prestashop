@@ -219,6 +219,11 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             ]
         );
 
+        $sfCarrier = ShoppingfeedCarrier::getByMarketplaceAndName(
+            $apiOrder->getChannel()->getName(),
+            $apiOrderShipment['carrier']
+        );
+
         if (Validate::isLoadedObject($carrier) == false) {
             $carrier = $this->initCarrierFinder()->getCarrierForOrderImport($apiOrder);
         }
