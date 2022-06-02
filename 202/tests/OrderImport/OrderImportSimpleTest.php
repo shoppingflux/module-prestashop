@@ -20,7 +20,6 @@
 namespace Tests\OrderImport;
 
 use ColissimoCartPickupPoint;
-use Db;
 use Order;
 use ShoppingfeedAddon\Actions\ActionsHandler;
 use ShoppingfeedCarrier;
@@ -457,87 +456,5 @@ class OrderImportSimpleTest extends AbstractOrdeTestCase
         $this->assertEquals($detailTaxes[0]['id_tax'], 1);
         $this->assertEquals($detailTaxes[1]['total_amount'], 0.010000);
         $this->assertEquals($detailTaxes[1]['id_tax'], 40);
-    }
-
-    public function setDifferentCarrierForProducts()
-    {
-        $query = (new \DbQuery())
-            ->from('carrier')
-            ->where('active = 1')
-            ->where('deleted = 0')
-            ->select('id_reference')
-            ->limit(2);
-        $carriers = Db::getInstance()->execute($query);
-
-        if (empty($carriers)) {
-            return false;
-        }
-
-        if (count($carriers) < 2) {
-            return false;
-        }
-
-        //Remove existing product-carrier associations
-        Db::getInstance()->delete('product_carrier', 'id_product in (1, 8)');
-        //Add the new product-carrier associations
-        $insertData = [
-            [
-                'id_product' => 1,
-                'id_carrier_reference' => $carriers[0]['id_reference'],
-                'id_shop' => 1,
-            ],
-            [
-                'id_product' => 8,
-                'id_carrier_reference' => $carriers[1]['id_reference'],
-                'id_shop' => 1,
-            ],
-        ];
-
-        return Db::getInstance()->insert('product_carrier', $insertData, false, true, Db::REPLACE);
-    }
-
-    /**
-     * @depends setDifferentCarrierForProducts
-     */
-    public function testImportSplittedOrder($isDifferentCarriersSet)
-    {
-        $this->assertTrue($isDifferentCarriersSet);
-
-        $apiOrder = $this->getOrderRessourceFromDataset('order-for-splitting.json');
-
-        $handler = new ActionsHandler();
-        $handler->addActions(
-            'registerSpecificRules',
-            'verifyOrder',
-            'createOrderCart',
-            'validateOrder',
-            'postProcess'
-        );
-
-        $handler->setConveyor(
-            [
-                'id_shop' => 1,
-                'id_token' => 1,
-                'apiOrder' => $apiOrder,
-            ]
-        );
-        Registry::set('shoppingfeedOrderImportHandler', $handler);
-
-        $processResult = $handler->process('shoppingfeedOrderImport');
-
-        $this->assertTrue($processResult);
-        $conveyor = $handler->getConveyor();
-
-        $orders = (new \PrestaShopCollection('Order'))
-            ->where('id_cart', '=', $conveyor['psOrder']->id_cart)
-            ->getResults();
-        $totalAmount = 0;
-        /** @var Order $order */
-        foreach ($orders as $order) {
-            $totalAmount += $order->total_paid_tax_incl;
-        }
-
-        $this->assertTrue(count($orders) == 2);
-        $this->assertTrue(round($totalAmount, 2) == 19.40);
     }
 }
