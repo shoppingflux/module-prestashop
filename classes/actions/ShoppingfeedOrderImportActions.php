@@ -1078,13 +1078,10 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 'id_carrier' => $carrier->id,
             ];
 
-            foreach ($updateOrder as $key => $value) {
-                $psOrder->{$key} = $value;
-            }
-            $psOrder->save(true);
+            Db::getInstance()->update('orders', $updateOrder, '`id_order` = ' . (int) $id_order);
             Db::getInstance()->update('order_invoice', $updateOrderInvoice, '`id_order` = ' . (int) $id_order);
             Db::getInstance()->update('order_carrier', $updateOrderTracking, '`id_order` = ' . (int) $id_order);
-            Db::getInstance()->delete('order_cart_rule', 'id_order = ' . $psOrder->id);
+            Db::getInstance()->delete('order_cart_rule', 'id_order = ' . (int) $id_order);
         }
 
         $queryUpdateOrderPayment = sprintf(
