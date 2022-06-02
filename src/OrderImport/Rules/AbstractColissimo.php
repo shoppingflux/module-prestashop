@@ -58,17 +58,6 @@ abstract class AbstractColissimo extends RuleAbstract implements RuleInterface
         }
     }
 
-    protected function isColissimoCarrier(OrderResource $apiOrder)
-    {
-        $shipment = $apiOrder->getShipment();
-
-        if (empty($shipment['carrier'])) {
-            return false;
-        }
-
-        return (bool) preg_match('/colissimo/i', $shipment['carrier']);
-    }
-
     public function afterCartCreation($params)
     {
         if (class_exists(ColissimoPickupPoint::class) === false || class_exists(ColissimoCartPickupPoint::class) === false) {

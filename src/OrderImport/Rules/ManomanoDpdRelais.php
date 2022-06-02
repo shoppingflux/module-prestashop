@@ -19,12 +19,14 @@
 
 namespace ShoppingfeedAddon\OrderImport\Rules;
 
+use Carrier;
 use Cart;
 use Module;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use ShoppingfeedAddon\OrderImport\DpdAssociation;
 use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
+use ShoppingfeedAddon\Services\CarrierFinder;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 use Tools;
 use Validate;
@@ -38,12 +40,14 @@ class ManomanoDpdRelais extends RuleAbstract implements RuleInterface
     /** @var Module */
     protected $dpdfrance;
 
+    const MODULE_NAME = 'dpdfrance';
+
     /**
      * {@inheritdoc}
      */
     public function isApplicable(OrderResource $apiOrder)
     {
-        $this->dpdfrance = Module::getInstanceByName('dpdfrance');
+        $this->dpdfrance = Module::getInstanceByName(self::MODULE_NAME);
 
         if (false == Validate::isLoadedObject($this->dpdfrance) || false == $this->dpdfrance->active) {
             return false;
@@ -119,6 +123,12 @@ class ManomanoDpdRelais extends RuleAbstract implements RuleInterface
             return false;
         }
 
+        $carrier = new Carrier($cart->id_carrier);
+
+        if ($carrier->external_module_name != self::MODULE_NAME) {
+            return false;
+        }
+
         $apiOrder = $params['apiOrder'];
         $relayID = $this->getRelayIdFromOrder($apiOrder);
 
@@ -184,12 +194,17 @@ class ManomanoDpdRelais extends RuleAbstract implements RuleInterface
 
     protected function isDpdCarrier(OrderResource $apiOrder)
     {
-        $shipment = $apiOrder->getShipment();
+        $carrier = $this->initCarrierFinder()->getCarrierForOrderImport($apiOrder);
 
-        if (empty($shipment['carrier'])) {
+        if (false == Validate::isLoadedObject($carrier)) {
             return false;
         }
 
-        return (bool) preg_match('/dpd/i', $shipment['carrier']);
+        return $carrier->external_module_name = self::MODULE_NAME;
+    }
+
+    protected function initCarrierFinder()
+    {
+        return new CarrierFinder();
     }
 }

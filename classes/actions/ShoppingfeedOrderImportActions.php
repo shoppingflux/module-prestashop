@@ -18,6 +18,7 @@
  */
 
 use ShoppingfeedAddon\OrderImport\OrderData;
+use ShoppingfeedAddon\Services\CarrierFinder;
 use ShoppingfeedClasslib\Actions\DefaultActions;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 use ShoppingfeedClasslib\Registry;
@@ -218,20 +219,8 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             ]
         );
 
-        $sfCarrier = ShoppingfeedCarrier::getByMarketplaceAndName(
-            $apiOrder->getChannel()->getName(),
-            $apiOrderShipment['carrier']
-        );
-        if (Validate::isLoadedObject($sfCarrier) && !Validate::isLoadedObject($carrier)) {
-            $carrier = Carrier::getCarrierByReference($sfCarrier->id_carrier_reference);
-        }
-
-        if (!Validate::isLoadedObject($carrier) && !empty(Configuration::get(Shoppingfeed::ORDER_DEFAULT_CARRIER_REFERENCE))) {
-            $carrier = Carrier::getCarrierByReference(Configuration::get(Shoppingfeed::ORDER_DEFAULT_CARRIER_REFERENCE));
-        }
-
-        if (!Validate::isLoadedObject($carrier) && !empty(Configuration::get('PS_CARRIER_DEFAULT'))) {
-            $carrier = new Carrier(Configuration::get('PS_CARRIER_DEFAULT'));
+        if (Validate::isLoadedObject($carrier) == false) {
+            $carrier = $this->initCarrierFinder()->getCarrierForOrderImport($apiOrder);
         }
 
         if (!Validate::isLoadedObject($carrier)) {
@@ -1288,5 +1277,10 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         }
 
         return (int) Configuration::get('PS_SHOP_DEFAULT');
+    }
+
+    protected function initCarrierFinder()
+    {
+        return new CarrierFinder();
     }
 }

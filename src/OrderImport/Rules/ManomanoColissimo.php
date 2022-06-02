@@ -23,6 +23,8 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
+use Carrier;
+use Cart;
 use Module;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
@@ -42,8 +44,7 @@ class ManomanoColissimo extends AbstractColissimo implements RuleInterface
         // Check marketplace, that the additional fields with the pickup point data are there and not empty, and that the "colissimo" module is installed and active
         if (preg_match('#^mamomano#i', $apiOrder->getChannel()->getName())
             && $this->isModuleColissimoEnabled()
-            && !empty($this->getPointId($apiOrder)
-            && $this->isColissimoCarrier($apiOrder))
+            && !empty($this->getPointId($apiOrder))
         ) {
             ProcessLoggerHandler::logInfo(
                 $logPrefix .
@@ -91,5 +92,22 @@ class ManomanoColissimo extends AbstractColissimo implements RuleInterface
         }
 
         return '';
+    }
+
+    public function afterCartCreation($params)
+    {
+        $cart = $params['cart'];
+
+        if (false == $cart instanceof Cart) {
+            return false;
+        }
+
+        $carrier = new Carrier($cart->id_carrier);
+
+        if ($carrier->external_module_name != self::COLISSIMO_MODULE_NAME) {
+            return false;
+        }
+
+        return parent::afterCartCreation($params);
     }
 }
