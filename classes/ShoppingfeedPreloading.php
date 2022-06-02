@@ -74,6 +74,7 @@ class ShoppingfeedPreloading extends ObjectModel
                 'type' => ObjectModel::TYPE_STRING,
                 'validate' => 'isString',
                 'allow_null' => false,
+                'size' => 32,
             ],
             'date_add' => [
                 'type' => self::TYPE_DATE,

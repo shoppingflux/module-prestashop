@@ -21,29 +21,10 @@
  * @copyright Copyright (c) 202-ecommerce
  * @license   Commercial license
  */
-require_once _PS_MODULE_DIR_ . 'shoppingfeed/classes/ShoppingfeedPreloading.php';
-
 function upgrade_module_1_8_0($module)
 {
-    $isIdTokenExiste = 0 < (int) Db::getInstance()->getValue('SELECT count(*) 
-	    FROM INFORMATION_SCHEMA.COLUMNS
-		WHERE `TABLE_NAME` = "' . _DB_PREFIX_ . ShoppingfeedPreloading::$definition['table'] . '"
-		AND `TABLE_SCHEMA` = "' . _DB_NAME_ . '"
-		AND `COLUMN_NAME` = "id_shoppingfeed_token"');
-
-    if ($isIdTokenExiste === false) {
-        $sql = 'ALTER TABLE ' . _DB_PREFIX_ . ShoppingfeedPreloading::$definition['table'] . '
-            ADD COLUMN `etag` VARCHAR(255) NOT NULL;';
-        Db::getInstance()->execute($sql);
-    }
-
-    $tokens = (new ShoppingfeedToken())->findAllActive();
-    foreach ($tokens as $token) {
-        $fileXml = sprintf(_PS_ROOT_DIR_ . '/file-%d.xml', $token['id_shoppingfeed_token']);
-        if (file_exists($fileXml)) {
-            unlink($fileXml);
-        }
-    }
+    $installer = new \ShoppingfeedClasslib\Install\ModuleInstaller($module);
+    $installer->installObjectModel(ShoppingfeedPreloading::class);
 
     $sql = 'UPDATE `' . _DB_PREFIX_ . ShoppingfeedPreloading::$definition['table'] . '` SET etag = md5(CONCAT(CURRENT_DATE, content))';
     Db::getInstance()->execute($sql);

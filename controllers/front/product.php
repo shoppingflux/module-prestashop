@@ -45,8 +45,22 @@ class ShoppingfeedProductModuleFrontController extends \ModuleFrontController
         if ($token === false) {
             exit();
         }
+        ProcessLoggerHandler::openLogger();
+        $etag = sprintf('W/"%s"', ShoppingfeedPreloading::getEtag($token['id_shoppingfeed_token']));
+        header('Etag: ' . $etag);
+        if ($_SERVER['HTTP_IF_NONE_MATCH'] === $etag) {
+            header('HTTP/1.1 304 not modified');
+            ProcessLoggerHandler::logSuccess(
+                sprintf('Xml for token %s not Modified', $token['id_shoppingfeed_token']),
+                'shoppingfeed_token',
+                $token['id_shoppingfeed_token'],
+                'ShoppingfeedProductModuleFrontController'
+            );
+            ProcessLoggerHandler::closeLogger();
+            exit();
+        }
         header('Content-type: text/xml');
-        header('Etag: ' . ShoppingfeedPreloading::getEtag($token['id_shoppingfeed_token']));
+
         $this->preparePreloading($token);
         $this->sfToken = $token;
         $productGenerator = new SfProductGenerator('php://output', 'xml');
@@ -63,6 +77,13 @@ class ShoppingfeedProductModuleFrontController extends \ModuleFrontController
         }
 
         $productGenerator->close();
+        ProcessLoggerHandler::logSuccess(
+            sprintf('Generate xml for token %s', $token['id_shoppingfeed_token']),
+            'shoppingfeed_token',
+            $token['id_shoppingfeed_token'],
+            'ShoppingfeedProductModuleFrontController'
+        );
+        ProcessLoggerHandler::closeLogger();
 
         exit;
     }
