@@ -20,6 +20,7 @@
 namespace Tests\OrderImport;
 
 use ColissimoCartPickupPoint;
+use Db;
 use ShoppingfeedAddon\Actions\ActionsHandler;
 use ShoppingfeedCarrier;
 use ShoppingfeedClasslib\Registry;
@@ -364,15 +365,46 @@ class OrderImportSimpleTest extends AbstractOrdeTestCase
         $this->assertEquals($pickupPoint->city, 'COLAYRAC ST CIRQ');
     }
 
+    public function addDpdCarrierAssociation()
+    {
+        //Find dpd carrier
+        $query = (new \DbQuery())
+            ->from('carrier')
+            ->where('active = 1')
+            ->where('deleted = 0')
+            ->where('external_module_name = "dpdfrance"')
+            ->select('id_reference');
+
+        $carrierReference = Db::getInstance()->getValue($query);
+
+        if (empty($carrierReference)) {
+            return false;
+        }
+
+        $associationData = [
+            'name_marketplace' => 'Monechelle',
+            'name_carrier' => 'DPD Pickup - Livraison en point relais',
+            'id_carrier_reference' => $carrierReference,
+            'is_new' => 0,
+            'date_add' => '2022-02-17 00:00:00',
+            'date_upd' => '2022-02-17 00:00:00',
+        ];
+        //Add an association
+        return Db::getInstance()->insert('shoppingfeed_carrier', $associationData, false, true, Db::REPLACE);
+    }
+
     /**
      * Test to import a standard order  ManoMano with DPD Relais
      *
      * @todo manage a specific carrier creation for tests
+     * @depends addDpdCarrierAssociation
      *
      * @return void
      */
-    public function testImportManoManoDpdRelaisWithDoubleTaxOnProduct(): void
+    public function testImportManoManoDpdRelaisWithDoubleTaxOnProduct($isAssociationAdded): void
     {
+        $this->assertTrue($isAssociationAdded);
+
         $apiOrder = $this->getOrderRessourceFromDataset('order-manomano.json');
 
         $handler = new ActionsHandler();
