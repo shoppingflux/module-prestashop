@@ -29,7 +29,7 @@ use ShoppingfeedClasslib\Registry;
  */
 class OrderSplittingTest extends AbstractOrdeTestCase
 {
-    public function setDifferentCarrierForProducts()
+    public function testSetDifferentCarrierForProducts()
     {
         $query = (new \DbQuery())
             ->from('carrier')
@@ -37,16 +37,13 @@ class OrderSplittingTest extends AbstractOrdeTestCase
             ->where('deleted = 0')
             ->select('id_reference')
             ->limit(2);
-        $carriers = Db::getInstance()->execute($query);
+        $carriers = Db::getInstance()->executeS($query);
 
         if (empty($carriers)) {
             return false;
         }
 
-        if (count($carriers) < 2) {
-            return false;
-        }
-
+        $this->assertEquals(2, count($carriers));
         //Remove existing product-carrier associations
         Db::getInstance()->delete('product_carrier', 'id_product in (1, 8)');
         //Add the new product-carrier associations
@@ -63,16 +60,15 @@ class OrderSplittingTest extends AbstractOrdeTestCase
             ],
         ];
 
-        return Db::getInstance()->insert('product_carrier', $insertData, false, true, Db::REPLACE);
+        $isDifferentCarriersSet = Db::getInstance()->insert('product_carrier', $insertData, false, true, Db::REPLACE);
+        $this->assertTrue($isDifferentCarriersSet);
     }
 
     /**
-     * @depends setDifferentCarrierForProducts
+     * @depends testSetDifferentCarrierForProducts
      */
-    public function testImportSplittedOrder($isDifferentCarriersSet)
+    public function testImportSplittedOrder()
     {
-        $this->assertTrue($isDifferentCarriersSet);
-
         $apiOrder = $this->getOrderRessourceFromDataset('order-for-splitting.json');
 
         $handler = new ActionsHandler();
@@ -108,12 +104,11 @@ class OrderSplittingTest extends AbstractOrdeTestCase
         foreach ($orders as $order) {
             $totalAmount += $order->total_paid_tax_incl;
             $totalShipping += $order->total_shipping;
-            $totalProduct += $order->total_products;
+            $totalProduct += $order->total_products_wt;
         }
 
-        $this->assertTrue(count($orders) == 2);
-        $this->assertTrue(round($totalAmount, 2) == 19.40);
-        $this->assertTrue(round($totalShipping, 2) == 4.90);
-        $this->assertTrue(round($totalProduct, 2) == 14.50);
+        $this->assertEquals(19.40, round($totalAmount, 2));
+        $this->assertEquals(4.90, round($totalShipping, 2));
+        $this->assertEquals(14.50, round($totalProduct, 2));
     }
 }

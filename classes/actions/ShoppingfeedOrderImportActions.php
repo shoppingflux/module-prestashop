@@ -1078,13 +1078,18 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 'id_carrier' => $carrier->id,
             ];
 
-            $psOrderObj = new Order((int) $id_order);
-
-            foreach ($updateOrder as $key => $value) {
-                $psOrderObj->{$key} = $value;
+            if ($psOrder->id == $id_order) {
+                $orderObj = $psOrder;
+            } else {
+                $orderObj = new Order($id_order);
             }
 
-            $psOrderObj->save(true);
+
+            foreach ($updateOrder as $key => $value) {
+                $orderObj->{$key} = $value;
+            }
+
+            $orderObj->save(true);
 
             Db::getInstance()->update('order_invoice', $updateOrderInvoice, '`id_order` = ' . (int) $id_order);
             Db::getInstance()->update('order_carrier', $updateOrderTracking, '`id_order` = ' . (int) $id_order);
@@ -1102,7 +1107,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             _DB_PREFIX_ . 'orders',
             _DB_PREFIX_ . 'order_payment',
             Tools::ps_round($paymentInformation['totalAmount'], 4),
-            (int) $id_order
+            (int) $psOrder->id
         );
         Db::getInstance()->execute($queryUpdateOrderPayment);
         Cache::clean('order_invoice_paid_*');

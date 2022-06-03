@@ -57,12 +57,12 @@
           "image":"http://localhost/img/p/1/1-small_default.jpg"
        },
         {
-          "reference":"1_11",
+          "reference":"1_2",
           "status":"",
           "quantity":1,
           "price":10,
           "taxAmount":0,
-          "channelReference":"123",
+          "channelReference":"2",
           "name":"Sac à langer Biscuit",
           "image":"https://localhost/5465-large_default/sac-a-langer-biscuit-pasito-a-pasito.jpg"
         }
@@ -74,7 +74,7 @@
        "currency":"EUR",
        "method":"Paypal"
     },
-    "reference":"TEST-ORDER-AMAZON",
+    "reference":"TEST-ORDER-SPLITTING",
     "shipment":{
        "carrier":"Colissimo",
        "trackingNumber":""
