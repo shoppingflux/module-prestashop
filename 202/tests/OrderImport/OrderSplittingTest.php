@@ -35,7 +35,7 @@ class OrderSplittingTest extends AbstractOrdeTestCase
             ->from('carrier')
             ->where('active = 1')
             ->where('deleted = 0')
-            ->select('id_reference')
+            ->select('id_reference, id_carrier')
             ->limit(2);
         $carriers = Db::getInstance()->executeS($query);
 
@@ -62,6 +62,20 @@ class OrderSplittingTest extends AbstractOrdeTestCase
 
         $isDifferentCarriersSet = Db::getInstance()->insert('product_carrier', $insertData, false, true, Db::REPLACE);
         $this->assertTrue($isDifferentCarriersSet);
+
+        $country = new \Country(\Country::getByIso('fr'));
+        $insertData = [
+            [
+                'id_carrier' => $carriers[0]['id_carrier'],
+                'id_zone' => $country->id_zone,
+            ],
+            [
+                'id_carrier' => $carriers[1]['id_carrier'],
+                'id_zone' => $country->id_zone,
+            ],
+        ];
+        $isCarrierZoneSet = Db::getInstance()->insert('carrier_zone', $insertData, false, true, Db::REPLACE);
+        $this->assertTrue($isCarrierZoneSet);
     }
 
     /**
@@ -107,6 +121,7 @@ class OrderSplittingTest extends AbstractOrdeTestCase
             $totalProduct += $order->total_products_wt;
         }
 
+        $this->assertEquals(2, count($orders));
         $this->assertEquals(19.40, round($totalAmount, 2));
         $this->assertEquals(4.90, round($totalShipping, 2));
         $this->assertEquals(14.50, round($totalProduct, 2));

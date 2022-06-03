@@ -912,6 +912,16 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         /** @var ShoppingFeed\Sdk\Api\Order\OrderResource $apiOrder */
         $apiOrder = $this->conveyor['apiOrder'];
         $psOrder = $this->conveyor['psOrder'];
+        $isResetShipping = false;
+        $cart = new Cart($psOrder->id_cart);
+
+        if ($cart->getNbOfPackages() > 1) {
+            if(Registry::isRegistered('order_for_cart_' . $cart->id)) {
+                $isResetShipping = true;
+            } else {
+                Registry::set('order_for_cart_' . $cart->id, true);
+            }
+        }
 
         $this->initProcess($apiOrder);
 
@@ -1025,11 +1035,12 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         $carrier_tax_rate = $carrier->getTaxesRate($address);
         $total_shipping_tax_excl = Tools::ps_round((float) $paymentInformation['shippingAmount'] / (1 + ($carrier_tax_rate / 100)), 2);
         $id_order = 0;
+
         foreach ($ordersList as $id_order => $orderPrices) {
             $total_paid = Tools::ps_round($orderPrices['total_products_tax_incl'], 2);
             $total_paid_tax_excl = Tools::ps_round($orderPrices['total_products_tax_excl'], 4);
             // Only on main order
-            if ($psOrder->id == (int) $id_order) {
+            if ($isResetShipping == false) {
                 // main order
                 $total_paid = Tools::ps_round($total_paid + (float) $paymentInformation['shippingAmount'], 2);
                 $total_paid_tax_excl = Tools::ps_round($orderPrices['total_products_tax_excl'] + (float) $total_shipping_tax_excl, 4);
@@ -1078,17 +1089,11 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 'id_carrier' => $carrier->id,
             ];
 
-            if ($psOrder->id == $id_order) {
-                $orderObj = $psOrder;
-            } else {
-                $orderObj = new Order($id_order);
-            }
-
             foreach ($updateOrder as $key => $value) {
-                $orderObj->{$key} = $value;
+                $psOrder->{$key} = $value;
             }
 
-            $orderObj->save(true);
+            $psOrder->save(true);
 
             Db::getInstance()->update('order_invoice', $updateOrderInvoice, '`id_order` = ' . (int) $id_order);
             Db::getInstance()->update('order_carrier', $updateOrderTracking, '`id_order` = ' . (int) $id_order);
