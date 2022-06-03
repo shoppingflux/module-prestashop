@@ -1084,7 +1084,6 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 $orderObj = new Order($id_order);
             }
 
-
             foreach ($updateOrder as $key => $value) {
                 $orderObj->{$key} = $value;
             }
