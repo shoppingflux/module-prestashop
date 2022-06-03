@@ -916,7 +916,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         $cart = new Cart($psOrder->id_cart);
 
         if ($cart->getNbOfPackages() > 1) {
-            if(Registry::isRegistered('order_for_cart_' . $cart->id)) {
+            if (Registry::isRegistered('order_for_cart_' . $cart->id)) {
                 $isResetShipping = true;
             } else {
                 Registry::set('order_for_cart_' . $cart->id, true);
