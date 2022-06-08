@@ -30,11 +30,6 @@ use ShoppingfeedClasslib\Registry;
  */
 class OrderRulesAmazonManomanoTvaTest extends AbstractOrdeTestCase
 {
-    /**
-     * Test to split name
-     *
-     * @return void
-     */
     public function testAmazon(): void
     {
         $apiOrder = $this->getOrderRessourceFromDataset('order-amazon-with-tva-num.json');
@@ -65,11 +60,6 @@ class OrderRulesAmazonManomanoTvaTest extends AbstractOrdeTestCase
         $this->assertNotEmpty($shippingAddress->vat_number);
     }
 
-    /**
-     * Test to split name
-     *
-     * @return void
-     */
     public function testManomano(): void
     {
         $apiOrder = $this->getOrderRessourceFromDataset('order-manomano-with-tva-num.json');
