@@ -1259,6 +1259,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             ShoppingfeedAddon\OrderImport\Rules\ZalandoColissimo::class,
             ShoppingfeedAddon\OrderImport\Rules\ZalandoCarrier::class,
             ShoppingfeedAddon\OrderImport\Rules\ColizeyColissimo::class,
+            ShoppingfeedAddon\OrderImport\Rules\AmazonManomanoTva::class,
         ];
 
         foreach ($defaultRulesClassNames as $ruleClassName) {
