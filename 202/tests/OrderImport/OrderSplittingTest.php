@@ -83,6 +83,7 @@ class OrderSplittingTest extends AbstractOrdeTestCase
      */
     public function testImportSplittedOrder()
     {
+        \Cache::clear();
         $apiOrder = $this->getOrderRessourceFromDataset('order-for-splitting.json');
 
         $handler = new ActionsHandler();
