@@ -50,7 +50,6 @@
         </label>
         <div class="col-lg-9">
             <select name="{$input.default_carrier_field_name|escape:'htmlall':'UTF-8'}" class="fixed-width-xl">
-                <option value="">{l s='Select your default carrier' mod='shoppingfeed'}</option>
                 {foreach from=$input.carriers item='option'}
                     <option value="{$option.value|escape:'htmlall':'UTF-8'}" {if $fields_value[$input.default_carrier_field_name] == $option.value}selected="selected"{/if}>&nbsp;{$option.label|escape:'htmlall':'UTF-8'}</option>
                 {/foreach}

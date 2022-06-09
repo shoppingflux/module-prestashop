@@ -20,9 +20,11 @@
 namespace ShoppingfeedAddon\Services;
 
 use Carrier;
+use Configuration;
 use Db;
 use DbQuery;
 use Order;
+use Shoppingfeed;
 
 class CarrierFinder
 {
@@ -50,5 +52,13 @@ class CarrierFinder
         } catch (\Throwable $e) {
             return 0;
         }
+    }
+
+    public function findProductFeedCarrier()
+    {
+        $carrier = Carrier::getCarrierByReference((int) Configuration::get(Shoppingfeed::PRODUCT_FEED_CARRIER_REFERENCE));
+        $carrier = is_object($carrier) ? $carrier : new Carrier();
+
+        return $carrier;
     }
 }
