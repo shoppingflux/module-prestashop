@@ -474,3 +474,4 @@ $_MODULE['<{shoppingfeed}prestashop>shoppingfeedproductsyncactions_3aab7c78f5902
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedproductsyncactions_5ddd4edf83584480ff1bd170fd0e45cf'] = 'Produit %s non enregistré pour synchronisation; aucune Action trouvée';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedproductsyncactions_bad55bce65539f218fb53a038f2a3083'] = 'Impossible de récupérer le lot à synchroniser; aucune Action trouvée';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedproductsyncactions_aa9800bc9533a049e2c71cf7cad950e7'] = 'Rien à synchroniser.';
+$_MODULE['<{shoppingfeed}prestashop>shoppingfeedadmincontroller_6929b6fdc007a9eb76276d74a9be29e9'] = 'Attention, votre transporteur par défaut Shopping Feed n\'est plus configuré.';
