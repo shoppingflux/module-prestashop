@@ -23,12 +23,11 @@ use Configuration;
 use Db;
 use Language;
 use Product;
+use Shoppingfeed;
 use Validate;
 
 class CdiscountFeeProduct
 {
-    const PRODUCT = 'SHOPPINGFEED_CDISCOUNT_FEE_PRODUCT';
-
     protected $db;
 
     public function __construct()
@@ -38,7 +37,7 @@ class CdiscountFeeProduct
 
     public function getProduct()
     {
-        $product = new Product(Configuration::get(self::PRODUCT));
+        $product = new Product(Configuration::get(Shoppingfeed::CDISCOUNT_FEE_PRODUCT));
 
         if (Validate::isLoadedObject($product)) {
             return $product;
@@ -82,25 +81,25 @@ class CdiscountFeeProduct
             true,
             Db::REPLACE
         );
-        Configuration::updateValue(self::PRODUCT, $product->id);
+        Configuration::updateValue(Shoppingfeed::CDISCOUNT_FEE_PRODUCT, $product->id);
 
         return $product;
     }
 
     public function removeProduct()
     {
-        $product = new Product(Configuration::get(self::PRODUCT));
+        $product = new Product(Configuration::get(Shoppingfeed::CDISCOUNT_FEE_PRODUCT));
 
         if (Validate::isLoadedObject($product)) {
             $product->delete();
         }
 
-        return Configuration::deleteByName(self::PRODUCT);
+        return Configuration::deleteByName(Shoppingfeed::CDISCOUNT_FEE_PRODUCT);
     }
 
     protected function getReference()
     {
-        return 'sf-cdiscount-fee-product-ref';
+        return 'FDG-ShoppingFlux';
     }
 
     protected function getEan13()
