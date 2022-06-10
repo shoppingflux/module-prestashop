@@ -24,12 +24,11 @@ use Db;
 use DbQuery;
 use Language;
 use OrderState;
+use Shoppingfeed;
 use Validate;
 
 class SFOrderState
 {
-    const SF_ORDER_STATE = 'SHOPPINGFEED_ORDER_STATE';
-
     protected $db;
 
     public function __construct()
@@ -39,7 +38,7 @@ class SFOrderState
 
     public function get()
     {
-        $sfOrderState = new OrderState(Configuration::getGlobalValue(self::SF_ORDER_STATE));
+        $sfOrderState = new OrderState(Configuration::getGlobalValue(Shoppingfeed::SF_ORDER_STATE));
 
         if (Validate::isLoadedObject($sfOrderState)) {
             return $sfOrderState;
@@ -78,7 +77,7 @@ class SFOrderState
         }
 
         $orderState->save();
-        Configuration::updateGlobalValue(self::SF_ORDER_STATE, $orderState->id);
+        Configuration::updateGlobalValue(Shoppingfeed::SF_ORDER_STATE, $orderState->id);
 
         return $orderState;
     }

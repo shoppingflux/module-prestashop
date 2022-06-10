@@ -75,6 +75,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     const PRODUCT_FEED_TIME_FULL_UPDATE = 'SHOPPINGFEED_PRODUCT_FEED_TIME_FULL_UPDATE';
     const PRODUCT_FEED_INTERVAL_CRON = 'SHOPPINGFEED_PRODUCT_FEED_INTERVAL_CRON';
     const ORDER_IMPORT_PERMANENT_SINCE_DATE = 'SHOPPINGFEED_ORDER_IMPORT_PERMANENT_SINCE_DATE';
+    const SF_ORDER_STATE = 'SHOPPINGFEED_ORDER_STATE';
 
     public $extensions = [
         \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerExtension::class,
