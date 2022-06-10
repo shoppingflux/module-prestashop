@@ -1770,6 +1770,7 @@ return array(
     'ShoppingfeedAddon\\OrderImport\\Rules\\ZalandoColissimo' => $baseDir . '/src/OrderImport/Rules/ZalandoColissimo.php',
     'ShoppingfeedAddon\\OrderImport\\SinceDate' => $baseDir . '/src/OrderImport/SinceDate.php',
     'ShoppingfeedAddon\\Services\\CarrierFinder' => $baseDir . '/src/Services/CarrierFinder.php',
+    'ShoppingfeedAddon\\Services\\CdiscountFeeProduct' => $baseDir . '/src/Services/CdiscountFeeProduct.php',
     'ShoppingfeedAddon\\Services\\ImageLink' => $baseDir . '/src/Services/ImageLink.php',
     'ShoppingfeedAddon\\Services\\IsoConvertor' => $baseDir . '/src/Services/IsoConvertor.php',
     'ShoppingfeedAddon\\Services\\ProductAttributeCombination' => $baseDir . '/src/Services/ProductAttributeCombination.php',
