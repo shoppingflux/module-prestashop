@@ -1,7 +1,5 @@
 <?php
 
-use ShoppingfeedAddon\Services\CarrierFinder;
-
 /**
  * Copyright since 2019 Shopping Feed
  *
@@ -29,21 +27,5 @@ class ShoppingfeedAdminController extends ModuleAdminController
     public function getTemplateFormVars()
     {
         return $this->tpl_form_vars;
-    }
-
-    public function initContent()
-    {
-        $carrier = $this->getCarrierFinder()->findProductFeedCarrier();
-
-        if (false == Validate::isLoadedObject($carrier)) {
-            $this->errors[] = $this->module->l('Be careful, your Shopping Feed default carrier is no longer configured', 'ShoppingfeedAdminController');
-        }
-
-        return parent::initContent();
-    }
-
-    protected function getCarrierFinder()
-    {
-        return new CarrierFinder();
     }
 }

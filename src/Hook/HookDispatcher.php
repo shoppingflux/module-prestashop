@@ -26,6 +26,7 @@ class HookDispatcher extends AbstractHookDispatcher
 {
     protected $hookClasses = [
         RelaisColis::class,
+        BackOfficeHeader::class,
     ];
 
     public function dispatch($hookName, array $params = [])

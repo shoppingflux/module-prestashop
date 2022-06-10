@@ -2003,6 +2003,7 @@ class ComposerStaticInit3fe85f86ff701f6bd7fd7d7a118b5533
         'ShoppingfeedAddon\\Actions\\ActionsHandler' => __DIR__ . '/../..' . '/src/Actions/ActionsHandler.php',
         'ShoppingfeedAddon\\Exception\\ProcessLockedException' => __DIR__ . '/../..' . '/src/Exception/ProcessLockedException.php',
         'ShoppingfeedAddon\\Hook\\ActionShoppingfeedTracking\\RelaisColis' => __DIR__ . '/../..' . '/src/Hook/ActionShoppingfeedTracking/RelaisColis.php',
+        'ShoppingfeedAddon\\Hook\\BackOfficeHeader' => __DIR__ . '/../..' . '/src/Hook/BackOfficeHeader.php',
         'ShoppingfeedAddon\\Hook\\HookDispatcher' => __DIR__ . '/../..' . '/src/Hook/HookDispatcher.php',
         'ShoppingfeedAddon\\OrderImport\\DpdAssociation' => __DIR__ . '/../..' . '/src/OrderImport/DpdAssociation.php',
         'ShoppingfeedAddon\\OrderImport\\OrderData' => __DIR__ . '/../..' . '/src/OrderImport/OrderData.php',
