@@ -603,6 +603,16 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     public function mapPrestashopProduct($sfProductReference, $id_shop, ...$arguments)
     {
         $sfProduct = new ShoppingfeedProduct();
+        $cdiscountFeeProduct = $this->initCdiscountFeeProduct()->getProduct();
+
+        if (Validate::isLoadedObject($cdiscountFeeProduct)) {
+            if ($cdiscountFeeProduct->reference == $sfProductReference) {
+                $cdiscountFeeProduct->id_product_attribute = null;
+
+                return $cdiscountFeeProduct;
+            }
+        }
+
         $sfProductReference = $sfProduct->getReverseShoppingfeedReference($sfProductReference, $id_shop);
 
         Hook::exec(

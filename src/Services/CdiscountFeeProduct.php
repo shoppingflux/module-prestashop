@@ -63,24 +63,9 @@ class CdiscountFeeProduct
         $product->visibility = 'none';
         $product->depends_on_stock = 1; //do not depend on stock
         $product->available_for_order = true;
-        $product->mpn = $this->getReference();
         $product->reference = $this->getReference();
-        $product->ean13 = $this->getEan13();
-        $product->isbn = $this->getIsbn();
-        $product->upc = $this->getUpc();
         $product->save();
 
-        $this->db->insert(
-            'product_supplier',
-            [
-                'id_product' => $product->id,
-                'id_supplier' => 1,
-                'product_supplier_reference' => $product->reference,
-            ],
-            false,
-            true,
-            Db::REPLACE
-        );
         Configuration::updateValue(Shoppingfeed::CDISCOUNT_FEE_PRODUCT, $product->id);
 
         return $product;
@@ -100,20 +85,5 @@ class CdiscountFeeProduct
     protected function getReference()
     {
         return 'FDG-ShoppingFlux';
-    }
-
-    protected function getEan13()
-    {
-        return '1234567890123';
-    }
-
-    protected function getIsbn()
-    {
-        return '12345678901234567890123456789012';
-    }
-
-    protected function getUpc()
-    {
-        return '123456789012';
     }
 }

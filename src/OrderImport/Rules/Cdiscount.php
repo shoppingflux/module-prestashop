@@ -28,8 +28,6 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-use Configuration;
-use Shoppingfeed;
 use ShoppingFeed\Sdk\Api\Order\OrderItem;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use ShoppingfeedAddon\OrderImport\OrderData;
@@ -38,6 +36,7 @@ use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
 use ShoppingfeedAddon\Services\CdiscountFeeProduct;
 use Tools;
+use Validate;
 
 class Cdiscount extends RuleAbstract implements RuleInterface
 {
@@ -93,17 +92,12 @@ class Cdiscount extends RuleAbstract implements RuleInterface
     protected function getReference()
     {
         $product = $this->initCdiscountFeeProduct()->getProduct();
-        $referenceFormat = Configuration::get(Shoppingfeed::PRODUCT_FEED_REFERENCE_FORMAT);
 
-        if (empty($referenceFormat)) {
-            return $product->id;
+        if (Validate::isLoadedObject($product)) {
+            return $product->reference;
         }
 
-        if ($referenceFormat == 'supplier_reference') {
-            return $product->mpn;
-        }
-
-        return $product->{$referenceFormat};
+        return '';
     }
 
     protected function initCdiscountFeeProduct()
