@@ -16,7 +16,7 @@
  *  @copyright Since 2019 Shopping Feed
  *  @license   https://opensource.org/licenses/AFL-3.0  Academic Free License (AFL 3.0)
  */
-if (false == class_exists('Throwable')) {
+if (false === class_exists('Throwable')) {
     class Throwable extends Exception
     {
     }
