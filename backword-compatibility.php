@@ -17,5 +17,7 @@
  *  @license   https://opensource.org/licenses/AFL-3.0  Academic Free License (AFL 3.0)
  */
 if (false == class_exists('Throwable')) {
-    class_alias('Exception', 'Throwable');
+    class Throwable extends Exception
+    {
+    }
 }
