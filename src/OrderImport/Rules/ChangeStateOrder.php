@@ -28,7 +28,6 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-use Configuration;
 use Order;
 use OrderHistory;
 use OrderState;
@@ -42,7 +41,7 @@ class ChangeStateOrder extends RuleAbstract implements RuleInterface
 {
     public function isApplicable(OrderResource $apiOrder)
     {
-        return true;
+        return $this->getIdOrderState() != 0;
     }
 
     public function onPostProcess($params)
@@ -160,6 +159,6 @@ class ChangeStateOrder extends RuleAbstract implements RuleInterface
             return (int) $this->configuration['end_order_state'];
         }
 
-        return (int) Configuration::get('PS_OS_PAYMENT');
+        return 0;
     }
 }

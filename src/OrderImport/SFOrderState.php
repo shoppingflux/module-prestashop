@@ -20,31 +20,22 @@
 namespace ShoppingfeedAddon\OrderImport;
 
 use Configuration;
-use Db;
-use DbQuery;
-use Language;
 use OrderState;
 use Shoppingfeed;
 use Validate;
 
 class SFOrderState
 {
-    protected $db;
+    protected $idShop;
 
-    public function __construct()
+    public function __construct($idShop = null)
     {
-        $this->db = Db::getInstance();
+        $this->idShop = $idShop;
     }
 
     public function get()
     {
-        $sfOrderState = new OrderState(Configuration::getGlobalValue(Shoppingfeed::SF_ORDER_STATE));
-
-        if (Validate::isLoadedObject($sfOrderState)) {
-            return $sfOrderState;
-        }
-
-        $sfOrderState = $this->create();
+        $sfOrderState = new OrderState(Configuration::get(Shoppingfeed::IMPORT_ORDER_STATE, null, null, $this->idShop));
 
         if (Validate::isLoadedObject($sfOrderState)) {
             return $sfOrderState;
@@ -53,32 +44,15 @@ class SFOrderState
         return $this->getDefault();
     }
 
+    public function set($idOrderState)
+    {
+        Configuration::updateValue(Shoppingfeed::IMPORT_ORDER_STATE, $idOrderState, false, null, $this->idShop);
+
+        return $this;
+    }
+
     protected function getDefault()
     {
         return new OrderState(Configuration::get('PS_OS_PAYMENT'));
-    }
-
-    protected function create()
-    {
-        //check if the order state exists already
-        $query = (new DbQuery())
-            ->from('order_state')
-            ->where('module_name = "shoppingfeed"')
-            ->select('id_order_state');
-
-        $orderState = new OrderState($this->db->getValue($query));
-        $orderState->module_name = 'shoppingfeed';
-        $orderState->color = '#f8c600';
-        $orderState->logable = true;
-        $orderState->name = [];
-
-        foreach (Language::getLanguages(false) as $lang) {
-            $orderState->name[$lang['id_lang']] = 'Imported from Shoppingfeed';
-        }
-
-        $orderState->save();
-        Configuration::updateGlobalValue(Shoppingfeed::SF_ORDER_STATE, $orderState->id);
-
-        return $orderState;
     }
 }
