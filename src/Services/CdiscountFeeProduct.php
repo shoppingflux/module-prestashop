@@ -20,7 +20,6 @@
 namespace ShoppingfeedAddon\Services;
 
 use Configuration;
-use Db;
 use Language;
 use Product;
 use Shoppingfeed;
@@ -28,11 +27,11 @@ use Validate;
 
 class CdiscountFeeProduct
 {
-    protected $db;
+    protected $symbolValidator;
 
     public function __construct()
     {
-        $this->db = Db::getInstance();
+        $this->symbolValidator = new SymbolValidator();
     }
 
     public function getProduct()
@@ -84,6 +83,13 @@ class CdiscountFeeProduct
 
     protected function getReference()
     {
-        return 'FDG-ShoppingFlux';
+        $reference = 'FDG-ShoppingFlux';
+        $this->symbolValidator->validate(
+            $reference,
+            ['Validate', Product::$definition['fields']['reference']['validate']],
+            ''
+        );
+
+        return $reference;
     }
 }
