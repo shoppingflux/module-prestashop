@@ -19,7 +19,6 @@
 
 namespace Tests\OrderImport;
 
-use Db;
 use Order;
 use ShoppingfeedAddon\Actions\ActionsHandler;
 use ShoppingfeedClasslib\Registry;
@@ -29,58 +28,6 @@ use ShoppingfeedClasslib\Registry;
  */
 class OrderSplittingTest extends AbstractOrdeTestCase
 {
-    public function testSetDifferentCarrierForProducts()
-    {
-        $query = (new \DbQuery())
-            ->from('carrier')
-            ->where('active = 1')
-            ->where('deleted = 0')
-            ->select('id_reference, id_carrier')
-            ->limit(2);
-        $carriers = Db::getInstance()->executeS($query);
-
-        if (empty($carriers)) {
-            return false;
-        }
-
-        $this->assertEquals(2, count($carriers));
-        //Remove existing product-carrier associations
-        Db::getInstance()->delete('product_carrier', 'id_product in (1, 8)');
-        //Add the new product-carrier associations
-        $insertData = [
-            [
-                'id_product' => 1,
-                'id_carrier_reference' => $carriers[0]['id_reference'],
-                'id_shop' => 1,
-            ],
-            [
-                'id_product' => 8,
-                'id_carrier_reference' => $carriers[1]['id_reference'],
-                'id_shop' => 1,
-            ],
-        ];
-
-        $isDifferentCarriersSet = Db::getInstance()->insert('product_carrier', $insertData, false, true, Db::REPLACE);
-        $this->assertTrue($isDifferentCarriersSet);
-
-        $country = new \Country(\Country::getByIso('fr'));
-        $insertData = [
-            [
-                'id_carrier' => $carriers[0]['id_carrier'],
-                'id_zone' => $country->id_zone,
-            ],
-            [
-                'id_carrier' => $carriers[1]['id_carrier'],
-                'id_zone' => $country->id_zone,
-            ],
-        ];
-        $isCarrierZoneSet = Db::getInstance()->insert('carrier_zone', $insertData, false, true, Db::REPLACE);
-        $this->assertTrue($isCarrierZoneSet);
-    }
-
-    /**
-     * @depends testSetDifferentCarrierForProducts
-     */
     public function testImportSplittedOrder()
     {
         \Cache::clear();
