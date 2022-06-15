@@ -24,7 +24,8 @@
 if (!defined('_PS_VERSION_')) {
     exit;
 }
-
+//backword-compatibility with php5.6
+require_once _PS_MODULE_DIR_ . 'shoppingfeed/backword-compatibility.php';
 require_once _PS_MODULE_DIR_ . 'shoppingfeed/vendor/autoload.php';
 
 use ShoppingfeedClasslib\Actions\ActionsHandler;
@@ -131,7 +132,7 @@ class ShoppingfeedSyncProductModuleFrontController extends ShoppingfeedCronContr
                     Registry::increment('errors');
                 }
             }
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             ProcessLoggerHandler::logError(
                 sprintf(
                     $logPrefix . ' ' . $this->module->l('Fail : %s', 'syncProduct'),

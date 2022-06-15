@@ -20,6 +20,8 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
+//backword-compatibility with php5.6
+require_once _PS_MODULE_DIR_ . 'shoppingfeed/backword-compatibility.php';
 require_once _PS_MODULE_DIR_ . 'shoppingfeed/vendor/autoload.php';
 
 // Set this as comment so Classlib will import the files; but don't uncomment !
@@ -1151,7 +1153,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             $processResult = $handler->process('shoppingfeedOrderImport');
             $conveyor = $handler->getConveyor();
             $params['order'] = $conveyor['psOrder'];
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logError(
                 sprintf(
                     ShoppingfeedOrderSyncActions::getLogPrefix() . ' ' .

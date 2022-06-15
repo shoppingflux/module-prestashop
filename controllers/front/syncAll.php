@@ -24,7 +24,8 @@
 if (!defined('_PS_VERSION_')) {
     exit;
 }
-
+//backword-compatibility with php5.6
+require_once _PS_MODULE_DIR_ . 'shoppingfeed/backword-compatibility.php';
 require_once _PS_MODULE_DIR_ . 'shoppingfeed/vendor/autoload.php';
 
 use ShoppingfeedAddon\Exception\ProcessLockedException;
@@ -66,7 +67,7 @@ class ShoppingfeedSyncAllModuleFrontController extends ShoppingfeedCronControlle
         try {
             $this->execute($this->syncProductCron, $this->module->cronTasks['syncProduct']['name']);
             $this->execute($this->syncOrderCron, $this->module->cronTasks['syncOrder']['name']);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             $this->handleExeption($e);
         }
 
