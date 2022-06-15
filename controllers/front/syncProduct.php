@@ -24,8 +24,7 @@
 if (!defined('_PS_VERSION_')) {
     exit;
 }
-//backword-compatibility with php5.6
-require_once _PS_MODULE_DIR_ . 'shoppingfeed/backword-compatibility.php';
+
 require_once _PS_MODULE_DIR_ . 'shoppingfeed/vendor/autoload.php';
 
 use ShoppingfeedClasslib\Actions\ActionsHandler;

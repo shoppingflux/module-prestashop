@@ -39,7 +39,8 @@
     "classmap": [
       "classes/",
       "controllers/",
-      "shoppingfeed.php"
+      "shoppingfeed.php",
+      "backword-compatibility.php"
     ],
     "psr-4": {
       "ShoppingfeedClasslib\\":          "vendor/totpsclasslib/src/",
