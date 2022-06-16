@@ -1743,6 +1743,7 @@ return array(
     'ShoppingfeedAddon\\Actions\\ActionsHandler' => $baseDir . '/src/Actions/ActionsHandler.php',
     'ShoppingfeedAddon\\Exception\\ProcessLockedException' => $baseDir . '/src/Exception/ProcessLockedException.php',
     'ShoppingfeedAddon\\Hook\\ActionShoppingfeedTracking\\RelaisColis' => $baseDir . '/src/Hook/ActionShoppingfeedTracking/RelaisColis.php',
+    'ShoppingfeedAddon\\Hook\\BackOfficeHeader' => $baseDir . '/src/Hook/BackOfficeHeader.php',
     'ShoppingfeedAddon\\Hook\\HookDispatcher' => $baseDir . '/src/Hook/HookDispatcher.php',
     'ShoppingfeedAddon\\OrderImport\\DpdAssociation' => $baseDir . '/src/OrderImport/DpdAssociation.php',
     'ShoppingfeedAddon\\OrderImport\\OrderCustomerData' => $baseDir . '/src/OrderImport/OrderCustomerData.php',

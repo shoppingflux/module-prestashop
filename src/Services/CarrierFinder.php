@@ -57,6 +57,14 @@ class CarrierFinder
         }
     }
 
+    public function findProductFeedCarrier()
+    {
+        $carrier = Carrier::getCarrierByReference((int) Configuration::get(Shoppingfeed::PRODUCT_FEED_CARRIER_REFERENCE));
+        $carrier = is_object($carrier) ? $carrier : new Carrier();
+
+        return $carrier;
+    }
+
     public function getCarrierForOrderImport(OrderResource $apiOrder)
     {
         $carrier = null;
