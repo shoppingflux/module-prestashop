@@ -397,7 +397,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                     'beforeBillingAddressSave',
                     [
                         'apiBillingAddress' => &$apiBillingAddress,
-                        'billingAddress' => $billingAddress,
+                        'billingAddress' => &$billingAddress,
                         'apiOrder' => $apiOrder,
                     ]
                 );
@@ -439,7 +439,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                     'beforeShippingAddressSave',
                     [
                         'apiShippingAddress' => &$apiShippingAddress,
-                        'shippingAddress' => $shippingAddress,
+                        'shippingAddress' => &$shippingAddress,
                         'apiOrder' => $apiOrder,
                     ]
                 );
