@@ -2031,6 +2031,7 @@ class ComposerStaticInit3fe85f86ff701f6bd7fd7d7a118b5533
         'ShoppingfeedAddon\\OrderImport\\Rules\\TestingOrder' => __DIR__ . '/../..' . '/src/OrderImport/Rules/TestingOrder.php',
         'ShoppingfeedAddon\\OrderImport\\Rules\\ZalandoCarrier' => __DIR__ . '/../..' . '/src/OrderImport/Rules/ZalandoCarrier.php',
         'ShoppingfeedAddon\\OrderImport\\Rules\\ZalandoColissimo' => __DIR__ . '/../..' . '/src/OrderImport/Rules/ZalandoColissimo.php',
+        'ShoppingfeedAddon\\OrderImport\\SFOrderState' => __DIR__ . '/../..' . '/src/OrderImport/SFOrderState.php',
         'ShoppingfeedAddon\\OrderImport\\SinceDate' => __DIR__ . '/../..' . '/src/OrderImport/SinceDate.php',
         'ShoppingfeedAddon\\Services\\CarrierFinder' => __DIR__ . '/../..' . '/src/Services/CarrierFinder.php',
         'ShoppingfeedAddon\\Services\\CdiscountFeeProduct' => __DIR__ . '/../..' . '/src/Services/CdiscountFeeProduct.php',

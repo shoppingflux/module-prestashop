@@ -18,6 +18,7 @@
  */
 
 use ShoppingfeedAddon\OrderImport\OrderData;
+use ShoppingfeedAddon\OrderImport\SFOrderState;
 use ShoppingfeedAddon\Services\CarrierFinder;
 use ShoppingfeedClasslib\Actions\DefaultActions;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
@@ -718,7 +719,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         try {
             $paymentModule->validateOrder(
                 (int) $cart->id,
-                Configuration::get('PS_OS_PAYMENT'),
+                $this->initSfOrderState()->get()->id,
                 $amount_paid,
                 Tools::strtolower($apiOrder->getChannel()->getName()),
                 null,
@@ -753,6 +754,10 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             $this->conveyor['id_order'] = $paymentModule->currentOrder;
             $this->conveyor['order_reference'] = $paymentModule->currentOrderReference;
         } else {
+            // Reset customer mail
+            $this->conveyor['customer']->email = Registry::get('customerEmail');
+            $this->conveyor['customer']->update();
+
             return true;
         }
 
@@ -1283,6 +1288,11 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         }
 
         return (int) Configuration::get('PS_SHOP_DEFAULT');
+    }
+
+    protected function initSfOrderState()
+    {
+        return new SFOrderState();
     }
 
     protected function initCarrierFinder()
