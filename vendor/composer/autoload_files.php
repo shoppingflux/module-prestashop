@@ -18,4 +18,5 @@ return array(
     '454f97bd9f49193f9584219f382e1101' => $vendorDir . '/prefixed/guzzlehttp/guzzle/src/functions_include.php',
     '65a66ec60d4919a4da0e932ab2da4543' => $vendorDir . '/prefixed/guzzlehttp/psr7/src/functions_include.php',
     '3b2deaad72ce74d74d2993b336bde5b3' => $vendorDir . '/prefixed/guzzlehttp/promises/src/functions_include.php',
+    '26110cc9145f9e0c51d9e8a05896da79' => $baseDir . '/classes/Compatibility/backword-compatibility.php',
 );

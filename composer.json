@@ -34,13 +34,13 @@
     "files": [
       "vendor/prefixed/guzzlehttp/guzzle/src/functions_include.php",
       "vendor/prefixed/guzzlehttp/psr7/src/functions_include.php",
-      "vendor/prefixed/guzzlehttp/promises/src/functions_include.php"
+      "vendor/prefixed/guzzlehttp/promises/src/functions_include.php",
+      "classes/Compatibility/backword-compatibility.php"
     ],
     "classmap": [
       "classes/",
       "controllers/",
-      "shoppingfeed.php",
-      "backword-compatibility.php"
+      "shoppingfeed.php"
     ],
     "psr-4": {
       "ShoppingfeedClasslib\\":          "vendor/totpsclasslib/src/",
