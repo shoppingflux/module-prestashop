@@ -1254,12 +1254,12 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             ShoppingfeedAddon\OrderImport\Rules\ShippedByMarketplace::class,
             ShoppingfeedAddon\OrderImport\Rules\RelaisColisRule::class,
             ShoppingfeedAddon\OrderImport\Rules\TestingOrder::class,
-            ShoppingfeedAddon\OrderImport\Rules\SymbolConformity::class,
             ShoppingfeedAddon\OrderImport\Rules\ManomanoDpdRelais::class,
             ShoppingfeedAddon\OrderImport\Rules\ZalandoColissimo::class,
             ShoppingfeedAddon\OrderImport\Rules\ZalandoCarrier::class,
             ShoppingfeedAddon\OrderImport\Rules\ColizeyColissimo::class,
             ShoppingfeedAddon\OrderImport\Rules\AmazonManomanoTva::class,
+            ShoppingfeedAddon\OrderImport\Rules\SymbolConformity::class,
         ];
 
         foreach ($defaultRulesClassNames as $ruleClassName) {

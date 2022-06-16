@@ -29,6 +29,8 @@ if (!defined('_PS_VERSION_')) {
 }
 
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
+use Tools;
+use Validate;
 
 /**
  * This class is a mutable copy of \ShoppingFeed\Sdk\Api\Order\OrderResource. Its
@@ -83,6 +85,12 @@ class OrderData
         'UK' => 'GB',
     ];
 
+    /** @var OrderCustomerData */
+    protected $customer;
+
+    /** @var OrderResource */
+    protected $apiOrder;
+
     public function __construct(OrderResource $apiOrder)
     {
         $this->storeReference = $apiOrder->getStoreReference();
@@ -95,6 +103,7 @@ class OrderData
         $this->payment = $apiOrder->getPaymentInformation();
         $this->shipment = $apiOrder->getShipment();
         $this->itemsReferencesAliases = $apiOrder->getItemsReferencesAliases();
+        $this->apiOrder = $apiOrder;
         // TODO : OrderResource should likely have a "getAdditionalFields" method
         $apiOrderData = $apiOrder->toArray();
         $this->additionalFields = empty($apiOrderData['additionalFields']) === false ? $apiOrderData['additionalFields'] : [];
@@ -126,5 +135,43 @@ class OrderData
         }
 
         return $address;
+    }
+
+    public function getCustomer()
+    {
+        if ($this->customer instanceof OrderCustomerData) {
+            return $this->customer;
+        }
+
+        $this->customer = new OrderCustomerData();
+
+        if (false == empty($this->billingAddress['firstName'])) {
+            $firstName = Tools::substr($this->billingAddress['firstName'], 0, 32);
+            // Numbers are forbidden in firstname / lastname
+            $firstName = preg_replace('/\-?\d+/', '', $firstName);
+            $this->customer->setFirstName($firstName);
+        }
+
+        if (false == empty($this->billingAddress['lastName'])) {
+            $lastName = Tools::substr($this->billingAddress['lastName'], 0, 32);
+            // Numbers are forbidden in firstname / lastname
+            $lastName = preg_replace('/\-?\d+/', '', $lastName);
+            $this->customer->setLastName($lastName);
+        }
+
+        if (Validate::isEmail($this->billingAddress['email'])) {
+            $this->customer->setEmail($this->billingAddress['email']);
+        } elseif (Validate::isEmail($this->shippingAddress['email'])) {
+            $this->customer->setEmail($this->shippingAddress['email']);
+        } else {
+            $this->customer->setEmail($this->apiOrder->getId() . '@' . $this->apiOrder->getChannel()->getName() . '.sf');
+        }
+
+        return $this->customer;
+    }
+
+    public function setCustomer(OrderCustomerData $customerData)
+    {
+        $this->customer = $customerData;
     }
 }

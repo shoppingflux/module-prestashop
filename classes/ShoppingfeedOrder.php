@@ -51,6 +51,8 @@ class ShoppingfeedOrder extends ObjectModel
     public $date_add;
     public $date_upd;
 
+    public $failed_ticket;
+
     public static $definition = [
         'table' => 'shoppingfeed_order',
         'primary' => 'id_shoppingfeed_order',
@@ -93,6 +95,11 @@ class ShoppingfeedOrder extends ObjectModel
                 'type' => ObjectModel::TYPE_INT,
                 'validate' => 'isInt',
                 'required' => true,
+                'allow_null' => true,
+            ],
+            'failed_ticket' => [
+                'type' => ObjectModel::TYPE_INT,
+                'validate' => 'isInt',
                 'allow_null' => true,
             ],
             'date_add' => [
