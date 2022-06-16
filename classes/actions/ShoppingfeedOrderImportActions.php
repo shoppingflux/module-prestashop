@@ -894,6 +894,16 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         /** @var ShoppingFeed\Sdk\Api\Order\OrderResource $apiOrder */
         $apiOrder = $this->conveyor['apiOrder'];
         $psOrder = $this->conveyor['psOrder'];
+        $isResetShipping = false;
+        $cart = new Cart($psOrder->id_cart);
+
+        if ($cart->getNbOfPackages() > 1) {
+            if (Registry::isRegistered('order_for_cart_' . $cart->id)) {
+                $isResetShipping = true;
+            } else {
+                Registry::set('order_for_cart_' . $cart->id, true);
+            }
+        }
 
         $this->initProcess($apiOrder);
 
@@ -1007,11 +1017,12 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         $carrier_tax_rate = $carrier->getTaxesRate($address);
         $total_shipping_tax_excl = Tools::ps_round((float) $paymentInformation['shippingAmount'] / (1 + ($carrier_tax_rate / 100)), 2);
         $id_order = 0;
+
         foreach ($ordersList as $id_order => $orderPrices) {
             $total_paid = Tools::ps_round($orderPrices['total_products_tax_incl'], 2);
             $total_paid_tax_excl = Tools::ps_round($orderPrices['total_products_tax_excl'], 4);
             // Only on main order
-            if ($psOrder->id == (int) $id_order) {
+            if ($isResetShipping == false) {
                 // main order
                 $total_paid = Tools::ps_round($total_paid + (float) $paymentInformation['shippingAmount'], 2);
                 $total_paid_tax_excl = Tools::ps_round($orderPrices['total_products_tax_excl'] + (float) $total_shipping_tax_excl, 4);
@@ -1063,10 +1074,12 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             foreach ($updateOrder as $key => $value) {
                 $psOrder->{$key} = $value;
             }
+
             $psOrder->save(true);
+
             Db::getInstance()->update('order_invoice', $updateOrderInvoice, '`id_order` = ' . (int) $id_order);
             Db::getInstance()->update('order_carrier', $updateOrderTracking, '`id_order` = ' . (int) $id_order);
-            Db::getInstance()->delete('order_cart_rule', 'id_order = ' . $psOrder->id);
+            Db::getInstance()->delete('order_cart_rule', 'id_order = ' . (int) $id_order);
         }
 
         $queryUpdateOrderPayment = sprintf(
@@ -1080,7 +1093,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             _DB_PREFIX_ . 'orders',
             _DB_PREFIX_ . 'order_payment',
             Tools::ps_round($paymentInformation['totalAmount'], 4),
-            (int) $id_order
+            (int) $psOrder->id
         );
         Db::getInstance()->execute($queryUpdateOrderPayment);
         Cache::clean('order_invoice_paid_*');

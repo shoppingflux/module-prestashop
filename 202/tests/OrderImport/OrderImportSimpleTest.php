@@ -20,6 +20,7 @@
 namespace Tests\OrderImport;
 
 use ColissimoCartPickupPoint;
+use Order;
 use ShoppingfeedAddon\Actions\ActionsHandler;
 use ShoppingfeedCarrier;
 use ShoppingfeedClasslib\Registry;
