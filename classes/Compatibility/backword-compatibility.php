@@ -16,7 +16,7 @@
  *  @copyright Since 2019 Shopping Feed
  *  @license   https://opensource.org/licenses/AFL-3.0  Academic Free License (AFL 3.0)
  */
-require_once dirname(__FILE__) . '/../../../../config/config.inc.php';
+include_once dirname(__FILE__) . '/../../../../config/config.inc.php';
 
 if (version_compare(phpversion(), '7', '<')) {
     if (false === class_exists('Throwable')) {
