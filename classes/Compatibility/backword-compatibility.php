@@ -16,7 +16,6 @@
  *  @copyright Since 2019 Shopping Feed
  *  @license   https://opensource.org/licenses/AFL-3.0  Academic Free License (AFL 3.0)
  */
-include_once dirname(__FILE__) . '/../../../../config/config.inc.php';
 
 if (version_compare(phpversion(), '7', '<')) {
     if (false === class_exists('Throwable')) {
@@ -26,7 +25,3 @@ if (version_compare(phpversion(), '7', '<')) {
     }
 }
 
-if (version_compare(_PS_VERSION_, '1.7.7', '<')) {
-    require_once _PS_MODULE_DIR_ . 'shoppingfeed/classes/Compatibility/PriceFormatter.php';
-    require_once _PS_MODULE_DIR_ . 'shoppingfeed/classes/Compatibility/SpecificPriceFormatter.php';
-}
