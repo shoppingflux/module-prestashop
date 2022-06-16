@@ -29,7 +29,9 @@ if (!defined('_PS_VERSION_')) {
 }
 
 use Address;
+use Customer;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
+use ShoppingfeedAddon\OrderImport\OrderData;
 use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
 use ShoppingfeedAddon\Services\SymbolValidator;
@@ -74,6 +76,9 @@ class SymbolConformity extends RuleAbstract implements RuleInterface
         );
         $logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
 
+        // Update customer method should be performed before an update address methods
+        // since this method is based on the address data which can be modified
+        $this->updateCustomer($orderData);
         $this->updateAddress($orderData->shippingAddress);
         $this->updateAddress($orderData->billingAddress);
 
@@ -199,5 +204,36 @@ class SymbolConformity extends RuleAbstract implements RuleInterface
                 Address::$definition['fields']['phone_mobile']['validate'],
             ]
         );
+    }
+
+    protected function updateCustomer(OrderData &$orderData)
+    {
+        $customerData = $orderData->getCustomer();
+        $firstName = $customerData->getFirstName();
+        $lastName = $customerData->getLastName();
+
+        if ($firstName) {
+            $this->validator->validate(
+                $firstName,
+                [
+                    'Validate',
+                    Customer::$definition['fields']['firstname']['validate'],
+                ]
+            );
+            $customerData->setFirstName($firstName);
+        }
+
+        if ($lastName) {
+            $this->validator->validate(
+                $lastName,
+                [
+                    'Validate',
+                    Customer::$definition['fields']['firstname']['validate'],
+                ]
+            );
+            $customerData->setLastName($lastName);
+        }
+
+        $orderData->setCustomer($customerData);
     }
 }

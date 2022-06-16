@@ -20,9 +20,14 @@
 namespace ShoppingfeedAddon\Services;
 
 use Carrier;
+use Configuration;
 use Db;
 use DbQuery;
 use Order;
+use Shoppingfeed;
+use ShoppingFeed\Sdk\Api\Order\OrderResource;
+use ShoppingfeedCarrier;
+use Validate;
 
 class CarrierFinder
 {
@@ -50,5 +55,39 @@ class CarrierFinder
         } catch (\Throwable $e) {
             return 0;
         }
+    }
+
+    public function findProductFeedCarrier()
+    {
+        $carrier = Carrier::getCarrierByReference((int) Configuration::get(Shoppingfeed::PRODUCT_FEED_CARRIER_REFERENCE));
+        $carrier = is_object($carrier) ? $carrier : new Carrier();
+
+        return $carrier;
+    }
+
+    public function getCarrierForOrderImport(OrderResource $apiOrder)
+    {
+        $carrier = null;
+        $channelName = $apiOrder->getChannel()->getName() ? $apiOrder->getChannel()->getName() : '';
+        $apiCarrierName = empty($apiOrder->getShipment()['carrier']) ? '' : $apiOrder->getShipment()['carrier'];
+
+        $sfCarrier = ShoppingfeedCarrier::getByMarketplaceAndName(
+            $channelName,
+            $apiCarrierName
+        );
+
+        if (Validate::isLoadedObject($sfCarrier)) {
+            $carrier = Carrier::getCarrierByReference($sfCarrier->id_carrier_reference);
+        }
+
+        if (!Validate::isLoadedObject($carrier) && !empty(Configuration::get(Shoppingfeed::ORDER_DEFAULT_CARRIER_REFERENCE))) {
+            $carrier = Carrier::getCarrierByReference(Configuration::get(Shoppingfeed::ORDER_DEFAULT_CARRIER_REFERENCE));
+        }
+
+        if (!Validate::isLoadedObject($carrier) && !empty(Configuration::get('PS_CARRIER_DEFAULT'))) {
+            $carrier = new Carrier(Configuration::get('PS_CARRIER_DEFAULT'));
+        }
+
+        return $carrier;
     }
 }

@@ -19,6 +19,7 @@
 
 use ShoppingfeedAddon\OrderImport\OrderData;
 use ShoppingfeedAddon\OrderImport\SFOrderState;
+use ShoppingfeedAddon\Services\CarrierFinder;
 use ShoppingfeedClasslib\Actions\DefaultActions;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 use ShoppingfeedClasslib\Registry;
@@ -223,16 +224,9 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             $apiOrder->getChannel()->getName(),
             $apiOrderShipment['carrier']
         );
-        if (Validate::isLoadedObject($sfCarrier) && !Validate::isLoadedObject($carrier)) {
-            $carrier = Carrier::getCarrierByReference($sfCarrier->id_carrier_reference);
-        }
 
-        if (!Validate::isLoadedObject($carrier) && !empty(Configuration::get(Shoppingfeed::ORDER_DEFAULT_CARRIER_REFERENCE))) {
-            $carrier = Carrier::getCarrierByReference(Configuration::get(Shoppingfeed::ORDER_DEFAULT_CARRIER_REFERENCE));
-        }
-
-        if (!Validate::isLoadedObject($carrier) && !empty(Configuration::get('PS_CARRIER_DEFAULT'))) {
-            $carrier = new Carrier(Configuration::get('PS_CARRIER_DEFAULT'));
+        if (Validate::isLoadedObject($carrier) == false) {
+            $carrier = $this->initCarrierFinder()->getCarrierForOrderImport($apiOrder);
         }
 
         if (!Validate::isLoadedObject($carrier)) {
@@ -315,34 +309,22 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         // Try to retrieve customer using the billing address mail
         $apiBillingAddress = &$this->conveyor['orderData']->billingAddress;
         $apiShippingAddress = &$this->conveyor['orderData']->shippingAddress;
-        if (Validate::isEmail($apiBillingAddress['email'])) {
-            $customerEmail = $apiBillingAddress['email'];
-        } elseif (Validate::isEmail($apiShippingAddress['email'])) {
-            $customerEmail = $apiShippingAddress['email'];
-        } else {
-            $customerEmail = $apiOrder->getId()
-                . '@' . $apiOrder->getChannel()->getName()
-                . '.sf';
-        }
-
+        /** @var \ShoppingfeedAddon\OrderImport\OrderCustomerData $orderCustomerData */
+        $orderCustomerData = $this->conveyor['orderData']->getCustomer();
         // see old module _getCustomer()
         $customer = new Customer();
-        $customer->getByEmail($customerEmail);
+        $customer->getByEmail($orderCustomerData->getEmail());
 
         // Create customer if it doesn't exist
         if (!Validate::isLoadedObject($customer)) {
             $customer = new Customer();
-            $customer->lastname = !empty($apiBillingAddress['lastName']) ? Tools::substr($apiBillingAddress['lastName'], 0, 32) : '-';
-            $customer->firstname = !empty($apiBillingAddress['firstName']) ? Tools::substr($apiBillingAddress['firstName'], 0, 32) : '-';
+            $customer->lastname = !empty($orderCustomerData->getLastName()) ? $orderCustomerData->getLastName() : '-';
+            $customer->firstname = !empty($orderCustomerData->getFirstName()) ? $orderCustomerData->getFirstName() : '-';
             $customer->passwd = md5(pSQL(_COOKIE_KEY_ . rand()));
             $customer->id_default_group = Configuration::get('PS_UNIDENTIFIED_GROUP');
-            $customer->email = $customerEmail;
+            $customer->email = $orderCustomerData->getEmail();
             $customer->newsletter = 0;
             $customer->id_shop = $this->getIdShop();
-
-            // Numbers are forbidden in firstname / lastname
-            $customer->lastname = preg_replace('/\-?\d+/', '', $customer->lastname);
-            $customer->firstname = preg_replace('/\-?\d+/', '', $customer->firstname);
 
             // Specific rules
             $this->specificRulesManager->applyRules(
@@ -416,7 +398,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                     'beforeBillingAddressSave',
                     [
                         'apiBillingAddress' => &$apiBillingAddress,
-                        'billingAddress' => $billingAddress,
+                        'billingAddress' => &$billingAddress,
                         'apiOrder' => $apiOrder,
                     ]
                 );
@@ -458,7 +440,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                     'beforeShippingAddressSave',
                     [
                         'apiShippingAddress' => &$apiShippingAddress,
-                        'shippingAddress' => $shippingAddress,
+                        'shippingAddress' => &$shippingAddress,
                         'apiOrder' => $apiOrder,
                     ]
                 );
@@ -917,6 +899,16 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         /** @var ShoppingFeed\Sdk\Api\Order\OrderResource $apiOrder */
         $apiOrder = $this->conveyor['apiOrder'];
         $psOrder = $this->conveyor['psOrder'];
+        $isResetShipping = false;
+        $cart = new Cart($psOrder->id_cart);
+
+        if ($cart->getNbOfPackages() > 1) {
+            if (Registry::isRegistered('order_for_cart_' . $cart->id)) {
+                $isResetShipping = true;
+            } else {
+                Registry::set('order_for_cart_' . $cart->id, true);
+            }
+        }
 
         $this->initProcess($apiOrder);
 
@@ -1030,11 +1022,12 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         $carrier_tax_rate = $carrier->getTaxesRate($address);
         $total_shipping_tax_excl = Tools::ps_round((float) $paymentInformation['shippingAmount'] / (1 + ($carrier_tax_rate / 100)), 2);
         $id_order = 0;
+
         foreach ($ordersList as $id_order => $orderPrices) {
             $total_paid = Tools::ps_round($orderPrices['total_products_tax_incl'], 2);
             $total_paid_tax_excl = Tools::ps_round($orderPrices['total_products_tax_excl'], 4);
             // Only on main order
-            if ($psOrder->id == (int) $id_order) {
+            if ($isResetShipping == false) {
                 // main order
                 $total_paid = Tools::ps_round($total_paid + (float) $paymentInformation['shippingAmount'], 2);
                 $total_paid_tax_excl = Tools::ps_round($orderPrices['total_products_tax_excl'] + (float) $total_shipping_tax_excl, 4);
@@ -1086,10 +1079,12 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             foreach ($updateOrder as $key => $value) {
                 $psOrder->{$key} = $value;
             }
+
             $psOrder->save(true);
+
             Db::getInstance()->update('order_invoice', $updateOrderInvoice, '`id_order` = ' . (int) $id_order);
             Db::getInstance()->update('order_carrier', $updateOrderTracking, '`id_order` = ' . (int) $id_order);
-            Db::getInstance()->delete('order_cart_rule', 'id_order = ' . $psOrder->id);
+            Db::getInstance()->delete('order_cart_rule', 'id_order = ' . (int) $id_order);
         }
 
         $queryUpdateOrderPayment = sprintf(
@@ -1103,7 +1098,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             _DB_PREFIX_ . 'orders',
             _DB_PREFIX_ . 'order_payment',
             Tools::ps_round($paymentInformation['totalAmount'], 4),
-            (int) $id_order
+            (int) $psOrder->id
         );
         Db::getInstance()->execute($queryUpdateOrderPayment);
         Cache::clean('order_invoice_paid_*');
@@ -1298,5 +1293,10 @@ class ShoppingfeedOrderImportActions extends DefaultActions
     protected function initSfOrderState()
     {
         return new SFOrderState();
+    }
+
+    protected function initCarrierFinder()
+    {
+        return new CarrierFinder();
     }
 }
