@@ -19,7 +19,11 @@
 function upgrade_module_1_8_0($module)
 {
     $installer = new \ShoppingfeedClasslib\Install\ModuleInstaller($module);
+    $installer->installObjectModel(ShoppingfeedPreloading::class);
     $installer->installObjectModel(ShoppingfeedOrder::class);
+
+    $sql = 'UPDATE `' . _DB_PREFIX_ . ShoppingfeedPreloading::$definition['table'] . '` SET etag = md5(CONCAT(CURRENT_DATE, content))';
+    Db::getInstance()->execute($sql);
 
     return true;
 }
