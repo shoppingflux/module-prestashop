@@ -135,7 +135,7 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
                     $this->processMonitor->getProcessObjectModelName(),
                     $this->processMonitor->getProcessObjectModelId()
                 );
-            } catch (Exception $e) {
+            } catch (Throwable $e) {
                 ProcessLoggerHandler::logError(
                     sprintf(
                         $logPrefix . ' ' . $this->module->l('Error : %s', 'syncOrder'),
@@ -192,7 +192,7 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
                     $this->processMonitor->getProcessObjectModelName(),
                     $this->processMonitor->getProcessObjectModelId()
                 );
-            } catch (Exception $e) {
+            } catch (Throwable $e) {
                 ProcessLoggerHandler::logError(
                     sprintf(
                         $logPrefix . ' ' . $this->module->l('Error : %s', 'syncOrder'),
@@ -227,7 +227,7 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
                         );
                     }
                 }
-            } catch (Exception $e) {
+            } catch (Throwable $e) {
                 ProcessLoggerHandler::logError(
                     sprintf(
                         $logPrefix . ' ' . $this->module->l('Failed to send mail with Orders errors : %s', 'syncOrder'),
@@ -299,7 +299,7 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
                     || Configuration::get(\Shoppingfeed::ORDER_IMPORT_SHIPPED_MARKETPLACE) == true) {
                     $result = array_merge($result, $shoppingfeedApi->getUnacknowledgedOrders(true));
                 }
-            } catch (Exception $e) {
+            } catch (Throwable $e) {
                 ProcessLoggerHandler::logError(
                     sprintf(
                         $this->module->l('Could not retrieve orders to import : %s.', 'syncOrder'),
@@ -368,7 +368,7 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
                         $this->processMonitor->getProcessObjectModelId()
                     );
                     Registry::increment('importedOrders');
-                } catch (Exception $e) {
+                } catch (Throwable $e) {
                     ProcessLoggerHandler::logError(
                         $logPrefix .
                             sprintf(

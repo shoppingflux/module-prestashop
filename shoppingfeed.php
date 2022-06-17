@@ -1168,7 +1168,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             $processResult = $handler->process('shoppingfeedOrderImport');
             $conveyor = $handler->getConveyor();
             $params['order'] = $conveyor['psOrder'];
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logError(
                 sprintf(
                     ShoppingfeedOrderSyncActions::getLogPrefix() . ' ' .

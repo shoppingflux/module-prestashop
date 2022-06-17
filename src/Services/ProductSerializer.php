@@ -38,10 +38,6 @@ use Tag;
 use Tools;
 use Validate;
 
-if (version_compare(_PS_VERSION_, '1.7.7', '<')) {
-    require_once _PS_MODULE_DIR_ . 'shoppingfeed/classes/Compatibility/SpecificPriceFormatter.php';
-}
-
 class ProductSerializer
 {
     private $product;

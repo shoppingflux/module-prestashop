@@ -113,6 +113,7 @@ class ShoppingfeedSyncProductModuleFrontController extends ShoppingfeedCronContr
         $handler->addActions('getBatch');
         $sft = new ShoppingfeedToken();
         $tokens = $sft->findAllActive();
+        $logPrefix = '';
         try {
             foreach ($tokens as $token) {
                 $logPrefix = $actionClassname::getLogPrefix($token['id_shoppingfeed_token']);
@@ -131,7 +132,7 @@ class ShoppingfeedSyncProductModuleFrontController extends ShoppingfeedCronContr
                     Registry::increment('errors');
                 }
             }
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             ProcessLoggerHandler::logError(
                 sprintf(
                     $logPrefix . ' ' . $this->module->l('Fail : %s', 'syncProduct'),
