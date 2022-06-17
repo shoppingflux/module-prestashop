@@ -46,10 +46,10 @@ class ShoppingfeedProductModuleFrontController extends \ModuleFrontController
             exit();
         }
         ProcessLoggerHandler::openLogger();
-        $etag = sprintf('W/"%s"', ShoppingfeedPreloading::getEtag($token['id_shoppingfeed_token']));
+        $etag = sprintf('"%s"', ShoppingfeedPreloading::getEtag($token['id_shoppingfeed_token']));
         header('Etag: ' . $etag);
-        if ($_SERVER['HTTP_IF_NONE_MATCH'] === $etag) {
-            header('HTTP/1.1 304 not modified');
+        if (array_key_exists('HTTP_IF_NONE_MATCH', $_SERVER) && $_SERVER['HTTP_IF_NONE_MATCH'] === $etag) {
+            http_response_code(304);
             ProcessLoggerHandler::logSuccess(
                 sprintf('Xml for token %s not Modified', $token['id_shoppingfeed_token']),
                 'shoppingfeed_token',
@@ -57,7 +57,7 @@ class ShoppingfeedProductModuleFrontController extends \ModuleFrontController
                 'ShoppingfeedProductModuleFrontController'
             );
             ProcessLoggerHandler::closeLogger();
-            exit();
+            exit;
         }
         header('Content-type: text/xml');
 
