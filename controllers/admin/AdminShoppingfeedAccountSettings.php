@@ -35,7 +35,6 @@ class AdminShoppingfeedAccountSettingsController extends ShoppingfeedAdminContro
      */
     public function initContent()
     {
-        var_dump(interface_exists('Throwable')); die;
         $shops = Shop::getShops();
         $currencies = Currency::getCurrencies();
         $languagues = Language::getLanguages();
