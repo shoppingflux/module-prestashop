@@ -16,14 +16,28 @@
  *  @copyright Since 2019 Shopping Feed
  *  @license   https://opensource.org/licenses/AFL-3.0  Academic Free License (AFL 3.0)
  */
-function upgrade_module_1_8_0($module)
+
+namespace ShoppingfeedAddon\Services;
+
+use Db;
+use ShoppingfeedTaskOrder;
+
+class TaskOrderCleaner
 {
-    $installer = new \ShoppingfeedClasslib\Install\ModuleInstaller($module);
-    $installer->installObjectModel(ShoppingfeedPreloading::class);
-    $installer->installObjectModel(ShoppingfeedOrder::class);
+    protected $db;
 
-    $sql = 'UPDATE `' . _DB_PREFIX_ . ShoppingfeedPreloading::$definition['table'] . '` SET etag = md5(CONCAT(CURRENT_DATE, content))';
-    Db::getInstance()->execute($sql);
+    public function __construct()
+    {
+        $this->db = Db::getInstance();
+    }
 
-    return true;
+    public function clean($period = 7)
+    {
+        $where = sprintf(
+            'NOW() > DATE_ADD(date_add, INTERVAL %d day)',
+            (int) $period
+        );
+
+        return $this->db->delete(ShoppingfeedTaskOrder::$definition['table'], $where);
+    }
 }

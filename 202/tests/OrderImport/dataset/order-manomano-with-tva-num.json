@@ -1,0 +1,98 @@
+{
+  "id":16175582123,
+  "storeId":25125,
+  "channelId":259,
+  "reference":"TEST-MANOMANO-WITH-TVA",
+  "storeReference":"",
+  "isTest":true,
+  "acknowledgedAt":null,
+  "createdAt":"2022-02-01T00:00:00+02:00",
+  "updatedAt":"2022-02-01T00:00:00+02:00",
+  "status":"waiting_shipment",
+  "anonymized":false,
+  "payment":{
+    "shippingAmount":4.8,
+    "productAmount":9.8,
+    "totalAmount":14.6,
+    "currency":"EUR",
+    "method":"1X"
+  },
+  "shipment":{
+    "carrier":"DPD Pickup - Livraison en point relais",
+    "trackingNumber":""
+  },
+  "additionalFields":{
+    "env":"default",
+    "fiscalnb":"B57681058",
+    "order_status":"4"
+  },
+  "errors":[
+
+  ],
+  "itemsReferencesAliases":null,
+  "items":[
+    {
+      "reference":"18",
+      "status":"",
+      "quantity":2,
+      "price":4.9,
+      "taxAmount":0.82,
+      "channelReference":"0",
+      "name":"Nettoyant résine pour adoucisseur d'eau",
+      "image":"https://localhost/1-marketplaces/nettoyant-resine-pour-adoucisseur.jpg"
+    }
+  ],
+  "shippingAddress":{
+    "firstName":"patrice lafont",
+    "lastName":"tabac le phenix",
+    "company":"",
+    "street":"5 place du 11 novembre 1918",
+    "street2":"",
+    "other":"p31175",
+    "postalCode":"30150",
+    "city":"Saint-geniès-de-comolas",
+    "country":"FR",
+    "phone":"+3361234567",
+    "mobilePhone":"+3361234567",
+    "email":"m_bcaddf4fgca@message.manomano.com"
+  },
+  "billingAddress":{
+    "firstName":"patrice",
+    "lastName":"lafont",
+    "company":"",
+    "street":"12 rue de la tarantulle",
+    "street2":"",
+    "other":"",
+    "postalCode":"30150",
+    "city":"Montfaucon",
+    "country":"FR",
+    "phone":"+3361234567",
+    "mobilePhone":"+3361234567",
+    "email":"m_bcaddf4fgca@message.manomano.com"
+  },
+  "_links":{
+    "self":{
+      "href":"/v1/store/40822/order/16175582123"
+    },
+    "store":{
+      "href":"/v1/store/40822"
+    }
+  },
+  "_embedded":{
+    "channel":{
+      "id":259,
+      "name":"Monechelle",
+      "_links":{
+        "self":{
+          "href":"/v1/channel/259"
+        },
+        "image":{
+          "href":"https://assets.shopping-feed.com/channel/logo/Monechelle.png"
+        }
+      }
+    },
+    "tag":[
+
+    ]
+  }
+}

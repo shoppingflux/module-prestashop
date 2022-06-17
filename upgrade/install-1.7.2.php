@@ -16,14 +16,10 @@
  *  @copyright Since 2019 Shopping Feed
  *  @license   https://opensource.org/licenses/AFL-3.0  Academic Free License (AFL 3.0)
  */
-function upgrade_module_1_8_0($module)
+function upgrade_module_1_7_2($module)
 {
     $installer = new \ShoppingfeedClasslib\Install\ModuleInstaller($module);
-    $installer->installObjectModel(ShoppingfeedPreloading::class);
-    $installer->installObjectModel(ShoppingfeedOrder::class);
-
-    $sql = 'UPDATE `' . _DB_PREFIX_ . ShoppingfeedPreloading::$definition['table'] . '` SET etag = md5(CONCAT(CURRENT_DATE, content))';
-    Db::getInstance()->execute($sql);
+    $installer->registerHooks();
 
     return true;
 }

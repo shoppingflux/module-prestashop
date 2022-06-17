@@ -47,6 +47,12 @@ UPDATE ps_product_lang SET available_now = 'disponible', available_later = 'non 
 UPDATE ps_stock_available SET quantity = 0 WHERE id_product = 3 and id_product_attribute = 13;
 UPDATE ps_stock_available SET quantity = 0 WHERE id_product = 4 and id_product_attribute = 16;
 
+DELETE FROM ps_product_carrier WHERE id_product IN (1,8);
+REPLACE INTO ps_product_carrier (id_product, id_carrier_reference, id_shop) VALUES
+(1,1,1), (8,2,1);
+REPLACE INTO ps_carrier_zone (id_carrier, id_zone) VALUES
+(1,9), (2,9);
+
 TRUNCATE ps_colissimo_pickup_point;
 "
 

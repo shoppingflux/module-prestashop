@@ -215,14 +215,22 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
                 [
                     'type' => 'select',
                     'options' => [
-                        'query' => array_map(
-                            function ($c) {
-                                return [
-                                    'id' => $c['id_reference'],
-                                    'name' => $c['name'],
-                                ];
-                            },
-                            Carrier::getCarriers(Context::getContext()->language->id, true, false, false, null, Carrier::ALL_CARRIERS)
+                        'query' => array_merge(
+                            [
+                                [
+                                    'id' => 0,
+                                    'name' => $this->module->l('Select carrier', 'AdminShoppingfeedGeneralSettings'),
+                                ],
+                            ],
+                            array_map(
+                                function ($c) {
+                                    return [
+                                        'id' => $c['id_reference'],
+                                        'name' => $c['name'],
+                                    ];
+                                },
+                                Carrier::getCarriers(Context::getContext()->language->id, true, false, false, null, Carrier::ALL_CARRIERS)
+                            )
                         ),
                         'id' => 'id',
                         'name' => 'name',

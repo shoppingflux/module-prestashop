@@ -75,6 +75,8 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     const PRODUCT_FEED_TIME_FULL_UPDATE = 'SHOPPINGFEED_PRODUCT_FEED_TIME_FULL_UPDATE';
     const PRODUCT_FEED_INTERVAL_CRON = 'SHOPPINGFEED_PRODUCT_FEED_INTERVAL_CRON';
     const ORDER_IMPORT_PERMANENT_SINCE_DATE = 'SHOPPINGFEED_ORDER_IMPORT_PERMANENT_SINCE_DATE';
+    const IMPORT_ORDER_STATE = 'SHOPPINGFEED_FIRST_STATE_AFTER_IMPORT';
+    const CDISCOUNT_FEE_PRODUCT = 'SHOPPINGFEED_CDISCOUNT_FEE_PRODUCT';
 
     public $extensions = [
         \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerExtension::class,
@@ -602,6 +604,16 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     public function mapPrestashopProduct($sfProductReference, $id_shop, ...$arguments)
     {
         $sfProduct = new ShoppingfeedProduct();
+        $cdiscountFeeProduct = $this->initCdiscountFeeProduct()->getProduct();
+
+        if (Validate::isLoadedObject($cdiscountFeeProduct)) {
+            if ($cdiscountFeeProduct->reference == $sfProductReference) {
+                $cdiscountFeeProduct->id_product_attribute = null;
+
+                return $cdiscountFeeProduct;
+            }
+        }
+
         $sfProductReference = $sfProduct->getReverseShoppingfeedReference($sfProductReference, $id_shop);
 
         Hook::exec(
@@ -716,11 +728,16 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
      */
     public function sqlProductsOnFeed($id_shop = null)
     {
+        $cdiscountFeeProduct = $this->initCdiscountFeeProduct()->getProduct();
         $sql = new DbQuery();
         $sql->from(Product::$definition['table'] . '_shop', 'ps')
             ->leftJoin(Product::$definition['table'], 'p', 'p.id_product = ps.id_product')
             ->where('ps.active = 1')
             ->where('ps.available_for_order = 1');
+
+        if (Validate::isLoadedObject($cdiscountFeeProduct)) {
+            $sql->where('p.id_product <> ' . $cdiscountFeeProduct->id);
+        }
 
         if ($id_shop === null) {
             $id_shop = (int) Configuration::get('PS_SHOP_DEFAULT');
@@ -1254,11 +1271,12 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             ShoppingfeedAddon\OrderImport\Rules\ShippedByMarketplace::class,
             ShoppingfeedAddon\OrderImport\Rules\RelaisColisRule::class,
             ShoppingfeedAddon\OrderImport\Rules\TestingOrder::class,
-            ShoppingfeedAddon\OrderImport\Rules\SymbolConformity::class,
             ShoppingfeedAddon\OrderImport\Rules\ManomanoDpdRelais::class,
             ShoppingfeedAddon\OrderImport\Rules\ZalandoColissimo::class,
             ShoppingfeedAddon\OrderImport\Rules\ZalandoCarrier::class,
             ShoppingfeedAddon\OrderImport\Rules\ColizeyColissimo::class,
+            ShoppingfeedAddon\OrderImport\Rules\AmazonManomanoTva::class,
+            ShoppingfeedAddon\OrderImport\Rules\SymbolConformity::class,
         ];
 
         foreach ($defaultRulesClassNames as $ruleClassName) {
@@ -1339,5 +1357,10 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         }
 
         return $result;
+    }
+
+    protected function initCdiscountFeeProduct()
+    {
+        return new \ShoppingfeedAddon\Services\CdiscountFeeProduct();
     }
 }
