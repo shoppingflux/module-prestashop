@@ -63,7 +63,6 @@ class ManomanoMissingCarrier extends RuleAbstract
     public function onCarrierRetrieval($params)
     {
         $apiOrder = $params['apiOrder'];
-        $apiOrderData = $apiOrder->toArray();
         $params['apiOrderShipment']['carrier'] = 'standard';
 
         $logPrefix = sprintf(
