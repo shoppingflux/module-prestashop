@@ -17,7 +17,7 @@
  *  @license   https://opensource.org/licenses/AFL-3.0  Academic Free License (AFL 3.0)
  */
 if (version_compare(phpversion(), '7', '<')) {
-    if (false === class_exists('Throwable')) {
+    if (false === class_exists('Throwable') && false === interface_exists('Throwable')) {
         class Throwable extends Exception
         {
         }
