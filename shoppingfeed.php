@@ -77,6 +77,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     const ORDER_IMPORT_PERMANENT_SINCE_DATE = 'SHOPPINGFEED_ORDER_IMPORT_PERMANENT_SINCE_DATE';
     const IMPORT_ORDER_STATE = 'SHOPPINGFEED_FIRST_STATE_AFTER_IMPORT';
     const CDISCOUNT_FEE_PRODUCT = 'SHOPPINGFEED_CDISCOUNT_FEE_PRODUCT';
+    const NEED_UPDATE_HOOK = 'SHOPPINGFEED_IS_NEED_UPDATE_HOOK';
 
     public $extensions = [
         \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerExtension::class,
@@ -389,6 +390,10 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
 
         $this->hookDispatcher = new \ShoppingfeedAddon\Hook\HookDispatcher($this);
         $this->hooks = array_merge($this->hooks, $this->hookDispatcher->getAvailableHooks());
+
+        if ((int) Configuration::getGlobalValue(self::NEED_UPDATE_HOOK) === 1) {
+            Configuration::updateGlobalValue(self::NEED_UPDATE_HOOK, (int) $this->updateHooks());
+        }
     }
 
     /**
@@ -1363,5 +1368,19 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     protected function initCdiscountFeeProduct()
     {
         return new \ShoppingfeedAddon\Services\CdiscountFeeProduct();
+    }
+
+    protected function updateHooks()
+    {
+        try {
+            $installer = new \ShoppingfeedClasslib\Install\ModuleInstaller($this);
+            $installer->registerHooks();
+        } catch (Exception $e) { //for php version < 7.0
+            return false;
+        } catch (Throwable $e) {
+            return false;
+        }
+
+        return true;
     }
 }
