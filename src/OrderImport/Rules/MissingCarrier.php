@@ -22,7 +22,6 @@ namespace ShoppingfeedAddon\OrderImport\Rules;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
-use Tools;
 
 class MissingCarrier extends RuleAbstract
 {
