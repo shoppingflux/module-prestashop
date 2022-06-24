@@ -23,6 +23,7 @@ use Configuration;
 use Language;
 use Product;
 use Shoppingfeed;
+use Tools;
 use Validate;
 
 class CdiscountFeeProduct
@@ -50,12 +51,15 @@ class CdiscountFeeProduct
         $product = new Product();
         $product->active = true;
         $product->name = [];
+        $product->link_rewrite = [];
 
         foreach (Language::getLanguages(false) as $lang) {
             if ($lang['iso_code'] == 'fr') {
                 $product->name[$lang['id_lang']] = 'Frais CDiscount';
+                $product->link_rewrite[$lang['id_lang']] = Tools::link_rewrite('Frais CDiscount');
             } else {
                 $product->name[$lang['id_lang']] = 'CDiscount Fees';
+                $product->link_rewrite[$lang['id_lang']] = Tools::link_rewrite('CDiscount Fees');
             }
         }
 
