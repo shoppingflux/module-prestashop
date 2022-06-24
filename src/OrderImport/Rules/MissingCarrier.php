@@ -24,9 +24,9 @@ use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 use Tools;
 
-class ManomanoMissingCarrier extends RuleAbstract
+class MissingCarrier extends RuleAbstract
 {
-    protected $className = 'ManomanoMissingCarrier';
+    protected $className = 'MissingCarrier';
 
     /**
      * {@inheritdoc}
@@ -34,14 +34,13 @@ class ManomanoMissingCarrier extends RuleAbstract
     public function isApplicable(OrderResource $apiOrder)
     {
         $apiOrderData = $apiOrder->toArray();
-        $isEpmmEnv = !empty($apiOrderData['additionalFields']['env']) && Tools::strtolower($apiOrderData['additionalFields']['env']) == 'epmm';
         $logPrefix = sprintf(
             $this->l('[Order: %s]', $this->className),
             $apiOrder->getId()
         );
         $logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
-        if ($isEpmmEnv
-            && empty($apiOrderData['shipment']['carrier'])) {
+
+        if (empty($apiOrderData['shipment']['carrier'])) {
             ProcessLoggerHandler::logInfo(
                 $logPrefix .
                 $this->l('Rule triggered.', $this->className),
@@ -82,7 +81,7 @@ class ManomanoMissingCarrier extends RuleAbstract
      */
     public function getConditions()
     {
-        return $this->l('If the order comes from Manomano and carrier is missing', $this->className);
+        return $this->l('If the carrier is missing', $this->className);
     }
 
     /**
@@ -90,6 +89,6 @@ class ManomanoMissingCarrier extends RuleAbstract
      */
     public function getDescription()
     {
-        return $this->l('Set the carrier.', $this->className);
+        return $this->l('Set the standard carrier.', $this->className);
     }
 }

@@ -1273,11 +1273,11 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             ShoppingfeedAddon\OrderImport\Rules\TestingOrder::class,
             ShoppingfeedAddon\OrderImport\Rules\ManomanoDpdRelais::class,
             ShoppingfeedAddon\OrderImport\Rules\ZalandoColissimo::class,
+            ShoppingfeedAddon\OrderImport\Rules\MissingCarrier::class,//should be performed before ZalandoCarrier
             ShoppingfeedAddon\OrderImport\Rules\ZalandoCarrier::class,
             ShoppingfeedAddon\OrderImport\Rules\ColizeyColissimo::class,
             ShoppingfeedAddon\OrderImport\Rules\AmazonManomanoTva::class,
             ShoppingfeedAddon\OrderImport\Rules\SymbolConformity::class,
-            ShoppingfeedAddon\OrderImport\Rules\ManomanoMissingCarrier::class,
         ];
 
         foreach ($defaultRulesClassNames as $ruleClassName) {

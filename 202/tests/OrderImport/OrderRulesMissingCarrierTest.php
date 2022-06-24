@@ -20,13 +20,12 @@
 namespace Tests\OrderImport;
 
 use ShoppingfeedAddon\OrderImport\OrderData;
-use ShoppingfeedAddon\OrderImport\Rules\ManomanoDpdRelais;
-use ShoppingfeedAddon\OrderImport\Rules\ManomanoMissingCarrier;
+use ShoppingfeedAddon\OrderImport\Rules\MissingCarrier;
 
 /**
  * Order Rules ManomanoDpdRelais Test
  */
-class OrderRulesManomanoEpmmMissingCarrierTest extends AbstractOrdeTestCase
+class OrderRulesMissingCarrierTest extends AbstractOrdeTestCase
 {
     /**
      * Test to split name
@@ -37,7 +36,7 @@ class OrderRulesManomanoEpmmMissingCarrierTest extends AbstractOrdeTestCase
     {
         $params['apiOrder'] = $this->getOrderRessourceFromDataset('manomano-epmm-missing-carrier.json');
         $apiOrderShipment = (new OrderData($params['apiOrder']))->shipment;
-        $rules = new ManomanoMissingCarrier();
+        $rules = new MissingCarrier();
         $this->assertTrue($rules->isApplicable($params['apiOrder']));
 
         $params['apiOrderShipment'] = &$apiOrderShipment;
