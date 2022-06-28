@@ -1,7 +1,7 @@
 <?php
 
 global $_MODULE;
-$_MODULE = [];
+$_MODULE = array();
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeed_b9d1b8558d2d7145794f697158b6f253'] = 'Shoppingfeed Prestashop Plugin (Feed&Order)';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeed_08c9126c100fb53b59dbfedb1ba37cda'] = 'Accélérez la vitesse de synchronisation des stocks Marketplaces de votre module Shopping Feed.';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeed_876f23178c29dc2552c0b48bf23cd9bd'] = 'Êtes vous sûr de vouloir désinstaller le module ?';
@@ -53,10 +53,21 @@ $_MODULE['<{shoppingfeed}prestashop>adminprocessmonitorcontroller_f1b81e4990e4ad
 $_MODULE['<{shoppingfeed}prestashop>adminprocessmonitorcontroller_bc33aa1314e7dcd3472db72472b909b2'] = 'Une erreur s\'est produite lors de la suppression.';
 $_MODULE['<{shoppingfeed}prestashop>adminprocessmonitorcontroller_7f290594963a303db17a5e21dc4cf0b7'] = 'Une erreur s\'est produite lors de la suppression de l\'objet';
 $_MODULE['<{shoppingfeed}prestashop>adminprocessmonitorcontroller_77ae44aa6c998166fcf1a87496278ad5'] = '(impossible de charger l\'objet)';
+$_MODULE['<{shoppingfeed}prestashop>backofficeheader_6929b6fdc007a9eb76276d74a9be29e9'] = 'Attention, votre transporteur par défaut Shopping Feed n\'est plus configuré.';
+$_MODULE['<{shoppingfeed}prestashop>monechellecolissimo_0cc1e925b5703e8da52b7c3e91829499'] = '[Commande: %s]';
+$_MODULE['<{shoppingfeed}prestashop>monechellecolissimo_43b6ade8fd758b0597ad2f31c9cd1b41'] = 'Règle déclenchée.';
+$_MODULE['<{shoppingfeed}prestashop>monechellecolissimo_f22690ebca72b016c51a0b9d6ed6149a'] = 'Si une commande vient de ManoMano et que le champs `other` ou `relayID` n\'est pas vide.';
+$_MODULE['<{shoppingfeed}prestashop>monechellecolissimo_d46e11f8bd9e72432aa812eae34372e3'] = 'Règle le transporteur à Colissimo point pickup et ajoute les données nécessaire dans le module associé.';
+$_MODULE['<{shoppingfeed}prestashop>amazonmanomanotva_338957761b7beea4f0f0de535551280f'] = 'Ajoute le numéro de TVA intracom';
+$_MODULE['<{shoppingfeed}prestashop>amazonmanomanotva_cc1cbb0097ab693308c18fe5560be3bd'] = 'Si une commande vient de ManoMano ou Amazon';
 $_MODULE['<{shoppingfeed}prestashop>zalandocarrier_0cc1e925b5703e8da52b7c3e91829499'] = '[Commande: %s]';
 $_MODULE['<{shoppingfeed}prestashop>zalandocarrier_43b6ade8fd758b0597ad2f31c9cd1b41'] = 'Règle déclenchée.';
 $_MODULE['<{shoppingfeed}prestashop>zalandocarrier_9b03904408244323647649bf095e6b72'] = 'Si la commande provient de Zalando.';
 $_MODULE['<{shoppingfeed}prestashop>zalandocarrier_c080a57a1eec56e1f84db6783c85e7d9'] = 'Régler le transporteur.';
+$_MODULE['<{shoppingfeed}prestashop>manomanocolissimo_0cc1e925b5703e8da52b7c3e91829499'] = '[Commande: %s]';
+$_MODULE['<{shoppingfeed}prestashop>manomanocolissimo_43b6ade8fd758b0597ad2f31c9cd1b41'] = 'Règle déclenchée.';
+$_MODULE['<{shoppingfeed}prestashop>manomanocolissimo_61c08624dd7294a67910b19e5f18b510'] = 'Si une commande vient de ManoMano et que le champs `other` ou `relayID` n\'est pas vide.';
+$_MODULE['<{shoppingfeed}prestashop>manomanocolissimo_d46e11f8bd9e72432aa812eae34372e3'] = 'Règle le transporteur à Colissimo point pickup et ajoute les données nécessaire dans le module associé.';
 $_MODULE['<{shoppingfeed}prestashop>amazonebay_0cc1e925b5703e8da52b7c3e91829499'] = '[Commande: %s]';
 $_MODULE['<{shoppingfeed}prestashop>amazonebay_6efbd4474b0556a3e01989218a4c4745'] = 'Règle déclenchée. Adresses mises à jour.';
 $_MODULE['<{shoppingfeed}prestashop>amazonebay_e1b9234f8eb2fc5b1bc1c05bbac9fb2e'] = 'Si la commande provient d\'Amazon OU Ebay OU Laredoute et que le ”prénom” ou le ”nom” est vide dans l\'adresse';
@@ -68,12 +79,16 @@ $_MODULE['<{shoppingfeed}prestashop>relaiscolisrule_12b2a9e1007d6213de0f4bc4d999
 $_MODULE['<{shoppingfeed}prestashop>relaiscolisrule_78865ba70061c4c52ec49cc70f93bb9f'] = 'Impossible de créer l\'objet info du Relais Colis.';
 $_MODULE['<{shoppingfeed}prestashop>relaiscolisrule_45ebbc37feac231b303e2e6b26d956b4'] = 'Règle déclenchée. Adresse d\'expédition non valide.';
 $_MODULE['<{shoppingfeed}prestashop>relaiscolisrule_4d11ce6d1b3bf012fa625df68a7ce2c3'] = 'Règle déclenchée. Mise à jour de l\'adresse d\'expédition.';
-$_MODULE['<{shoppingfeed}prestashop>colizeycolissimo_0ada85f7fb82c287ceabfb0aee405cd4'] = 'Si une commande provient de Colizey et dispose d\'un champs additionnel non vide \'service_point_id\' and \'service_point_name\'.';
 $_MODULE['<{shoppingfeed}prestashop>relaiscolisrule_4447b0476e74682abfd0eed0ac07c83d'] = 'Ajoute la commande dans la table du module Relais Colis.';
 $_MODULE['<{shoppingfeed}prestashop>relaiscolisrule_91a513e2642537f871e499426027f2dc'] = 'Si la commande \'Laredoute\' comme nom de marketplace.';
 $_MODULE['<{shoppingfeed}prestashop>colizeycolissimo_0cc1e925b5703e8da52b7c3e91829499'] = '[Commande: %s]';
 $_MODULE['<{shoppingfeed}prestashop>colizeycolissimo_43b6ade8fd758b0597ad2f31c9cd1b41'] = 'Règle déclenchée.';
-$_MODULE['<{shoppingfeed}prestashop>colizeycolissimo_9a4f53a89c0709136ee8c46c2c765332'] = 'Si la commande provient de Colizey et possède dans ses champs additionnels ”service_point_id” et ”service_point_name”.';
+$_MODULE['<{shoppingfeed}prestashop>colizeycolissimo_0ada85f7fb82c287ceabfb0aee405cd4'] = 'Si une commande provient de Colizey et dispose d\'un champs additionnel non vide \'service_point_id\' and \'service_point_name\'.';
+$_MODULE['<{shoppingfeed}prestashop>missingcarrier_0cc1e925b5703e8da52b7c3e91829499'] = '[Commande: %s]';
+$_MODULE['<{shoppingfeed}prestashop>missingcarrier_43b6ade8fd758b0597ad2f31c9cd1b41'] = 'Règle déclenchée.';
+$_MODULE['<{shoppingfeed}prestashop>missingcarrier_cef229e1d1e0425019d4c84296bec9c7'] = 'Règle déclenchée. Transporteur réglé sur `standart`.';
+$_MODULE['<{shoppingfeed}prestashop>missingcarrier_b079d6741c1172392105931f01e13a46'] = 'Si le champs transporteur est vide.';
+$_MODULE['<{shoppingfeed}prestashop>missingcarrier_1e29533f874586a8e0f0974289c4bc36'] = 'Mettre comme valeur de transporteur `standart`.';
 $_MODULE['<{shoppingfeed}prestashop>manomanodpdrelais_a4c70d1c218a67800bfb8ba0525fe085'] = 'Recherche l\'ID relais et complète la table ”dpdfrance_shipping” comme attendu par le module  ”DPD France”.';
 $_MODULE['<{shoppingfeed}prestashop>manomanodpdrelais_71363325e117c4bb339f1a178e000666'] = 'Si la commande provient de ManoMano et expédiée avec ”DPD Relay”';
 $_MODULE['<{shoppingfeed}prestashop>manomanodpdrelais_0cc1e925b5703e8da52b7c3e91829499'] = '[Commande: %s]';
@@ -95,9 +110,6 @@ $_MODULE['<{shoppingfeed}prestashop>amazonprime_0cc1e925b5703e8da52b7c3e91829499
 $_MODULE['<{shoppingfeed}prestashop>amazonprime_4a71f7c39b134c1934a4b4b3c7f1e966'] = 'Règle déclenchée. Méthode de paiement changé pour ”amazon prime”';
 $_MODULE['<{shoppingfeed}prestashop>amazonprime_c2cdab4635332129d799aa23c83f1527'] = 'Si la commande provient d\'Amazon ET que le champs additionnel ”is_prime” est VRAI';
 $_MODULE['<{shoppingfeed}prestashop>amazonprime_f4a97adfdb617aafa47056d2f6958410'] = 'Appliquer la méthode de paiement ”amazon prime” afin de l\'afficher dans ”Récapitulatif Marketplaces”';
-$_MODULE['<{shoppingfeed}prestashop>cdiscount_0cc1e925b5703e8da52b7c3e91829499'] = '[Commande %s]';
-$_MODULE['<{shoppingfeed}prestashop>cdiscount_43b6ade8fd758b0597ad2f31c9cd1b41'] = 'Règle déclenchée. ';
-$_MODULE['<{shoppingfeed}prestashop>cdiscount_e57bbf77c09cc684e13dece4dab3c599'] = 'Frais ajoutés à la commande.';
 $_MODULE['<{shoppingfeed}prestashop>cdiscount_944ef8a365522b31999e069600eb122a'] = 'Si la commande provient de CDiscount ET que le champs additionnel ”INTERETBCA” est rempli';
 $_MODULE['<{shoppingfeed}prestashop>cdiscount_0222978137c9d5458d0074e456e6ebf8'] = 'Ajouter un produit ”Frais CDiscount” à la commande dont le montant sera visible sur la commande.';
 $_MODULE['<{shoppingfeed}prestashop>cdiscountcolissimo_0cc1e925b5703e8da52b7c3e91829499'] = 'Règle déclenchée. Mise à jour de l\'ID relais sur l\'adresse de livraison.';
@@ -125,7 +137,7 @@ $_MODULE['<{shoppingfeed}prestashop>testingorder_0cc1e925b5703e8da52b7c3e9182949
 $_MODULE['<{shoppingfeed}prestashop>testingorder_4ad367ed9d85670d0aee2e5d8feb1148'] = 'Status de commande non valide. ID: %d';
 $_MODULE['<{shoppingfeed}prestashop>testingorder_eba2574749f45707a84aa0c6264d7207'] = 'Règle déclenchée. Configuration du statut de commande sur ANNULÉ.';
 $_MODULE['<{shoppingfeed}prestashop>testingorder_7523b11cd5b28c4360a2dd5b108245ae'] = 'Si la commande est un test';
-$_MODULE['<{shoppingfeed}prestashop>testingorder_7c5a72dfd28d60e1195279cf5c443d31'] = '[Commande %s]';
+$_MODULE['<{shoppingfeed}prestashop>testingorder_7c5a72dfd28d60e1195279cf5c443d31'] = 'Régler la commande à ANNULEE après l\'import.';
 $_MODULE['<{shoppingfeed}prestashop>socolissimo_0cc1e925b5703e8da52b7c3e91829499'] = '[Commande %s]';
 $_MODULE['<{shoppingfeed}prestashop>socolissimo_43b6ade8fd758b0597ad2f31c9cd1b41'] = 'Règle déclenchée.';
 $_MODULE['<{shoppingfeed}prestashop>socolissimo_e2fac82fe38a82dbf371b301c40238a2'] = 'Données insérées dans le module Soliberte.';
@@ -190,7 +202,6 @@ $_MODULE['<{shoppingfeed}prestashop>process_modal_0c3667ad6e3454896964cfb549f199
 $_MODULE['<{shoppingfeed}prestashop>runcronbutton_9506f0fd0f7f1b07960b15b4c9e68d1a'] = 'Lancer';
 $_MODULE['<{shoppingfeed}prestashop>order_status_syncro_7d42f7083d8bfca5a9bf3c8c1bfea250'] = 'Transporteur utilisé lorsqu\'une commande est importée d\'une nouvelle marketplace.';
 $_MODULE['<{shoppingfeed}prestashop>order_status_syncro_bff13ed1cd5b83b03f024f1eb6524337'] = 'Transporteur par défaut';
-$_MODULE['<{shoppingfeed}prestashop>order_status_syncro_bec154cf96926858240b98c628c9949b'] = 'Sélectionnez votre transporteur';
 $_MODULE['<{shoppingfeed}prestashop>order_status_syncro_0c097c8d2f2d519cf7bf6fd1f8476e3d'] = 'Correspondance des transporteurs';
 $_MODULE['<{shoppingfeed}prestashop>order_status_syncro_8f07ae455b246a580ce7239c2b8dac63'] = 'Transporteur Shopping feed';
 $_MODULE['<{shoppingfeed}prestashop>order_status_syncro_d51f61bae1c0c52905c6b44619218e8c'] = 'Transporteur PrestaShop';
@@ -323,6 +334,7 @@ $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_ad05c3a58e
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_e3212a6266bce4b9444bfb291b89e719'] = 'Le paramètre \"Nombre de commande max par requête\" est reservée aux expert (100 par défaut). Vous pouvez configurer le nombre de commandes qui seront traitées à chaque appel de la tâche CRON. Plus vous augmentez ce nombre, plus il y aura de requête en base de données. La valeur de ce paramètre doit être ajustée en fonction de la capacité de votre serveur MYSQL.';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_e4efbb5b13b21b642f301a34a7dc6607'] = 'Nombre de commande max par requête';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_105c3acfc6df5996bfbd91ead7868356'] = 'Importer les commandes depuis';
+$_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_c8878a5464c72f58e4a4f1e40532eb34'] = 'Premier état de commande après import';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_b9d1b8558d2d7145794f697158b6f253'] = 'Shoppingfeed Prestashop Plugin (Feed&Order)';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_ceff443491edd888ee91e6bef87446a6'] = 'Vous devez spécifier un \"Délai avant la synchronisation du numéro de suivi\" supérieur à 0.';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_23b574c89c8eafae9531357e5763d00f'] = 'Vous devez spécifier un \"Nombre de commandes maximum\" entre 1 et 200.';
@@ -336,6 +348,7 @@ $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_c9cc8cce247
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_69b3163bd39a42b50ea3dca3052a5f81'] = 'Flux des produits (toutes les boutiques)';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_e8ba77c6849020af2847b4f821216ec6'] = 'En mettant à jour ce formulaire, l\'index de votre flux produit sera purgé.';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_f4f4aeb3ac6859b193f57cb3a3cc9eb3'] = 'Synchroniser les packs';
+$_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_67838a580a67c01392c8bc906654228a'] = 'Sélectionner un transporteur';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_9af89f127f86c391ff95931b6a79e475'] = 'Frais de port basé sur le transporteur';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_1191f9aef311a9b83965a1a5eca833a9'] = 'Les frais de port de chaque produit sera calculé à partir de ce transporteur.';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_d0efb46cfd8b126482192a343e2142b4'] = 'Format d\'image';
@@ -402,8 +415,8 @@ $_MODULE['<{shoppingfeed}prestashop>shoppingfeedproductsyncpriceactions_4930df58
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedproductsyncpriceactions_73c1f14a52d64e32c681f6bc2b587189'] = 'Mise à jour du produit %s prix : %s';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedproductsyncpriceactions_88f3784c2963bc004558697d67f77e1d'] = '%s non référencé dans le catalogue Shopping Feed - prix : %s';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_0cc1e925b5703e8da52b7c3e91829499'] = '[Commande: %s]';
-$_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_4528e2041b7be1a9241cbcbc2835b51d'] = 'Sauter un import de commande à cause d\'une devise non supportée.';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_a11762ead4c38afafe9cd9fcc729e17f'] = 'Aucune donnée trouvée dans l\'apiOrder';
+$_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_4528e2041b7be1a9241cbcbc2835b51d'] = 'Sauter un import de commande à cause d\'une devise non supportée.';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_0de7fd990e38ad9216de83e95f5446ce'] = 'Commande non importée; Déjà importée.';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_2d507cd78ac89b9255ac05fcbb8ed6df'] = 'Aucun items trouvés sur la commande provenant de Shopping feed.';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_d5f89b597bc30691ef3906dd5d18974d'] = 'Alias de la référence %s remplacé par le produit %s.';
@@ -474,4 +487,3 @@ $_MODULE['<{shoppingfeed}prestashop>shoppingfeedproductsyncactions_3aab7c78f5902
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedproductsyncactions_5ddd4edf83584480ff1bd170fd0e45cf'] = 'Produit %s non enregistré pour synchronisation; aucune Action trouvée';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedproductsyncactions_bad55bce65539f218fb53a038f2a3083'] = 'Impossible de récupérer le lot à synchroniser; aucune Action trouvée';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedproductsyncactions_aa9800bc9533a049e2c71cf7cad950e7'] = 'Rien à synchroniser.';
-$_MODULE['<{shoppingfeed}prestashop>backofficeheader_6929b6fdc007a9eb76276d74a9be29e9'] = 'Attention, votre transporteur par défaut Shopping Feed n\'est plus configuré.';
