@@ -19,7 +19,6 @@
 
 namespace ShoppingfeedAddon\Services;
 
-use Carrier;
 use Cart;
 use Configuration;
 use Context;
@@ -39,10 +38,6 @@ use Tag;
 use Tools;
 use Validate;
 
-if (version_compare(_PS_VERSION_, '1.7.7', '<')) {
-    require_once _PS_MODULE_DIR_ . 'shoppingfeed/classes/Compatibility/SpecificPriceFormatter.php';
-}
-
 class ProductSerializer
 {
     private $product;
@@ -54,6 +49,7 @@ class ProductSerializer
     private $id_currency;
     private $productCoreFields;
     private $productCategory;
+    protected $carrierFinder;
 
     public function __construct($id_product, $id_lang, $id_shop, $id_currency)
     {
@@ -84,14 +80,12 @@ class ProductSerializer
                 Shoppingfeed::PRODUCT_FEED_CUSTOM_FIELDS,
             ]
         );
+        $this->carrierFinder = new CarrierFinder();
     }
 
     private function getCarrier()
     {
-        $carrier = Carrier::getCarrierByReference((int) $this->configurations[Shoppingfeed::PRODUCT_FEED_CARRIER_REFERENCE]);
-        $carrier = is_object($carrier) ? $carrier : new Carrier((int) $this->configurations[Shoppingfeed::PRODUCT_FEED_CARRIER_REFERENCE]);
-
-        return $carrier;
+        return $this->carrierFinder->findProductFeedCarrier();
     }
 
     public function serialize()

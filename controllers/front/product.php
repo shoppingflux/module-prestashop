@@ -45,16 +45,27 @@ class ShoppingfeedProductModuleFrontController extends \ModuleFrontController
         if ($token === false) {
             exit();
         }
+        ProcessLoggerHandler::openLogger();
+        $etag = sprintf('"%s"', ShoppingfeedPreloading::getEtag($token['id_shoppingfeed_token']));
+        header('Etag: ' . $etag);
+        if (array_key_exists('HTTP_IF_NONE_MATCH', $_SERVER) && $_SERVER['HTTP_IF_NONE_MATCH'] === $etag) {
+            http_response_code(304);
+            ProcessLoggerHandler::logSuccess(
+                sprintf('Xml for token %s not Modified', $token['id_shoppingfeed_token']),
+                'shoppingfeed_token',
+                $token['id_shoppingfeed_token'],
+                'ShoppingfeedProductModuleFrontController'
+            );
+            ProcessLoggerHandler::closeLogger();
+            exit;
+        }
+        header('Content-type: text/xml');
 
         $this->preparePreloading($token);
-
         $this->sfToken = $token;
-        $fileXml = sprintf('file-%d.xml', $token['id_shoppingfeed_token']);
-        ProcessLoggerHandler::logSuccess(sprintf('Generate file %s for token %s:.', $fileXml, $token['content']), null, null, 'ShoppingfeedProductModuleFrontController');
-        ProcessLoggerHandler::closeLogger();
-        $productGenerator = new SfProductGenerator($fileXml, 'xml');
+        $productGenerator = new SfProductGenerator('php://output', 'xml');
         $productGenerator->setPlatform('Prestashop', _PS_VERSION_)
-            ->addMapper([$this, 'mapper']);
+                         ->addMapper([$this, 'mapper']);
 
         $limit = 100;
         $nb_iteration = ceil((new ShoppingfeedPreloading())->getPreloadingCount($token['id_shoppingfeed_token']) / $limit);
@@ -66,13 +77,14 @@ class ShoppingfeedProductModuleFrontController extends \ModuleFrontController
         }
 
         $productGenerator->close();
-
-        Tools::redirect(
-            $this->getBaseLink($token['id_shop']) . $fileXml,
-            __PS_BASE_URI__,
-            null,
-            ['HTTP/1.1 302 Moved Temporarily']
+        ProcessLoggerHandler::logSuccess(
+            sprintf('Generate xml for token %s', $token['id_shoppingfeed_token']),
+            'shoppingfeed_token',
+            $token['id_shoppingfeed_token'],
+            'ShoppingfeedProductModuleFrontController'
         );
+        ProcessLoggerHandler::closeLogger();
+
         exit;
     }
 

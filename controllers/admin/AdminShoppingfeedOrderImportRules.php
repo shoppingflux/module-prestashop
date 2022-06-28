@@ -23,6 +23,7 @@ if (!defined('_PS_VERSION_')) {
 require_once _PS_MODULE_DIR_ . 'shoppingfeed/vendor/autoload.php';
 
 use ShoppingfeedAddon\OrderImport\RulesManager;
+use ShoppingfeedAddon\OrderImport\SFOrderState;
 use ShoppingfeedAddon\OrderImport\SinceDate;
 
 /**
@@ -466,6 +467,16 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
                             'name' => Shoppingfeed::ORDER_IMPORT_PERMANENT_SINCE_DATE,
                         ],
                         [
+                            'type' => 'select',
+                            'label' => $this->module->l('First order state after import', 'AdminShoppingfeedOrderImportRules'),
+                            'name' => Shoppingfeed::IMPORT_ORDER_STATE,
+                            'options' => [
+                                'query' => OrderState::getOrderStates($this->context->language->id),
+                                'id' => 'id_order_state',
+                                'name' => 'name',
+                            ],
+                        ],
+                        [
                             'type' => 'shoppingfeed_close-section',
                         ],
                     ],
@@ -488,6 +499,7 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
             'tracking_timeshift' => Configuration::get(Shoppingfeed::ORDER_STATUS_TIME_SHIFT),
             'max_order_update' => Configuration::get(Shoppingfeed::ORDER_STATUS_MAX_ORDERS),
             Shoppingfeed::ORDER_IMPORT_PERMANENT_SINCE_DATE => $this->getSinceDateService()->get(),
+            Shoppingfeed::IMPORT_ORDER_STATE => $this->initSfOrderState()->get()->id,
         ];
 
         $helper->base_folder = $this->getTemplatePath() . $this->override_folder;
@@ -620,6 +632,10 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
             }
         }
 
+        if (Tools::isSubmit(Shoppingfeed::IMPORT_ORDER_STATE)) {
+            $this->initSfOrderState()->set((int) Tools::getValue(Shoppingfeed::IMPORT_ORDER_STATE));
+        }
+
         return true;
     }
 
@@ -645,5 +661,10 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
         }
 
         return $carriers;
+    }
+
+    protected function initSfOrderState()
+    {
+        return new SFOrderState();
     }
 }

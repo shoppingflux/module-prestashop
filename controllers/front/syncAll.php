@@ -66,7 +66,7 @@ class ShoppingfeedSyncAllModuleFrontController extends ShoppingfeedCronControlle
         try {
             $this->execute($this->syncProductCron, $this->module->cronTasks['syncProduct']['name']);
             $this->execute($this->syncOrderCron, $this->module->cronTasks['syncOrder']['name']);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             $this->handleExeption($e);
         }
 
