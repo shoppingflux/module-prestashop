@@ -8,7 +8,7 @@
         "acknowledgedAt": "2022-02-27T19:53:50+01:00",
         "createdAt": "2022-02-27T19:09:29+01:00",
         "updatedAt": "2022-02-27T19:09:29+01:00",
-        "status": "shipped",
+        "status": "waiting_shipment",
         "anonymized": false,
         "payment": {
           "shippingAmount": 4,
@@ -31,7 +31,7 @@
         "itemsReferencesAliases": {},
         "items": [
           {
-            "reference": "DH4754 Y59-T6 / XL",
+            "reference":"2_12",
             "status": "shipped",
             "quantity": 1,
             "price": 63,
