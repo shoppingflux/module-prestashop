@@ -388,8 +388,13 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             ];
         }
 
-        $this->hookDispatcher = new \ShoppingfeedAddon\Hook\HookDispatcher($this);
-        $this->hooks = array_merge($this->hooks, $this->hookDispatcher->getAvailableHooks());
+        // There is a risk having a class not found exception because of cache of autoload.php
+        try {
+            $this->hookDispatcher = new \ShoppingfeedAddon\Hook\HookDispatcher($this);
+            $this->hooks = array_merge($this->hooks, $this->hookDispatcher->getAvailableHooks());
+        } catch (Exception $e) { //for php version < 7.0
+        } catch (Throwable $e) {
+        }
 
         if ((int) Configuration::getGlobalValue(self::NEED_UPDATE_HOOK) === 1) {
             Configuration::updateGlobalValue(self::NEED_UPDATE_HOOK, (int) $this->updateHooks());
