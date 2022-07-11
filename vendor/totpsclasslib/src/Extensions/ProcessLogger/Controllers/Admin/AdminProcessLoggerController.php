@@ -21,7 +21,7 @@
  * @copyright Copyright (c) 202-ecommerce
  * @license   Commercial license
  *
- * @version   release/2.3.1
+ * @version   feature/34626_diagnostic
  */
 
 namespace ShoppingfeedClasslib\Extensions\ProcessLogger\Controllers\Admin;

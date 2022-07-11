@@ -82,6 +82,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     public $extensions = [
         \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerExtension::class,
         \ShoppingfeedClasslib\Extensions\ProcessMonitor\ProcessMonitorExtension::class,
+        \ShoppingfeedClasslib\Extensions\Diagnostic\DiagnosticExtension::class,
     ];
 
     /**
@@ -228,10 +229,10 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         ],
         [
             'name' => [
-                'en' => 'FAQ/Help',
-                'fr' => 'FAQ/Aide',
+                'en' => 'Diagnostics',
+                'fr' => 'Dépannage',
             ],
-            'class_name' => 'AdminShoppingfeedFaq',
+            'class_name' => 'AdminShoppingfeedDiagnostic',
             'parent_class_name' => 'shoppingfeed',
             'visible' => true,
         ],
@@ -378,10 +379,10 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
                 ],
                 [
                     'name' => [
-                        'en' => 'FAQ/Help',
-                        'fr' => 'FAQ/Aide',
+                        'en' => 'Diagnostics',
+                        'fr' => 'Dépannage',
                     ],
-                    'class_name' => 'AdminShoppingfeedFaq',
+                    'class_name' => 'AdminShoppingfeedDiagnostic',
                     'parent_class_name' => 'shoppingfeed',
                     'visible' => true,
                 ],
