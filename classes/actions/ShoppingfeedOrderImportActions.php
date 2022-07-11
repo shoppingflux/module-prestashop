@@ -225,6 +225,10 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             $apiOrderShipment['carrier']
         );
 
+        if (Validate::isLoadedObject($sfCarrier)) {
+            $carrier = Carrier::getCarrierByReference($sfCarrier->id_carrier_reference);
+        }
+
         if (Validate::isLoadedObject($carrier) == false) {
             $carrier = $this->initCarrierFinder()->getCarrierForOrderImport($apiOrder);
         }
