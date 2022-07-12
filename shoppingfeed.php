@@ -725,7 +725,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     public function countProductsOnFeed($id_shop = null)
     {
         $sql = $this->sqlProductsOnFeed($id_shop);
-        $sql->select('COUNT(p.`id_product`)');
+        $sql->select('COUNT(distinct p.`id_product`)');
         $countProductsOnFeed = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
 
         return $countProductsOnFeed;
