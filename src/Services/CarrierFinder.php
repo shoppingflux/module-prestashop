@@ -25,7 +25,6 @@ use Db;
 use DbQuery;
 use Order;
 use Shoppingfeed;
-use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use ShoppingfeedCarrier;
 use Validate;
 

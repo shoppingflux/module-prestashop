@@ -227,7 +227,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
 
         if (Validate::isLoadedObject($carrier) == false) {
             $channelName = $apiOrder->getChannel()->getName() ? $apiOrder->getChannel()->getName() : '';
-            $apiCarrierName = empty($apiOrderShipment['carrier'])? $apiOrder->getShipment()['carrier'] : $apiOrderShipment['carrier'];
+            $apiCarrierName = empty($apiOrderShipment['carrier']) ? $apiOrder->getShipment()['carrier'] : $apiOrderShipment['carrier'];
             $carrier = $this->initCarrierFinder()->getCarrierForOrderImport($channelName, $apiCarrierName);
         }
 
