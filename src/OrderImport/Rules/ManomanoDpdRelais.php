@@ -194,7 +194,9 @@ class ManomanoDpdRelais extends RuleAbstract implements RuleInterface
 
     protected function isDpdCarrier(OrderResource $apiOrder)
     {
-        $carrier = $this->initCarrierFinder()->getCarrierForOrderImport($apiOrder);
+        $channelName = $apiOrder->getChannel()->getName() ? $apiOrder->getChannel()->getName() : '';
+        $apiCarrierName = empty($apiOrder->getShipment()['carrier']) ? '' : $apiOrder->getShipment()['carrier'];
+        $carrier = $this->initCarrierFinder()->getCarrierForOrderImport($channelName, $apiCarrierName);
 
         if (false == Validate::isLoadedObject($carrier)) {
             return false;
