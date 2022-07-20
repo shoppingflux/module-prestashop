@@ -67,8 +67,10 @@
                   </div>
                 {/if}
               {/foreach}
-              <div class="mt-3 mb-3" role="alert">You want to participate to the developers community or just be notified of new releases ? 
-              Need more information, please visit our <a href="https://github.com/{$githubInfos|escape:'html':'UTF-8'}">GitHub public repository</a>.
+              <div class="mt-3 mb-3" role="alert">
+              {l s='You want to participate to the developers community or just be notified of new releases ?' mod='shoppingfeed'} 
+              {l s='Need more information, please visit our ' mod='shoppingfeed'}
+              <a href="https://github.com/{$githubInfos|escape:'html':'UTF-8'}">{l s='GitHub public repository' mod='shoppingfeed'}</a>.
               </div>
 
               {if empty($githubVersions)}

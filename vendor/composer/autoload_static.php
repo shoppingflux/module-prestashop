@@ -7,14 +7,14 @@ namespace Composer\Autoload;
 class ComposerStaticInit3fe85f86ff701f6bd7fd7d7a118b5533
 {
     public static $files = array (
-        'ec07570ca5a812141189b1fa81503674' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/Assert/Functions.php',
-        '6e3fae29631ef280660b3cdad06f25a8' => __DIR__ . '/..' . '/symfony/deprecation-contracts/function.php',
         'a4a119a56e50fbb293281d9a48007e0e' => __DIR__ . '/..' . '/symfony/polyfill-php80/bootstrap.php',
         '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
+        '6e3fae29631ef280660b3cdad06f25a8' => __DIR__ . '/..' . '/symfony/deprecation-contracts/function.php',
         '320cde22f66dd4f5d3fd621d3e88b98f' => __DIR__ . '/..' . '/symfony/polyfill-ctype/bootstrap.php',
         '0d59ee240a4cd96ddbb4ff164fccea4d' => __DIR__ . '/..' . '/symfony/polyfill-php73/bootstrap.php',
         '25072dd6e2470089de65ae7bf11d3109' => __DIR__ . '/..' . '/symfony/polyfill-php72/bootstrap.php',
         '6124b4c8570aa390c21fafd04a26c69f' => __DIR__ . '/..' . '/myclabs/deep-copy/src/DeepCopy/deep_copy.php',
+        'ec07570ca5a812141189b1fa81503674' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/Assert/Functions.php',
         '1fcaacb5a22154c13db6129480b5e77c' => __DIR__ . '/..' . '/shoppingfeed/php-feed-generator/src/functions.php',
         '454f97bd9f49193f9584219f382e1101' => __DIR__ . '/..' . '/prefixed/guzzlehttp/guzzle/src/functions_include.php',
         '65a66ec60d4919a4da0e932ab2da4543' => __DIR__ . '/..' . '/prefixed/guzzlehttp/psr7/src/functions_include.php',
@@ -2093,7 +2093,6 @@ class ComposerStaticInit3fe85f86ff701f6bd7fd7d7a118b5533
         'ShoppingfeedClasslib\\Db\\ObjectModelDefinition' => __DIR__ . '/..' . '/totpsclasslib/src/Db/ObjectModelDefinition.php',
         'ShoppingfeedClasslib\\Db\\ObjectModelExtension' => __DIR__ . '/..' . '/totpsclasslib/src/Db/ObjectModelExtension.php',
         'ShoppingfeedClasslib\\Extensions\\AbstractModuleExtension' => __DIR__ . '/..' . '/totpsclasslib/src/Extensions/AbstractModuleExtension.php',
-        'ShoppingfeedClasslib\\Extensions\\AtomicDesign\\Classes\\TranslateTrait' => __DIR__ . '/..' . '/totpsclasslib/src/Extensions/AtomicDesign/Classes/TranslateTrait.php',
         'ShoppingfeedClasslib\\Extensions\\Diagnostic\\Actions\\ConnectActions' => __DIR__ . '/..' . '/totpsclasslib/src/Extensions/Diagnostic/Actions/ConnectActions.php',
         'ShoppingfeedClasslib\\Extensions\\Diagnostic\\Controllers\\Admin\\AdminDiagnosticController' => __DIR__ . '/..' . '/totpsclasslib/src/Extensions/Diagnostic/Controllers/Admin/AdminDiagnosticController.php',
         'ShoppingfeedClasslib\\Extensions\\Diagnostic\\Controllers\\Admin\\AdminSSOConnectController' => __DIR__ . '/..' . '/totpsclasslib/src/Extensions/Diagnostic/Controllers/Admin/AdminSSOConnectController.php',

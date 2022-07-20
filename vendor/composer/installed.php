@@ -1,11 +1,11 @@
 <?php return array(
     'root' => array(
-        'pretty_version' => 'dev-develop',
-        'version' => 'dev-develop',
+        'pretty_version' => '1.0.0+no-version-set',
+        'version' => '1.0.0.0',
         'type' => 'prestashop-module',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'reference' => 'fb2e54acfe14d976eef455d0e715855898638902',
+        'reference' => NULL,
         'name' => 'module-partners/shoppingfeed',
         'dev' => true,
     ),
@@ -74,12 +74,12 @@
             'dev_requirement' => true,
         ),
         'module-partners/shoppingfeed' => array(
-            'pretty_version' => 'dev-develop',
-            'version' => 'dev-develop',
+            'pretty_version' => '1.0.0+no-version-set',
+            'version' => '1.0.0.0',
             'type' => 'prestashop-module',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
-            'reference' => 'fb2e54acfe14d976eef455d0e715855898638902',
+            'reference' => NULL,
             'dev_requirement' => false,
         ),
         'myclabs/deep-copy' => array(
