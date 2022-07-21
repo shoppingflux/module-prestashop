@@ -46,6 +46,9 @@ class RueducommerceMondialrelay extends RuleAbstract implements RuleInterface
 {
     public function isApplicable(OrderResource $apiOrder)
     {
+        if (parent::isApplicable($apiOrder) === false) {
+            return false;
+        }
         $apiOrderShipment = $apiOrder->getShipment();
 
         if (preg_match('#^rdc|rueducommerce$#', Tools::strtolower($apiOrder->getChannel()->getName()))

@@ -20,8 +20,8 @@
 namespace Tests\OrderImport;
 
 use ShoppingfeedAddon\Actions\ActionsHandler;
-use ShoppingfeedClasslib\Registry;
 use ShoppingfeedAddon\OrderImport\Rules\Mondialrelay;
+use ShoppingfeedClasslib\Registry;
 use Validate;
 
 /**
@@ -72,6 +72,7 @@ class OrderImportMondialRelaisTest extends AbstractOrdeTestCase
         $psOrder = new \Order((int) $onveyor['id_order']);
 
         $this->assertTrue(Validate::isLoadedObject($psOrder));
+
         return $psOrder;
     }
 
@@ -83,6 +84,7 @@ class OrderImportMondialRelaisTest extends AbstractOrdeTestCase
         $cart = new \cart($psOrder->id_cart);
 
         $this->assertTrue(Validate::isLoadedObject($cart));
+
         return $cart;
     }
 
@@ -94,6 +96,7 @@ class OrderImportMondialRelaisTest extends AbstractOrdeTestCase
         $customer = new \Customer((int) $onveyor['customer']->id);
 
         $this->assertTrue(Validate::isLoadedObject($customer));
+
         return $customer;
     }
 
@@ -105,6 +108,7 @@ class OrderImportMondialRelaisTest extends AbstractOrdeTestCase
         $carrier = new \Carrier((int) $onveyor['carrier']->id);
 
         $this->assertTrue(Validate::isLoadedObject($carrier));
+
         return $carrier;
     }
 
@@ -116,10 +120,11 @@ class OrderImportMondialRelaisTest extends AbstractOrdeTestCase
         $sfOrder = new \ShoppingfeedOrder((int) $onveyor['sfOrder']->id);
 
         $this->assertTrue(Validate::isLoadedObject($sfOrder));
+
         return $sfOrder;
     }
 
-     /**
+    /**
      * @depends testIsOrderValid
      */
     public function testDataOrder($psOrder)
@@ -165,7 +170,7 @@ class OrderImportMondialRelaisTest extends AbstractOrdeTestCase
      */
     public function testDataCarrier($carrier)
     {
-        $this->assertEquals($carrier->id_reference, 1);    
+        $this->assertEquals($carrier->id_reference, 1);
     }
 
     /**
@@ -174,7 +179,7 @@ class OrderImportMondialRelaisTest extends AbstractOrdeTestCase
     public function testDataSfOrder($sfOrder)
     {
         $this->assertEquals($sfOrder->name_marketplace, 'Colizey');
-        $this->assertEquals($sfOrder->id_order_marketplace, 'fb4d807c-f248-49c7-ac23-e8bc70c9a8d7');  
+        $this->assertEquals($sfOrder->id_order_marketplace, 'fb4d807c-f248-49c7-ac23-e8bc70c9a8d7');
     }
 
     /**
@@ -185,7 +190,7 @@ class OrderImportMondialRelaisTest extends AbstractOrdeTestCase
     public function testDataMondialrelay($cart)
     {
         $mrsr = \MondialrelaySelectedRelay::getFromIdCart($cart->id);
-      
+
         $this->assertTrue(Validate::isLoadedObject($mrsr));
         $this->assertEquals($mrsr->id_mondialrelay_carrier_method, 1);
         $this->assertEquals($mrsr->selected_relay_num, '012082');
