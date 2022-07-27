@@ -157,7 +157,7 @@ class ShoppingfeedProductModuleFrontController extends \ModuleFrontController
                 ->setReference($variation['reference'])
                 ->setPrice($variation['price'])
             ;
-            if (isset($variation['ecotax'])) {
+            if (isset($variation['ecotax']) && $this->isEcotaxEnabled()) {
                 $variationProduct->setEcotax($variation['ecotax']);
             }
             if (isset($variation['quantity']) === true) {
@@ -288,5 +288,10 @@ class ShoppingfeedProductModuleFrontController extends \ModuleFrontController
         }
 
         return 0;
+    }
+
+    protected function isEcotaxEnabled()
+    {
+        return (bool) Configuration::get('PS_USE_ECOTAX');
     }
 }
