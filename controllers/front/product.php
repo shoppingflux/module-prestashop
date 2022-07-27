@@ -157,6 +157,9 @@ class ShoppingfeedProductModuleFrontController extends \ModuleFrontController
                 ->setReference($variation['reference'])
                 ->setPrice($variation['price'])
             ;
+            if (isset($variation['ecotax'])) {
+                $variationProduct->setEcotax($variation['ecotax']);
+            }
             if (isset($variation['quantity']) === true) {
                 $variationProduct->setQuantity($variation['quantity']);
             }

@@ -405,6 +405,7 @@ class ProductSerializer
                 'attributes' => [
                     'hierararchy' => 'child',
                 ],
+                'ecotax' => $combination['ecotax'],
             ];
 
             if (empty($combination['ean13']) === false) {
