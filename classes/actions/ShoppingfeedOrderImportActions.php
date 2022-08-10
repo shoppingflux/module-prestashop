@@ -1088,7 +1088,37 @@ class ShoppingfeedOrderImportActions extends DefaultActions
 
             Db::getInstance()->update('order_invoice', $updateOrderInvoice, '`id_order` = ' . (int) $id_order);
             Db::getInstance()->update('order_carrier', $updateOrderTracking, '`id_order` = ' . (int) $id_order);
-            Db::getInstance()->delete('order_cart_rule', 'id_order = ' . (int) $id_order);
+
+            $query = (new DbQuery())
+                ->select('cr.*')
+                ->from('order_cart_rule', 'ocr')
+                ->leftJoin('cart_rule', 'cr', 'ocr.id_cart_rule = cr.id_cart_rule')
+                ->where('ocr.id_order = ' . (int) $id_order);
+            $cartRules = Db::getInstance()->executeS($query);
+            if (!empty($cartRules)) {
+                //Looking for gift product
+                foreach ($cartRules as $cartRule) {
+                    if (empty($cartRule['gift_product'])) {
+                        continue;
+                    }
+                    //Deleting the gift product
+                    $query = 'DELETE od, odt';
+                    $query .= ' FROM ' . _DB_PREFIX_ . 'order_detail od';
+                    $query .= ' LEFT JOIN ' . _DB_PREFIX_ . 'order_detail_tax odt ON odt.id_order_detail = od.id_order_detail';
+                    $query .= ' WHERE od.id_order = ' . (int) $id_order . ' AND od.product_id = ' . (int) $cartRule['gift_product'] . ' AND od.product_attribute_id = ' . (int) $cartRule['gift_product_attribute'];
+
+                    Db::getInstance()->execute($query);
+
+                    ProcessLoggerHandler::logInfo(
+                        $this->logPrefix .
+                        $this->l('Deleted the gift product. Product ID: ' . $cartRule['gift_product'], 'ShoppingfeedOrderImportActions'),
+                        'Order',
+                        $this->conveyor['id_order']
+                    );
+                }
+                //deleting cart rules
+                Db::getInstance()->delete('order_cart_rule', 'id_order = ' . (int) $id_order);
+            }
         }
 
         $queryUpdateOrderPayment = sprintf(
