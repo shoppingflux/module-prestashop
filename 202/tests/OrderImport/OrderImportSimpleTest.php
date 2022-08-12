@@ -71,6 +71,18 @@ class OrderImportSimpleTest extends AbstractOrdeTestCase
         $this->assertEquals($sfOrder->id_order_marketplace, 'TEST-ORDER-AMAZON');
 
         $psOrder = new \Order((int) $conveyor['id_order']);
+        $orderDetails = [];
+        $importedItems = $conveyor['orderData']->items;
+        //PrestaShop may split the order
+        $orders = \Db::getInstance()->executeS((new \DbQuery())->from('orders')->where('id_cart = ' . $psOrder->id_cart));
+
+        foreach ($orders as $order) {
+            $tempOrder = new \Order($order['id_order']);
+            $orderDetails = array_merge($orderDetails, $tempOrder->getOrderDetailList());
+        }
+
+        // if PrestaShop added the gift product we should remove it
+        $this->assertEquals(count($orderDetails), count($importedItems));
         // it's a test > canceled
         $this->assertEquals($psOrder->current_state, _PS_OS_CANCELED_);
         $this->assertEquals($psOrder->payment, 'amazon');
