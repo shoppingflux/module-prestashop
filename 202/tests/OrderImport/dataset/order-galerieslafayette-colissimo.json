@@ -1,0 +1,103 @@
+{
+  "id": 17662438541,
+  "storeId": 44918,
+  "channelId": 1273,
+  "reference": "1300448968034-A",
+  "storeReference": "529",
+  "isTest": false,
+  "acknowledgedAt": "2022-07-04T15:14:33+02:00",
+  "createdAt": "2022-07-04T12:35:44+02:00",
+  "updatedAt": "2022-07-27T14:15:37+02:00",
+  "status": "waiting_shipment",
+  "anonymized": false,
+  "shipment": {
+    "carrier": "Retrait en Point Relais Colissimo",
+    "trackingNumber": "",
+    "trackingLink": ""
+  },
+  "additionalFields": {
+    "relais-id": "908557",
+    "fulfilled_by": "merchant",
+    "order_status": "RECEIVED",
+    "sales-channel": "Web",
+    "type-de-point": "A2P",
+    "shipping_pudo_id": "908557",
+    "shipping_type_code": "33",
+    "fulfillment_center_code": "DEFAULT"
+  },
+  "errors": [],
+  "itemsReferencesAliases": null,
+  "fulfilledBy": "undefined",
+  "items":[
+    {
+      "reference":"8",
+      "status":"",
+      "quantity":1,
+      "price":4.5,
+      "taxAmount":0,
+      "channelReference":"1300448968034-A-1",
+      "name":"Mug Today is a good day",
+      "image":"http://localhost/img/p/1/1-small_default.jpg"
+    }
+  ],
+  "payment":{
+    "shippingAmount":4.9,
+    "productAmount":4.5,
+    "totalAmount":9.4,
+    "currency":"EUR",
+    "method":"Paypal"
+  },
+  "commission": null,
+  "shippingAddress": {
+    "firstName": "John",
+    "lastName": "Doe",
+    "company": "CARREFOUR CITY",
+    "street": "39 RUE ABCDEFGHIJ",
+    "street2": "",
+    "other": "",
+    "postalCode": "31500",
+    "city": "TOULOUSE",
+    "country": "FR",
+    "phone": "0600000001",
+    "mobilePhone": "",
+    "email": "rgmwdx5eg9d.lk3ngmuiz@notification.mirakl.net",
+    "relayId": ""
+  },
+  "billingAddress": {
+    "firstName": "John",
+    "lastName": "Doe",
+    "company": "",
+    "street": "39 RUE ABCDEFGHIJ",
+    "street2": "",
+    "other": "",
+    "postalCode": "31500",
+    "city": "TOULOUSE",
+    "country": "FR",
+    "phone": "0600000001",
+    "mobilePhone": "",
+    "email": "rgmwdx5eg9d.lk3ngmuiz@notification.mirakl.net"
+  },
+  "_links": {
+    "self": {
+      "href": "/v1/store/44918/order/17662438541"
+    },
+    "store": {
+      "href": "/v1/store/44918"
+    }
+  },
+  "_embedded": {
+    "channel": {
+      "id": 1273,
+      "name": "GaleriesLafayette",
+      "_links": {
+        "self": {
+          "href": "/v1/channel/1273"
+        },
+        "image": {
+          "href": "https://assets.shopping-feed.com/channel/logo/GaleriesLafayette.png"
+        }
+      }
+    },
+    "tag": []
+  }
+}
