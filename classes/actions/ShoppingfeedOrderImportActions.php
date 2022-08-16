@@ -510,31 +510,27 @@ class ShoppingfeedOrderImportActions extends DefaultActions
 
             // If the product doesn't use advanced stock management
             // If there's not enough stock to place the order
-            if (!$psProduct->checkQty($apiProduct->quantity)) {
-                // Add just enough stock
-                $currentStock = StockAvailable::getQuantityAvailableByProduct(
+            if ($this->checkQtyProduct($psProduct->id, $psProduct->id_product_attribute, $apiProduct->quantity) === false) {
+                $this->addJustEnoughStock(
                     $psProduct->id,
                     $psProduct->id_product_attribute,
-                    $this->getIdShop()
+                    $apiProduct->reference,
+                    $apiProduct->quantity
                 );
-                $stockToAdd = (int) $apiProduct->quantity - (int) $currentStock;
-                ProcessLoggerHandler::logInfo(
-                    sprintf(
-                        $this->logPrefix .
-                            $this->l('Not enough stock for product %s: original %d, required %d, add %d.', 'ShoppingfeedOrderImportActions'),
-                        $apiProduct->reference,
-                        (int) $currentStock,
-                        (int) $apiProduct->quantity,
-                        (int) $stockToAdd
-                    ),
-                    'Order'
-                );
-                StockAvailable::updateQuantity(
-                    $psProduct->id,
-                    $psProduct->id_product_attribute,
-                    $stockToAdd,
-                    $this->getIdShop()
-                );
+            }
+            if (Pack::isPack((int) $psProduct->id)) {
+                $items = Pack::getItems($psProduct->id, Context::getContext()->language->id);
+                foreach ($items as $item) {
+                    if ($this->checkQtyProduct($item->id, $item->id_pack_product_attribute, $apiProduct->quantity)) {
+                        continue;
+                    }
+                    $this->addJustEnoughStock(
+                        $item->id,
+                        $item->id_pack_product_attribute,
+                        $item->reference,
+                        $apiProduct->quantity
+                    );
+                }
             }
         }
 
@@ -1300,5 +1296,42 @@ class ShoppingfeedOrderImportActions extends DefaultActions
     protected function initCarrierFinder()
     {
         return new CarrierFinder();
+    }
+
+    protected function checkQtyProduct($id_product, $id_product_attribute, $qty)
+    {
+        if (Product::isAvailableWhenOutOfStock(StockAvailable::outOfStock($id_product))) {
+            return true;
+        }
+        $availableQuantity = StockAvailable::getQuantityAvailableByProduct($id_product, $id_product_attribute);
+
+        return $qty <= $availableQuantity;
+    }
+
+    protected function addJustEnoughStock($id_product, $id_product_attribute, $reference, $orderQty)
+    {
+        $currentStock = StockAvailable::getQuantityAvailableByProduct(
+            $id_product,
+            $id_product_attribute,
+            $this->getIdShop()
+        );
+        $stockToAdd = (int) $orderQty - (int) $currentStock;
+        ProcessLoggerHandler::logInfo(
+            sprintf(
+                $this->logPrefix .
+                    $this->l('Not enough stock for product %s: original %d, required %d, add %d.', 'ShoppingfeedOrderImportActions'),
+                $reference,
+                (int) $currentStock,
+                (int) $orderQty,
+                (int) $stockToAdd
+            ),
+            'Order'
+        );
+        StockAvailable::updateQuantity(
+            $id_product,
+            $id_product_attribute,
+            $stockToAdd,
+            $this->getIdShop()
+        );
     }
 }
