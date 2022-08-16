@@ -19,6 +19,7 @@ UPDATE ps_configuration SET value = '[\"5\",\"4\"]' WHERE name = 'SHOPPINGFEED_S
 UPDATE ps_configuration SET value = '[\"6\"]' WHERE name = 'SHOPPINGFEED_CANCELLED_ORDERS';
 UPDATE ps_configuration SET value = '[\"7\"]' WHERE name = 'SHOPPINGFEED_REFUNDED_ORDERS';
 UPDATE ps_configuration SET value = '{\"ShoppingfeedAddon\\OrderImport\\Rules\\AmazonEbay\":{\"enabled\":\"1\"},\"ShoppingfeedAddon\\OrderImport\\Rules\\ChangeStateOrder\":{\"end_order_state\":\"\"},\"ShoppingfeedAddon\\OrderImport\\Rules\\ShippedByMarketplace\":{\"end_order_state_shipped\":\"5\"},\"ShoppingfeedAddon\\OrderImport\\Rules\\SymbolConformity\":{\"enabled\":\"1\"}}' WHERE name = 'SHOPPINGFEED_ORDER_IMPORT_SPECIFIC_RULES_CONFIGURATION';
+UPDATE ps_configuration SET value = '1' WHERE name = 'PS_CART_RULE_FEATURE_ACTIVE';
 
 INSERT IGNORE INTO ps_tax (id_tax, rate, active, deleted) VALUES
 (40, 0.190, 1, 0);
@@ -52,6 +53,12 @@ REPLACE INTO ps_product_carrier (id_product, id_carrier_reference, id_shop) VALU
 (1,1,1), (8,2,1);
 REPLACE INTO ps_carrier_zone (id_carrier, id_zone) VALUES
 (1,9), (2,9);
+
+TRUNCATE ps_cart_rule;
+REPLACE INTO ps_cart_rule (id_cart_rule ,id_customer,date_from,date_to,description,quantity,quantity_per_user,priority,partial_use,code,minimum_amount,minimum_amount_tax,minimum_amount_currency,minimum_amount_shipping,country_restriction,carrier_restriction,group_restriction,cart_rule_restriction,product_restriction,shop_restriction,free_shipping,reduction_percent,reduction_amount,reduction_tax,reduction_currency,reduction_product,reduction_exclude_special,gift_product,gift_product_attribute,highlight,active,date_add,date_upd)
+    VALUES (1, 0,'2022-02-17 00:00:00','2042-02-17 00:00:00','',999,999,1,1,'',0.000000,0,1,0,0,0,0,0,0,0,0,0.00,0.000000,0,1,0,0,7,0,0,1,'2022-02-17 00:00:00','2022-02-17 00:00:00');
+REPLACE INTO ps_cart_rule_lang (id_cart_rule,id_lang,name)
+    VALUES (1,1,'gift');
 
 TRUNCATE ps_colissimo_pickup_point;
 "
