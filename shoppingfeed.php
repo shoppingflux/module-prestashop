@@ -1287,6 +1287,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             ShoppingfeedAddon\OrderImport\Rules\ZalandoCarrier::class,
             ShoppingfeedAddon\OrderImport\Rules\ColizeyColissimo::class,
             ShoppingfeedAddon\OrderImport\Rules\AmazonManomanoTva::class,
+            ShoppingfeedAddon\OrderImport\Rules\GaleriesLafayetteColissimo::class,
             ShoppingfeedAddon\OrderImport\Rules\SymbolConformity::class,
         ];
 
