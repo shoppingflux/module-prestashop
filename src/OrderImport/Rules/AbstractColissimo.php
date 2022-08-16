@@ -89,7 +89,7 @@ abstract class AbstractColissimo extends RuleAbstract implements RuleInterface
 
         // Save/update Colissimo pickup point
         $pickupPointData = [
-            'colissimo_id' => $shippingAddressObj->other,
+            'colissimo_id' => $colissimoPickupPointId,
             'company_name' => $shippingAddressObj->company,
             'address1' => $shippingAddressObj->address1,
             'address2' => $shippingAddressObj->address2,
