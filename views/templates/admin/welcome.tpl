@@ -21,17 +21,30 @@
 * @license   Commercial license
 *}
 
-{extends file="helpers/form/form.tpl"}
 
 {block name="legend" append}
+<div class="w-100 mb-3">
+  <div class="row">
+    <div class="col-sm-12">
+      <div class="row justify-content-center">
+        <div class="col-xl-12 pr-5 pl-5">
+          <div class="card">
+            <div class="card-header d-flex justify-content-between">
    <div class="form-group welcome_shoppingfeed">
        <div class="col-lg-6 logo_shoppingfeed">
            <img class="mb-0" id="logo_sf" src="{$img_path|escape:'htmlall':'UTF-8'}logo_shoppingfeed.png"/>
        </div>
        <div class="col-lg-6 desc_shoppingfeed">
            <p>
-               {l s='Improve your shoppingfeed module\'s Marketplaces synchronization speed.' mod='shoppingfeed'}
+               {l s='Diagnostic, update and repair your Shoppingfeed addons.' mod='shoppingfeed'}
            </p>
        </div>
+   </div>
+   </div>
+   </div>
+   </div>
+   </div>
+   </div>
+   </div>
    </div>
 {/block}

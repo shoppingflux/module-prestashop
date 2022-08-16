@@ -3,8 +3,8 @@ services:
     prestashop:
         build: $PWD/202/docker
         environment:
-            PS_DOMAIN: "localhost"
-            RUN_USER: www-data
+            PS_DOMAIN: "172.18.0.2"
+            RUN_USER: clotaire
         ports:
             - 8080:80
         volumes:
