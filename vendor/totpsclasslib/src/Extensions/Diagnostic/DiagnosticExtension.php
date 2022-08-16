@@ -39,7 +39,6 @@ use ShoppingfeedClasslib\Extensions\Diagnostic\Stubs\Storage\DiagnosticRetriever
 use ShoppingfeedClasslib\Extensions\Diagnostic\Stubs\Storage\StubStorage;
 use ShoppingfeedClasslib\Extensions\AbstractModuleExtension;
 use ShoppingfeedClasslib\Extensions\Diagnostic\Controllers\Admin\AdminDiagnosticController;
-use ShoppingfeedClasslib\Extensions\Diagnostic\Controllers\Admin\AdminSSOConnectController;
 use Configuration;
 
 class DiagnosticExtension extends AbstractModuleExtension
@@ -56,15 +55,6 @@ class DiagnosticExtension extends AbstractModuleExtension
             'parent_class_name' => 'shoppingfeed',
             'visible' => true,
         ],
-        [
-            'name' => [
-                'en' => 'SSO Connection',
-                'fr' => 'Connection SSO',
-            ],
-            'class_name' => 'AdminShoppingfeedSSOConnect',
-            'parent_class_name' => 'shoppingfeed',
-            'visible' => false,
-        ],
     ];
 
     public $objectModels = [];
@@ -79,17 +69,12 @@ class DiagnosticExtension extends AbstractModuleExtension
 
     const CONNECT_RESTRICTED_IPS = 'SHOPPINGFEED_CONNECT_RESTRICTED_IPS';
 
-    const CONNECT_SSO_AVAILABLE = 'SHOPPINGFEED_CONNECT_SSO_AVAILABLE';
-
     const CONNECT_SLUG = 'SHOPPINGFEED_CONNECT_SLUG';
 
     public function install()
     {
         Configuration::updateGlobalValue(self::MODULE_NAME, $this->module->name);
         Configuration::updateGlobalValue(self::DIAGNOSTIC_MODULE_NAME, $this->module->name);
-        Configuration::updateGlobalValue(self::CONNECT_SSO_AVAILABLE, json_encode([
-            $this->module->name => false,
-        ]));
 
         return parent::install();
     }
