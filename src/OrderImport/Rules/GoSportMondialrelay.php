@@ -30,9 +30,8 @@ if (!defined('_PS_VERSION_')) {
 
 use Module;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
-use Tools;
 
-class Mondialrelay extends AbstractMondialrelay
+class GoSportMondialrelay extends AbstractMondialrelay
 {
     /** @var Module */
     protected $module_mondialRelay;
@@ -42,32 +41,20 @@ class Mondialrelay extends AbstractMondialrelay
         if (parent::isApplicable($apiOrder) === false) {
             return false;
         }
-        $apiOrderShipment = $apiOrder->getShipment();
+        $apiOrderData = $apiOrder->toArray();
+        $apiOrderAdditionalFields = $apiOrderData['additionalFields'];
 
-        // Check only for name presence in the string; the relay ID could be appended
-        // to the field (see ShoppingfeedAddon\OrderImport\Rules\RueducommerceMondialrelay)
-        if (preg_match('#mondial relay#', Tools::strtolower($apiOrderShipment['carrier']))) {
-            return true;
+        if (empty($apiOrderAdditionalFields['shipping_pudo_id'])
+            || $apiOrderAdditionalFields['shipping_type_code']) {
+            return false;
         }
 
-        if (preg_match('#Livraison Magasin produit jusqu\'à 30 kg#i', $apiOrderShipment['carrier'])) {
-            return true;
-        }
-
-        if (preg_match('#Livraison Point MR 24R#i', $apiOrderShipment['carrier'])) {
-            return true;
-        }
-
-        if (preg_match('#^rel$#i', trim($apiOrderShipment['carrier']))) {
-            return true;
-        }
-
-        return false;
+        return true;
     }
 
     public function getRelayId($orderData)
     {
-        return $orderData->shippingAddress['other'];
+        return $orderData['additionalFields']['shipping_pudo_id'];
     }
 
     /**
@@ -75,7 +62,7 @@ class Mondialrelay extends AbstractMondialrelay
      */
     public function getConditions()
     {
-        return $this->l('If the order has \'Mondial Relay\' in its carrier name.', 'Mondialrelay');
+        return $this->l('If the order comes from Mondial Relay and has non-empty "shipping_pudo_id" and "shipping_type_code" additional fields.', 'Mondial Relay');
     }
 
     /**
