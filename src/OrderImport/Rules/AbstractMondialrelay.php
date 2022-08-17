@@ -30,6 +30,15 @@ use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 use Tools;
+use Validate;
+use Order;
+use Carrier;
+use Address;
+use Configuration;
+use SoapClient;
+use DbQuery;
+use Db;
+use Cart;
 
 abstract class AbstractMondialrelay extends RuleAbstract implements RuleInterface
 {
