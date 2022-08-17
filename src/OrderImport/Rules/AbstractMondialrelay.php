@@ -23,22 +23,22 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
+use Address;
+use Carrier;
+use Cart;
+use Configuration;
 use Country;
+use Db;
+use DbQuery;
 use Module;
+use Order;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
+use SoapClient;
 use Tools;
 use Validate;
-use Order;
-use Carrier;
-use Address;
-use Configuration;
-use SoapClient;
-use DbQuery;
-use Db;
-use Cart;
 
 abstract class AbstractMondialrelay extends RuleAbstract implements RuleInterface
 {
