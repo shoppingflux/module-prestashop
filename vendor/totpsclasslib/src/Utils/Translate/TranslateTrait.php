@@ -20,22 +20,23 @@
  * @author    202-ecommerce <tech@202-ecommerce.com>
  * @copyright Copyright (c) 202-ecommerce
  * @license   Commercial license
- * @version   release/2.3.1
+ * @version   feature/34626_diagnostic
  */
 
 namespace ShoppingfeedClasslib\Utils\Translate;
 
-use \Translate;
+use Translate;
 
 trait TranslateTrait
 {
-
     /**
      * Translation method for classes that use this trait
-     * @param $textToTranslate
+     *
+     * @param string $textToTranslate
      * @param string $class
      * @param bool $addslashes
      * @param bool $htmlentities
+     *
      * @return mixed
      */
     protected function l($textToTranslate, $class = '', $addslashes = false, $htmlentities = true)
@@ -43,11 +44,13 @@ trait TranslateTrait
         if (empty($class) === true) {
             $class = $this->getClassShortName();
         }
+
         return Translate::getModuleTranslation('shoppingfeed', $textToTranslate, $class);
     }
 
     /**
      * @return string
+     *
      * @throws \ReflectionException
      */
     protected function getClassShortName()

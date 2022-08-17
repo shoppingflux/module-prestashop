@@ -405,6 +405,7 @@ class ProductSerializer
                 'attributes' => [
                     'hierararchy' => 'child',
                 ],
+                'ecotax' => $combination['ecotax'],
             ];
 
             if (empty($combination['ean13']) === false) {
@@ -516,14 +517,10 @@ class ProductSerializer
             ->from('image', 'i')
             ->leftJoin('image_lang', 'il', 'il.id_image = i.id_image AND il.id_lang = ' . (int) $id_lang)
             ->where('i.id_product = ' . $this->product->id)
-            ->orderBy('i.cover DESC, i.`position` ASC')
-            ->select('i.cover, i.id_image, il.legend, i.position');
-
-        if ($this->id_shop) {
-            $sql
-                ->leftJoin('image_shop', 'is', 'i.id_image = is.id_image')
-                ->where('is.id_shop = ' . (int) $this->id_shop);
-        }
+            ->orderBy('is.cover DESC, i.`position` ASC')
+            ->select('is.cover, i.id_image, il.legend, i.position')
+            ->leftJoin('image_shop', 'is', 'i.id_image = is.id_image')
+            ->where('is.id_shop = ' . (int) $this->id_shop);
 
         return Db::getInstance()->executeS($sql);
     }
@@ -562,13 +559,9 @@ class ProductSerializer
             ->from('product_attribute_image', 'pai')
             ->leftJoin('image', 'i', 'pai.id_image = i.id_image')
             ->where('pai.id_product_attribute =' . (int) $id_product_attribute)
-            ->orderBy('i.cover DESC, i.position ASC');
-
-        if ($this->id_shop) {
-            $sql
-                ->leftJoin('image_shop', 'is', 'i.id_image = is.id_image')
-                ->where('is.id_shop = ' . (int) $this->id_shop);
-        }
+            ->orderBy('is.cover DESC, i.position ASC')
+            ->leftJoin('image_shop', 'is', 'i.id_image = is.id_image')
+            ->where('is.id_shop = ' . (int) $this->id_shop);
 
         $data = Db::getInstance()->executeS($sql);
 
