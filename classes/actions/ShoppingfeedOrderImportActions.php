@@ -1121,7 +1121,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
 
                 ProcessLoggerHandler::logInfo(
                     $this->logPrefix .
-                    $this->l('Deleted the gift product. Product ID: ' . $cartRule['gift_product'], 'ShoppingfeedOrderImportActions'),
+                    $this->l('Gift product deleted. Product ID: ', 'ShoppingfeedOrderImportActions') . $cartRule['gift_product'],
                     'Order',
                     $cartRule['id_order']
                 );
@@ -1172,7 +1172,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
 
             ProcessLoggerHandler::logInfo(
                 $this->logPrefix .
-                $this->l('Order was deleted. Order ID: ' . (int) $idOrder, 'ShoppingfeedOrderImportActions'),
+                $this->l('Order deleted. Order ID: ', 'ShoppingfeedOrderImportActions') . (int) $idOrder,
                 'Order'
             );
         }
