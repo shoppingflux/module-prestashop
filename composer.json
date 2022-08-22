@@ -12,8 +12,8 @@
   "config": {
      "vendor-dir": "vendor",
       "preferred-install": "dist",
-      "classmap-authoritative": true,
-      "optimize-autoloader": true,
+      "classmap-authoritative": false,
+      "optimize-autoloader": false,
       "prepend-autoloader": false,
       "platform": {
           "php": "7.4"
