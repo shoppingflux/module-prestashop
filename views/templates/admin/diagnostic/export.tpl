@@ -11,7 +11,7 @@
               </div>
             </div>
             <div class="form-wrapper justify-content-center col-xl-12 my-3">
-              {l s='You can export all info info using the button below ' mod='shoppingfeed'}
+              {l s='You can export all informations using the button `Export`' mod='shoppingfeed'}
             </div>
             <div class="card-footer">
               <div class="d-flex justify-content-end">

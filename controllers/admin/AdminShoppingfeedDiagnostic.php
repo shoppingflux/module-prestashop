@@ -54,7 +54,7 @@ class AdminShoppingfeedDiagnosticController extends AdminDiagnosticController
         $this->setHelperDisplay($helper);
         $helper->tpl_vars['img_path'] = $this->module->getPathUri() . 'views/img/';
         $helper->base_folder = $this->getTemplatePath();
-        $helper->base_tpl = 'welcome.tpl';
+        $helper->base_tpl = 'diagnostic.tpl';
 
         return $helper->generateForm([['form' => $fields_form]]);
     }

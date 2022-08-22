@@ -137,8 +137,10 @@ class DatabaseStubHandler extends AbstractStubHandler
             $uniqueIndexes = $this->checkUniqueIndexes($definition, TableType::MAIN);
             if (!empty($uniqueIndexes)) {
                 $tableDefinition->addError(
-                    $this->l('Unique index is not valid. ' .
-                        'Missing indexes : ' . implode(',', $uniqueIndexes))
+                    sprintf(
+                        $this->l('Unique index is not valid. Missing indexes: %s'),
+                        implode(',', $uniqueIndexes)
+                    )
                 );
             }
         }
@@ -156,8 +158,10 @@ class DatabaseStubHandler extends AbstractStubHandler
                 $uniqueIndexes = $this->checkUniqueIndexes($definition, TableType::LANG);
                 if (!empty($uniqueIndexes)) {
                     $tableDefinition->addError(
-                        $this->l('Unique index is not valid. ' .
-                            'Missing indexes : ' . implode(',', $uniqueIndexes))
+                        sprintf(
+                            $this->l('Unique index is not valid. Missing indexes: %s'),
+                            implode(',', $uniqueIndexes)
+                        )
                     );
                 }
             }
@@ -176,8 +180,10 @@ class DatabaseStubHandler extends AbstractStubHandler
                 $uniqueIndexes = $this->checkUniqueIndexes($definition, TableType::SHOP);
                 if (!empty($uniqueIndexes)) {
                     $tableDefinition->addError(
-                        $this->l('Unique index is not valid. ' .
-                            'Missing indexes : ' . implode(',', $uniqueIndexes))
+                        sprintf(
+                            $this->l('Unique index is not valid. Missing indexes: %s'),
+                            implode(',', $uniqueIndexes)
+                        )
                     );
                 }
             }

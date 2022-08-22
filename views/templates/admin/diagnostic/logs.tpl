@@ -15,68 +15,70 @@
                   <div class="badge-warning px-2 mb-0">{l s='Logs found' mod='shoppingfeed'}</div>
                 {/if}
             </div>
-            <div class="form-wrapper justify-content-center col-xl-12 mt-3 {if empty($logs.files) && empty($logs.db)}d-none{/if}">
-              <div class="mt-2 alert alert-info">{l s='Logs from the module or PrestaShop can provide many information in order to analyse an issue.' mod='shoppingfeed'}</div>
+            <div class="form-wrapper justify-content-center col-xl-12 mt-3 d-none">
               <section class="accordion-section clearfix">
                 <div class="container">
-                    {if !empty($logs.files)}
-                        {foreach $logs.files as $file}
-                          <div class="panel-group pt-2">
-                            <div class="panel panel-default mb-3">
-                              <div class="panel-heading shoppingfeed-collapse"
-                                   data-type="files"
-                                   data-value="{$file}">
-                                <h4 class="panel-title mb-0">
-                                  <a role="button"
-                                     href="#">
-                                      {l s='Log - ' mod='shoppingfeed'} {$file}
+                  {if !empty($logs.files)}
+                    {foreach $logs.files as $file}
+                      <div class="panel-group pt-2">
+                        <div class="panel panel-default mb-3">
+                          <div class="panel-heading shoppingfeed-collapse"
+                                data-type="files"
+                                data-value="{$file.path}">
+                            <h4 class="panel-title mb-0">
+                              <a role="button" href="#">
+                                {l s='Log - ' mod='shoppingfeed'} {$file.path} - {$file.size}
+                              </a>
+                            </h4>
+                            <small>{l s='will be exported only if less than 2Mo' mod='shoppingfeed'}</small>
+                          </div>
+                          <div class="d-none" data-log-zone>
+                            <div class="panel-body mt-2">
+                              <div data-zone-content></div>
+                              <div class="d-flex justify-content-end">
+                                {if $file.downloadYes}
+                                  <a class="btn btn-outline-primary"
+                                    href="{$actionsLink|cat:'&event=downloadLog'|cat:'&value='|cat:$file.path|cat:'&type=files'}">
+                                    {l s='Download' mod='shoppingfeed'}
                                   </a>
-                                </h4>
-                              </div>
-                              <div class="d-none" data-log-zone>
-                                <div class="panel-body mt-2">
-                                  <div data-zone-content></div>
-                                  <div class="d-flex justify-content-end">
-                                    <a class="btn btn-outline-primary"
-                                       href="{$actionsLink|cat:'&event=downloadLog'|cat:'&value='|cat:$file|cat:'&type=files'}">
-                                      {l s='Download' mod='shoppingfeed'}
-                                    </a>
-                                  </div>
-                                </div>
+                                {/if}
                               </div>
                             </div>
                           </div>
-                        {/foreach}
-                    {/if}
-                    {if !empty($logs.db)}
-                        {foreach $logs.db as $db => $isDbLogExist}
-                          <div class="panel-group pt-2">
-                            <div class="panel panel-default mb-3">
-                              <div class="panel-heading shoppingfeed-collapse"
-                                   data-type="db"
-                                   data-value="{$db}">
-                                <h4 class="panel-title mb-0">
-                                  <a role="button"
-                                     href="#">
-                                      {l s='Log - ' mod='shoppingfeed'} {$db}
-                                  </a>
-                                </h4>
-                              </div>
-                              <div class="d-none" data-log-zone>
-                                <div class="panel-body mt-2">
-                                  <div data-zone-content></div>
-                                  <div class="d-flex justify-content-end">
-                                    <a class="btn btn-outline-primary"
-                                       href="{$actionsLink|cat:'&event=downloadLog'|cat:'&value='|cat:$db|cat:'&type=db'}">
-                                        {l s='Download' mod='shoppingfeed'}
-                                    </a>
-                                  </div>
-                                </div>
+                        </div>
+                      </div>
+                    {/foreach}
+                  {/if}
+                  {if !empty($logs.db)}
+                    {foreach $logs.db as $db => $dbValues}
+                      <div class="panel-group pt-2">
+                        <div class="panel panel-default mb-3">
+                          <div class="panel-heading shoppingfeed-collapse"
+                               data-type="db"
+                               data-value="{$db}">
+                            <h4 class="panel-title mb-0">
+                              <a role="button" href="#">
+                                {l s='Log - ' mod='shoppingfeed'} {$db} - {$dbValues.countLines}
+                                {l s='rows /' mod='shoppingfeed'} {$dbValues.xLastDays}
+                                {l s=' last days' mod='shoppingfeed'}
+                              </a>
+                            </h4>
+                          </div>
+                          <div class="d-none" data-log-zone>
+                            <div class="panel-body mt-2">
+                              <div data-zone-content></div>
+                              <div class="d-flex justify-content-end">
+                                <a class="btn btn-outline-primary"
+                                   href="{$actionsLink|cat:'&event=downloadLog'|cat:'&value='|cat:$db|cat:'&type=db'}">
+                                  {l s='Download' mod='shoppingfeed'}
+                                </a>
                               </div>
                             </div>
                           </div>
-                        {/foreach}
-                    {/if}
+                        </div>
+                      </div>
+                    {/foreach}
+                  {/if}
                 </div>
               </section>
             </div>
