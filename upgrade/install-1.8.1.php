@@ -22,10 +22,15 @@ use ShoppingfeedClasslib\Install\ModuleInstaller;
 
 function upgrade_module_1_8_1($module)
 {
-    $installer = new ModuleInstaller($module);
-    $installer->uninstallModuleAdminControllers() &&
-        $installer->installAdminControllers() &&
-        $installer->installExtension(DiagnosticExtension::class);
+    // There is a risk having a class not found exception because of cache of autoload.php
+    try {
+        $installer = new ModuleInstaller($module);
+        $installer->uninstallModuleAdminControllers()
+            && $installer->installAdminControllers()
+            && $installer->installExtension(DiagnosticExtension::class)
+            && $installer->registerHooks();
+    } catch (Exception $e) {
+    }
 
     return true;
 }
