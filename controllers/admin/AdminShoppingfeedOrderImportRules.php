@@ -483,6 +483,8 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
                     'submit' => [
                         'title' => $this->module->l('Save', 'AdminShoppingfeedOrderImportRules'),
                         'name' => 'saveOrdersConfig',
+                        // PS hides the button if this is not set
+                        'id' => 'shoppingfeed_saveOrderSync-submit',
                     ],
                 ],
             ],
