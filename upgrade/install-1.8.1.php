@@ -17,7 +17,6 @@
  *  @license   https://opensource.org/licenses/AFL-3.0  Academic Free License (AFL 3.0)
  */
 
-use ShoppingfeedClasslib\Extensions\Diagnostic\DiagnosticExtension;
 use ShoppingfeedClasslib\Install\ModuleInstaller;
 
 function upgrade_module_1_8_1($module)
