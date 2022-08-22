@@ -16,11 +16,16 @@
  *  @copyright Since 2019 Shopping Feed
  *  @license   https://opensource.org/licenses/AFL-3.0  Academic Free License (AFL 3.0)
  */
+
+use ShoppingfeedClasslib\Extensions\Diagnostic\DiagnosticExtension;
+use ShoppingfeedClasslib\Install\ModuleInstaller;
+
 function upgrade_module_1_8_1($module)
 {
-    $installer = new \ShoppingfeedClasslib\Install\ModuleInstaller($module);
-    $installer->uninstallModuleAdminControllers();
-    $installer->installAdminControllers();
+    $installer = new ModuleInstaller($module);
+    $installer->uninstallModuleAdminControllers() &&
+        $installer->installAdminControllers() &&
+        $installer->installExtension(DiagnosticExtension::class);
 
     return true;
 }
