@@ -1,0 +1,95 @@
+{
+   "_embedded":{
+      "channel":{
+         "_links":{
+            "image":{
+               "href":"https://assets.shopping-feed.com/channel/logo/.png"
+            },
+            "self":{
+               "href":"/v1/channel/66"
+            }
+         },
+         "id":66,
+         "name":"Amazon"
+      }
+   },
+   "_links":{
+      "self":{
+         "href":"/v1/store/29573/order/629030123456"
+      },
+      "store":{
+         "href":"/v1/store/29573"
+      }
+   },
+   "acknowledgedAt":null,
+   "additionalFields": {
+     "env": "epmm"
+   },
+   "billingAddress":{
+       "firstName":"",
+       "lastName":"Bernard Martin",
+       "company":"202 ecommerce",
+       "street":"10 rue Vivienne",
+       "street2":"",
+       "other":"",
+       "postalCode":"75002",
+       "city":"Paris",
+       "country":"FR",
+       "phone":"0123456789",
+       "mobilePhone":"0623456789",
+       "email":"unique.id@test.net"
+   },
+   "channelId":66,
+   "createdAt":"2022-02-01T00:00:00+01:00",
+   "errors":[
+
+   ],
+   "id":629030123456,
+   "isTest":false,
+    "itemsReferencesAliases":null,
+    "items":[
+       {
+          "reference":"8",
+          "status":"",
+          "quantity":1,
+          "price":4.5,
+          "taxAmount":0,
+          "channelReference":"2201DBFVY-MP002320-A-1",
+          "name":"Mug Today is a good day",
+          "image":"http://localhost/img/p/1/1-small_default.jpg"
+       }
+    ],
+    "payment":{
+       "shippingAmount":4.9,
+       "productAmount":4.5,
+       "totalAmount":9.4,
+       "currency":"EUR",
+       "method":"PayPal"
+    },
+    "reference":"TEST-ORDER-AMAZON-EPMM",
+    "shipment":{
+       "carrier":"Colissimo",
+       "trackingNumber":""
+    },
+    "errors":[
+
+    ],
+   "shippingAddress":{
+       "firstName":"",
+       "lastName":"Bernard Martin",
+       "company":"202 ecommerce",
+       "street":"10 rue Vivienne",
+       "street2":"",
+       "other":"",
+       "postalCode":"75002",
+       "city":"Paris",
+       "country":"FR",
+       "phone":"0123456789",
+       "mobilePhone":"0623456789",
+       "email":"unique.id@test.net"
+   },
+   "status":"waiting_shipment",
+   "storeId":25125,
+   "storeReference":"",
+   "updatedAt":"2019-12-12T09:39:10+01:00"
+}
