@@ -2,17 +2,17 @@
 /**
  * NOTICE OF LICENSE
  *
- * This source file is subject to a commercial license from SARL 202 ecommence
+ * This source file is subject to a commercial license from SARL 202 ecommerce
  * Use, copy, modification or distribution of this source file without written
- * license agreement from the SARL 202 ecommence is strictly forbidden.
+ * license agreement from the SARL 202 ecommerce is strictly forbidden.
  * In order to obtain a license, please contact us: tech@202-ecommerce.com
  * ...........................................................................
  * INFORMATION SUR LA LICENCE D'UTILISATION
  *
  * L'utilisation de ce fichier source est soumise a une licence commerciale
- * concedee par la societe 202 ecommence
+ * concedee par la societe 202 ecommerce
  * Toute utilisation, reproduction, modification ou distribution du present
- * fichier source sans contrat de licence ecrit de la part de la SARL 202 ecommence est
+ * fichier source sans contrat de licence ecrit de la part de la SARL 202 ecommerce est
  * expressement interdite.
  * Pour obtenir une licence, veuillez contacter 202-ecommerce <tech@202-ecommerce.com>
  * ...........................................................................
@@ -20,35 +20,44 @@
  * @author    202-ecommerce <tech@202-ecommerce.com>
  * @copyright Copyright (c) 202-ecommerce
  * @license   Commercial license
- * @version   develop
+ *
+ * @version   feature/34626_diagnostic
  */
 
 namespace ShoppingfeedClasslib;
 
-use ShoppingfeedClasslib\Hook\AbstractHookDispatcher;
-use PrestaShop\PrestaShop\Core\Module\WidgetInterface;
-use \ReflectionClass;
-use \Tools;
-use ShoppingfeedClasslib\Install\ModuleInstaller;
 use ShoppingfeedClasslib\Extensions\AbstractModuleExtension;
+use ShoppingfeedClasslib\Hook\AbstractHookDispatcher;
+use ShoppingfeedClasslib\Install\ModuleInstaller;
+use PrestaShop\PrestaShop\Core\Module\WidgetInterface;
+use ReflectionClass;
+use Tools;
 
+/**
+ * @deprecated
+ */
 class Module extends \Module
 {
     //region Fields
 
     /**
      * List of objectModel used in this Module
-     * @var array $objectModels
+     *
+     * @var array
      */
-    public $objectModels = array();
+    public $objectModels = [];
 
     /**
      * List of hooks used in this Module
-     * @var array $hooks
+     *
+     * @var array
      */
-    public $hooks = array();
+    public $hooks = [];
 
-    public $extensions = array();
+    /**
+     * @var array
+     */
+    public $extensions = [];
 
     /**
      * @var AbstractHookDispatcher
@@ -57,9 +66,20 @@ class Module extends \Module
 
     /**
      * List of AdminControllers used in this Module
-     * @var array $moduleAdminControllers
+     *
+     * @var array
      */
-    public $moduleAdminControllers = array();
+    public $moduleAdminControllers = [];
+
+    /**
+     * @var string
+     */
+    public $secure_key;
+
+    /**
+     * @var array
+     */
+    public $cronTasks = [];
 
     //endregion
 
@@ -74,6 +94,7 @@ class Module extends \Module
             $extension = new $extensionName();
             $extension->setModule($this);
             $extension->initExtension();
+            $this->hooks = array_merge($this->hooks, $extension->hooks);
         }
     }
 
@@ -81,6 +102,7 @@ class Module extends \Module
      * Install Module
      *
      * @return bool
+     *
      * @throws \PrestaShopException
      */
     public function install()
@@ -88,6 +110,7 @@ class Module extends \Module
         $installer = new ModuleInstaller($this);
 
         $isPhpVersionCompliant = false;
+
         try {
             $isPhpVersionCompliant = $installer->checkPhpVersion();
         } catch (\Exception $e) {
@@ -101,6 +124,7 @@ class Module extends \Module
      * Uninstall Module
      *
      * @return bool
+     *
      * @throws \PrestaShopDatabaseException
      * @throws \PrestaShopException
      */
@@ -115,6 +139,7 @@ class Module extends \Module
      * @TODO Reset Module only if merchant choose to keep data on modal
      *
      * @return bool
+     *
      * @throws \PrestaShopDatabaseException
      * @throws \PrestaShopException
      */
@@ -128,17 +153,19 @@ class Module extends \Module
     /**
      * Handle module extension hook call
      *
-     * @param $hookName
-     * @param $params
+     * @param string $hookName
+     * @param array $params
+     *
      * @return array|bool|string
      */
     public function handleExtensionsHook($hookName, $params)
     {
         $result = false;
+        $hookDispatcher = $this->getHookDispatcher();
 
         // execute module hooks
-        if ($this->getHookDispatcher() != null) {
-            $moduleHookResult = $this->getHookDispatcher()->dispatch($hookName, $params);
+        if ($hookDispatcher != null) {
+            $moduleHookResult = $hookDispatcher->dispatch($hookName, $params);
             if ($moduleHookResult != null) {
                 $result = $moduleHookResult;
             }
@@ -155,10 +182,10 @@ class Module extends \Module
             /** @var AbstractModuleExtension $extension */
             $extension = new $extension($this);
             $hookResult = null;
-            if (is_callable(array($extension, $hookName))) {
+            if (is_callable([$extension, $hookName])) {
                 $hookResult = $extension->{$hookName}($params);
-                //TODO
-            } else if (is_callable(array($extension, 'getHookDispatcher')) && $extension->getHookDispatcher() != null) {
+            //TODO
+            } elseif (is_callable([$extension, 'getHookDispatcher']) && $extension->getHookDispatcher() != null) {
                 $hookResult = $extension->getHookDispatcher()->dispatch($hookName, $params);
             }
             if ($hookResult != null) {
@@ -178,12 +205,15 @@ class Module extends \Module
     /**
      * Handle module widget call
      *
-     * @param $action
-     * @param $method
-     * @param $hookName
-     * @param $configuration
+     * @param string $action
+     * @param string $method
+     * @param string $hookName
+     * @param array $configuration
+     *
      * @return bool
+     *
      * @throws \ReflectionException
+     *
      * @deprecated use render widget function
      */
     public function handleWidget($action, $method, $hookName, $configuration)
@@ -203,26 +233,28 @@ class Module extends \Module
                 continue;
             }
             $extension->setModule($this);
-            if (is_callable(array($extension, $method))) {
+            if (is_callable([$extension, $method])) {
                 return $extension->{$method}($hookName, $configuration);
             }
         }
 
         return false;
-
     }
 
     /**
-     * @param $hookName
+     * @param string $hookName
      * @param array $configuration
+     *
      * @return bool
+     *
      * @throws \ReflectionException
      */
     public function renderWidget($hookName, array $configuration)
     {
+        $hookDispatcher = $this->getHookDispatcher();
         // render module widgets
-        if ($this->getHookDispatcher() != null) {
-            $moduleWidgetResult = $this->getHookDispatcher()->dispatch($hookName, $configuration);
+        if ($hookDispatcher != null) {
+            $moduleWidgetResult = $hookDispatcher->dispatch($hookName, $configuration);
             if ($moduleWidgetResult != null) {
                 return $moduleWidgetResult;
             }
@@ -237,8 +269,13 @@ class Module extends \Module
             /** @var AbstractModuleExtension $extension */
             $extension = new $extension($this);
 
-            if (is_callable(array($extension, 'getHookDispatcher')) && $extension->getHookDispatcher() != null) {
-                return $extension->getHookDispatcher()->dispatch($hookName, $configuration);
+            if (is_callable([$extension, 'getHookDispatcher']) && $extension->getHookDispatcher() != null) {
+                $extensionWidgetResult = $extension->getHookDispatcher()->dispatch($hookName, $configuration);
+                if (is_null($extensionWidgetResult)) {
+                    continue;
+                }
+
+                return $extensionWidgetResult;
             }
         }
 
@@ -247,21 +284,31 @@ class Module extends \Module
     }
 
     /**
-     * @param $hookName
+     * @param string $hookName
      * @param array $configuration
+     *
      * @return array|bool
      */
     public function getWidgetVariables($hookName, array $configuration)
     {
-        return array();
+        return [];
     }
 
     /**
      * Get the current module hook/widget dispatcher
-     * @return null
+     *
+     * @return AbstractHookDispatcher|null
      */
     public function getHookDispatcher()
     {
         return $this->hookDispatcher;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getPath()
+    {
+        return $this->_path;
     }
 }

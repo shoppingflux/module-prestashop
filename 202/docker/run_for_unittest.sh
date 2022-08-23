@@ -8,10 +8,24 @@ set -x
 php /var/www/html/bin/console prestashop:module install shoppingfeed -e prod
 php /var/www/html/bin/console prestashop:module install dpdfrance -e prod
 php /var/www/html/bin/console prestashop:module install colissimo -e prod
+php /var/www/html/bin/console prestashop:module install mondialrelay -e prod
 
 echo "Add data fixtures for Unit Tests"
 
 mysql -h localhost -u root prestashop -e "
+
+truncate ps_mondialrelay_carrier_method;
+INSERT INTO ps_mondialrelay_carrier_method (id_carrier, delivery_mode, insurance_level, is_deleted, id_reference, date_add, date_upd) 
+VALUES ('1', '24R', '0', '0', '1', '2022-06-23 11:30:14', '2022-06-23 11:30:14');
+
+DELETE FROM ps_configuration WHERE name LIKE 'MONDIALRELAY_%';
+INSERT INTO ps_configuration (id_shop_group, id_shop, name, value, date_add, date_upd) VALUES
+(NULL, NULL, 'MONDIALRELAY_WEBSERVICE_ENSEIGNE', 'BDTEST13', now(), now()),
+(NULL, NULL, 'MONDIALRELAY_WEBSERVICE_BRAND_CODE', '11', now(), now()),
+(NULL, NULL, 'MONDIALRELAY_WEBSERVICE_KEY', 'PrivateK', now(), now()),
+(NULL, NULL, 'MONDIALRELAY_LABEL_LANG', 'FR', now(), now()),
+(NULL, NULL, 'MONDIALRELAY_WEIGHT_COEFF', '1', now(), now());
+
 UPDATE ps_product_attribute SET reference = 'demo_17_white' WHERE id_product = 11 AND default_on = 1;
 
 TRUNCATE ps_shoppingfeed_order;
@@ -19,6 +33,7 @@ UPDATE ps_configuration SET value = '[\"5\",\"4\"]' WHERE name = 'SHOPPINGFEED_S
 UPDATE ps_configuration SET value = '[\"6\"]' WHERE name = 'SHOPPINGFEED_CANCELLED_ORDERS';
 UPDATE ps_configuration SET value = '[\"7\"]' WHERE name = 'SHOPPINGFEED_REFUNDED_ORDERS';
 UPDATE ps_configuration SET value = '{\"ShoppingfeedAddon\\OrderImport\\Rules\\AmazonEbay\":{\"enabled\":\"1\"},\"ShoppingfeedAddon\\OrderImport\\Rules\\ChangeStateOrder\":{\"end_order_state\":\"\"},\"ShoppingfeedAddon\\OrderImport\\Rules\\ShippedByMarketplace\":{\"end_order_state_shipped\":\"5\"},\"ShoppingfeedAddon\\OrderImport\\Rules\\SymbolConformity\":{\"enabled\":\"1\"}}' WHERE name = 'SHOPPINGFEED_ORDER_IMPORT_SPECIFIC_RULES_CONFIGURATION';
+UPDATE ps_configuration SET value = '1' WHERE name = 'PS_CART_RULE_FEATURE_ACTIVE';
 
 INSERT IGNORE INTO ps_tax (id_tax, rate, active, deleted) VALUES
 (40, 0.190, 1, 0);
@@ -52,6 +67,12 @@ REPLACE INTO ps_product_carrier (id_product, id_carrier_reference, id_shop) VALU
 (1,1,1), (8,2,1);
 REPLACE INTO ps_carrier_zone (id_carrier, id_zone) VALUES
 (1,9), (2,9);
+
+TRUNCATE ps_cart_rule;
+REPLACE INTO ps_cart_rule (id_cart_rule ,id_customer,date_from,date_to,description,quantity,quantity_per_user,priority,partial_use,code,minimum_amount,minimum_amount_tax,minimum_amount_currency,minimum_amount_shipping,country_restriction,carrier_restriction,group_restriction,cart_rule_restriction,product_restriction,shop_restriction,free_shipping,reduction_percent,reduction_amount,reduction_tax,reduction_currency,reduction_product,reduction_exclude_special,gift_product,gift_product_attribute,highlight,active,date_add,date_upd)
+    VALUES (1, 0,'2022-02-17 00:00:00','2042-02-17 00:00:00','',999,999,1,1,'',0.000000,0,1,0,0,0,0,0,0,0,0,0.00,0.000000,0,1,0,0,7,0,0,1,'2022-02-17 00:00:00','2022-02-17 00:00:00');
+REPLACE INTO ps_cart_rule_lang (id_cart_rule,id_lang,name)
+    VALUES (1,1,'gift');
 
 TRUNCATE ps_colissimo_pickup_point;
 "

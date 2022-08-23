@@ -25,7 +25,6 @@ use Db;
 use DbQuery;
 use Order;
 use Shoppingfeed;
-use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use ShoppingfeedCarrier;
 use Validate;
 
@@ -65,12 +64,9 @@ class CarrierFinder
         return $carrier;
     }
 
-    public function getCarrierForOrderImport(OrderResource $apiOrder)
+    public function getCarrierForOrderImport($channelName, $apiCarrierName)
     {
         $carrier = null;
-        $channelName = $apiOrder->getChannel()->getName() ? $apiOrder->getChannel()->getName() : '';
-        $apiCarrierName = empty($apiOrder->getShipment()['carrier']) ? '' : $apiOrder->getShipment()['carrier'];
-
         $sfCarrier = ShoppingfeedCarrier::getByMarketplaceAndName(
             $channelName,
             $apiCarrierName

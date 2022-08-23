@@ -226,7 +226,9 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         );
 
         if (Validate::isLoadedObject($carrier) == false) {
-            $carrier = $this->initCarrierFinder()->getCarrierForOrderImport($apiOrder);
+            $channelName = $apiOrder->getChannel()->getName() ? $apiOrder->getChannel()->getName() : '';
+            $apiCarrierName = empty($apiOrderShipment['carrier']) ? $apiOrder->getShipment()['carrier'] : $apiOrderShipment['carrier'];
+            $carrier = $this->initCarrierFinder()->getCarrierForOrderImport($channelName, $apiCarrierName);
         }
 
         if (!Validate::isLoadedObject($carrier)) {
@@ -508,31 +510,27 @@ class ShoppingfeedOrderImportActions extends DefaultActions
 
             // If the product doesn't use advanced stock management
             // If there's not enough stock to place the order
-            if (!$psProduct->checkQty($apiProduct->quantity)) {
-                // Add just enough stock
-                $currentStock = StockAvailable::getQuantityAvailableByProduct(
+            if ($this->checkQtyProduct($psProduct->id, $psProduct->id_product_attribute, $apiProduct->quantity) === false) {
+                $this->addJustEnoughStock(
                     $psProduct->id,
                     $psProduct->id_product_attribute,
-                    $this->getIdShop()
+                    $apiProduct->reference,
+                    $apiProduct->quantity
                 );
-                $stockToAdd = (int) $apiProduct->quantity - (int) $currentStock;
-                ProcessLoggerHandler::logInfo(
-                    sprintf(
-                        $this->logPrefix .
-                            $this->l('Not enough stock for product %s: original %d, required %d, add %d.', 'ShoppingfeedOrderImportActions'),
-                        $apiProduct->reference,
-                        (int) $currentStock,
-                        (int) $apiProduct->quantity,
-                        (int) $stockToAdd
-                    ),
-                    'Order'
-                );
-                StockAvailable::updateQuantity(
-                    $psProduct->id,
-                    $psProduct->id_product_attribute,
-                    $stockToAdd,
-                    $this->getIdShop()
-                );
+            }
+            if (Pack::isPack((int) $psProduct->id)) {
+                $items = Pack::getItems($psProduct->id, Context::getContext()->language->id);
+                foreach ($items as $item) {
+                    if ($this->checkQtyProduct($item->id, $item->id_pack_product_attribute, $apiProduct->quantity)) {
+                        continue;
+                    }
+                    $this->addJustEnoughStock(
+                        $item->id,
+                        $item->id_pack_product_attribute,
+                        $item->reference,
+                        $apiProduct->quantity
+                    );
+                }
             }
         }
 
@@ -751,7 +749,12 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         }
 
         if ($paymentModule->currentOrder && $paymentModule->currentOrderReference) {
-            $this->conveyor['id_order'] = $paymentModule->currentOrder;
+            if (Registry::isRegistered('order_to_delete') && (int) Registry::get('order_to_delete') == (int) $paymentModule->currentOrder) {
+                $this->conveyor['id_order'] = (int) Registry::get('last_recalculated_order');
+            } else {
+                $this->conveyor['id_order'] = $paymentModule->currentOrder;
+            }
+
             $this->conveyor['order_reference'] = $paymentModule->currentOrderReference;
         } else {
             // Reset customer mail
@@ -901,15 +904,6 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         $psOrder = $this->conveyor['psOrder'];
         $isResetShipping = false;
         $cart = new Cart($psOrder->id_cart);
-
-        if ($cart->getNbOfPackages() > 1) {
-            if (Registry::isRegistered('order_for_cart_' . $cart->id)) {
-                $isResetShipping = true;
-            } else {
-                Registry::set('order_for_cart_' . $cart->id, true);
-            }
-        }
-
         $this->initProcess($apiOrder);
 
         // We may have multiple orders created for the same reference, (advanced stock management)
@@ -1010,6 +1004,25 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 );
             }
         }
+
+        // if the PrestaShop automatically adds the gift product
+        // and split the order because the gift product can not be delivered the same carrier,
+        // then this order includes only gift product.
+        // Such order should be removed
+        if (empty($ordersList)) {
+            Registry::set('order_to_delete', $psOrder->id);
+
+            return true;
+        }
+
+        if ($cart->getNbOfPackages() > 1) {
+            if (Registry::isRegistered('order_for_cart_' . $cart->id)) {
+                $isResetShipping = true;
+            } else {
+                Registry::set('order_for_cart_' . $cart->id, true);
+            }
+        }
+
         $carrier = $this->conveyor['carrier'];
         $paymentInformation = &$this->conveyor['orderData']->payment;
 
@@ -1084,7 +1097,37 @@ class ShoppingfeedOrderImportActions extends DefaultActions
 
             Db::getInstance()->update('order_invoice', $updateOrderInvoice, '`id_order` = ' . (int) $id_order);
             Db::getInstance()->update('order_carrier', $updateOrderTracking, '`id_order` = ' . (int) $id_order);
-            Db::getInstance()->delete('order_cart_rule', 'id_order = ' . (int) $id_order);
+        }
+
+        $query = (new DbQuery())
+            ->select('cr.*, ocr.id_order')
+            ->from('order_cart_rule', 'ocr')
+            ->leftJoin('cart_rule', 'cr', 'ocr.id_cart_rule = cr.id_cart_rule')
+            ->where('ocr.id_order = ' . (int) $psOrder->id);
+        $cartRules = Db::getInstance()->executeS($query);
+        if (!empty($cartRules)) {
+            //Looking for gift product
+            foreach ($cartRules as $cartRule) {
+                if (empty($cartRule['gift_product'])) {
+                    continue;
+                }
+                //Deleting the gift product
+                $query = 'DELETE od, odt';
+                $query .= ' FROM ' . _DB_PREFIX_ . 'order_detail od';
+                $query .= ' LEFT JOIN ' . _DB_PREFIX_ . 'order_detail_tax odt ON odt.id_order_detail = od.id_order_detail';
+                $query .= ' WHERE od.id_order = ' . (int) $cartRule['id_order'] . ' AND od.product_id = ' . (int) $cartRule['gift_product'] . ' AND od.product_attribute_id = ' . (int) $cartRule['gift_product_attribute'];
+
+                Db::getInstance()->execute($query);
+
+                ProcessLoggerHandler::logInfo(
+                    $this->logPrefix .
+                    $this->l('Gift product deleted. Product ID: ', 'ShoppingfeedOrderImportActions') . $cartRule['gift_product'],
+                    'Order',
+                    $cartRule['id_order']
+                );
+            }
+            //deleting cart rules
+            Db::getInstance()->delete('order_cart_rule', 'id_order = ' . (int) $psOrder->id);
         }
 
         $queryUpdateOrderPayment = sprintf(
@@ -1110,11 +1153,29 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             $this->conveyor['id_order']
         );
 
+        Registry::set('last_recalculated_order', $this->conveyor['id_order']);
+
         return true;
     }
 
     public function postProcess()
     {
+        if (Registry::isRegistered('order_to_delete') && $idOrder = (int) Registry::get('order_to_delete')) {
+            Db::getInstance()->delete('orders', 'id_order = ' . $idOrder);
+            Db::getInstance()->delete('order_detail', 'id_order = ' . $idOrder);
+            Db::getInstance()->delete('order_invoice', 'id_order = ' . $idOrder);
+            Db::getInstance()->delete('order_invoice_payment', 'id_order = ' . $idOrder);
+            Db::getInstance()->delete('order_carrier', 'id_order = ' . $idOrder);
+            Db::getInstance()->delete('order_cart_rule', 'id_order = ' . $idOrder);
+            Db::getInstance()->delete('order_history', 'id_order = ' . $idOrder);
+            Db::getInstance()->delete('order_slip', 'id_order = ' . $idOrder);
+
+            ProcessLoggerHandler::logInfo(
+                $this->logPrefix .
+                $this->l('Order deleted. Order ID: ', 'ShoppingfeedOrderImportActions') . (int) $idOrder,
+                'Order'
+            );
+        }
         // Specific rule : after the process is complete
         $this->specificRulesManager->applyRules(
             'onPostProcess',
@@ -1298,5 +1359,42 @@ class ShoppingfeedOrderImportActions extends DefaultActions
     protected function initCarrierFinder()
     {
         return new CarrierFinder();
+    }
+
+    protected function checkQtyProduct($id_product, $id_product_attribute, $qty)
+    {
+        if (Product::isAvailableWhenOutOfStock(StockAvailable::outOfStock($id_product))) {
+            return true;
+        }
+        $availableQuantity = StockAvailable::getQuantityAvailableByProduct($id_product, $id_product_attribute);
+
+        return $qty <= $availableQuantity;
+    }
+
+    protected function addJustEnoughStock($id_product, $id_product_attribute, $reference, $orderQty)
+    {
+        $currentStock = StockAvailable::getQuantityAvailableByProduct(
+            $id_product,
+            $id_product_attribute,
+            $this->getIdShop()
+        );
+        $stockToAdd = (int) $orderQty - (int) $currentStock;
+        ProcessLoggerHandler::logInfo(
+            sprintf(
+                $this->logPrefix .
+                    $this->l('Not enough stock for product %s: original %d, required %d, add %d.', 'ShoppingfeedOrderImportActions'),
+                $reference,
+                (int) $currentStock,
+                (int) $orderQty,
+                (int) $stockToAdd
+            ),
+            'Order'
+        );
+        StockAvailable::updateQuantity(
+            $id_product,
+            $id_product_attribute,
+            $stockToAdd,
+            $this->getIdShop()
+        );
     }
 }

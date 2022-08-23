@@ -82,6 +82,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     public $extensions = [
         \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerExtension::class,
         \ShoppingfeedClasslib\Extensions\ProcessMonitor\ProcessMonitorExtension::class,
+        \ShoppingfeedClasslib\Extensions\Diagnostic\DiagnosticExtension::class,
     ];
 
     /**
@@ -228,10 +229,10 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         ],
         [
             'name' => [
-                'en' => 'FAQ/Help',
-                'fr' => 'FAQ/Aide',
+                'en' => 'Diagnostics',
+                'fr' => 'Dépannage',
             ],
-            'class_name' => 'AdminShoppingfeedFaq',
+            'class_name' => 'AdminShoppingfeedDiagnostic',
             'parent_class_name' => 'shoppingfeed',
             'visible' => true,
         ],
@@ -378,10 +379,10 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
                 ],
                 [
                     'name' => [
-                        'en' => 'FAQ/Help',
-                        'fr' => 'FAQ/Aide',
+                        'en' => 'Diagnostics',
+                        'fr' => 'Dépannage',
                     ],
-                    'class_name' => 'AdminShoppingfeedFaq',
+                    'class_name' => 'AdminShoppingfeedDiagnostic',
                     'parent_class_name' => 'shoppingfeed',
                     'visible' => true,
                 ],
@@ -725,7 +726,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     public function countProductsOnFeed($id_shop = null)
     {
         $sql = $this->sqlProductsOnFeed($id_shop);
-        $sql->select('COUNT(p.`id_product`)');
+        $sql->select('COUNT(distinct p.`id_product`)');
         $countProductsOnFeed = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
 
         return $countProductsOnFeed;
@@ -1281,12 +1282,15 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             ShoppingfeedAddon\OrderImport\Rules\ShippedByMarketplace::class,
             ShoppingfeedAddon\OrderImport\Rules\RelaisColisRule::class,
             ShoppingfeedAddon\OrderImport\Rules\TestingOrder::class,
+            ShoppingfeedAddon\OrderImport\Rules\ManomanoColissimo::class,
+            ShoppingfeedAddon\OrderImport\Rules\MonechelleColissimo::class,
             ShoppingfeedAddon\OrderImport\Rules\ManomanoDpdRelais::class,
             ShoppingfeedAddon\OrderImport\Rules\ZalandoColissimo::class,
             ShoppingfeedAddon\OrderImport\Rules\MissingCarrier::class, //should be performed before ZalandoCarrier
             ShoppingfeedAddon\OrderImport\Rules\ZalandoCarrier::class,
             ShoppingfeedAddon\OrderImport\Rules\ColizeyColissimo::class,
             ShoppingfeedAddon\OrderImport\Rules\AmazonManomanoTva::class,
+            ShoppingfeedAddon\OrderImport\Rules\GaleriesLafayetteColissimo::class,
             ShoppingfeedAddon\OrderImport\Rules\SymbolConformity::class,
         ];
 
