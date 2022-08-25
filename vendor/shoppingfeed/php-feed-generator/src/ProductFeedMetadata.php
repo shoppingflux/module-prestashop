@@ -14,11 +14,6 @@ class ProductFeedMetadata
     private $agent;
 
     /**
-     * @var string
-     */
-    private $module;
-
-    /**
      * @var \DateTimeInterface
      */
     private $startedAt;
@@ -47,7 +42,6 @@ class ProductFeedMetadata
     {
         $this->setAgent('shopping-feed-generator', '1.0.0');
         $this->setPlatform('Unknown', 'Unknown');
-        $this->setModule('Unknown', 'Unknown');
         $this->filtered = 0;
         $this->written  = 0;
         $this->invalid  = 0;
@@ -176,26 +170,5 @@ class ProductFeedMetadata
     public function getInvalidCount()
     {
         return $this->invalid;
-    }
-
-    /**
-     * @return string
-     */
-    public function getModule()
-    {
-        return $this->module;
-    }
-
-    /**
-     * @param string $name
-     * @param string $version
-     *
-     * @return self
-     */
-    public function setModule($name, $version)
-    {
-        $this->module = sprintf('%s:%s', $name, $version);
-
-        return $this;
     }
 }

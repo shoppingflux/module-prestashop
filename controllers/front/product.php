@@ -68,7 +68,10 @@ class ShoppingfeedProductModuleFrontController extends \ModuleFrontController
                          ->addMapper([$this, 'mapper']);
 
         if (is_callable([$productGenerator, 'getMetaData'])) {
-            $productGenerator->getMetaData()->setModule($this->module->name, $this->module->version);
+            $productGenerator->getMetaData()->setPlatform(
+                'Prestashop',
+                sprintf('%s-module:%s', _PS_VERSION_, $this->module->version)
+            );
         }
 
         $limit = 100;
