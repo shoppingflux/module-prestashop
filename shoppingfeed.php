@@ -78,6 +78,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     const IMPORT_ORDER_STATE = 'SHOPPINGFEED_FIRST_STATE_AFTER_IMPORT';
     const CDISCOUNT_FEE_PRODUCT = 'SHOPPINGFEED_CDISCOUNT_FEE_PRODUCT';
     const NEED_UPDATE_HOOK = 'SHOPPINGFEED_IS_NEED_UPDATE_HOOK';
+    const ORDER_TRACKING = 'SHOPPINGFEED_ORDER_TRACKING';
 
     public $extensions = [
         \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerExtension::class,
