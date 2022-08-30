@@ -16,6 +16,9 @@
  * @copyright Since 2019 Shopping Feed
  * @license   https://opensource.org/licenses/AFL-3.0  Academic Free License (AFL 3.0)
  */
+
+use ShoppingfeedAddon\ProductFilter\FilterFactory;
+
 if (!defined('_PS_VERSION_')) {
     exit;
 }
@@ -762,28 +765,13 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         if (is_array($product_filters)) {
             foreach ($product_filters as $groupFilters) {
                 $groupFilterCollection = [];
-                foreach ($groupFilters as $filter) {
-                    $type = key($filter);
-                    switch ($type) {
-                        case 'category':
-                            $groupFilterCollection[] = '(ps.id_category_default = ' . (int) $filter[$type] . ')';
-                            continue 2;
-                        case 'brand':
-                            $groupFilterCollection[] = '(ps.id_product IN (select id_product from ' . _DB_PREFIX_ . 'product where id_manufacturer = ' . (int) $filter[$type] . '))';
-                            continue 2;
-                        case 'supplier':
-                            $groupFilterCollection[] = '(ps.id_product IN (select id_product from ' . _DB_PREFIX_ . 'product_supplier where id_supplier = ' . (int) $filter[$type] . '))';
-                            continue 2;
-                        case 'attribute':
-                            $groupFilterCollection[] = '(ps.id_product IN (select id_product from ' . _DB_PREFIX_ . 'product_attribute pa JOIN ' . _DB_PREFIX_ . 'product_attribute_combination pac on pa.id_product_attribute = pac.id_product_attribute where pac.id_attribute = ' . (int) $filter[$type] . '))';
-                            continue 2;
-                        case 'feature':
-                            $groupFilterCollection[] = '(ps.id_product IN (select id_product from ' . _DB_PREFIX_ . 'feature_product where id_feature_value = ' . (int) $filter[$type] . '))';
-                            continue 2;
-                        default:
-                            continue 2;
-                    }
+
+                foreach ($groupFilters as $filterMap) {
+                    $type = key($filterMap);
+                    $filter = $this->getFilterFactory()->getFilter($type, $filterMap[$type]);
+                    $groupFilterCollection[] = $filter->getSqlChunk();
                 }
+
                 $sqlFilter[] = implode(' and ', $groupFilterCollection);
             }
 
@@ -1402,5 +1390,10 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         }
 
         return true;
+    }
+
+    protected function getFilterFactory()
+    {
+        return new FilterFactory();
     }
 }

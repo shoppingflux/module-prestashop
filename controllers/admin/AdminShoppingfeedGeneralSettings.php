@@ -22,6 +22,7 @@ if (!defined('_PS_VERSION_')) {
 
 require_once _PS_MODULE_DIR_ . 'shoppingfeed/vendor/autoload.php';
 
+use ShoppingfeedAddon\ProductFilter\FilterFactory;
 use ShoppingfeedClasslib\Actions\ActionsHandler;
 
 /**
@@ -93,7 +94,12 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
             $countPreloading += (int) $shoppingfeedPreloading->getPreloadingCountForSync($token['id_shoppingfeed_token']);
         }
 
-        $percentPreloading = ($countPreloading / $countProductInShops) * 100;
+        // avoid division by zero
+        if ($countProductInShops) {
+            $percentPreloading = ($countPreloading / $countProductInShops) * 100;
+        } else {
+            $percentPreloading = 0;
+        }
 
         $this->context->smarty->assign('count_products', $this->nbr_products);
         $this->context->smarty->assign('hasAFilter', $product_filters !== null);
@@ -545,17 +551,32 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
     public function renderProductSelectionConfigForm()
     {
         $tpl = Context::getContext()->smarty->createTemplate(_PS_MODULE_DIR_ . 'shoppingfeed/views/templates/admin/shoppingfeed_general_settings/product_filter.tpl');
-
-        $product_feed_rule_filters = Configuration::getGlobalValue(Shoppingfeed::PRODUCT_FEED_RULE_FILTERS);
-        $product_filters = Tools::jsonDecode($product_feed_rule_filters, true);
         $product_visibility_nowhere = (bool) Configuration::getGlobalValue(Shoppingfeed::PRODUCT_VISIBILTY_NOWHERE);
 
         $tpl->assign([
-            'product_filters' => ($product_feed_rule_filters === null) ? [] : $product_filters,
+            'product_filters' => $this->getProductFilters(),
             'product_visibility_nowhere' => $product_visibility_nowhere,
         ]);
 
         return $tpl->fetch();
+    }
+
+    protected function getProductFilters()
+    {
+        $product_feed_rule_filters = Configuration::getGlobalValue(Shoppingfeed::PRODUCT_FEED_RULE_FILTERS);
+        $product_feed_rule_filters = Tools::jsonDecode($product_feed_rule_filters, true);
+        $product_filters = [];
+
+        foreach ($product_feed_rule_filters as $index => $groupFilter) {
+            $product_filters[$index] = [];
+            foreach ($groupFilter as $filterMap) {
+                $type = key($filterMap);
+                $filter = $this->getFilterFactory()->getFilter($type, $filterMap[$type]);
+                $product_filters[$index][] = $filter;
+            }
+        }
+
+        return $product_filters;
     }
 
     /**
@@ -911,5 +932,10 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
             ->select('fv.id_feature_value as id, fvl.value as title');
 
         die(json_encode(Db::getInstance()->executeS($query)));
+    }
+
+    protected function getFilterFactory()
+    {
+        return new FilterFactory();
     }
 }

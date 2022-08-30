@@ -61,5 +61,18 @@
 
 <script>
   var ruleGenerator = new RuleConditionGenerator({});
-  ruleGenerator.init(document.getElementById('condition-container'))
+  ruleGenerator.init(document.getElementById('condition-container'));
+
+  {foreach from=$product_filters item=groupFilter}
+      ruleGenerator.addNewConditionSet();
+      {foreach from=$groupFilter item=filter}
+          ruleGenerator.addCondition({
+              filter: '{$filter->getFilter() nofilter}',
+              type: '{$filter->getType()|escape:'htmlall':'utf-8'}',
+              value: '{$filter->getValue()|escape:'htmlall':'utf-8'}'
+          });
+      {/foreach}
+  {/foreach}
+
+
 </script>
