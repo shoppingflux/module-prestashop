@@ -24,6 +24,7 @@ var RuleConditionGenerator = function(conf) {
   this.conditionSetContainer = null;
   this.translations = (conf.translations !== undefined ? conf.translations : null);
   this.conditionsBoard = null;
+  this.filterContainer = null;
 };
 
 RuleConditionGenerator.prototype.buildElement = function(conf) {
@@ -52,6 +53,14 @@ RuleConditionGenerator.prototype.init = function(container) {
   }
 
   this.container = container;
+  this.filterContainer = this.buildElement({
+    type: 'div',
+    attributes: {
+      'filter-container': 1,
+      style: 'display: none'
+    }
+  });
+  this.container.appendChild(this.filterContainer);
   this.conditionSetContainer = this.buildElement({
     type: 'div',
     attributes: {
@@ -86,18 +95,21 @@ RuleConditionGenerator.prototype.registerEventListeners = function() {
     }
 
     this.addNewConditionSet();
-    this.conditionSetContainer.addEventListener('click', function(event) {
-      if (event.target.classList.contains('.panel')) {
-        this.focusOnSet(event.target)
-      }
-
-      var panel = event.target.closest('.panel');
-
-      if (panel) {
-        this.focusOnSet(panel);
-      }
-    }.bind(this));
   }.bind(this));
+
+  this.conditionSetContainer.addEventListener('click', function(event) {
+    if (event.target.classList.contains('.panel')) {
+      this.focusOnSet(event.target)
+    }
+
+    var panel = event.target.closest('.panel');
+
+    if (panel) {
+      this.focusOnSet(panel);
+    }
+  }.bind(this));
+
+  document.addEventListener('shoppingfeed-product-condition-updated', this.updateFilters.bind(this));
 };
 
 RuleConditionGenerator.prototype.addNewConditionSet = function() {
@@ -147,6 +159,17 @@ RuleConditionGenerator.prototype.addNewConditionSet = function() {
     type: 'tbody'
   }));
   set.appendChild(table);
+
+  if (this.conditionSetContainer.querySelectorAll('.panel').length > 0) {
+    this.conditionSetContainer.appendChild(this.buildElement({
+      type: 'h4',
+      text: 'OR',
+      attributes: {
+        style: 'text-align: center;'
+      }
+    }));
+  }
+
   this.conditionSetContainer.appendChild(set);
   this.focusOnSet(set);
 };
@@ -271,6 +294,7 @@ RuleConditionGenerator.prototype.addConditionsBoard = function() {
           class: 'btn btn-default'
         }
       });
+      button.addEventListener('click', this.addBrandCondition.bind(this));
       button.appendChild(this.buildElement({
         type: 'i',
         attributes: {
@@ -331,6 +355,7 @@ RuleConditionGenerator.prototype.addConditionsBoard = function() {
           class: 'btn btn-default'
         }
       });
+      button.addEventListener('click', this.addSupplierCondition.bind(this));
       button.appendChild(this.buildElement({
         type: 'i',
         attributes: {
@@ -377,23 +402,15 @@ RuleConditionGenerator.prototype.addConditionsBoard = function() {
         }
       });
       selectWrapper.appendChild(this.buildSelectFromList(list, 'id_attribute_group'));
+      selectWrapper.querySelector('select').addEventListener('change', this.updateAttributeList.bind(this));
       wrapper.appendChild(selectWrapper);
-
-      group.appendChild(wrapper);
-      this.conditionsBoard.appendChild(group);
-    }.bind(this))
-    .then(function() {
-      return this.getAttributeList(document.querySelector('select[name="id_attribute_group"]').value);
-    }.bind(this))
-    .then(function(list) {
-      var selectWrapper = this.buildElement({
+      wrapper.appendChild(this.buildElement({
         type: 'div',
         attributes: {
-          class: 'col-lg-4'
+          class: 'col-lg-4',
+          'attribute-list-wrapper': 1
         }
-      });
-      selectWrapper.appendChild(this.buildSelectFromList(list, 'id_attribute'));
-      document.querySelector('[attribute-condition] .col-lg-9').appendChild(selectWrapper);
+      }));
 
       var buttonWrapper = this.buildElement({
         type: 'div',
@@ -407,6 +424,7 @@ RuleConditionGenerator.prototype.addConditionsBoard = function() {
           class: 'btn btn-default'
         }
       });
+      button.addEventListener('click', this.addAttributeCondition.bind(this));
       button.appendChild(this.buildElement({
         type: 'i',
         attributes: {
@@ -418,8 +436,10 @@ RuleConditionGenerator.prototype.addConditionsBoard = function() {
         text: 'Add condition'
       }));
       buttonWrapper.appendChild(button);
-      document.querySelector('[attribute-condition] .col-lg-9').appendChild(buttonWrapper);
-
+      wrapper.appendChild(buttonWrapper);
+      group.appendChild(wrapper);
+      this.conditionsBoard.appendChild(group);
+      this.updateAttributeList();
     }.bind(this))
     .then(function() {
       return this.getFeatureList();
@@ -451,24 +471,18 @@ RuleConditionGenerator.prototype.addConditionsBoard = function() {
           class: 'col-lg-4'
         }
       });
-      selectWrapper.appendChild(this.buildSelectFromList(list, 'id_feature'));
-      wrapper.appendChild(selectWrapper);
+      var select = this.buildSelectFromList(list, 'id_feature');
 
-      group.appendChild(wrapper);
-      this.conditionsBoard.appendChild(group);
-    }.bind(this))
-    .then(function() {
-      return this.getFeatureValueList(document.querySelector('select[name="id_feature"]').value)
-    }.bind(this))
-    .then(function(list) {
-      var selectWrapper = this.buildElement({
+      select.addEventListener('change', this.updateFeatureValueList.bind(this));
+      selectWrapper.appendChild(select);
+      wrapper.appendChild(selectWrapper);
+      wrapper.appendChild(this.buildElement({
         type: 'div',
         attributes: {
+          'feature-value-list-wrapper': 1,
           class: 'col-lg-4'
         }
-      });
-      selectWrapper.appendChild(this.buildSelectFromList(list, 'id_feature_value'));
-      document.querySelector('[feature-condition] .col-lg-9').appendChild(selectWrapper);
+      }));
 
       var buttonWrapper = this.buildElement({
         type: 'div',
@@ -482,6 +496,7 @@ RuleConditionGenerator.prototype.addConditionsBoard = function() {
           class: 'btn btn-default'
         }
       });
+      button.addEventListener('click', this.addFeatureCondition.bind(this));
       button.appendChild(this.buildElement({
         type: 'i',
         attributes: {
@@ -493,8 +508,11 @@ RuleConditionGenerator.prototype.addConditionsBoard = function() {
         text: 'Add condition'
       }));
       buttonWrapper.appendChild(button);
-      document.querySelector('[feature-condition] .col-lg-9').appendChild(buttonWrapper);
+      wrapper.appendChild(buttonWrapper);
 
+      group.appendChild(wrapper);
+      this.conditionsBoard.appendChild(group);
+      this.updateFeatureValueList();
     }.bind(this));
 };
 
@@ -609,7 +627,10 @@ RuleConditionGenerator.prototype.focusOnSet = function(set) {
 
 RuleConditionGenerator.prototype.addCondition = function(conf) {
   var tr = this.buildElement({
-    type: 'tr'
+    type: 'tr',
+    attributes: {
+      filter: (conf.filter !== undefined ? conf.filter : '')
+    }
   });
   var button = this.buildElement({
     type: 'span',
@@ -621,6 +642,9 @@ RuleConditionGenerator.prototype.addCondition = function(conf) {
     type: 'td'
   });
 
+  button.addEventListener('click', function(event) {
+    this.onDeleteCondition(event.target);
+  }.bind(this));
   tr.appendChild(this.buildElement({
     type: 'td',
     text: (conf.type !== undefined ? conf.type : '')
@@ -641,16 +665,145 @@ RuleConditionGenerator.prototype.addCondition = function(conf) {
   }));
   buttonWrapper.appendChild(button);
   tr.appendChild(buttonWrapper);
+
+  if (document.querySelectorAll('table.alert-info tbody tr').length > 0) {
+    var operator = this.buildElement({
+      type: 'tr',
+      attributes: {
+        operator: 1
+      }
+    });
+    operator.appendChild(this.buildElement({
+      type: 'td',
+      attributes: {
+        colspan: '3',
+        style: 'text-align: center; font-weight: bold;'
+      },
+      text: 'and'
+    }));
+    document.querySelector('table.alert-info tbody').appendChild(operator);
+  }
+
   document.querySelector('table.alert-info tbody').appendChild(tr);
+
+  var event = new Event('shoppingfeed-product-condition-updated');
+  document.dispatchEvent(event);
 };
 
 RuleConditionGenerator.prototype.addCategoryCondition = function() {
   var value = document.querySelector('select[name="id_category"] option:checked').innerHTML;
   var id = document.querySelector('select[name="id_category"]').value;
+  var filter = {
+    category: id
+  };
   this.addCondition({
-    id: id,
     value: value,
-    type: 'Category'
+    type: 'Category',
+    filter: JSON.stringify(filter)
   });
 };
 
+RuleConditionGenerator.prototype.addBrandCondition = function() {
+  var value = document.querySelector('select[name="id_brand"] option:checked').innerHTML;
+  var id = document.querySelector('select[name="id_brand"]').value;
+  var filter = {
+    brand: id
+  };
+  this.addCondition({
+    value: value,
+    type: 'Brand',
+    filter: JSON.stringify(filter)
+  });
+};
+
+RuleConditionGenerator.prototype.addSupplierCondition = function() {
+  var value = document.querySelector('select[name="id_supplier"] option:checked').innerHTML;
+  var id = document.querySelector('select[name="id_supplier"]').value;
+  var filter = {
+    supplier: id
+  };
+  this.addCondition({
+    value: value,
+    type: 'Supplier',
+    filter: JSON.stringify(filter)
+  });
+};
+
+RuleConditionGenerator.prototype.addAttributeCondition = function() {
+  var attributeGroupName = document.querySelector('select[name="id_attribute_group"] option:checked').innerHTML;
+  var attributeName = document.querySelector('select[name="id_attribute"] option:checked').innerHTML;
+  var value = attributeGroupName + ':' + attributeName;
+  var id_attribute = document.querySelector('select[name="id_attribute"]').value;
+  var filter = {
+    attribute: id_attribute
+  };
+  this.addCondition({
+    value: value,
+    type: 'Attribute',
+    filter: JSON.stringify(filter)
+  });
+};
+
+RuleConditionGenerator.prototype.addFeatureCondition = function() {
+  var featureName = document.querySelector('select[name="id_feature"] option:checked').innerHTML;
+  var featureValueName = document.querySelector('select[name="id_feature_value"] option:checked').innerHTML;
+  var value = featureName + ':' + featureValueName;
+  var id_feature_value = document.querySelector('select[name="id_feature_value"]').value;
+  var filter = {
+    feature: id_feature_value
+  };
+  this.addCondition({
+    value: value,
+    type: 'Feature',
+    filter: JSON.stringify(filter)
+  });
+};
+
+RuleConditionGenerator.prototype.onDeleteCondition = function(button) {
+  var tableBody = button.closest('tbody');
+  button.closest('tr').remove();
+  var lastRow = tableBody.querySelector('tr:last-child');
+
+  if (lastRow && lastRow.hasAttribute('operator')) {
+    lastRow.remove();
+  }
+
+  var event = new Event('shoppingfeed-product-condition-updated');
+  document.dispatchEvent(event);
+};
+
+RuleConditionGenerator.prototype.updateAttributeList = function() {
+  this.getAttributeList(document.querySelector('select[name="id_attribute_group"]').value)
+    .then(function(list) {
+      var selectWrapper = document.querySelector('[attribute-list-wrapper]');
+      selectWrapper.innerHTML = '';
+      selectWrapper.appendChild(this.buildSelectFromList(list, 'id_attribute'));
+    }.bind(this))
+};
+
+RuleConditionGenerator.prototype.updateFeatureValueList = function() {
+  this.getFeatureValueList(document.querySelector('select[name="id_feature"]').value)
+    .then(function(list) {
+      var selectWrapper = document.querySelector('[feature-value-list-wrapper]');
+      selectWrapper.innerHTML = '';
+      selectWrapper.appendChild(this.buildSelectFromList(list, 'id_feature_value'));
+    }.bind(this))
+};
+
+RuleConditionGenerator.prototype.updateFilters = function() {
+  this.filterContainer.innerHTML = '';
+  this.conditionSetContainer.querySelectorAll('.panel').forEach(function(panel, index) {
+    panel.querySelectorAll('tr[filter]').forEach(function(element) {
+      var filter = element.getAttribute('filter');
+      var input = this.buildElement({
+        type: 'input',
+        attributes: {
+          type: 'hidden',
+          value: filter,
+          name: 'product_rule_select[' + index + '][]'
+        }
+      });
+      this.filterContainer.appendChild(input);
+    }.bind(this));
+  }.bind(this));
+};

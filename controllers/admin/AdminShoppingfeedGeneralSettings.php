@@ -603,22 +603,14 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
     {
         $product_visibility_nowhere = (bool) Tools::getValue('product_visibility_nowhere', false);
         $product_rule_select = Tools::getValue('product_rule_select', []);
-        $product_filter = [];
 
-        foreach ($product_rule_select as $type => $filterIds) {
-            if (empty($type)) {
-                continue;
+        foreach ($product_rule_select as &$groupFilter) {
+            foreach ($groupFilter as &$filter) {
+                $filter = json_decode($filter, true);
             }
-            $id = implode(',', $filterIds);
-            $id = explode(',', $id);
-            $id = array_filter($id, 'is_numeric');
-            $id = implode(',', $id);
-            if (empty($id)) {
-                continue;
-            }
-            $product_filter[$type] = $id;
         }
-        Configuration::updateGlobalValue(Shoppingfeed::PRODUCT_FEED_RULE_FILTERS, Tools::jsonEncode($product_filter));
+
+        Configuration::updateGlobalValue(Shoppingfeed::PRODUCT_FEED_RULE_FILTERS, Tools::jsonEncode($product_rule_select));
         Configuration::updateGlobalValue(Shoppingfeed::PRODUCT_VISIBILTY_NOWHERE, $product_visibility_nowhere);
 
         return true;

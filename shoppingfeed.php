@@ -758,34 +758,45 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         $product_visibility_nowhere = (bool) Configuration::getGlobalValue(Shoppingfeed::PRODUCT_VISIBILTY_NOWHERE);
         $product_filters = Tools::jsonDecode($product_feed_rule_filters, true);
         $sqlFilter = [];
+
         if (is_array($product_filters)) {
-            foreach ($product_filters as $product_filter_type => $product_filter) {
-                switch ($product_filter_type) {
-                    case 'products':
-                        $sqlFilter[] = 'ps.id_product IN (' . $product_filter . ')';
-                        continue 2;
-                    case 'attributes':
-                        $sqlFilter[] = 'ps.id_product IN (select id_product from ' . _DB_PREFIX_ . 'product_attribute pa JOIN ' . _DB_PREFIX_ . 'product_attribute_combination pac on pa.id_product_attribute = pac.id_product_attribute where pac.id_attribute IN (' . $product_filter . '))';
-                        continue 2;
-                    case 'manufacturers':
-                        $sqlFilter[] = 'ps.id_product IN (select id_product from ' . _DB_PREFIX_ . 'product where id_manufacturer IN (' . $product_filter . '))';
-                        continue 2;
-                    case 'categories':
-                        $sqlFilter[] = 'ps.id_category_default IN (' . $product_filter . ')';
-                        continue 2;
-                    case 'suppliers':
-                        $sqlFilter[] = 'ps.id_product IN (select id_product from ' . _DB_PREFIX_ . 'product_supplier where id_supplier IN (' . $product_filter . '))';
-                        continue 2;
-                    case 'features':
-                        $sqlFilter[] = 'ps.id_product IN (select id_product from ' . _DB_PREFIX_ . 'feature_product where id_feature IN (' . $product_filter . '))';
-                        continue 2;
-                    default:
-                        continue 2;
+            foreach ($product_filters as $groupFilters) {
+                $groupFilterCollection = [];
+                foreach ($groupFilters as $filter) {
+                    $type = key($filter);
+                    switch ($type) {
+                        case 'category':
+                            $groupFilterCollection[] = '(ps.id_category_default = ' . (int) $filter[$type] . ')';
+                            continue 2;
+                        case 'brand':
+                            $groupFilterCollection[] = '(ps.id_product IN (select id_product from ' . _DB_PREFIX_ . 'product where id_manufacturer = ' . (int) $filter[$type] . '))';
+                            continue 2;
+                        case 'supplier':
+                            $groupFilterCollection[] = '(ps.id_product IN (select id_product from ' . _DB_PREFIX_ . 'product_supplier where id_supplier = ' . (int) $filter[$type] . '))';
+                            continue 2;
+                        case 'attribute':
+                            $groupFilterCollection[] = '(ps.id_product IN (select id_product from ' . _DB_PREFIX_ . 'product_attribute pa JOIN ' . _DB_PREFIX_ . 'product_attribute_combination pac on pa.id_product_attribute = pac.id_product_attribute where pac.id_attribute = ' . (int) $filter[$type] . '))';
+                            continue 2;
+                        case 'feature':
+                            $groupFilterCollection[] = '(ps.id_product IN (select id_product from ' . _DB_PREFIX_ . 'feature_product where id_feature_value = ' . (int) $filter[$type] . '))';
+                            continue 2;
+                        default:
+                            continue 2;
+                    }
                 }
+                $sqlFilter[] = implode(' and ', $groupFilterCollection);
             }
+
+            $sqlFilter = array_map(
+                function($condition) {
+                    return '(' . $condition . ')';
+                },
+                $sqlFilter
+            );
         }
+
         if (count($sqlFilter) > 0) {
-            $sql->where('(' . implode(' or ', $sqlFilter) . ')');
+            $sql->where(implode(' or ', $sqlFilter));
         }
         if ((bool) Configuration::getGlobalValue(Shoppingfeed::PRODUCT_FEED_SYNC_PACK) !== true) {
             $sql->where('p.cache_is_pack = 0');
