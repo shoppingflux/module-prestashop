@@ -863,7 +863,7 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
             ->orderBy('c.id_category ASC')
             ->select('c.id_category as id, CONCAT("(", c.id_category, ")", " ", cl.name) as title');
 
-        die(json_encode(Db::getInstance()->executeS($query)));
+        exit(json_encode(Db::getInstance()->executeS($query)));
     }
 
     public function displayAjaxGetBrandList()
@@ -873,7 +873,7 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
             ->orderBy('id_manufacturer ASC')
             ->select('id_manufacturer as id, name as title');
 
-        die(json_encode(Db::getInstance()->executeS($query)));
+        exit(json_encode(Db::getInstance()->executeS($query)));
     }
 
     public function displayAjaxGetSupplierList()
@@ -883,7 +883,7 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
             ->orderBy('id_supplier ASC')
             ->select('id_supplier as id, name as title');
 
-        die(json_encode(Db::getInstance()->executeS($query)));
+        exit(json_encode(Db::getInstance()->executeS($query)));
     }
 
     public function displayAjaxGetAttributeGroupList()
@@ -894,7 +894,7 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
             ->orderBy('id_attribute_group ASC')
             ->select('id_attribute_group as id, name as title');
 
-        die(json_encode(Db::getInstance()->executeS($query)));
+        exit(json_encode(Db::getInstance()->executeS($query)));
     }
 
     public function displayAjaxGetAttributeList()
@@ -907,7 +907,7 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
             ->orderBy('a.id_attribute ASC')
             ->select('a.id_attribute as id, al.name as title');
 
-        die(json_encode(Db::getInstance()->executeS($query)));
+        exit(json_encode(Db::getInstance()->executeS($query)));
     }
 
     public function displayAjaxGetFeatureList()
@@ -918,7 +918,7 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
             ->orderBy('id_feature ASC')
             ->select('id_feature as id, name as title');
 
-        die(json_encode(Db::getInstance()->executeS($query)));
+        exit(json_encode(Db::getInstance()->executeS($query)));
     }
 
     public function displayAjaxGetFeatureValueList()
@@ -931,7 +931,7 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
             ->orderBy('fv.id_feature ASC')
             ->select('fv.id_feature_value as id, fvl.value as title');
 
-        die(json_encode(Db::getInstance()->executeS($query)));
+        exit(json_encode(Db::getInstance()->executeS($query)));
     }
 
     protected function getFilterFactory()

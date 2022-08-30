@@ -776,7 +776,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             }
 
             $sqlFilter = array_map(
-                function($condition) {
+                function ($condition) {
                     return '(' . $condition . ')';
                 },
                 $sqlFilter
