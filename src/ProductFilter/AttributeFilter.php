@@ -33,7 +33,7 @@ class AttributeFilter implements Filter
 
     public function __construct($id)
     {
-        $this->attribute = new Attribute($id, Context::getContext()->language->id);
+        $this->attribute = new Attribute($id);
         $this->attributeGroup = new AttributeGroup($this->attribute->id_attribute_group, Context::getContext()->language->id);
         $this->translator = Context::getContext()->getTranslator();
     }
@@ -58,7 +58,7 @@ class AttributeFilter implements Filter
         return sprintf(
             '%s:%s',
             $this->attributeGroup->name,
-            $this->attribute->name
+            (is_array($this->attribute->name) ? $this->attribute->name[Context::getContext()->language->id] : $this->attribute->name)
         );
     }
 }
