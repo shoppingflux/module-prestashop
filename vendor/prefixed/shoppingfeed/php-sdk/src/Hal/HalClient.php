@@ -21,26 +21,23 @@ class HalClient
     /**
      * @param AdapterInterface $httpClient
      */
-    public function __construct(
-        $baseUri,
-        AdapterInterface $httpClient
-    )
+    public function __construct($baseUri, AdapterInterface $httpClient)
     {
         $this->baseUri = $baseUri;
         $this->client  = $httpClient;
     }
 
     /**
-     * @param $token
+     * @param string $token
      *
      * @return HalClient
      */
     public function withToken($token)
     {
-        $httpClient = $this->client->withToken($token);
-        $instance   = new self($this->baseUri, $httpClient);
-
-        return $instance;
+        return new self(
+            $this->baseUri,
+            $this->client->withToken($token)
+        );
     }
 
     /**
@@ -105,10 +102,14 @@ class HalClient
      */
     public function createResource(ResponseInterface $response)
     {
-        return HalResource::fromArray(
-            $this,
-            Json::decode($response->getBody(), true)
-        );
+        $data = [];
+        $body = trim($response->getBody());
+
+        if ($body) {
+            $data = Json::decode($body, true);
+        }
+
+        return HalResource::fromArray($this, $data);
     }
 
     /**
