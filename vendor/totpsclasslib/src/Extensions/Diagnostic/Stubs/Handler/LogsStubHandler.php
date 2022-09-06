@@ -36,13 +36,13 @@ class LogsStubHandler extends AbstractStubHandler
 {
     use TranslateTrait;
 
-    private const LIMITE_DB_NUMBER_OF_DAYS = 30;
+    const LIMITE_DB_NUMBER_OF_DAYS = 30;
 
-    private const LIMITE_DB_RAWS_ON_SCREEN = 100;
+    const LIMITE_DB_RAWS_ON_SCREEN = 100;
 
-    private const LIMITE_FILE_RAWS_ON_SCREEN = 100;
+    const LIMITE_FILE_RAWS_ON_SCREEN = 100;
 
-    private const LIMITE_SIZE_FILE = 2*1000000;
+    const LIMITE_SIZE_FILE = 2*1000000;
 
     public function handle()
     {
