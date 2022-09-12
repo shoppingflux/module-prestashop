@@ -53,6 +53,10 @@ class ShoppingfeedOrder extends ObjectModel
 
     public $failed_ticket;
 
+    public $zalando_customer;
+
+    public $zalando_products;
+
     public static $definition = [
         'table' => 'shoppingfeed_order',
         'primary' => 'id_shoppingfeed_order',
@@ -100,6 +104,18 @@ class ShoppingfeedOrder extends ObjectModel
             'failed_ticket' => [
                 'type' => ObjectModel::TYPE_INT,
                 'validate' => 'isInt',
+                'allow_null' => true,
+            ],
+            'zalando_customer' => [
+                'type' => ObjectModel::TYPE_STRING,
+                'validate' => 'isString',
+                'required' => false,
+                'allow_null' => true,
+            ],
+            'zalando_products' => [
+                'type' => ObjectModel::TYPE_HTML,
+                'validate' => 'isString',
+                'required' => false,
                 'allow_null' => true,
             ],
             'date_add' => [

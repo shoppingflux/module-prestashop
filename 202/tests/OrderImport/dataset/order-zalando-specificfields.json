@@ -1,0 +1,121 @@
+{
+    "id": 17590210571,
+    "storeId": 5548,
+    "channelId": 39452,
+    "reference": "10703121937176",
+    "storeReference": null,
+    "isTest": false,
+    "acknowledgedAt": null,
+    "createdAt": "2022-06-20T11:17:08+02:00",
+    "updatedAt": "2022-06-20T11:18:14+02:00",
+    "status": "waiting_shipment",
+    "anonymized": false,
+    "payment": {
+      "shippingAmount": 0,
+      "productAmount": 225,
+      "totalAmount": 225,
+      "currency": "EUR",
+      "method": "" 
+    },
+    "shipment": {
+      "carrier": "",
+      "trackingNumber": "",
+      "trackingLink": "" 
+    },
+    "additionalFields": {
+      "order_id": "8690c66f-3fe5-4765-a1ef-8e1cb47ce69a",
+      "fulfilled_by": "merchant",
+      "order_status": "approved",
+      "customer_number": "93000070344",
+      "return_tracking": "",
+      "service_point_id": "",
+      "service_point_name": "",
+      "line_status_0bf4ba16-0adc-4645-bf97-ff990781b482": "initial",
+      "line_status_598ca1ab-609d-46c1-9fe6-03a851981543": "initial" 
+    },
+    "errors": [],
+    "itemsReferencesAliases": null,
+    "items": [
+      {
+        "reference": "1_1",
+        "status": "created",
+        "quantity": 1,
+        "price": 130,
+        "taxAmount": 0,
+        "ecotaxAmount": 0,
+        "channelReference": "0bf4ba16-0adc-4645-bf97-ff990781b482",
+        "additionalFields": {
+          "order_item_id": "32632708-cc99-32d1-aa43-ca59521a9c9e",
+          "article_id": "JR581J004-Q11009500D" 
+        },
+        "name": "Haut de maillot triangle maille crochet Dolce noir",
+        "image": "https://cdn.lingerie-story.fr/65733-thickbox_default/haut-de-maillot-triangle-maille-crochet-dolce-noir.jpg" 
+      },
+      {
+        "reference": "1_2",
+        "status": "created",
+        "quantity": 1,
+        "price": 95,
+        "taxAmount": 0,
+        "ecotaxAmount": 0,
+        "channelReference": "598ca1ab-609d-46c1-9fe6-03a851981543",
+        "additionalFields": {
+          "order_item_id": "0c6a3824-272a-3333-87bf-5a6962ad83b1",
+          "article_id": "JR581I00D-Q110042000" 
+        },
+        "name": "Bas de maillot de bain brésilien en crochet à nouettes réglables Dolce noir",
+        "image": "https://cdn.lingerie-story.fr/65745-thickbox_default/bas-de-maillot-de-bain-bresilien-en-crochet-a-nouettes-reglables-dolce-noir.jpg" 
+      }
+    ],
+    "shippingAddress": {
+      "firstName": "Patricia",
+      "lastName": "Bösch",
+      "company": "",
+      "street": "Martisackerweg 21",
+      "street2": "",
+      "other": "",
+      "postalCode": "4203",
+      "city": "Grellingen",
+      "country": "FR",
+      "phone": "",
+      "mobilePhone": "",
+      "email": "pp-cc-kam+10703121937176@zalando.de" 
+    },
+    "billingAddress": {
+      "firstName": "Patricia",
+      "lastName": "Bösch",
+      "company": "",
+      "street": "Martisackerweg 21",
+      "street2": "",
+      "other": "",
+      "postalCode": "4203",
+      "city": "Grellingen",
+      "country": "FR",
+      "phone": "",
+      "mobilePhone": "",
+      "email": "pp-cc-kam+10703121937176@zalando.de" 
+    },
+    "_links": {
+      "self": {
+        "href": "/v1/store/5548/order/17590210571" 
+      },
+      "store": {
+        "href": "/v1/store/5548" 
+      }
+    },
+    "_embedded": {
+      "channel": {
+        "id": 39452,
+        "name": "zalandolingeriestory",
+        "_links": {
+          "self": {
+            "href": "/v1/channel/39452" 
+          },
+          "image": {
+            "href": "https://assets.shopping-feed.com/channel/logo/zalandolingeriestory.png" 
+          }
+        }
+      },
+      "tag": []
+    }
+  }
