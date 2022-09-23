@@ -16,9 +16,6 @@
  * @copyright Since 2019 Shopping Feed
  * @license   https://opensource.org/licenses/AFL-3.0  Academic Free License (AFL 3.0)
  */
-
-use ShoppingfeedAddon\Services\OrderTracker;
-
 if (!defined('_PS_VERSION_')) {
     exit;
 }
@@ -35,6 +32,8 @@ require_once _PS_MODULE_DIR_ . 'shoppingfeed/vendor/autoload.php';
 // use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerExtension;
 // use ShoppingfeedClasslib\Extensions\ProcessMonitor\ProcessMonitorExtension;
 // use ShoppingfeedAddon\Hook\HookDispatcher;
+// use ShoppingfeedAddon\ProductFilter\FilterFactory;
+// use ShoppingfeedAddon\Services\OrderTracker;
 
 /**
  * The base module class
@@ -764,34 +763,30 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         $product_visibility_nowhere = (bool) Configuration::getGlobalValue(Shoppingfeed::PRODUCT_VISIBILTY_NOWHERE);
         $product_filters = Tools::jsonDecode($product_feed_rule_filters, true);
         $sqlFilter = [];
+
         if (is_array($product_filters)) {
-            foreach ($product_filters as $product_filter_type => $product_filter) {
-                switch ($product_filter_type) {
-                    case 'products':
-                        $sqlFilter[] = 'ps.id_product IN (' . $product_filter . ')';
-                        continue 2;
-                    case 'attributes':
-                        $sqlFilter[] = 'ps.id_product IN (select id_product from ' . _DB_PREFIX_ . 'product_attribute pa JOIN ' . _DB_PREFIX_ . 'product_attribute_combination pac on pa.id_product_attribute = pac.id_product_attribute where pac.id_attribute IN (' . $product_filter . '))';
-                        continue 2;
-                    case 'manufacturers':
-                        $sqlFilter[] = 'ps.id_product IN (select id_product from ' . _DB_PREFIX_ . 'product where id_manufacturer IN (' . $product_filter . '))';
-                        continue 2;
-                    case 'categories':
-                        $sqlFilter[] = 'ps.id_category_default IN (' . $product_filter . ')';
-                        continue 2;
-                    case 'suppliers':
-                        $sqlFilter[] = 'ps.id_product IN (select id_product from ' . _DB_PREFIX_ . 'product_supplier where id_supplier IN (' . $product_filter . '))';
-                        continue 2;
-                    case 'features':
-                        $sqlFilter[] = 'ps.id_product IN (select id_product from ' . _DB_PREFIX_ . 'feature_product where id_feature IN (' . $product_filter . '))';
-                        continue 2;
-                    default:
-                        continue 2;
+            foreach ($product_filters as $groupFilters) {
+                $groupFilterCollection = [];
+
+                foreach ($groupFilters as $filterMap) {
+                    $type = key($filterMap);
+                    $filter = $this->getFilterFactory()->getFilter($type, $filterMap[$type]);
+                    $groupFilterCollection[] = $filter->getSqlChunk();
                 }
+
+                $sqlFilter[] = implode(' and ', $groupFilterCollection);
             }
+
+            $sqlFilter = array_map(
+                function ($condition) {
+                    return '(' . $condition . ')';
+                },
+                $sqlFilter
+            );
         }
+
         if (count($sqlFilter) > 0) {
-            $sql->where('(' . implode(' or ', $sqlFilter) . ')');
+            $sql->where(implode(' or ', $sqlFilter));
         }
         if ((bool) Configuration::getGlobalValue(Shoppingfeed::PRODUCT_FEED_SYNC_PACK) !== true) {
             $sql->where('p.cache_is_pack = 0');
@@ -1416,9 +1411,14 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         return true;
     }
 
+    protected function getFilterFactory()
+    {
+        return new \ShoppingfeedAddon\ProductFilter\FilterFactory();
+    }
+
     protected function getOrderTracker()
     {
-        return new OrderTracker();
+        return new \ShoppingfeedAddon\Services\OrderTracker();
     }
 
     /**

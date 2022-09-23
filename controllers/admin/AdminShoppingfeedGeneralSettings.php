@@ -22,6 +22,7 @@ if (!defined('_PS_VERSION_')) {
 
 require_once _PS_MODULE_DIR_ . 'shoppingfeed/vendor/autoload.php';
 
+use ShoppingfeedAddon\ProductFilter\FilterFactory;
 use ShoppingfeedClasslib\Actions\ActionsHandler;
 
 /**
@@ -93,7 +94,12 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
             $countPreloading += (int) $shoppingfeedPreloading->getPreloadingCountForSync($token['id_shoppingfeed_token']);
         }
 
-        $percentPreloading = ($countPreloading / $countProductInShops) * 100;
+        // avoid division by zero
+        if ($countProductInShops) {
+            $percentPreloading = ($countPreloading / $countProductInShops) * 100;
+        } else {
+            $percentPreloading = 0;
+        }
 
         $this->context->smarty->assign('count_products', $this->nbr_products);
         $this->context->smarty->assign('hasAFilter', $product_filters !== null);
@@ -545,17 +551,32 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
     public function renderProductSelectionConfigForm()
     {
         $tpl = Context::getContext()->smarty->createTemplate(_PS_MODULE_DIR_ . 'shoppingfeed/views/templates/admin/shoppingfeed_general_settings/product_filter.tpl');
-
-        $product_feed_rule_filters = Configuration::getGlobalValue(Shoppingfeed::PRODUCT_FEED_RULE_FILTERS);
-        $product_filters = Tools::jsonDecode($product_feed_rule_filters, true);
         $product_visibility_nowhere = (bool) Configuration::getGlobalValue(Shoppingfeed::PRODUCT_VISIBILTY_NOWHERE);
 
         $tpl->assign([
-            'product_filters' => ($product_feed_rule_filters === null) ? [] : $product_filters,
+            'product_filters' => $this->getProductFilters(),
             'product_visibility_nowhere' => $product_visibility_nowhere,
         ]);
 
         return $tpl->fetch();
+    }
+
+    protected function getProductFilters()
+    {
+        $product_feed_rule_filters = Configuration::getGlobalValue(Shoppingfeed::PRODUCT_FEED_RULE_FILTERS);
+        $product_feed_rule_filters = Tools::jsonDecode($product_feed_rule_filters, true);
+        $product_filters = [];
+
+        foreach ($product_feed_rule_filters as $index => $groupFilter) {
+            $product_filters[$index] = [];
+            foreach ($groupFilter as $filterMap) {
+                $type = key($filterMap);
+                $filter = $this->getFilterFactory()->getFilter($type, $filterMap[$type]);
+                $product_filters[$index][] = $filter;
+            }
+        }
+
+        return $product_filters;
     }
 
     /**
@@ -603,22 +624,14 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
     {
         $product_visibility_nowhere = (bool) Tools::getValue('product_visibility_nowhere', false);
         $product_rule_select = Tools::getValue('product_rule_select', []);
-        $product_filter = [];
 
-        foreach ($product_rule_select as $type => $filterIds) {
-            if (empty($type)) {
-                continue;
+        foreach ($product_rule_select as &$groupFilter) {
+            foreach ($groupFilter as &$filter) {
+                $filter = json_decode($filter, true);
             }
-            $id = implode(',', $filterIds);
-            $id = explode(',', $id);
-            $id = array_filter($id, 'is_numeric');
-            $id = implode(',', $id);
-            if (empty($id)) {
-                continue;
-            }
-            $product_filter[$type] = $id;
         }
-        Configuration::updateGlobalValue(Shoppingfeed::PRODUCT_FEED_RULE_FILTERS, Tools::jsonEncode($product_filter));
+
+        Configuration::updateGlobalValue(Shoppingfeed::PRODUCT_FEED_RULE_FILTERS, Tools::jsonEncode($product_rule_select));
         Configuration::updateGlobalValue(Shoppingfeed::PRODUCT_VISIBILTY_NOWHERE, $product_visibility_nowhere);
 
         return true;
@@ -836,5 +849,93 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
         if ((Tools::getValue('with_factory') !== false)) {
             $this->addJS(_PS_MODULE_DIR_ . 'shoppingfeed/views/js/general_settings/general_settings.js');
         }
+
+        $this->addJS(_PS_MODULE_DIR_ . 'shoppingfeed/views/js/general_settings/RuleConditionGenerator.js');
+    }
+
+    public function displayAjaxGetCategoryList()
+    {
+        $query = (new DbQuery())
+            ->from('category_lang', 'cl')
+            ->leftJoin('category', 'c', 'cl.id_category = c.id_category')
+            ->where('cl.id_lang = ' . (int) $this->context->language->id)
+            ->where('c.id_parent <> 0')
+            ->orderBy('c.id_category ASC')
+            ->select('c.id_category as id, CONCAT("(", c.id_category, ")", " ", cl.name) as title');
+
+        exit(json_encode(Db::getInstance()->executeS($query)));
+    }
+
+    public function displayAjaxGetBrandList()
+    {
+        $query = (new DbQuery())
+            ->from('manufacturer')
+            ->orderBy('id_manufacturer ASC')
+            ->select('id_manufacturer as id, name as title');
+
+        exit(json_encode(Db::getInstance()->executeS($query)));
+    }
+
+    public function displayAjaxGetSupplierList()
+    {
+        $query = (new DbQuery())
+            ->from('supplier')
+            ->orderBy('id_supplier ASC')
+            ->select('id_supplier as id, name as title');
+
+        exit(json_encode(Db::getInstance()->executeS($query)));
+    }
+
+    public function displayAjaxGetAttributeGroupList()
+    {
+        $query = (new DbQuery())
+            ->from('attribute_group_lang')
+            ->where('id_lang = ' . (int) $this->context->language->id)
+            ->orderBy('id_attribute_group ASC')
+            ->select('id_attribute_group as id, name as title');
+
+        exit(json_encode(Db::getInstance()->executeS($query)));
+    }
+
+    public function displayAjaxGetAttributeList()
+    {
+        $query = (new DbQuery())
+            ->from('attribute_lang', 'al')
+            ->leftJoin('attribute', 'a', 'al.id_attribute = a.id_attribute')
+            ->where('al.id_lang = ' . (int) $this->context->language->id)
+            ->where('a.id_attribute_group = ' . (int) Tools::getValue('id_group'))
+            ->orderBy('a.id_attribute ASC')
+            ->select('a.id_attribute as id, al.name as title');
+
+        exit(json_encode(Db::getInstance()->executeS($query)));
+    }
+
+    public function displayAjaxGetFeatureList()
+    {
+        $query = (new DbQuery())
+            ->from('feature_lang')
+            ->where('id_lang = ' . (int) $this->context->language->id)
+            ->orderBy('id_feature ASC')
+            ->select('id_feature as id, name as title');
+
+        exit(json_encode(Db::getInstance()->executeS($query)));
+    }
+
+    public function displayAjaxGetFeatureValueList()
+    {
+        $query = (new DbQuery())
+            ->from('feature_value_lang', 'fvl')
+            ->leftJoin('feature_value', 'fv', 'fv.id_feature_value = fvl.id_feature_value')
+            ->where('fvl.id_lang = ' . (int) $this->context->language->id)
+            ->where('fv.id_feature = ' . (int) Tools::getValue('id_feature'))
+            ->orderBy('fv.id_feature ASC')
+            ->select('fv.id_feature_value as id, fvl.value as title');
+
+        exit(json_encode(Db::getInstance()->executeS($query)));
+    }
+
+    protected function getFilterFactory()
+    {
+        return new FilterFactory();
     }
 }
