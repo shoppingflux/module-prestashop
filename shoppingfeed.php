@@ -16,6 +16,9 @@
  * @copyright Since 2019 Shopping Feed
  * @license   https://opensource.org/licenses/AFL-3.0  Academic Free License (AFL 3.0)
  */
+
+use ShoppingfeedAddon\Services\OrderTracker;
+
 if (!defined('_PS_VERSION_')) {
     exit;
 }
@@ -78,6 +81,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     const IMPORT_ORDER_STATE = 'SHOPPINGFEED_FIRST_STATE_AFTER_IMPORT';
     const CDISCOUNT_FEE_PRODUCT = 'SHOPPINGFEED_CDISCOUNT_FEE_PRODUCT';
     const NEED_UPDATE_HOOK = 'SHOPPINGFEED_IS_NEED_UPDATE_HOOK';
+    const ORDER_TRACKING = 'SHOPPINGFEED_ORDER_TRACKING';
 
     public $extensions = [
         \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerExtension::class,
@@ -1157,6 +1161,23 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
      */
     public function hookActionValidateOrder($params)
     {
+        if (Validate::isLoadedObject($params['order']) && !$this->isShoppingfeedOrder($params['order'])) {
+            //if that isn't shoppingfeed order and tracking order is active, then should track it
+            if ((int) Configuration::get(self::ORDER_TRACKING)) {
+                try {
+                    $this->getOrderTracker()->track($params['order']);
+                } catch (Throwable $e) {
+                    \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::openLogger();
+                    \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::addLog(
+                        $this->l('Error while sending tracking order info. Message: ') . $e->getMessage(),
+                        'Order',
+                        $params['order']->id
+                    );
+                    ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::closeLogger();
+                }
+            }
+        }
+
         $handler = \ShoppingfeedClasslib\Registry::get('shoppingfeedOrderImportHandler');
         if ($handler === false) {
             return;
@@ -1393,5 +1414,22 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         }
 
         return true;
+    }
+
+    protected function getOrderTracker()
+    {
+        return new OrderTracker();
+    }
+
+    /**
+     * @param Order $order
+     */
+    protected function isShoppingfeedOrder($order)
+    {
+        if (false == Validate::isLoadedObject($order)) {
+            return false;
+        }
+
+        return $order->module == 'sfpayment';
     }
 }
