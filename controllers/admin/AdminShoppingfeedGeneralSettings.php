@@ -858,7 +858,7 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
         $query = (new DbQuery())
             ->from('category_lang', 'cl')
             ->leftJoin('category', 'c', 'cl.id_category = c.id_category')
-            ->where('cl.id_lang = ' . $this->context->language->id)
+            ->where('cl.id_lang = ' . (int) $this->context->language->id)
             ->where('c.id_parent <> 0')
             ->orderBy('c.id_category ASC')
             ->select('c.id_category as id, CONCAT("(", c.id_category, ")", " ", cl.name) as title');
@@ -890,7 +890,7 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
     {
         $query = (new DbQuery())
             ->from('attribute_group_lang')
-            ->where('id_lang = ' . $this->context->language->id)
+            ->where('id_lang = ' . (int) $this->context->language->id)
             ->orderBy('id_attribute_group ASC')
             ->select('id_attribute_group as id, name as title');
 
@@ -902,7 +902,7 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
         $query = (new DbQuery())
             ->from('attribute_lang', 'al')
             ->leftJoin('attribute', 'a', 'al.id_attribute = a.id_attribute')
-            ->where('al.id_lang = ' . $this->context->language->id)
+            ->where('al.id_lang = ' . (int) $this->context->language->id)
             ->where('a.id_attribute_group = ' . (int) Tools::getValue('id_group'))
             ->orderBy('a.id_attribute ASC')
             ->select('a.id_attribute as id, al.name as title');
@@ -914,7 +914,7 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
     {
         $query = (new DbQuery())
             ->from('feature_lang')
-            ->where('id_lang = ' . $this->context->language->id)
+            ->where('id_lang = ' . (int) $this->context->language->id)
             ->orderBy('id_feature ASC')
             ->select('id_feature as id, name as title');
 
@@ -926,7 +926,7 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
         $query = (new DbQuery())
             ->from('feature_value_lang', 'fvl')
             ->leftJoin('feature_value', 'fv', 'fv.id_feature_value = fvl.id_feature_value')
-            ->where('fvl.id_lang = ' . $this->context->language->id)
+            ->where('fvl.id_lang = ' . (int) $this->context->language->id)
             ->where('fv.id_feature = ' . (int) Tools::getValue('id_feature'))
             ->orderBy('fv.id_feature ASC')
             ->select('fv.id_feature_value as id, fvl.value as title');
