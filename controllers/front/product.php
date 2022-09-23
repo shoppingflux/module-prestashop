@@ -67,6 +67,13 @@ class ShoppingfeedProductModuleFrontController extends \ModuleFrontController
         $productGenerator->setPlatform('Prestashop', _PS_VERSION_)
                          ->addMapper([$this, 'mapper']);
 
+        if (is_callable([$productGenerator, 'getMetaData'])) {
+            $productGenerator->getMetaData()->setPlatform(
+                'Prestashop',
+                sprintf('%s-module:%s-php:%s', _PS_VERSION_, $this->module->version, phpversion())
+            );
+        }
+
         $limit = 100;
         $nb_iteration = ceil((new ShoppingfeedPreloading())->getPreloadingCount($token['id_shoppingfeed_token']) / $limit);
         $productGenerator->open();

@@ -354,4 +354,9 @@ class SfProductGenerator
 
         return new $writerClass();
     }
+
+    public function getMetaData()
+    {
+        return $this->metadata;
+    }
 }
