@@ -532,6 +532,9 @@ $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_b9d1b8558d
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_ceff443491edd888ee91e6bef87446a6'] = 'Vous devez spécifier un \"Délai avant la synchronisation du numéro de suivi\" supérieur à 0.';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_23b574c89c8eafae9531357e5763d00f'] = 'Vous devez spécifier un \"Nombre de commandes maximum\" entre 1 et 200.';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_67838a580a67c01392c8bc906654228a'] = 'Séelctionner un transporteur';
+$_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_f6a566b2cb5358a6d47d58e4d13df905'] = 'Tracking commandes';
+$_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_83c5ced40150eafe750d3c5813d6ea8f'] = 'Vous pourrez lister les commandes venant des comparateurs de prix';
+$_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_6d2fb7c26da628ea0bd520aeed7c5e50'] = 'Autoriser l\'import des commandes expédiées par les marketplaces';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_b9d1b8558d2d7145794f697158b6f253'] = 'Shoppingfeed Prestashop Plugin (Feed&Order)';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_b858c374263bb5214cdf9bf781b80db5'] = 'Mises à jour en 15 min du stock et des prix (toutes les boutiques)';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_f43b60c034d25fe65f315d1b7dee99d7'] = 'Si vous désactivez la synchronisation du stock et des prix, vos données seront synchronisés uniquement une fois par jour avec votre flux produits.';

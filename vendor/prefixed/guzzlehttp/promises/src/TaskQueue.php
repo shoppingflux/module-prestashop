@@ -1,4 +1,5 @@
 <?php
+
 namespace SfGuzzle\GuzzleHttp\Promise;
 
 /**
@@ -8,7 +9,7 @@ namespace SfGuzzle\GuzzleHttp\Promise;
  * maintains a constant stack size. You can use the task queue asynchronously
  * by calling the `run()` function of the global task queue in an event loop.
  *
- *     SfGuzzle\GuzzleHttp\Promise\queue()->run();
+ *     SfGuzzle\GuzzleHttp\Promise\Utils::queue()->run();
  */
 class TaskQueue implements TaskQueueInterface
 {
@@ -42,8 +43,8 @@ class TaskQueue implements TaskQueueInterface
 
     public function run()
     {
-        /** @var callable $task */
         while ($task = array_shift($this->queue)) {
+            /** @var callable $task */
             $task();
         }
     }

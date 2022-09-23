@@ -367,8 +367,4 @@ abstract class AbstractMondialrelay extends RuleAbstract implements RuleInterfac
     }
 
     abstract public function getRelayId($orderData);
-
-    abstract public function getConditions();
-
-    abstract public function getDescription();
 }

@@ -17,8 +17,6 @@
  * @license   https://opensource.org/licenses/AFL-3.0  Academic Free License (AFL 3.0)
  */
 
-use ShoppingfeedAddon\ProductFilter\FilterFactory;
-
 if (!defined('_PS_VERSION_')) {
     exit;
 }
@@ -35,6 +33,8 @@ require_once _PS_MODULE_DIR_ . 'shoppingfeed/vendor/autoload.php';
 // use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerExtension;
 // use ShoppingfeedClasslib\Extensions\ProcessMonitor\ProcessMonitorExtension;
 // use ShoppingfeedAddon\Hook\HookDispatcher;
+// use ShoppingfeedAddon\ProductFilter\FilterFactory;
+// use ShoppingfeedAddon\Services\OrderTracker;
 
 /**
  * The base module class
@@ -81,6 +81,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     const IMPORT_ORDER_STATE = 'SHOPPINGFEED_FIRST_STATE_AFTER_IMPORT';
     const CDISCOUNT_FEE_PRODUCT = 'SHOPPINGFEED_CDISCOUNT_FEE_PRODUCT';
     const NEED_UPDATE_HOOK = 'SHOPPINGFEED_IS_NEED_UPDATE_HOOK';
+    const ORDER_TRACKING = 'SHOPPINGFEED_ORDER_TRACKING';
 
     public $extensions = [
         \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerExtension::class,
@@ -427,6 +428,8 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         $this->setConfigurationDefault(self::REFUNDED_ORDERS, json_encode([]));
         $this->setConfigurationDefault(self::ORDER_IMPORT_ENABLED, true);
         $this->setConfigurationDefault(self::ORDER_IMPORT_SHIPPED, false);
+        $this->setConfigurationDefault(self::ORDER_IMPORT_SPECIFIC_RULES_CONFIGURATION, json_encode([]));
+        $this->setConfigurationDefault(self::ORDER_IMPORT_SHIPPED_MARKETPLACE, 0);
         $this->setConfigurationDefault(self::PRODUCT_FEED_CARRIER_REFERENCE, Configuration::getGlobalValue('PS_CARRIER_DEFAULT'));
         $this->setConfigurationDefault(self::ORDER_DEFAULT_CARRIER_REFERENCE, Configuration::getGlobalValue('PS_CARRIER_DEFAULT'));
         if (version_compare(_PS_VERSION_, '1.7', '<')) {
@@ -1154,6 +1157,23 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
      */
     public function hookActionValidateOrder($params)
     {
+        if (Validate::isLoadedObject($params['order']) && !$this->isShoppingfeedOrder($params['order'])) {
+            //if that isn't shoppingfeed order and tracking order is active, then should track it
+            if ((int) Configuration::get(self::ORDER_TRACKING)) {
+                try {
+                    $this->getOrderTracker()->track($params['order']);
+                } catch (Throwable $e) {
+                    \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::openLogger();
+                    \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::addLog(
+                        $this->l('Error while sending tracking order info. Message: ') . $e->getMessage(),
+                        'Order',
+                        $params['order']->id
+                    );
+                    ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::closeLogger();
+                }
+            }
+        }
+
         $handler = \ShoppingfeedClasslib\Registry::get('shoppingfeedOrderImportHandler');
         if ($handler === false) {
             return;
@@ -1394,6 +1414,23 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
 
     protected function getFilterFactory()
     {
-        return new FilterFactory();
+        return new \ShoppingfeedAddon\ProductFilter\FilterFactory();
+    }
+
+    protected function getOrderTracker()
+    {
+        return new \ShoppingfeedAddon\Services\OrderTracker();
+    }
+
+    /**
+     * @param Order $order
+     */
+    protected function isShoppingfeedOrder($order)
+    {
+        if (false == Validate::isLoadedObject($order)) {
+            return false;
+        }
+
+        return $order->module == 'sfpayment';
     }
 }

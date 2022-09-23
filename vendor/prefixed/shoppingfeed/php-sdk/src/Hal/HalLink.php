@@ -1,7 +1,6 @@
 <?php
 namespace ShoppingFeed\Sdk\Hal;
 
-use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use ShoppingFeed\Sdk\Http\UriTemplate;
 use ShoppingFeed\Sdk\Resource\Json;
@@ -56,12 +55,15 @@ class HalLink
         if (isset($config['templated'])) {
             $this->templated = (bool) $config['templated'];
         }
+
         if (isset($config['type'])) {
             $this->type = $config['type'];
         }
+
         if (isset($config['name'])) {
             $this->name = $config['name'];
         }
+
         if (isset($config['title'])) {
             $this->title = $config['title'];
         }
@@ -243,7 +245,7 @@ class HalLink
     }
 
     /**
-     * @param RequestInterface|RequestInterface[] $request
+     * @param \Psr\Http\Message\RequestInterface|\Psr\Http\Message\RequestInterface[] $request
      * @param array                               $config
      *
      * @return null|HalResource
@@ -254,9 +256,9 @@ class HalLink
     }
 
     /**
-     * @param       $method
-     * @param array $variables
-     * @param array $body
+     * @param string $method
+     * @param array  $variables
+     * @param mixed  $body
      *
      * @return \Psr\Http\Message\RequestInterface
      */
@@ -266,7 +268,7 @@ class HalLink
         $method  = strtoupper($method);
         $headers = [];
 
-        if (! isset($headers['Content-Type']) && in_array($method, ['POST', 'PUT', 'PATCH'])) {
+        if ((null !== $body && '' !== $body) && in_array($method, ['POST', 'PUT', 'PATCH', 'DELETE'])) {
             $headers['Content-Type'] = 'application/json';
             $body                    = Json::encode($body);
         }
