@@ -36,7 +36,7 @@ class CategoryFilter implements Filter
 
     public function getSqlChunk()
     {
-        return '(ps.id_category_default = ' . $this->category->id . ')';
+        return '(ps.id_category_default = ' . (int) $this->category->id . ')';
     }
 
     public function getFilter()
