@@ -70,7 +70,7 @@ class ShoppingfeedProductModuleFrontController extends \ModuleFrontController
         if (is_callable([$productGenerator, 'getMetaData'])) {
             $productGenerator->getMetaData()->setPlatform(
                 'Prestashop',
-                sprintf('%s-module:%s', _PS_VERSION_, $this->module->version)
+                sprintf('%s-module:%s-php:%s', _PS_VERSION_, $this->module->version, phpversion())
             );
         }
 
