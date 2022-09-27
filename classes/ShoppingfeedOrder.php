@@ -49,13 +49,12 @@ class ShoppingfeedOrder extends ObjectModel
     public $date_marketplace_creation;
 
     public $date_add;
+
     public $date_upd;
 
     public $failed_ticket;
 
-    public $zalando_customer;
-
-    public $zalando_products;
+    public $additionalFields;
 
     public static $definition = [
         'table' => 'shoppingfeed_order',
@@ -106,13 +105,7 @@ class ShoppingfeedOrder extends ObjectModel
                 'validate' => 'isInt',
                 'allow_null' => true,
             ],
-            'zalando_customer' => [
-                'type' => ObjectModel::TYPE_STRING,
-                'validate' => 'isString',
-                'required' => false,
-                'allow_null' => true,
-            ],
-            'zalando_products' => [
+            'additionalFields' => [
                 'type' => ObjectModel::TYPE_HTML,
                 'validate' => 'isString',
                 'required' => false,

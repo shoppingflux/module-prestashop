@@ -1340,10 +1340,12 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         if (Validate::isLoadedObject($sfOrder) === false) {
             return '';
         }
-
+        $additionalFields = json_decode($sfOrder->additionalFields, true);
+        if (is_array($additionalFields) === false || array_key_exists('customer_number', $additionalFields) === false) {
+            return;
+        }
         $this->context->smarty->assign([
-            'zalando_customer' => $sfOrder->zalando_customer,
-            'zalando_products' => json_decode($sfOrder->zalando_products),
+            'id_customer' => $additionalFields['customer_number'],
         ]);
 
         return $this->context->smarty->fetch(

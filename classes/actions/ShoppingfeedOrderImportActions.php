@@ -782,6 +782,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
     {
         /** @var ShoppingFeed\Sdk\Api\Order\OrderResource $apiOrder */
         $apiOrder = $this->conveyor['apiOrder'];
+        $data = $apiOrder->toArray();
 
         // Create the ShoppingfeedOrder here; we need to know if it's been created
         // after this point
@@ -798,6 +799,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         if ($this->conveyor['orderData']->createdAt->getTimestamp() != 0) {
             $sfOrder->date_marketplace_creation = $this->conveyor['orderData']->createdAt->format('Y-m-d H:i:s');
         }
+        $sfOrder->additionalFields = json_encode($data['additionalFields']);
         $sfOrder->save();
         $this->conveyor['sfOrder'] = $sfOrder;
 
@@ -808,6 +810,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 'apiOrder' => $apiOrder,
                 'id_order' => $this->conveyor['id_order'],
                 'order_reference' => $this->conveyor['order_reference'],
+                'prestashopProducts' => $this->conveyor['prestashopProducts'],
             ]
         );
 

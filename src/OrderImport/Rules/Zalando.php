@@ -28,10 +28,11 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
+use Db;
+use DbQuery;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
-use ShoppingfeedOrder;
 use Tools;
 
 class Zalando extends RuleAbstract implements RuleInterface
@@ -55,25 +56,33 @@ class Zalando extends RuleAbstract implements RuleInterface
 
     public function afterOrderCreation($params)
     {
-        $sfOrder = ShoppingfeedOrder::getByIdOrder($params['id_order']);
         $apiOrder = $params['apiOrder'];
         $data = $apiOrder->toArray();
-        $additionalFields = $data['additionalFields'];
-        $items = $data['items'];
-
-        $zalando_products = [];
-
-        foreach ($items as $item) {
-            $zalando_products[] = sprintf(
+        foreach ($data['items'] as &$apiProduct) {
+            $psProduct = $params['prestashopProducts'][$apiProduct['reference']];
+            $query = new DbQuery();
+            $query->select('od.id_order_detail')
+                ->from('order_detail', 'od')
+                ->where('od.id_order = ' . (int) $params['id_order'])
+                ->where('od.product_id = ' . (int) $psProduct->id)
+            ;
+            if ($psProduct->id_product_attribute) {
+                $query->where('product_attribute_id = ' . (int) $psProduct->id_product_attribute);
+            }
+            $productOrderDetail = Db::getInstance()->getRow($query);
+            $product_name = sprintf(
                 '%s : %s - %s',
-                $item['name'],
-                $item['additionalFields']['order_item_id'],
-                $item['additionalFields']['article_id']
+                substr($apiProduct['name'], 0, 188), // fix size name product to 250 maximum
+                $apiProduct['additionalFields']['order_item_id'],
+                $apiProduct['additionalFields']['article_id']
+            );
+
+            Db::getInstance()->update(
+                'order_detail',
+                ['product_name' => $product_name],
+                '`id_order_detail` = ' . (int) $productOrderDetail['id_order_detail']
             );
         }
-        $sfOrder->zalando_customer = $additionalFields['customer_number'];
-        $sfOrder->zalando_products = Tools::jsonEncode($zalando_products);
-        $sfOrder->save();
     }
 
     /**

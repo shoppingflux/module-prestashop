@@ -19,12 +19,12 @@
 
 namespace Tests\OrderImport;
 
+use Hook;
 use Order;
 use ShoppingfeedAddon\Actions\ActionsHandler;
 use ShoppingfeedAddon\OrderImport\Rules\Zalando;
 use ShoppingfeedClasslib\Registry;
 use ShoppingfeedOrder;
-use Tools;
 use Validate;
 
 /**
@@ -53,6 +53,7 @@ class OrderImportZalandoTest extends AbstractOrdeTestCase
             ]
         );
         Registry::set('shoppingfeedOrderImportHandler', $handler);
+
         $processResult = $handler->process('shoppingfeedOrderImport');
 
         $this->assertTrue($processResult);
@@ -94,12 +95,10 @@ class OrderImportZalandoTest extends AbstractOrdeTestCase
      */
     public function testDataSfOrder($psOrder)
     {
-        $this->assertEquals($psOrder->zalando_customer, '93000070344');
-        $zalando_products = [
-            'Haut de maillot triangle maille crochet Dolce noir : 32632708-cc99-32d1-aa43-ca59521a9c9e - JR581J004-Q11009500D',
-            'Bas de maillot de bain brésilien en crochet à nouettes réglables Dolce noir : 0c6a3824-272a-3333-87bf-5a6962ad83b1 - JR581I00D-Q110042000',
-        ];
-        $this->assertEquals($psOrder->zalando_products, Tools::jsonEncode($zalando_products));
+        $additionalFields = json_decode($psOrder->additionalFields, true);
+        $this->assertTrue(is_array($additionalFields));
+        $this->assertTrue(array_key_exists('customer_number', $additionalFields));
+        $this->assertEquals($additionalFields['customer_number'], '93000070344');
     }
 
     /**
@@ -108,5 +107,29 @@ class OrderImportZalandoTest extends AbstractOrdeTestCase
     public function testDataOrder($psOrder)
     {
         $this->assertEquals($psOrder->current_state, _PS_OS_PAYMENT_);
+    }
+
+    /**
+     * @depends testIsOrderValid
+     */
+    public function testOrderDetails($psOrder)
+    {
+        $details = $psOrder->getOrderDetailList();
+
+        $this->assertTrue(is_array($details));
+        $this->assertTrue(count($details) === 2);
+        $this->assertEquals($details[0]['product_name'], 'Haut de maillot triangle maille crochet Dolce noir : 32632708-cc99-32d1-aa43-ca59521a9c9e - JR581J004-Q11009500D');
+        $this->assertEquals($details[1]['product_name'], 'Bas de maillot de bain brésilien en crochet à nouettes réglables Dolce noir : 0c6a3824-272a-3333-87bf-5a6962ad83b1 - JR581I00D-Q110042000');
+    }
+
+    /**
+     * @depends testIsOrderValid
+     */
+    public function testHook($psOrder)
+    {
+        foreach ($psOrder->getInvoicesCollection()  as $invoice) {
+            $display = Hook::exec('displayPDFInvoice', ['object' => $invoice]);
+            $this->assertNotEquals(strpos($display, '93000070344'), 0);
+        }
     }
 }
