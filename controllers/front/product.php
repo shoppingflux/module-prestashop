@@ -165,7 +165,7 @@ class ShoppingfeedProductModuleFrontController extends \ModuleFrontController
                 ->setPrice($variation['price'])
             ;
             /**
-            * @todo: PR not accepted https://github.com/shoppingflux/php-feed-generator/pull/21
+             * @todo: PR not accepted https://github.com/shoppingflux/php-feed-generator/pull/21
             if (isset($variation['ecotax']) && $this->isEcotaxEnabled()) {
                 $variationProduct->setEcotax($variation['ecotax']);
             }
