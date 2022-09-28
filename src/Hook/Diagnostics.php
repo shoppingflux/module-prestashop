@@ -20,6 +20,7 @@
 namespace ShoppingfeedAddon\Hook;
 
 use Configuration;
+use Module;
 use ShoppingfeedClasslib\Hook\AbstractHook;
 
 class Diagnostics extends AbstractHook
