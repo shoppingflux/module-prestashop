@@ -169,7 +169,7 @@ class ShoppingfeedProductModuleFrontController extends \ModuleFrontController
             if (isset($variation['ecotax']) && $this->isEcotaxEnabled()) {
                 $variationProduct->setEcotax($variation['ecotax']);
             }
-            */
+             */
             if (isset($variation['quantity']) === true) {
                 $variationProduct->setQuantity($variation['quantity']);
             }
