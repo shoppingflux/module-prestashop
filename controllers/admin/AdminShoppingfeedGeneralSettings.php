@@ -564,6 +564,9 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
     protected function getProductFilters()
     {
         $product_feed_rule_filters = Configuration::getGlobalValue(Shoppingfeed::PRODUCT_FEED_RULE_FILTERS);
+        if ($product_feed_rule_filters === false) {
+            return [];
+        }
         $product_feed_rule_filters = Tools::jsonDecode($product_feed_rule_filters, true);
         $product_filters = [];
 
