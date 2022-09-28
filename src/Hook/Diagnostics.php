@@ -55,6 +55,13 @@ class Diagnostics extends AbstractHook
             );
         }
 
+        if (Module::isEnabled('hidefeatures') === true) {
+            $conflics[] = $this->module->l(
+                'Module `hidefeatures` is enabled on your PrestaShop. Some features can be hidden on your feed.',
+                'Diagnostics'
+            );
+        }
+
         return $conflics;
     }
 }
