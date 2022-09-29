@@ -98,6 +98,6 @@ class Zalando extends RuleAbstract implements RuleInterface
      */
     public function getDescription()
     {
-        return $this->l('Addition of Zalando-specific fields in PrestaShop invoices', 'ZalandoColissimo');
+        return $this->l('Addition of Zalando-specific fields in PrestaShop invoices', 'Zalando');
     }
 }
