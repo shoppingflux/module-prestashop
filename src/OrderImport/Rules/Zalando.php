@@ -44,9 +44,6 @@ class Zalando extends RuleAbstract implements RuleInterface
         if (key_exists('channelId', $data) === false) {
             return false;
         }
-        if ($data['channelId'] !== 39452) {
-            return false;
-        }
         if (preg_match('#^zalando#', Tools::strtolower($apiOrder->getChannel()->getName())) === false) {
             return false;
         }
@@ -90,7 +87,7 @@ class Zalando extends RuleAbstract implements RuleInterface
      */
     public function getConditions()
     {
-        return $this->l('If an order came from Zalando and channelId equal to 39452.', 'Zalando');
+        return $this->l('If an order came from Zalando.', 'Zalando');
     }
 
     /**
