@@ -20,6 +20,7 @@
 namespace ShoppingfeedAddon\Hook;
 
 use Configuration;
+use Module;
 use ShoppingfeedClasslib\Hook\AbstractHook;
 
 class Diagnostics extends AbstractHook
@@ -51,6 +52,13 @@ class Diagnostics extends AbstractHook
         if ($isShoppingfluxexport === true) {
             $conflics[] = $this->module->l(
                 'Older module Shoppingflux Export is available on your server. Please uninstall and remove the directory of the ',
+                'Diagnostics'
+            );
+        }
+
+        if (Module::isEnabled('hidefeatures') === true) {
+            $conflics[] = $this->module->l(
+                'Module `hidefeatures` is enabled on your PrestaShop. Some features can be hidden on your feed.',
                 'Diagnostics'
             );
         }
