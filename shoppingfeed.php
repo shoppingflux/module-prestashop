@@ -273,6 +273,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         'actionObjectSpecificPriceDeleteAfter',
         'deleteProductAttribute',
         'actionAdminSpecificPriceRuleControllerDeleteBefore',
+        'displayPDFInvoice',
     ];
 
     /**
@@ -1310,6 +1311,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             ShoppingfeedAddon\OrderImport\Rules\AmazonManomanoTva::class,
             ShoppingfeedAddon\OrderImport\Rules\GaleriesLafayetteColissimo::class,
             ShoppingfeedAddon\OrderImport\Rules\SymbolConformity::class,
+            ShoppingfeedAddon\OrderImport\Rules\Zalando::class,
         ];
 
         foreach ($defaultRulesClassNames as $ruleClassName) {
@@ -1344,6 +1346,29 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             ->getProductIdsByRule((int) Tools::getValue('id_specific_price_rule'));
 
         $this->updateShoppingFeedPreloading($productIds, ShoppingfeedPreloading::ACTION_SYNC_PRICE);
+    }
+
+    public function hookDisplayPDFInvoice($params)
+    {
+        if ($params['object'] instanceof OrderInvoice !== true) {
+            return '';
+        }
+        $sfOrder = ShoppingfeedOrder::getByIdOrder((int) $params['object']->id_order);
+
+        if (Validate::isLoadedObject($sfOrder) === false) {
+            return '';
+        }
+        $additionalFields = json_decode($sfOrder->additionalFields, true);
+        if (is_array($additionalFields) === false || array_key_exists('customer_number', $additionalFields) === false) {
+            return;
+        }
+        $this->context->smarty->assign([
+            'id_customer' => $additionalFields['customer_number'],
+        ]);
+
+        return $this->context->smarty->fetch(
+            $this->local_path . 'views/templates/hook/displayPDFInvoice.tpl'
+        );
     }
 
     /**

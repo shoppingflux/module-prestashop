@@ -2074,6 +2074,7 @@ class ComposerStaticInit3fe85f86ff701f6bd7fd7d7a118b5533
         'ShoppingfeedAddon\\OrderImport\\Rules\\Socolissimo' => __DIR__ . '/../..' . '/src/OrderImport/Rules/Socolissimo.php',
         'ShoppingfeedAddon\\OrderImport\\Rules\\SymbolConformity' => __DIR__ . '/../..' . '/src/OrderImport/Rules/SymbolConformity.php',
         'ShoppingfeedAddon\\OrderImport\\Rules\\TestingOrder' => __DIR__ . '/../..' . '/src/OrderImport/Rules/TestingOrder.php',
+        'ShoppingfeedAddon\\OrderImport\\Rules\\Zalando' => __DIR__ . '/../..' . '/src/OrderImport/Rules/Zalando.php',
         'ShoppingfeedAddon\\OrderImport\\Rules\\ZalandoCarrier' => __DIR__ . '/../..' . '/src/OrderImport/Rules/ZalandoCarrier.php',
         'ShoppingfeedAddon\\OrderImport\\Rules\\ZalandoColissimo' => __DIR__ . '/../..' . '/src/OrderImport/Rules/ZalandoColissimo.php',
         'ShoppingfeedAddon\\OrderImport\\SFOrderState' => __DIR__ . '/../..' . '/src/OrderImport/SFOrderState.php',

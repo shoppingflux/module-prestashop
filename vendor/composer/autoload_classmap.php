@@ -1813,6 +1813,7 @@ return array(
     'ShoppingfeedAddon\\OrderImport\\Rules\\Socolissimo' => $baseDir . '/src/OrderImport/Rules/Socolissimo.php',
     'ShoppingfeedAddon\\OrderImport\\Rules\\SymbolConformity' => $baseDir . '/src/OrderImport/Rules/SymbolConformity.php',
     'ShoppingfeedAddon\\OrderImport\\Rules\\TestingOrder' => $baseDir . '/src/OrderImport/Rules/TestingOrder.php',
+    'ShoppingfeedAddon\\OrderImport\\Rules\\Zalando' => $baseDir . '/src/OrderImport/Rules/Zalando.php',
     'ShoppingfeedAddon\\OrderImport\\Rules\\ZalandoCarrier' => $baseDir . '/src/OrderImport/Rules/ZalandoCarrier.php',
     'ShoppingfeedAddon\\OrderImport\\Rules\\ZalandoColissimo' => $baseDir . '/src/OrderImport/Rules/ZalandoColissimo.php',
     'ShoppingfeedAddon\\OrderImport\\SFOrderState' => $baseDir . '/src/OrderImport/SFOrderState.php',
