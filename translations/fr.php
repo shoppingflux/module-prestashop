@@ -34,7 +34,7 @@ $_MODULE['<{shoppingfeed}prestashop>adminprocessloggercontroller_53c6a96a3df980c
 $_MODULE['<{shoppingfeed}prestashop>adminprocessloggercontroller_b718adec73e04ce3ec720dd11a06a308'] = 'ID';
 $_MODULE['<{shoppingfeed}prestashop>adminprocessloggercontroller_49ee3087348e8d44e1feda1917443987'] = 'Nom';
 $_MODULE['<{shoppingfeed}prestashop>adminprocessloggercontroller_4c2a8fe7eaf24721cc7a9f0175115bd4'] = 'Message';
-$_MODULE['<{shoppingfeed}prestashop>adminprocessloggercontroller_a0db49ba470c1c9ae2128c3470339153'] = 'Niveau';202ecommerce/ebay2/issues
+$_MODULE['<{shoppingfeed}prestashop>adminprocessloggercontroller_a0db49ba470c1c9ae2128c3470339153'] = 'Niveau';
 $_MODULE['<{shoppingfeed}prestashop>adminprocessloggercontroller_68972b8768ecc5cdcb803169e5f42407'] = 'Entité';
 $_MODULE['<{shoppingfeed}prestashop>adminprocessloggercontroller_d95fc016a6eee828f434ed5f55504427'] = 'ID de l\'entité';
 $_MODULE['<{shoppingfeed}prestashop>adminprocessloggercontroller_f89167d8204a193c6bbeabb68922d448'] = 'ID session';
@@ -109,7 +109,6 @@ $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedaccountsettings_459a6f79ad9
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedaccountsettings_9f82518d468b9fee614fcc92f76bb163'] = 'Boutique';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedaccountsettings_4994a8ffeba4ac3140beb89e8d41f174'] = 'Langue';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedaccountsettings_386c339d37e737a436499d423a77df0c'] = 'Devise';
-$_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedaccountsettings_c9cc8cce247e49bae79f15173ce97354'] = 'Sauvegarder';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedaccountsettings_99dea78007133396a7b8ed70578ac6ae'] = 'Login';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedaccountsettings_66e159d9f5d405f84cd3739bf5891b4f'] = 'Sinon, vous pouvez aussi remplir directement le formulaire de token situé plus bas.';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedaccountsettings_f6039d44b29456b20f8f373155ae4973'] = 'Identifiant';
