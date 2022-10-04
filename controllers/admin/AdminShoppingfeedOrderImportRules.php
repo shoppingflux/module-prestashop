@@ -283,7 +283,7 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
                         ],
                         [
                             'type' => 'switch',
-                            'label' => $this->module->l('Allow import orders shipped by Marketplaces Amazon, CDiscount and Manomano', 'AdminShoppingfeedOrderImportRules'),
+                            'label' => $this->module->l('Allow import orders shipped by Marketplaces', 'AdminShoppingfeedOrderImportRules'),
                             'name' => Shoppingfeed::ORDER_IMPORT_SHIPPED_MARKETPLACE,
                             'id' => 'shoppingfeed_order-import-switch',
                             'hint' => $this->module->l('Order will be imported regardless of its status on Shopping Feed side', 'AdminShoppingfeedOrderImportRules'),
@@ -296,6 +296,24 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
                                 ],
                                 [
                                     'id' => 'shoppingfeed_order-import-switch-0',
+                                    'value' => 0,
+                                ],
+                            ],
+                        ],
+                        [
+                            'type' => 'switch',
+                            'label' => $this->module->l('Order Tracking', 'AdminShoppingfeedOrderImportRules'),
+                            'name' => Shoppingfeed::ORDER_TRACKING,
+                            'id' => 'shoppingfeed_order-import-switch',
+                            'hint' => $this->module->l('You\'ll be able to list orders from price comparators', 'AdminShoppingfeedOrderImportRules'),
+                            'is_bool' => true,
+                            'values' => [
+                                [
+                                    'id' => Shoppingfeed::ORDER_TRACKING . '-1',
+                                    'value' => 1,
+                                ],
+                                [
+                                    'id' => Shoppingfeed::ORDER_TRACKING . '-0',
                                     'value' => 0,
                                 ],
                             ],
@@ -502,6 +520,7 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
             'max_order_update' => Configuration::get(Shoppingfeed::ORDER_STATUS_MAX_ORDERS),
             Shoppingfeed::ORDER_IMPORT_PERMANENT_SINCE_DATE => $this->getSinceDateService()->get(),
             Shoppingfeed::IMPORT_ORDER_STATE => $this->initSfOrderState()->get()->id,
+            Shoppingfeed::ORDER_TRACKING => (int) Configuration::get(Shoppingfeed::ORDER_TRACKING),
         ];
 
         $helper->base_folder = $this->getTemplatePath() . $this->override_folder;
@@ -563,6 +582,7 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
         $order_sync_test = Tools::getValue(Shoppingfeed::ORDER_IMPORT_TEST);
         $order_sync_shipped = Tools::getValue(Shoppingfeed::ORDER_IMPORT_SHIPPED);
         $order_sync_shipped_marketplace = Tools::getValue(Shoppingfeed::ORDER_IMPORT_SHIPPED_MARKETPLACE);
+        $order_tracking = Tools::getValue(Shoppingfeed::ORDER_TRACKING);
 
         $shops = Shop::getShops();
         foreach ($shops as $shop) {
@@ -573,6 +593,13 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
             Configuration::updateValue(
                 Shoppingfeed::ORDER_IMPORT_SHIPPED_MARKETPLACE,
                 ($order_sync_shipped_marketplace ? true : false),
+                false,
+                null,
+                $shop['id_shop']
+            );
+            Configuration::updateValue(
+                Shoppingfeed::ORDER_TRACKING,
+                ($order_tracking ? true : false),
                 false,
                 null,
                 $shop['id_shop']

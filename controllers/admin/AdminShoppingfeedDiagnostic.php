@@ -23,6 +23,11 @@
  *
  * @version   release/2.3.2
  */
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
+require_once _PS_MODULE_DIR_ . 'shoppingfeed/vendor/autoload.php';
 
 use ShoppingfeedClasslib\Extensions\Diagnostic\Controllers\Admin\AdminDiagnosticController;
 
