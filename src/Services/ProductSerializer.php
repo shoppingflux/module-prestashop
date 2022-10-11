@@ -182,7 +182,7 @@ class ProductSerializer
     public function serializeStock($content)
     {
         $contentUpdate = $content;
-        $contentUpdate['quantity'] = $quantity = (int) StockAvailable::getQuantityAvailableByProduct($this->product->id);
+        $contentUpdate['quantity'] = $quantity = (int) StockAvailable::getQuantityAvailableByProduct($this->product->id, null, $this->id_shop);
 
         if ($quantity > 0 && empty($this->product->available_now) === false) {
             $contentUpdate['attributes']['availability_label'] = $this->product->available_now;
@@ -190,7 +190,7 @@ class ProductSerializer
             $contentUpdate['attributes']['availability_label'] = $this->product->available_later;
         }
         foreach ($contentUpdate['variations'] as $id_product_attribute => &$variation) {
-            $variation['quantity'] = $quantity = StockAvailable::getQuantityAvailableByProduct($this->product->id, $id_product_attribute);
+            $variation['quantity'] = $quantity = StockAvailable::getQuantityAvailableByProduct($this->product->id, $id_product_attribute, $this->id_shop);
             if ($quantity > 0 && empty($this->product->available_now) === false) {
                 $variation['attributes']['availability_label'] = $this->product->available_now;
             } elseif ($quantity < 1 && empty($this->product->available_later) === false) {
