@@ -611,7 +611,7 @@ class ProductSerializer
                         LEFT JOIN `' . _DB_PREFIX_ . 'category_lang` cl ON (cp.`id_category` = cl.`id_category`)
                         LEFT JOIN `' . _DB_PREFIX_ . 'category` c ON (cp.`id_category` = c.`id_category`)
                         WHERE cp.`id_product` = ' . (int) $id_product . '
-                        AND cp.`id_category` NOT IN (' . $id_category . ')
+                        AND cp.`id_category` NOT IN (' . implode(', ', array_map('intval', explode(',', $id_category))) . ')
                         AND cl.`id_lang` = ' . (int) $id_lang . '
                         ORDER BY level_depth DESC');
 

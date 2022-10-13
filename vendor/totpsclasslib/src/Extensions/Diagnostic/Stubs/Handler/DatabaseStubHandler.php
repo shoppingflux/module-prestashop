@@ -93,6 +93,7 @@ class DatabaseStubHandler extends AbstractStubHandler
 
 
         return [
+            'module_name' => $this->getStub()->getModule()->name,
             'tables' => array_map(function (DefinitionInfo $definitionInfo) {
                 return $definitionInfo->toArray();
             }, $tablesInfo),

@@ -83,7 +83,7 @@ class GithubVersionHandler extends AbstractStubHandler
         }
         $releases = json_decode($output, true);
         foreach ($releases as $k => $release) {
-            if ($release['prerelease'] != false) {
+            if (empty($release['prerelease']) === false) {
                 unset($releases[$k]);
             }
         }

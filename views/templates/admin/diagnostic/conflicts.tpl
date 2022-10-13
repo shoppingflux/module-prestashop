@@ -19,11 +19,11 @@
               <div class="form-wrapper justify-content-center col-xl-12 mt-3 {if empty($conflicts.data)}d-none{/if}">
                 <ul>
                   {foreach $conflicts.data as $conflict}
-                      <li>{$conflict}</li>
+                      <li>{$conflict|escape:'html':'UTF-8'}</li>
                   {/foreach}
                 </ul>
               </div>
-             {if $conflicts.action}
+             {if $conflicts.action|escape:'html':'UTF-8'}
                <div class="card-footer {if empty($conflicts.data)}d-none{/if}">
                  <div class="d-flex justify-content-end">
                    <a href="{$conflicts.action}" class="btn btn-lg btn-primary badge-info" type="submit">

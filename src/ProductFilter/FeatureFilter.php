@@ -40,7 +40,11 @@ class FeatureFilter implements Filter
 
     public function getSqlChunk()
     {
-        return '(ps.id_product IN (select id_product from ' . _DB_PREFIX_ . 'feature_product where id_feature_value = ' . (int) $this->featureValue->id . '))';
+        return '(ps.id_product IN (
+            SELECT id_product 
+            FROM ' . _DB_PREFIX_ . 'feature_product 
+            WHERE id_feature_value = ' . (int) $this->featureValue->id . ')
+        )';
     }
 
     public function getFilter()

@@ -29,7 +29,7 @@
                     {if $syncProduct->id == null || $syncProduct->last_update < date('Y-m-d H:i:s', (time() - 3600 * 24))}
                     <span class="value">{l s='inactive' mod='shoppingfeed'}</span>
                     {else}
-                    <span class="subtitle">{l s='Last launch' mod='shoppingfeed'} {$syncProduct->last_update}</span>
+                    <span class="subtitle">{l s='Last launch' mod='shoppingfeed'} {$syncProduct->last_update|escape:'html':'UTF-8'}</span>
                     <span class="value">{l s='active' mod='shoppingfeed'}</span>
                     {/if}
                 </div>
@@ -40,7 +40,7 @@
                 <div class="kpi-content">
                     <i class="icon-archive"></i>
                     <span class="title">{l s='Exported products' mod='shoppingfeed'}</span>
-                    <span class="value">{$count_products|default:0}</span>
+                    <span class="value">{$count_products|default:0|escape:'html':'UTF-8'}</span>
                     <span class="subtitle">{l s='Go to your XML feed' mod='shoppingfeed'}</span>
                 </div>
             </a>
@@ -50,7 +50,7 @@
                 <div class="kpi-content">
                     <i class="icon-beaker"></i>
                     <span class="title">{l s='Product feed indexing' mod='shoppingfeed'}</span>
-                    <span class="value">{$percent_preloading|default:0}% {l s='of your catalog' mod='shoppingfeed'}</span>
+                    <span class="value">{$percent_preloading|default:0|escape:'html':'UTF-8'}% {l s='of your catalog' mod='shoppingfeed'}</span>
                     <span class="subtitle">{l s='Purge cache' mod='shoppingfeed'}</span>
                 </div>
             </a>

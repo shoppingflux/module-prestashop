@@ -775,7 +775,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
                     $groupFilterCollection[] = $filter->getSqlChunk();
                 }
 
-                $sqlFilter[] = implode(' and ', $groupFilterCollection);
+                $sqlFilter[] = implode(' AND ', $groupFilterCollection);
             }
 
             $sqlFilter = array_map(
@@ -787,7 +787,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         }
 
         if (count($sqlFilter) > 0) {
-            $sql->where(implode(' or ', $sqlFilter));
+            $sql->where(implode(' OR ', $sqlFilter));
         }
         if ((bool) Configuration::getGlobalValue(Shoppingfeed::PRODUCT_FEED_SYNC_PACK) !== true) {
             $sql->where('p.cache_is_pack = 0');
@@ -1102,7 +1102,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         $products = [];
         $sql = new DbQuery();
         $sql->from(Product::$definition['table'])
-            ->where('id_category_default in(' . implode(',', $categoryIds) . ')');
+            ->where('id_category_default IN (' . implode(', ', array_map('intval', $categoryIds)) . ')');
         $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
 
         return $result === [] ? [] : array_column($result, 'id_product');

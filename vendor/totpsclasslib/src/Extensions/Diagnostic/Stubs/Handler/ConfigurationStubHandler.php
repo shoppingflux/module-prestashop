@@ -39,6 +39,7 @@ class ConfigurationStubHandler extends AbstractStubHandler
     {
         $configurations = $this->getConfigurations();
         return [
+            'module_name' => $this->getStub()->getModule()->name,
             'configurations' => array_map(function (ConfigurationModel $configurationModel) {
                 return $configurationModel->toArray();
             }, $configurations),

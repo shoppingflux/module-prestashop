@@ -1,19 +1,19 @@
 {if empty($fileContent) && empty($dbContent)}
     {l s='Log unavailable' mod='shoppingfeed'}
 {elseif !empty($fileContent)}
-  <pre>{$fileContent}</pre>
+  <pre>{$fileContent|escape:'html':'UTF-8'}</pre>
 {elseif !empty($dbContent)}
   <table class="table border">
     <thead>
     {foreach $dbContent.headers as $header}
-      <th>{$header}</th>
+      <th>{$header|escape:'html':'UTF-8'}</th>
     {/foreach}
     </thead>
     <tbody>
     {foreach $dbContent.content as $line}
         <tr>
           {foreach $line as $name => $value}
-            <td>{$value}</td>
+            <td>{$value|escape:'html':'UTF-8'}</td>
           {/foreach}
         </tr>
     {/foreach}

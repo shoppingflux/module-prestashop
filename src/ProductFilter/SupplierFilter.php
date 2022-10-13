@@ -36,7 +36,11 @@ class SupplierFilter implements Filter
 
     public function getSqlChunk()
     {
-        return '(ps.id_product IN (select id_product from ' . _DB_PREFIX_ . 'product_supplier where id_supplier = ' . (int) $this->supplier->id . '))';
+        return '(ps.id_product IN (
+            SELECT id_product 
+            FROM ' . _DB_PREFIX_ . 'product_supplier 
+            WHERE id_supplier = ' . (int) $this->supplier->id . ')
+        )';
     }
 
     public function getFilter()

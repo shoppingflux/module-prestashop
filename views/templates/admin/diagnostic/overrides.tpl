@@ -16,7 +16,7 @@
                 {/if}
             </div>
             <div class="form-wrapper justify-content-center col-xl-12 mt-3 d-none">
-              <div class="mt-2 alert alert-info">{l s='Overrides may cause conflits with Shoppingfeed modules. As all customizations, overrides get complexity to your PrestaShop.' mod='shoppingfeed'}</div>
+              <div class="mt-2 alert alert-info">{l s='Overrides may cause conflits with %s modules. As all customizations, overrides get complexity to your PrestaShop.' sprintf=[$module_name|escape:'html':'UTF-8'] mod='totsupport'}</div>
               {foreach name="overrides" from=$overrides item=override}
                 {if $smarty.foreach.overrides.first}
                   <p>
@@ -24,7 +24,7 @@
                   </p>
                   <ul>
                 {/if}
-                <li>{$override}</li>
+                <li>{$override|escape:'html':'UTF-8'}</li>
                 {if $smarty.foreach.overrides.last}
                   </ul>
                 {/if}
