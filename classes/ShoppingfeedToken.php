@@ -138,7 +138,7 @@ class ShoppingfeedToken extends ObjectModel
         $query = (new DbQuery())
             ->select('*')
             ->from(self::$definition['table'])
-            ->where("content = '$token'")
+            ->where('content = "' . pSQL($token) . '"')
         ;
 
         return Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($query);
