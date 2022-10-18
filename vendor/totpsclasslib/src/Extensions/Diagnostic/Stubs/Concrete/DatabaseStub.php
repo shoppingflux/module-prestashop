@@ -42,7 +42,7 @@ class DatabaseStub extends AbstractStub
 
     const OPTIMIZE_TABLES_EVENT = 'optimizeTables';
 
-    public function __construct()
+    public function __construct($parameters = [])
     {
         parent::__construct();
         $this->tpl = _PS_MODULE_DIR_ . 'shoppingfeed/views/templates/admin/diagnostic/database.tpl';

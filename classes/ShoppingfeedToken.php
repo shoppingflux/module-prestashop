@@ -113,7 +113,7 @@ class ShoppingfeedToken extends ObjectModel
         $sql = new DbQuery();
         $sql->select('*')
             ->from(self::$definition['table'])
-            ->where('id_shop IN(' . implode(', ', $idShops) . ')')
+            ->where('id_shop IN(' . implode(', ', array_map('intval', $idShops)) . ')')
             ->where('active = 1');
 
         return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);

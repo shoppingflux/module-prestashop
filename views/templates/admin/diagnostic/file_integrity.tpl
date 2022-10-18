@@ -10,23 +10,42 @@
                   {l s='File integrity' mod='shoppingfeed'}
               </div>
                 {if isset($missing) == false}
-                  <div class="badge-secondary px-2 mb-0">{l s='Not available' mod='shoppingfeed'}</div>
-                {elseif empty($created) || empty($missing) || empty($updated)}
-                  <div class="badge-success px-2 mb-0">{l s='There are no missing or updated files' mod='shoppingfeed'}</div>
+                  <div class="badge-secondary px-2 mb-0">
+                    {l s='Not available' mod='shoppingfeed'}
+                  </div>
+                {elseif empty($created) && empty($missing) && empty($updated)}
+                  <div class="badge-success px-2 mb-0">
+                    {l s='There are no missing or updated files' mod='shoppingfeed'}
+                  </div>
                 {else}
-                  <div class="badge-danger color-light px-2 mb-0">{l s='Missing or updated files found' mod='shoppingfeed'}</div>
+                  <div class="badge-danger color-light px-2 mb-0">
+                    {l s='Missing or updated files found' mod='shoppingfeed'}
+                  </div>
                 {/if}
             </div>
             <div class="form-wrapper justify-content-center col-xl-12 mt-3 d-none">
-              <div class="mt-2 alert alert-info">{l s='Compare your shoppingfeed module files with the official package of the same release.' mod='shoppingfeed'}</div>
+                <div class="mt-2 alert alert-info">{l s='Compare your %s module files with the official package of the same release.' sprintf=[$module_name|escape:'html':'UTF-8'] mod='shoppingfeed'}</div>
                 {if !empty($missing)}
                   <p>{l s='These files are not found in your server, you should add it:' mod='shoppingfeed'}</p>
                   <ul class="list-unstyled">
-                      {foreach $created as $missingFile}
-                        <li><span class="material-icons">add</span> <abbr title="{l s='File added relative to the original package' mod='shoppingfeed'}">{$missingFile}</abbr></li>
-                      {/foreach}
                       {foreach $missing as $missingFile}
-                        <li><span class="material-icons">remove</span> <abbr title="{l s='File deleted relative to the original package' mod='shoppingfeed'}">{$missingFile}</abbr></li>
+                        <li>
+                          <span class="material-icons">remove</span>
+                          <abbr title="{l s='File deleted relative to the original package' mod='shoppingfeed'}">
+                            {$missingFile|escape:'html':'UTF-8'}</abbr>
+                        </li>
+                      {/foreach}
+                  </ul>
+                {/if}
+                {if !empty($created)}
+                  <p>{l s='These files are found in your server, but not in the original package:' mod='shoppingfeed'}</p>
+                  <ul class="list-unstyled">
+                      {foreach $created as $createdFile}
+                        <li>
+                          <span class="material-icons">add</span>
+                          <abbr title="{l s='File added relative to the original package' mod='shoppingfeed'}">
+                            {$createdFile|escape:'html':'UTF-8'}</abbr>
+                        </li>
                       {/foreach}
                   </ul>
                 {/if}
@@ -35,9 +54,9 @@
                   <div>
                       {foreach $updated as $updatedFile}
                         <details class="mb-2">
-                          <summary>{$updatedFile.path}</summary>
+                          <summary>{$updatedFile.path|escape:'html':'UTF-8'}</summary>
                           <code>
-                            <pre class="mt-2">{$updatedFile.diff|htmlentities}</pre>
+                            <pre class="mt-2">{$updatedFile.diff|escape:'html':'UTF-8'}}</pre>
                           </code>
                         </details>
                       {/foreach}

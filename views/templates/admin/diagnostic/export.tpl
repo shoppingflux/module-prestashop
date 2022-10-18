@@ -15,7 +15,7 @@
             </div>
             <div class="card-footer">
               <div class="d-flex justify-content-end">
-                <a href="{$exportStubLink}" class="btn btn-default">{l s='Export' mod='shoppingfeed'}</a>
+                <a href="{$exportStubLink|escape:'html':'UTF-8'}" class="btn btn-default">{l s='Export' mod='shoppingfeed'}</a>
               </div>
             </div>
           </div>

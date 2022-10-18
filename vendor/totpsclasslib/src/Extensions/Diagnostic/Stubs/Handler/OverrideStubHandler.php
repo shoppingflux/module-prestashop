@@ -38,6 +38,7 @@ class OverrideStubHandler extends AbstractStubHandler
         });
 
         return [
+            'module_name' => $this->getStub()->getModule()->name,
             'overrides' => $overrides,
         ];
     }

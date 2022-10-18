@@ -36,6 +36,11 @@ final class Product extends AbstractProduct
     /**
      * @var float
      */
+    private $ecotax = .0;
+
+    /**
+     * @var float
+     */
     private $vat = .0;
 
     /**
@@ -207,6 +212,25 @@ final class Product extends AbstractProduct
         }
 
         return false;
+    }
+    /**
+     * @return float
+     */
+    public function getEcotax()
+    {
+        return $this->ecotax;
+    }
+
+    /**
+     * @param float $ecotax
+     *
+     * @return $this
+     */
+    public function setEcotax($ecotax)
+    {
+        $this->ecotax = \ShoppingFeed\Feed\price_format($ecotax);
+
+        return $this;
     }
 
     /**

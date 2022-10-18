@@ -22,19 +22,30 @@ class ComposerAutoloaderInit3fe85f86ff701f6bd7fd7d7a118b5533
             return self::$loader;
         }
 
-        require __DIR__ . '/platform_check.php';
-
         spl_autoload_register(array('ComposerAutoloaderInit3fe85f86ff701f6bd7fd7d7a118b5533', 'loadClassLoader'), true, false);
-        self::$loader = $loader = new \Composer\Autoload\ClassLoader(\dirname(__DIR__));
+        self::$loader = $loader = new \Composer\Autoload\ClassLoader(\dirname(\dirname(__FILE__)));
         spl_autoload_unregister(array('ComposerAutoloaderInit3fe85f86ff701f6bd7fd7d7a118b5533', 'loadClassLoader'));
 
-        require __DIR__ . '/autoload_static.php';
-        call_user_func(\Composer\Autoload\ComposerStaticInit3fe85f86ff701f6bd7fd7d7a118b5533::getInitializer($loader));
+        $useStaticLoader = PHP_VERSION_ID >= 50600 && !defined('HHVM_VERSION') && (!function_exists('zend_loader_file_encoded') || !zend_loader_file_encoded());
+        if ($useStaticLoader) {
+            require __DIR__ . '/autoload_static.php';
+
+            call_user_func(\Composer\Autoload\ComposerStaticInit3fe85f86ff701f6bd7fd7d7a118b5533::getInitializer($loader));
+        } else {
+            $classMap = require __DIR__ . '/autoload_classmap.php';
+            if ($classMap) {
+                $loader->addClassMap($classMap);
+            }
+        }
 
         $loader->setClassMapAuthoritative(true);
         $loader->register(false);
 
-        $includeFiles = \Composer\Autoload\ComposerStaticInit3fe85f86ff701f6bd7fd7d7a118b5533::$files;
+        if ($useStaticLoader) {
+            $includeFiles = Composer\Autoload\ComposerStaticInit3fe85f86ff701f6bd7fd7d7a118b5533::$files;
+        } else {
+            $includeFiles = require __DIR__ . '/autoload_files.php';
+        }
         foreach ($includeFiles as $fileIdentifier => $file) {
             composerRequire3fe85f86ff701f6bd7fd7d7a118b5533($fileIdentifier, $file);
         }
@@ -43,16 +54,11 @@ class ComposerAutoloaderInit3fe85f86ff701f6bd7fd7d7a118b5533
     }
 }
 
-/**
- * @param string $fileIdentifier
- * @param string $file
- * @return void
- */
 function composerRequire3fe85f86ff701f6bd7fd7d7a118b5533($fileIdentifier, $file)
 {
     if (empty($GLOBALS['__composer_autoload_files'][$fileIdentifier])) {
-        $GLOBALS['__composer_autoload_files'][$fileIdentifier] = true;
-
         require $file;
+
+        $GLOBALS['__composer_autoload_files'][$fileIdentifier] = true;
     }
 }

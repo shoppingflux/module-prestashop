@@ -187,7 +187,7 @@
                       <ul>
                           {foreach from=$checks.testsRequired item='value' key='key'}
                               {if $value eq 'fail' && isset($checks.testsErrors[$key])}
-                                <li>{$checks.testsErrors[$key]}</li>
+                                <li>{$checks.testsErrors[$key]|escape:'html':'UTF-8'}</li>
                               {/if}
                           {/foreach}
                       </ul>
@@ -204,7 +204,7 @@
                               <ul>
                                   {foreach from=$checks.testsOptional item='value' key='key'}
                                       {if $value eq 'fail' && isset($checks.testsErrors[$key])}
-                                        <li>{$checks.testsErrors[$key]}</li>
+                                        <li>{$checks.testsErrors[$key]|escape:'html':'UTF-8'}</li>
                                       {/if}
                                   {/foreach}
                               </ul>

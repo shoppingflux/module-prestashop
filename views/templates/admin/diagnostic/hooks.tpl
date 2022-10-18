@@ -16,7 +16,7 @@
                 {/if}
             </div>
             <div class="form-wrapper justify-content-center col-xl-12 mt-3 {if empty($hooksOnError)}d-none{/if}">
-              <div class="mt-2 alert alert-info">{l s='Check if hooks of Shoppingfeed module are all plugged.' mod='shoppingfeed'}</div>
+              <div class="mt-2 alert alert-info">{l s='Check if hooks of %s module are all plugged.' sprintf=[$module_name|escape:'html':'UTF-8'] mod='totsupport'}</div>
               <div class="table-wrapper">
                 <table class="table border-bottom">
                   <thead>
@@ -24,7 +24,7 @@
                     <th>#</th>
                     <th>{l s='Hook name' mod='shoppingfeed'}</th>
                       {foreach $shopList as $shop}
-                        <th>{l s='Shop' mod='shoppingfeed'}: {$shop.name}</th>
+                        <th>{l s='Shop' mod='shoppingfeed'}: {$shop.name|escape:'html':'UTF-8'}</th>
                       {/foreach}
                     <th>{l s='Actions' mod='shoppingfeed'}</th>
                   </tr>
@@ -34,7 +34,7 @@
                       {assign var='shouldBeFixed' value=false}
                     <tr>
                       <td>{$index + 1}</td>
-                      <td>{$hook.name}</td>
+                      <td>{$hook.name|escape:'html':'UTF-8'}</td>
                         {foreach $shopList as $shop}
                             {foreach $hook.shops as $hookShop}
                                 {if $shop.id_shop == $hookShop.id}
@@ -43,7 +43,7 @@
                                         <span class="badge badge-success">{l s='OK' mod='shoppingfeed'}</span>
                                       {else}
                                           {assign var='shouldBeFixed' value=true}
-                                        <a href="{$actionsLink|cat:'&id_shop='|cat:$hookShop.id|cat:'&hookName='|cat:$hook.name|cat:'&event=fixHook'}">
+                                        <a href="{$actionsLink|cat:'&id_shop='|cat:$hookShop.id|cat:'&hookName='|cat:$hook.name|cat:'&event=fixHook'|escape:'html':'UTF-8'}">
                                           <span class="badge badge-danger">{l s='KO' mod='shoppingfeed'}</span>
                                         </a>
                                       {/if}
@@ -57,7 +57,7 @@
                           {else}
                             <a class="btn btn-danger py-0"
                                style="color: #fff;"
-                               href="{$actionsLink|cat:'&hookName='|cat:$hook.name|cat:'&event=fixHooks'}">
+                               href="{$actionsLink|cat:'&hookName='|cat:$hook.name|cat:'&event=fixHooks'|escape:'html':'UTF-8'}">
                                 {l s='Fix hook' mod='shoppingfeed'}
                             </a>
                           {/if}
@@ -72,12 +72,12 @@
                     <p>{l s='The next hooks should be activated for your module' mod='shoppingfeed'}</p>
                     <ul>
                         {foreach $hooksOnError as $hook}
-                          <li>{$hook}</li>
+                          <li>{$hook|escape:'html':'UTF-8'}</li>
                         {/foreach}
                     </ul>
                     <a class="btn btn-danger py-0"
                        style="color: #fff;"
-                       href="{$actionsLink|cat:'&event=fixAllHooks'}">
+                       href="{$actionsLink|cat:'&event=fixAllHooks'|escape:'html':'UTF-8'}">
                         {l s='Fix all hooks' mod='shoppingfeed'}
                     </a>
                   </div>

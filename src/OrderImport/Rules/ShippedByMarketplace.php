@@ -38,6 +38,7 @@ use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 use StockAvailable;
+use Tools;
 use Validate;
 
 /**
@@ -275,6 +276,12 @@ class ShippedByMarketplace extends RuleAbstract implements RuleInterface
 
         if ($this->isShippedManomano($apiOrder)) {
             return true;
+        }
+
+        if (false == empty($apiOrder->toArray()['fulfilledBy'])) {
+            if (Tools::strtolower($apiOrder->toArray()['fulfilledBy']) == 'channel') {
+                return true;
+            }
         }
 
         return false;

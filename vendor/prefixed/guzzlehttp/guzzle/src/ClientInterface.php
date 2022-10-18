@@ -1,8 +1,8 @@
 <?php
 namespace SfGuzzle\GuzzleHttp;
 
-use SfGuzzle\GuzzleHttp\Promise\PromiseInterface;
 use SfGuzzle\GuzzleHttp\Exception\GuzzleException;
+use SfGuzzle\GuzzleHttp\Promise\PromiseInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\UriInterface;
@@ -12,7 +12,10 @@ use Psr\Http\Message\UriInterface;
  */
 interface ClientInterface
 {
-    const VERSION = '6.3.3';
+    /**
+     * @deprecated Will be removed in Guzzle 7.0.0
+     */
+    const VERSION = '6.5.5';
 
     /**
      * Send an HTTP request.

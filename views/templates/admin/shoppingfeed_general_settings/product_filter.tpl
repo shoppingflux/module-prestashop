@@ -28,71 +28,12 @@
             <i class="icon-cog"></i> {l s='Products selection' mod='shoppingfeed'}
         </div>
         <div class="form-wrapper">
-            <div class="shoppingfeed_form-section">
-                <h2>{l s='Choose the products send to Shopping Feed' mod='shoppingfeed'}</h2>
-                <div class="form-group">
-                    <label class="control-label col-lg-3">
-                        {l s='Add a rule concerning' mod='shoppingfeed'}
-                    </label>
-                    <div class="col-lg-9">
-                        <select class="fixed-width-xl" id="product_rule_type">
-                            <option value="">{l s='-- Choose --' mod='shoppingfeed'}</option>
-                            <option value="products">{l s='Products' mod='shoppingfeed'}</option>
-                            <option value="attributes">{l s='Attributes' mod='shoppingfeed'}</option>
-                            <option value="categories">{l s='Categories' mod='shoppingfeed'}</option>
-                            <option value="manufacturers">{l s='Manufacturers' mod='shoppingfeed'}</option>
-                            <option value="suppliers">{l s='Suppliers' mod='shoppingfeed'}</option>
-                            <option value="features">{l s='Features' mod='shoppingfeed'}</option>
-                        </select>
-                        <a id="buttonAddProductRuleGroup" class="btn btn-default ">
-                            <i class="icon-plus-sign"></i>{l s='Product selection' d='Admin.Catalog.Feature'}
-                        </a>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="control-label col-lg-3">
-                    </label>
-                    <div class="col-lg-9">
-                        <table id="product_rule_table" class="table table-bordered">
-                            <tbody>
-                                {foreach from=$product_filters key=type item=product_filter}
-                                <tr data-type="{$type}">
-                                    <td class="type">
-                                        {if $type === 'products'}
-                                            {l s='Products' mod='shoppingfeed'}
-                                        {elseif $type === 'attributes'}
-                                            {l s='Attributes' mod='shoppingfeed'}
-                                        {elseif $type === 'categories'}
-                                            {l s='Categories' mod='shoppingfeed'}
-                                        {elseif $type === 'manufacturers'}
-                                            {l s='Manufacturers' mod='shoppingfeed'}
-                                        {elseif $type === 'suppliers'}
-                                            {l s='Suppliers' mod='shoppingfeed'}
-                                        {elseif $type === 'features'}
-                                            {l s='Features' mod='shoppingfeed'}
-                                        {/if}
-                                    </td>
-                                    <td class="product_filter">
-                                        <input type="text" value="" disabled="disabled" />
-                                    </td>
-                                    <td class="product_input">
-                                        <a class="btn btn-default product_rule_choose_link" >
-                                            <i class="icon-list-ul"></i>
-                                        </a>
-                                        <input type="hidden" name="product_rule_select[{$type}][]" value="{$product_filter}"/>
-                                    </td>
-                                    <td class="text-right">
-                                        <a class="btn btn-default product_rule_remove" >
-                                        <i class="icon-remove"></i>
-                                        </a>
-                                    </td>
-                                </tr>
-                                {/foreach}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
+          <div class="shoppingfeed_form-section">
+            <h2>{l s='Choose the products send to Shopping Feed' mod='shoppingfeed'}</h2>
+
+            <div id="condition-container"></div>
+          </div>
+
             <div class="shoppingfeed_form-section">
                 <h2>{l s='Send products depending to their visibility' mod='shoppingfeed'}</h2>
                 <div class="form-group form-check">
@@ -117,3 +58,21 @@
         </div>
     </div>
 </form>
+
+<script>
+  var ruleGenerator = new RuleConditionGenerator({});
+  ruleGenerator.init(document.getElementById('condition-container'));
+
+  {foreach from=$product_filters item=groupFilter}
+      ruleGenerator.addNewConditionSet();
+      {foreach from=$groupFilter item=filter}
+          ruleGenerator.addCondition({
+              filter: '{$filter->getFilter() nofilter}',
+              type: '{$filter->getType()|escape:'htmlall':'utf-8'}',
+              value: '{$filter->getValue()|escape:'htmlall':'utf-8'}'
+          });
+      {/foreach}
+  {/foreach}
+
+
+</script>

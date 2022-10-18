@@ -197,10 +197,10 @@ class ShoppingfeedSyncProductModuleFrontController extends ShoppingfeedCronContr
             JOIN %1$sproduct p on p.id_product = sp.id_product
             join %1$sshoppingfeed_token st on st.id_shoppingfeed_token = sp.id_token
             JOIN %1$sproduct_shop ps on ps.id_product = sp.id_product and ps.id_shop = st.id_shop
-            where sp.date_upd < p.date_upd or sp.date_upd < ps.date_upd;
+            WHERE sp.date_upd < p.date_upd or sp.date_upd < ps.date_upd;
             ',
             _DB_PREFIX_,
-            $task
+            pSQL($task)
         );
     }
 

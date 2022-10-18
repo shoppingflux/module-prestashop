@@ -49,9 +49,12 @@ class ShoppingfeedOrder extends ObjectModel
     public $date_marketplace_creation;
 
     public $date_add;
+
     public $date_upd;
 
     public $failed_ticket;
+
+    public $additionalFields;
 
     public static $definition = [
         'table' => 'shoppingfeed_order',
@@ -100,6 +103,12 @@ class ShoppingfeedOrder extends ObjectModel
             'failed_ticket' => [
                 'type' => ObjectModel::TYPE_INT,
                 'validate' => 'isInt',
+                'allow_null' => true,
+            ],
+            'additionalFields' => [
+                'type' => ObjectModel::TYPE_HTML,
+                'validate' => 'isString',
+                'required' => false,
                 'allow_null' => true,
             ],
             'date_add' => [

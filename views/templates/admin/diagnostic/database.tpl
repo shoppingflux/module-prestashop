@@ -16,16 +16,16 @@
                 {/if}
             </div>
             <div class="form-wrapper justify-content-center col-xl-12 mt-3 {if !$hasDatabaseErrors && empty($queries) && empty($optimizeQueries)}d-none{/if}">
-                <div class="mt-2 alert alert-info">{l s='Compare your shoppingfeed datablase schema with the official package of the same release.' mod='shoppingfeed'}</div>
+                <div class="mt-2 alert alert-info">{l s='Compare your %s database schema with the official package of the same release.' sprintf=$module_name mod='shoppingfeed'}</div>
                 <div>
                   {foreach $tables as $tableTypeName => $tableTypes}
                       {foreach $tableTypes as $tableType}
                           {if !empty($tableType)}
-                            <div>{l s='Table '} <strong>{$tableType.name}</strong></div>
+                            <div>{l s='Table '} <strong>{$tableType.name|escape:'html':'UTF-8'}</strong></div>
                               {if !empty($tableType.errors)}
                                 <ul>
                                     {foreach $tableType.errors as $tableTypeError}
-                                      <li><span class="badge-danger px-2">{$tableTypeError}</span></li>
+                                      <li><span class="badge-danger px-2">{$tableTypeError|escape:'html':'UTF-8'}</span></li>
                                     {/foreach}
                                 </ul>
                               {/if}
@@ -40,17 +40,17 @@
                                     <tbody>
                                     {foreach $tableType.fields as $field}
                                       <tr>
-                                        <td style="width: 20%">{$field.column}</td>
+                                        <td style="width: 20%">{$field.column|escape:'html':'UTF-8'}</td>
                                           {if !empty($field.errors)}
                                             <td>
                                               <ul>
                                                   {foreach $field.errors as $fieldError}
                                                     <li>{l s='Error: '} <span
-                                                              class="badge-danger px-1">{$fieldError.text}</span></li>
+                                                              class="badge-danger px-1">{$fieldError.text|escape:'html':'UTF-8'}</span></li>
                                                     <li>{l s='Actual: '} <span
-                                                              class="badge-warning px-1">{$fieldError.actual}</span></li>
+                                                              class="badge-warning px-1">{$fieldError.actual|escape:'html':'UTF-8'}</span></li>
                                                     <li>{l s='Should be: '} <span
-                                                              class="badge-success px-1">{$fieldError.fixed}</span></li>
+                                                              class="badge-success px-1">{$fieldError.fixed|escape:'html':'UTF-8'}</span></li>
                                                   {/foreach}
                                               </ul>
                                             </td>
@@ -75,14 +75,14 @@
                   <h3>{l s='PS Database problems' mod='shoppingfeed'}</h3>
                     {function name='renderDbProblems'}
                         {foreach $queryItems as $queryName => $queryModels}
-                          <div class="font-weight-bold text-warning mb-2">{$queryName}</div>
+                          <div class="font-weight-bold text-warning mb-2">{$queryName|escape:'html':'UTF-8'}</div>
                             {foreach $queryModels as $queryModel}
                               <div class="border p-1 mb-1">
                                 <div class="mb-1">
-                                  <span class="font-weight-bold">{l s='Query: ' mod='shoppingfeed'}{$queryModel.query}</span>
+                                  <span class="font-weight-bold">{l s='Query: ' mod='shoppingfeed'}{$queryModel.query|escape:'html':'UTF-8'}</span>
                                 </div>
                                 <div class="mb-1">
-                                  <span class="font-weight-bold">{l s='Fix query: ' mod='shoppingfeed'}{$queryModel.fix_query}</span>
+                                  <span class="font-weight-bold">{l s='Fix query: ' mod='shoppingfeed'}{$queryModel.fix_query|escape:'html':'UTF-8'}</span>
                                 </div>
                                 {if !empty($queryModel.rows)}
                                   <div class="table-wrapper">
@@ -90,14 +90,14 @@
                                       <thead>
                                         <tr>
                                           {foreach $queryModel.headers as $header}
-                                            <th>{$header}</th>
+                                            <th>{$header|escape:'html':'UTF-8'}</th>
                                           {/foreach}
                                         </tr>
                                         <tbody>
                                           {foreach $queryModel.rows as $row}
                                             <tr>
                                                 {foreach $row as $column}
-                                                  <td>{$column}</td>
+                                                  <td>{$column|escape:'html'|truncate:150}</td>
                                                 {/foreach}
                                             </tr>
                                           {/foreach}
@@ -106,7 +106,11 @@
                                     </table>
                                   </div>
                                 {/if}
-                                {$queryModel.countRows}{l s=' résultats.' mod='shoppingfeed'}
+                                  {if empty($queryModel.countRows) === true}
+                                    {$queryModel.rows|count}{l s=' résultats.' mod='shoppingfeed'}
+                                  {else}
+                                    {$queryModel.countRows|escape:'html':'UTF-8'}{l s=' résultats.' mod='shoppingfeed'}
+                                  {/if}
                               </div>
                             {/foreach}
                         {/foreach}
@@ -124,17 +128,17 @@
             <div class="card-footer {if !$hasDatabaseErrors && empty($queries) && empty($optimizeQueries)}d-none{/if}">
               <div class="justify-content-end {if !$hasDatabaseErrors && empty($queries) && empty($optimizeQueries)}d-none{else}d-flex{/if}">
                 {if $hasDatabaseErrors}
-                  <a href="{$actionsLink|cat:'&event=fixModuleTables'}" class="btn btn-lg btn-primary badge-info mx-1">
+                  <a href="{$actionsLink|cat:'&event=fixModuleTables'|escape:'html':'UTF-8'}" class="btn btn-lg btn-primary badge-info mx-1">
                       {l s='Fix module tables' mod='shoppingfeed'}
                   </a>
                 {/if}
                 {if !empty($queries)}
-                  <a href="{$actionsLink|cat:'&event=fixTables'}" class="btn btn-lg btn-primary badge-info mx-1">
+                  <a href="{$actionsLink|cat:'&event=fixTables'|escape:'html':'UTF-8'}" class="btn btn-lg btn-primary badge-info mx-1">
                       {l s='Fix Prestashop tables' mod='shoppingfeed'}
                   </a>
                 {/if}
                 {if !empty($optimizeQueries)}
-                  <a href="{$actionsLink|cat:'&event=optimizeTables'}" class="btn btn-lg btn-primary badge-info mx-1">
+                  <a href="{$actionsLink|cat:'&event=optimizeTables'|escape:'html':'UTF-8'}" class="btn btn-lg btn-primary badge-info mx-1">
                       {l s='Optimize tables' mod='shoppingfeed'}
                   </a>
                 {/if}

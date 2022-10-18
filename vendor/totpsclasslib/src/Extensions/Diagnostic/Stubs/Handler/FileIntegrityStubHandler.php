@@ -41,14 +41,19 @@ class FileIntegrityStubHandler extends AbstractStubHandler
 
     public function handle()
     {
+        $response = [
+            'module_name' => $this->getStub()->getModule()->name,
+        ];
         $respositoryInfo = $this->getRepositoryInfo();
         foreach ($respositoryInfo as $repository) {
             if ($repository['tag_name'] == $this->getStub()->getParameters()->getModuleVersion()) {
-                return $this->getDifferences($repository);
+                $differences = $this->getDifferences($repository);
+                if(!empty($differences)) {
+                    return array_merge($differences, $response);
+                }
             }
         }
-
-        return null;
+        return $response;
     }
 
     protected function getRepositoryInfo()
@@ -84,7 +89,7 @@ class FileIntegrityStubHandler extends AbstractStubHandler
 
         $releases = json_decode($output, true);
         foreach ($releases as $k => $release) {
-            if ($release['prerelease'] != false) {
+            if (empty($release['prerelease']) === false) {
                 unset($releases[$k]);
             }
         }
@@ -108,7 +113,6 @@ class FileIntegrityStubHandler extends AbstractStubHandler
             }
             return $this->buildDifferenceArray($md5file);
         }
-
         return null;
     }
 
@@ -129,7 +133,6 @@ class FileIntegrityStubHandler extends AbstractStubHandler
         }
 
         $lines = preg_split("/\r\n|\r|\n/", $md5file);
-
         foreach ($lines as &$line) {
             $line = preg_split('/\s/', $line, -1, PREG_SPLIT_NO_EMPTY);
             if (!empty($line[1])) {
@@ -148,21 +151,30 @@ class FileIntegrityStubHandler extends AbstractStubHandler
             'updated' => [],
         ];
 
-        foreach ($md5file as $item) {
-            if (empty($item[0]) || empty($item[1])) {
+        $files = [];
+
+        foreach ($md5file as $file) {
+            if (empty($file)){
                 continue;
             }
-            $path = _PS_MODULE_DIR_ . $this->getStub()->getModule()->name . '/' . $item[1];
+            list($md5, $fileName) = $file;
+            if (empty($md5) || empty($fileName)) {
+                continue;
+            }
+
+            $files[$fileName] = $md5;
+
+            $path = _PS_MODULE_DIR_ . $this->getStub()->getModule()->name . '/' . $fileName;
             if (!file_exists($path)) {
-                $differences['missing'][] = $item[1];
+                $differences['missing'][] = $fileName;
             } else {
                 $md5local = md5_file($path);
                 $allowDiff = $this->getStub()->getParameters()->getAllowDiff();
-                if ($md5local !== (string) $item[0]) {
+                if ($md5local !== (string) $md5) {
                     // Diff not computed
                     if ($allowDiff === false) {
                         $updated = [
-                            'path' => $item[1],
+                            'path' => $fileName,
                             'diff' => '',
                         ];
                         $differences['updated'][] = $updated;
@@ -172,34 +184,32 @@ class FileIntegrityStubHandler extends AbstractStubHandler
                         self::GIT_FILE_PATH,
                         $this->getStub()->getParameters()->getRepository(),
                         $this->getStub()->getParameters()->getModuleVersion(),
-                        $item[1]
+                        $fileName
                     );
                     $urlContent = file_get_contents($url);
-                    $diffHandler = (new DiffHandler())
-                        ->setModule($this->getStub()->getModule());
-
+                    $diffHandler = (new DiffHandler())->setModule($this->getStub()->getModule());
                     $updated = [
-                        'path' => $item[1],
+                        'path' => $fileName,
                         'diff' => $diffHandler->handle($urlContent, file_get_contents($path)),
                     ];
                     $differences['updated'][] = $updated;
                 }
             }
         }
+
         $path = _PS_MODULE_DIR_ . $this->getStub()->getModule()->name;
 	    $directory = new \RecursiveDirectoryIterator($path);
 	    $iterator = new \RecursiveIteratorIterator($directory);
         foreach($iterator as $item) {
             $pathname = substr($item->getPathname(), strlen($path) + 1);
 	        if ($item->isDir()) {
-	           continue;
+                continue;
 	        }
-	        if (isset($files['./' . $pathname])) {
-	           continue;
+	        if (isset($files[$pathname])) {
+                continue;
 	        }
             $differences['created'][] = $pathname;
 	    }
-
         return $differences;
     }
 

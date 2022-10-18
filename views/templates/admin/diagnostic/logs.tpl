@@ -24,10 +24,10 @@
                         <div class="panel panel-default mb-3">
                           <div class="panel-heading shoppingfeed-collapse"
                                 data-type="files"
-                                data-value="{$file.path}">
+                                data-value="{$file.path|escape:'html':'UTF-8'}">
                             <h4 class="panel-title mb-0">
                               <a role="button" href="#">
-                                {l s='Log - ' mod='shoppingfeed'} {$file.path} - {$file.size}
+                                {l s='Log - ' mod='shoppingfeed'} {$file.path|escape:'html':'UTF-8'} - {$file.size|escape:'html':'UTF-8'}
                               </a>
                             </h4>
                             <small>{l s='will be exported only if less than 2Mo' mod='shoppingfeed'}</small>
@@ -38,7 +38,7 @@
                               <div class="d-flex justify-content-end">
                                 {if $file.downloadYes}
                                   <a class="btn btn-outline-primary"
-                                    href="{$actionsLink|cat:'&event=downloadLog'|cat:'&value='|cat:$file.path|cat:'&type=files'}">
+                                    href="{$actionsLink|cat:'&event=downloadLog'|cat:'&value='|cat:$file.path|cat:'&type=files'|escape:'html':'UTF-8'}">
                                     {l s='Download' mod='shoppingfeed'}
                                   </a>
                                 {/if}
@@ -55,11 +55,11 @@
                         <div class="panel panel-default mb-3">
                           <div class="panel-heading shoppingfeed-collapse"
                                data-type="db"
-                               data-value="{$db}">
+                               data-value="{$db|escape:'html':'UTF-8'}">
                             <h4 class="panel-title mb-0">
                               <a role="button" href="#">
-                                {l s='Log - ' mod='shoppingfeed'} {$db} - {$dbValues.countLines}
-                                {l s='rows /' mod='shoppingfeed'} {$dbValues.xLastDays}
+                                {l s='Log - ' mod='shoppingfeed'} {$db|escape:'html':'UTF-8'} - {$dbValues.countLines|escape:'html':'UTF-8'}
+                                {l s='rows /' mod='shoppingfeed'} {$dbValues.xLastDays|escape:'html':'UTF-8'}
                                 {l s=' last days' mod='shoppingfeed'}
                               </a>
                             </h4>
@@ -69,7 +69,7 @@
                               <div data-zone-content></div>
                               <div class="d-flex justify-content-end">
                                 <a class="btn btn-outline-primary"
-                                   href="{$actionsLink|cat:'&event=downloadLog'|cat:'&value='|cat:$db|cat:'&type=db'}">
+                                   href="{$actionsLink|cat:'&event=downloadLog'|cat:'&value='|cat:$db|cat:'&type=db'|escape:'html':'UTF-8'}">
                                   {l s='Download' mod='shoppingfeed'}
                                 </a>
                               </div>
