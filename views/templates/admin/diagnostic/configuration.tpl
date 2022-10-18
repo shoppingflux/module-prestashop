@@ -16,14 +16,14 @@
                 {/if}
             </div>
             <div class="form-wrapper justify-content-center col-xl-12 mt-3 {if $allConfigurationsAreSame}d-none{/if}">
-              <div class="mt-2 alert alert-info">{l s='Verify your Shoppingfeed module setting in a quick view on all shop.' mod='shoppingfeed'}</div>
+              <div class="mt-2 alert alert-info">{l s='Verify your %s module setting in a quick view on all shop.' sprintf=[$module_name|escape:'html':'UTF-8'] mod='totsupport'}</div>
               <table class="table border-bottom">
                 <thead>
                 <tr>
                   <th>{l s='Configuration' mod='shoppingfeed'}</th>
                   <th>{l s='All shops value' mod='shoppingfeed'}</th>
                     {foreach $shopList as $shop}
-                      <th>{l s='Shop' mod='shoppingfeed'}: {$shop.name}</th>
+                      <th>{l s='Shop' mod='shoppingfeed'}: {$shop.name|escape:'html':'UTF-8'}</th>
                     {/foreach}
                 </tr>
                 </thead>
@@ -31,7 +31,7 @@
                 {foreach $configurations as $configName => $configValue}
                   <tr>
                     <td>
-                      <span>{$configName}</span>
+                      <span>{$configName|escape:'html':'UTF-8'}</span>
                       <span>&nbsp</span>
                         {if !$configValue.is_same}
                           <span class="badge-warning px-1">{l s='Config has different values' mod='shoppingfeed'}</span>
@@ -39,11 +39,11 @@
                           <span class="badge-success px-1">{l s='All config values are same' mod='shoppingfeed'}</span>
                         {/if}
                     </td>
-                    <td>{$configValue.all_shop_value}</td>
+                    <td>{$configValue.all_shop_value|escape:'html':'UTF-8'}</td>
                       {foreach $shopList as $shop}
                           {foreach $configValue.shops_value as $shopValue}
                               {if $shop.id_shop == $shopValue.id_shop}
-                                <td>{$shopValue.value}</td>
+                                <td>{$shopValue.value|escape:'html':'UTF-8'}</td>
                               {/if}
                           {/foreach}
                       {/foreach}

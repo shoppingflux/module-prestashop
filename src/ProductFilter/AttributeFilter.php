@@ -40,7 +40,12 @@ class AttributeFilter implements Filter
 
     public function getSqlChunk()
     {
-        return '(ps.id_product IN (select id_product from ' . _DB_PREFIX_ . 'product_attribute pa JOIN ' . _DB_PREFIX_ . 'product_attribute_combination pac on pa.id_product_attribute = pac.id_product_attribute where pac.id_attribute = ' . (int) $this->attribute->id . '))';
+        return '(ps.id_product IN (
+            SELECT id_product 
+                FROM ' . _DB_PREFIX_ . 'product_attribute pa 
+                JOIN ' . _DB_PREFIX_ . 'product_attribute_combination pac ON pa.id_product_attribute = pac.id_product_attribute 
+                WHERE pac.id_attribute = ' . (int) $this->attribute->id . ')
+            )';
     }
 
     public function getFilter()

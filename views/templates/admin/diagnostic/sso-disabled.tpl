@@ -8,8 +8,8 @@
           {l s='Authentication not available for the moment' mod='shoppingfeed'}
       </div>
       <div class="card-body">
-        <img id="logo" src="{$logo}"/>
-        <div class="text-center">{$ps_version}</div>
+        <img id="logo" src="{$logo|escape:'html':'UTF-8'}"/>
+        <div class="text-center">{$ps_version|escape:'html':'UTF-8'}</div>
       </div>
       <div class="card-footer text-muted">
         <a href="http://www.prestashop.com/" onclick="return !window.open(this.href);">

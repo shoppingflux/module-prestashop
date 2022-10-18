@@ -36,8 +36,6 @@ class PsQueryHandler
 {
     use TranslateTrait;
 
-    const TAILLE = 5;
-
     public function getConfigurationDuplicates()
     {
         $queryModels = [];
@@ -139,12 +137,12 @@ class PsQueryHandler
 
             $query = 'SELECT * FROM `' . bqSQL($tableLang) . '`
                       WHERE `' . bqSQL($idTable) . '` NOT IN
-                      (SELECT `' . bqSQL($idTable) . '` FROM `' . bqSQL($table) . '`)';
+                      (SELECT `' . bqSQL($idTable) . '` FROM `' . bqSQL($table) . '`) LIMIT 5';
             $result = Db::getInstance()->executeS($query);
             if (!empty($result)) {
                 $fixQueryModel = new FixQueryModel();
                 $fixQueryModel->setQuery($query);
-                $fixQueryModel->setFixQuery(str_replace('SELECT *', 'DELETE', $query));
+                $fixQueryModel->setFixQuery(str_replace(['SELECT *', 'LIMIT 5'], ['DELETE', ''], $query));
                 $fixQueryModel->setRows($result);
                 $fixQueryModel->setHeaders(array_keys($result[0]));
 
@@ -153,13 +151,13 @@ class PsQueryHandler
 
             $query = 'SELECT * FROM `' . bqSQL($tableLang) . '`
                       WHERE `id_lang` NOT IN
-                      (SELECT `id_lang` FROM `' . _DB_PREFIX_ . 'lang`)';
+                      (SELECT `id_lang` FROM `' . _DB_PREFIX_ . 'lang`) LIMIT 5';
             $result = Db::getInstance()->executeS($query);
 
             if (!empty($result)) {
                 $fixQueryModel = new FixQueryModel();
                 $fixQueryModel->setQuery($query);
-                $fixQueryModel->setFixQuery(str_replace('SELECT *', 'DELETE', $query));
+                $fixQueryModel->setFixQuery(str_replace(['SELECT *', 'LIMIT 5'], ['DELETE', ''], $query));
                 $fixQueryModel->setRows($result);
                 $fixQueryModel->setHeaders(array_keys($result[0]));
 
@@ -241,13 +239,13 @@ class PsQueryHandler
                   WHERE `id_shop` NOT IN
                   (SELECT `id_shop` FROM `' . _DB_PREFIX_ . 'shop`)
                   AND `id_shop_group` NOT IN (SELECT `id_shop_group`
-                  FROM `' . _DB_PREFIX_ . 'shop_group`)';
+                  FROM `' . _DB_PREFIX_ . 'shop_group`) LIMIT 5';
 
         $result = Db::getInstance()->executeS($query);
         if (!empty($result)) {
             $fixQueryModel = new FixQueryModel();
             $fixQueryModel->setQuery($query);
-            $fixQueryModel->setFixQuery(str_replace('SELECT *', 'DELETE', $query));
+            $fixQueryModel->setFixQuery(str_replace(['SELECT *', 'LIMIT 5'], ['DELETE', ''], $query));
             $fixQueryModel->setRows($result);
             $fixQueryModel->setHeaders(array_keys($result[0]));
 

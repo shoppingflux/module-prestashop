@@ -3,7 +3,7 @@
     <div class="col-sm-12">
       {assign var="isUpToDate" value=true}
       {foreach $githubVersions as $index => $githubVersion}
-        {if version_compare($githubVersion.name, $moduleVersion) > 0 and $githubVersion.prerelease == 0}
+        {if version_compare($githubVersion.name, $moduleVersion) > 0 and empty($githubVersion.prerelease) === true}
           {assign var="isUpToDate" value=false}
         {/if}
       {/foreach}
@@ -45,7 +45,7 @@
                       <div>
                         {foreach $githubVersion.assets as $asset}
                           {if preg_match('/.zip$/', $asset.browser_download_url)}
-                            <a href="{$asset.browser_download_url}"
+                            <a href="{$asset.browser_download_url|escape:'html':'UTF-8'}"
                                class="btn btn-warning text-center inline">{$asset.name|escape:'html':'UTF-8'}</a>
                           {/if}
                         {/foreach}
@@ -57,7 +57,7 @@
                       </div>
                     </div>
                     <div>
-                        {$githubVersion.body|nl2br}
+                        {$githubVersion.body|escape:'html':'UTF-8'|nl2br}
                     </div>
                   </div>
                 {elseif version_compare($githubVersion.name, $moduleVersion) == 0 && $uptodate == true}

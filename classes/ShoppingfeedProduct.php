@@ -125,7 +125,7 @@ class ShoppingfeedProduct extends ObjectModel
                 $sql->select('sp.`product_supplier_reference`');
                 $sql->leftJoin('product_supplier', 'sp', 'sp.`id_product` = p.`id_product`');
             } else {
-                $sql->select('p.`' . pSQL($reference_format) . '`');
+                $sql->select('p.`' . bqSQL($reference_format) . '`');
             }
             $where = 'p.`id_product` = ' . (int) $this->id_product;
         } else {
@@ -134,7 +134,7 @@ class ShoppingfeedProduct extends ObjectModel
                 $sql->select('sp.`product_supplier_reference`');
                 $sql->leftJoin('product_supplier', 'sp', 'sp.`id_product_attribute` = pa.`id_product_attribute`');
             } else {
-                $sql->select('pa.`' . pSQL($reference_format) . '`');
+                $sql->select('pa.`' . bqSQL($reference_format) . '`');
             }
             $where = 'pa.`id_product_attribute` = ' . (int) $this->id_product_attribute .
                 ' AND pa.`id_product` = ' . (int) $this->id_product;
@@ -189,10 +189,11 @@ class ShoppingfeedProduct extends ObjectModel
             if ($reference_format === 'supplier_reference') {
                 $where = 'EXISTS(
                         SELECT * FROM `' . _DB_PREFIX_ . 'product_supplier` sp
-                        WHERE sp.`id_product_attribute` = pa.`id_product_attribute` AND `product_supplier_reference` = "' . pSQL($sfReference) . '"
+                        WHERE sp.`id_product_attribute` = pa.`id_product_attribute` 
+                            AND `product_supplier_reference` = "' . pSQL($sfReference) . '"
                     )';
             } else {
-                $where = 'pa.`' . pSQL($reference_format) . '` = "' . pSQL($sfReference) . '"';
+                $where = 'pa.`' . bqSQL($reference_format) . '` = "' . pSQL($sfReference) . '"';
             }
 
             $sql->where($where);
@@ -228,7 +229,7 @@ class ShoppingfeedProduct extends ObjectModel
                     WHERE sp.`id_product` = p.`id_product` AND `product_supplier_reference` = "' . pSQL($sfReference) . '"
                 )';
         } else {
-            $where = 'p.`' . pSQL($reference_format) . '` = "' . pSQL($sfReference) . '"';
+            $where = 'p.`' . bqSQL($reference_format) . '` = "' . pSQL($sfReference) . '"';
         }
         $sql->where($where);
         $value = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);

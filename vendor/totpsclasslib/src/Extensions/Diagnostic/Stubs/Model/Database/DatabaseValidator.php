@@ -150,7 +150,7 @@ class DatabaseValidator
                     }
                     break;
                 case ObjectModel::TYPE_INT:
-                    $regex = '/int(\((\d+)\))?' . (strpos(strtolower($arguments['validate']), 'unsigned') ? ' unsigned' : '') . '/mi';
+                    $regex = '/int(\((\d+)\))?' . (!empty($arguments['validate']) && strpos(strtolower($arguments['validate']), 'unsigned') ? ' unsigned' : '') . '/mi';
 
                     if (!preg_match($regex, strtolower($data['Type']))) {
                         $errors[] = (new DatabaseError())

@@ -3,7 +3,7 @@
         {l s='Unselected' mod='shoppingfeed'}
         <select multiple size="10" id="product_rule_unselect" class="product_rule_unselect">
 			{foreach from=$products.unselected item='item'}
-				<option value="{$item.id|intval}" title="{$item.name}">&nbsp;{$item.name}</option>
+				<option value="{$item.id|intval}" title="{$item.name|escape:'html':'UTF-8'}">&nbsp;{$item.name|escape:'html':'UTF-8'}</option>
 			{/foreach}
         </select>
         <div class="clearfix">&nbsp;</div>
@@ -16,7 +16,7 @@
         {l s='Selected' mod='shoppingfeed'}
         <select multiple size="10" id="product_rule_select" class="product_rule_toselect" >
             {foreach from=$products.selected item='item'}
-				<option value="{$item.id|intval}" title="{$item.name}">&nbsp;{$item.name}</option>
+				<option value="{$item.id|intval}" title="{$item.name|escape:'html':'UTF-8'}">&nbsp;{$item.name|escape:'html':'UTF-8'}</option>
 			{/foreach}
         </select>
         <div class="clearfix">&nbsp;</div>

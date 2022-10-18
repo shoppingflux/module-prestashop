@@ -56,6 +56,9 @@ class Zalando extends RuleAbstract implements RuleInterface
         $apiOrder = $params['apiOrder'];
         $data = $apiOrder->toArray();
         foreach ($data['items'] as &$apiProduct) {
+            if (empty($apiProduct['additionalFields']) === true) {
+                continue;
+            }
             $psProduct = $params['prestashopProducts'][$apiProduct['reference']];
             $query = new DbQuery();
             $query->select('od.id_order_detail')

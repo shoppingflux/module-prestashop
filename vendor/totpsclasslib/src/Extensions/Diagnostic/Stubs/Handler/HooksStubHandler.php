@@ -57,6 +57,7 @@ class HooksStubHandler extends AbstractStubHandler
         }
 
         return [
+            'module_name' => $this->getStub()->getModule()->name,
             'shopList' => $shopList,
             'hooks' => array_map(function (HookShopModel $hookShopModel) {
                 return $hookShopModel->toArray();
