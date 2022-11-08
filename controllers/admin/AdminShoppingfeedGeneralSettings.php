@@ -634,7 +634,7 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
             }
         }
 
-        Configuration::updateGlobalValue(Shoppingfeed::PRODUCT_FEED_RULE_FILTERS, Tools::jsonEncode($product_rule_select));
+        Configuration::updateGlobalValue(Shoppingfeed::PRODUCT_FEED_RULE_FILTERS, json_encode($product_rule_select));
         Configuration::updateGlobalValue(Shoppingfeed::PRODUCT_VISIBILTY_NOWHERE, $product_visibility_nowhere);
 
         return true;
@@ -760,7 +760,7 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
     public function displayAjaxPurgeCache()
     {
         $this->purgePrealoading();
-        $this->ajaxDie(Tools::jsonEncode(['success' => true]));
+        $this->ajaxDie(json_encode(['success' => true]));
     }
 
     public function displayAjaxProductSelectionConfigForm()

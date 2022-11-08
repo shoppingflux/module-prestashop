@@ -82,7 +82,7 @@ class AdminShoppingfeedOrderImportController extends ShoppingfeedAdminController
     {
         if (Module::isInstalled('shoppingfluxexport') === false) {
             $this->ajaxDie(
-                Tools::jsonEncode(
+                json_encode(
                     [
                         'errors' => [
                             $this->module->l('shoppingfluxexport not install, impossible to import order from shoppingfluxexport', 'adminshoppingfeedorderimport'),
@@ -94,7 +94,7 @@ class AdminShoppingfeedOrderImportController extends ShoppingfeedAdminController
 
         if (Module::isEnabled('shoppingfluxexport') === true) {
             $this->ajaxDie(
-                Tools::jsonEncode(
+                json_encode(
                     [
                         'errors' => [
                             $this->module->l('shoppingfluxexport is enabled, impossible to import order from shoppingfluxexport', 'adminshoppingfeedorderimport'),
@@ -220,7 +220,7 @@ class AdminShoppingfeedOrderImportController extends ShoppingfeedAdminController
         }
         ProcessLoggerHandler::closeLogger();
         $this->ajaxDie(
-            Tools::jsonEncode(['errors' => $errors])
+            json_encode(['errors' => $errors])
         );
     }
 }

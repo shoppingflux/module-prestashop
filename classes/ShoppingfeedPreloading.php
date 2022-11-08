@@ -126,10 +126,10 @@ class ShoppingfeedPreloading extends ObjectModel
             $this->id = null;
             $this->id_token = $id_token;
             $this->id_product = $id_product;
-            $this->content = Tools::jsonEncode($productSerialize->serialize(), JSON_UNESCAPED_UNICODE);
+            $this->content = json_encode($productSerialize->serialize(), JSON_UNESCAPED_UNICODE);
         } elseif (Tools::strlen($shoppingfeedPreloading['content']) === 0) {
             $this->hydrate($shoppingfeedPreloading);
-            $this->content = Tools::jsonEncode($productSerialize->serialize(), JSON_UNESCAPED_UNICODE);
+            $this->content = json_encode($productSerialize->serialize(), JSON_UNESCAPED_UNICODE);
         } else {
             $this->hydrate($shoppingfeedPreloading);
             $actions = Tools::jsonDecode($this->actions, true);
@@ -138,16 +138,16 @@ class ShoppingfeedPreloading extends ObjectModel
                     switch ($action) {
                         case self::ACTION_SYNC_ALL:
                         default:
-                            $this->content = Tools::jsonEncode($productSerialize->serialize(), JSON_UNESCAPED_UNICODE);
+                            $this->content = json_encode($productSerialize->serialize(), JSON_UNESCAPED_UNICODE);
                             continue 2;
                         case self::ACTION_SYNC_PRICE:
-                            $this->content = Tools::jsonEncode($productSerialize->serializePrice(Tools::jsonDecode($this->content, true)), JSON_UNESCAPED_UNICODE);
+                            $this->content = json_encode($productSerialize->serializePrice(Tools::jsonDecode($this->content, true)), JSON_UNESCAPED_UNICODE);
                             continue 2;
                         case self::ACTION_SYNC_STOCK:
-                            $this->content = Tools::jsonEncode($productSerialize->serializeStock(Tools::jsonDecode($this->content, true)), JSON_UNESCAPED_UNICODE);
+                            $this->content = json_encode($productSerialize->serializeStock(Tools::jsonDecode($this->content, true)), JSON_UNESCAPED_UNICODE);
                             continue 2;
                         case self::ACTION_SYNC_CATEGORY:
-                            $this->content = Tools::jsonEncode($productSerialize->serializeCategory(Tools::jsonDecode($this->content, true)), JSON_UNESCAPED_UNICODE);
+                            $this->content = json_encode($productSerialize->serializeCategory(Tools::jsonDecode($this->content, true)), JSON_UNESCAPED_UNICODE);
                             continue 2;
                     }
                 }
@@ -266,19 +266,19 @@ class ShoppingfeedPreloading extends ObjectModel
             $this->id = null;
             $this->id_token = $id_token;
             $this->id_product = $id_product;
-            $this->actions = Tools::jsonEncode([self::ACTION_SYNC_ALL]);
+            $this->actions = json_encode([self::ACTION_SYNC_ALL]);
 
             return $this->save();
         }
         $this->hydrate($shoppingfeedPreloading);
         if ($this->content === null || $action === self::ACTION_SYNC_ALL) {
-            $this->actions = Tools::jsonEncode([self::ACTION_SYNC_ALL]);
+            $this->actions = json_encode([self::ACTION_SYNC_ALL]);
 
             return $this->save();
         }
         $actions = Tools::jsonDecode($this->actions, true);
         if (is_array($actions) === false) {
-            $this->actions = Tools::jsonEncode([$action]);
+            $this->actions = json_encode([$action]);
 
             return $this->save();
         }
@@ -287,7 +287,7 @@ class ShoppingfeedPreloading extends ObjectModel
         }
         if (in_array($action, $actions) === false) {
             $actions[] = $action;
-            $this->actions = Tools::jsonEncode($actions);
+            $this->actions = json_encode($actions);
 
             return $this->save();
         }

@@ -560,7 +560,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         $cart->id_carrier = $this->conveyor['carrier']->id;
         $cart->id_shop = $this->getIdShop();
         if (version_compare(_PS_VERSION_, '1.7.2.5', '>=')) {
-            $cart->delivery_option = Tools::jsonEncode([$cart->id_address_delivery => $cart->id_carrier . ',']);
+            $cart->delivery_option = json_encode([$cart->id_address_delivery => $cart->id_carrier . ',']);
         } else {
             $cart->delivery_option = @serialize([$cart->id_address_delivery => $cart->id_carrier . ',']);
         }
