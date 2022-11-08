@@ -132,7 +132,7 @@ class ShoppingfeedPreloading extends ObjectModel
             $this->content = json_encode($productSerialize->serialize(), JSON_UNESCAPED_UNICODE);
         } else {
             $this->hydrate($shoppingfeedPreloading);
-            $actions = Tools::jsonDecode($this->actions, true);
+            $actions = json_decode($this->actions, true);
             if (is_array($actions)) {
                 foreach ($actions as $action) {
                     switch ($action) {
@@ -141,13 +141,13 @@ class ShoppingfeedPreloading extends ObjectModel
                             $this->content = json_encode($productSerialize->serialize(), JSON_UNESCAPED_UNICODE);
                             continue 2;
                         case self::ACTION_SYNC_PRICE:
-                            $this->content = json_encode($productSerialize->serializePrice(Tools::jsonDecode($this->content, true)), JSON_UNESCAPED_UNICODE);
+                            $this->content = json_encode($productSerialize->serializePrice(json_decode($this->content, true)), JSON_UNESCAPED_UNICODE);
                             continue 2;
                         case self::ACTION_SYNC_STOCK:
-                            $this->content = json_encode($productSerialize->serializeStock(Tools::jsonDecode($this->content, true)), JSON_UNESCAPED_UNICODE);
+                            $this->content = json_encode($productSerialize->serializeStock(json_decode($this->content, true)), JSON_UNESCAPED_UNICODE);
                             continue 2;
                         case self::ACTION_SYNC_CATEGORY:
-                            $this->content = json_encode($productSerialize->serializeCategory(Tools::jsonDecode($this->content, true)), JSON_UNESCAPED_UNICODE);
+                            $this->content = json_encode($productSerialize->serializeCategory(json_decode($this->content, true)), JSON_UNESCAPED_UNICODE);
                             continue 2;
                     }
                 }
@@ -185,7 +185,7 @@ class ShoppingfeedPreloading extends ObjectModel
                     ->limit($limit, $from);
 
         foreach (Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql) as $row) {
-            $result[] = Tools::jsonDecode($row['content'], true);
+            $result[] = json_decode($row['content'], true);
         }
 
         return $result;
@@ -276,7 +276,7 @@ class ShoppingfeedPreloading extends ObjectModel
 
             return $this->save();
         }
-        $actions = Tools::jsonDecode($this->actions, true);
+        $actions = json_decode($this->actions, true);
         if (is_array($actions) === false) {
             $this->actions = json_encode([$action]);
 

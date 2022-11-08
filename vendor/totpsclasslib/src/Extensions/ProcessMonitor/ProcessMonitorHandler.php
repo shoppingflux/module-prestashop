@@ -103,7 +103,7 @@ class ProcessMonitorHandler
             );
         }
 
-        return Tools::jsonDecode($this->process->data, true);
+        return json_decode($this->process->data, true);
     }
 
     /**

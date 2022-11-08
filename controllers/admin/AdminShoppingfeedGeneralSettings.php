@@ -71,7 +71,7 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
     public function welcomeForm()
     {
         $product_feed_rule_filters = Configuration::getGlobalValue(Shoppingfeed::PRODUCT_FEED_RULE_FILTERS);
-        $product_filters = Tools::jsonDecode($product_feed_rule_filters, true);
+        $product_filters = json_decode($product_feed_rule_filters, true);
 
         $fields_form = [
             'legend' => [
@@ -567,7 +567,7 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
         if ($product_feed_rule_filters === false) {
             return [];
         }
-        $product_feed_rule_filters = Tools::jsonDecode($product_feed_rule_filters, true);
+        $product_feed_rule_filters = json_decode($product_feed_rule_filters, true);
         $product_filters = [];
 
         foreach ($product_feed_rule_filters as $index => $groupFilter) {
