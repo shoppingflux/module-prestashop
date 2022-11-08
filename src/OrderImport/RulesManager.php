@@ -31,7 +31,6 @@ if (!defined('_PS_VERSION_')) {
 use Configuration;
 use Hook;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
-use Tools;
 
 /**
  * This class will manage a list of specific rules, and the execution of hooks
