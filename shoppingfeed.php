@@ -433,7 +433,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         $this->setConfigurationDefault(self::PRODUCT_FEED_CARRIER_REFERENCE, Configuration::getGlobalValue('PS_CARRIER_DEFAULT'));
         $this->setConfigurationDefault(self::ORDER_DEFAULT_CARRIER_REFERENCE, Configuration::getGlobalValue('PS_CARRIER_DEFAULT'));
         if (method_exists(ImageType::class, 'getFormatedName')) {
-            $this->setConfigurationDefault(self::PRODUCT_FEED_IMAGE_FORMAT, call_user_func([ImageType::class, 'getFormatedName'], 'large'));
+            $this->setConfigurationDefault(self::PRODUCT_FEED_IMAGE_FORMAT, ImageType::getFormatedName('large'));
         } else {
             $this->setConfigurationDefault(self::PRODUCT_FEED_IMAGE_FORMAT, ImageType::getFormattedName('large'));
         }
