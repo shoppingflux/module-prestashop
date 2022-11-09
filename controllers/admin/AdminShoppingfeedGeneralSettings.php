@@ -71,7 +71,7 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
     public function welcomeForm()
     {
         $product_feed_rule_filters = Configuration::getGlobalValue(Shoppingfeed::PRODUCT_FEED_RULE_FILTERS);
-        $product_filters = Tools::jsonDecode($product_feed_rule_filters, true);
+        $product_filters = json_decode($product_feed_rule_filters, true);
 
         $fields_form = [
             'legend' => [
@@ -567,7 +567,7 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
         if ($product_feed_rule_filters === false) {
             return [];
         }
-        $product_feed_rule_filters = Tools::jsonDecode($product_feed_rule_filters, true);
+        $product_feed_rule_filters = json_decode($product_feed_rule_filters, true);
         $product_filters = [];
 
         foreach ($product_feed_rule_filters as $index => $groupFilter) {
@@ -634,7 +634,7 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
             }
         }
 
-        Configuration::updateGlobalValue(Shoppingfeed::PRODUCT_FEED_RULE_FILTERS, Tools::jsonEncode($product_rule_select));
+        Configuration::updateGlobalValue(Shoppingfeed::PRODUCT_FEED_RULE_FILTERS, json_encode($product_rule_select));
         Configuration::updateGlobalValue(Shoppingfeed::PRODUCT_VISIBILTY_NOWHERE, $product_visibility_nowhere);
 
         return true;
@@ -760,7 +760,7 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
     public function displayAjaxPurgeCache()
     {
         $this->purgePrealoading();
-        $this->ajaxDie(Tools::jsonEncode(['success' => true]));
+        $this->ajaxDie(json_encode(['success' => true]));
     }
 
     public function displayAjaxProductSelectionConfigForm()

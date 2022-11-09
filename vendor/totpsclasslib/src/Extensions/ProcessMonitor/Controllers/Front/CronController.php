@@ -77,7 +77,7 @@ abstract class CronController extends \ModuleFrontController
         }
         if (false === $result) {
             $return = array('success' => false, 'error' => 'Authentication failed');
-            $this->ajaxDie(Tools::jsonEncode($return));
+            $this->ajaxDie(json_encode($return));
         }
 
         return $result;
@@ -103,7 +103,7 @@ abstract class CronController extends \ModuleFrontController
         $processName = $this->getProcessName();
         if (false === ($data = $this->processMonitor->lock($processName))) {
             $return = array('success' => false, 'error' => 'Lock return false. Process ID already in run.');
-            $this->ajaxDie(Tools::jsonEncode($return));
+            $this->ajaxDie(json_encode($return));
         }
 
         try {
@@ -136,7 +136,7 @@ abstract class CronController extends \ModuleFrontController
         $this->processMonitor->unlock($data);
 
         $return = array('success' => true);
-        $this->ajaxDie(Tools::jsonEncode($return));
+        $this->ajaxDie(json_encode($return));
     }
 
     /**

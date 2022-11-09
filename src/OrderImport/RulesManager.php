@@ -31,7 +31,6 @@ if (!defined('_PS_VERSION_')) {
 use Configuration;
 use Hook;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
-use Tools;
 
 /**
  * This class will manage a list of specific rules, and the execution of hooks
@@ -57,7 +56,7 @@ class RulesManager
     public function __construct($id_shop, OrderResource $apiOrder = null)
     {
         $this->apiOrder = $apiOrder;
-        $this->rulesConfiguration = Tools::jsonDecode(
+        $this->rulesConfiguration = json_decode(
             Configuration::get(
                 \Shoppingfeed::ORDER_IMPORT_SPECIFIC_RULES_CONFIGURATION,
                 null,

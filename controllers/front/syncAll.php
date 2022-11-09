@@ -124,7 +124,7 @@ class ShoppingfeedSyncAllModuleFrontController extends ShoppingfeedCronControlle
     {
         if ($e instanceof ProcessLockedException) {
             $return = ['success' => false, 'error' => $e->getMessage()];
-            $this->ajaxDie(Tools::jsonEncode($return));
+            $this->ajaxDie(json_encode($return));
         } else {
             throw $e;
         }
