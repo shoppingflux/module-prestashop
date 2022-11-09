@@ -22,7 +22,6 @@ namespace Tests\ProductSerializer;
 use PHPUnit\Framework\TestCase;
 use ShoppingfeedAddon\Actions\ActionsHandler;
 use ShoppingfeedPreloading;
-use Tools;
 
 class TestAttributeTestCase extends TestCase
 {
