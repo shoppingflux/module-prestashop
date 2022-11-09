@@ -21,17 +21,17 @@ namespace ShoppingfeedAddon\ProductFilter;
 
 use Context;
 use Manufacturer;
+use ShoppingfeedClasslib\Utils\Translate\TranslateTrait;
 
 class BrandFilter implements Filter
 {
-    protected $manufacturer;
+    use TranslateTrait;
 
-    protected $translator;
+    protected $manufacturer;
 
     public function __construct($id)
     {
         $this->manufacturer = new Manufacturer($id, Context::getContext()->language->id);
-        $this->translator = Context::getContext()->getTranslator();
     }
 
     public function getSqlChunk()
@@ -48,7 +48,7 @@ class BrandFilter implements Filter
 
     public function getType()
     {
-        return $this->translator->trans('Brand', [], 'BrandFilter');
+        return $this->l('Brand', 'BrandFilter');
     }
 
     public function getValue()

@@ -21,17 +21,17 @@ namespace ShoppingfeedAddon\ProductFilter;
 
 use Category;
 use Context;
+use ShoppingfeedClasslib\Utils\Translate\TranslateTrait;
 
 class CategoryFilter implements Filter
 {
-    protected $category;
+    use TranslateTrait;
 
-    protected $translator;
+    protected $category;
 
     public function __construct($id)
     {
         $this->category = new Category($id, Context::getContext()->language->id);
-        $this->translator = Context::getContext()->getTranslator();
     }
 
     public function getSqlChunk()
@@ -46,7 +46,7 @@ class CategoryFilter implements Filter
 
     public function getType()
     {
-        return $this->translator->trans('Category', [], 'CategoryFilter');
+        return $this->l('Category', 'CategoryFilter');
     }
 
     public function getValue()

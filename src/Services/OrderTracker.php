@@ -19,25 +19,24 @@
 
 namespace ShoppingfeedAddon\Services;
 
-use Context;
 use Db;
 use DbQuery;
 use Order;
 use SfGuzzle\GuzzleHttp\Client;
 use ShoppingfeedApi;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
+use ShoppingfeedClasslib\Utils\Translate\TranslateTrait;
 use ShoppingfeedToken;
 
 class OrderTracker
 {
-    protected $db;
+    use TranslateTrait;
 
-    protected $translator;
+    protected $db;
 
     public function __construct()
     {
         $this->db = Db::getInstance();
-        $this->translator = Context::getContext()->getTranslator();
     }
 
     public function track(Order $order)
@@ -63,7 +62,7 @@ class OrderTracker
                 $endpoint
             );
             ProcessLoggerHandler::addLog(
-                $this->translator->trans('Sending the order tracking info for token ') . $api->getToken(),
+                $this->l('Sending the order tracking info for token', 'OrderTracker') . $api->getToken(),
                 'Order',
                 $order->id
             );
