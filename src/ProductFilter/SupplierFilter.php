@@ -20,18 +20,18 @@
 namespace ShoppingfeedAddon\ProductFilter;
 
 use Context;
+use ShoppingfeedClasslib\Utils\Translate\TranslateTrait;
 use Supplier;
 
 class SupplierFilter implements Filter
 {
-    protected $supplier;
+    use TranslateTrait;
 
-    protected $translator;
+    protected $supplier;
 
     public function __construct($id)
     {
         $this->supplier = new Supplier($id, Context::getContext()->language->id);
-        $this->translator = Context::getContext()->getTranslator();
     }
 
     public function getSqlChunk()
@@ -50,7 +50,7 @@ class SupplierFilter implements Filter
 
     public function getType()
     {
-        return $this->translator->trans('Supplier', [], 'BrandFilter');
+        return $this->l('Supplier', 'SupplierFilter');
     }
 
     public function getValue()

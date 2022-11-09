@@ -19,7 +19,6 @@
 
 namespace ShoppingfeedAddon\Services;
 
-use Context;
 use Db;
 use DbQuery;
 use Order;
@@ -37,7 +36,6 @@ class OrderTracker
     public function __construct()
     {
         $this->db = Db::getInstance();
-        $this->translator = Context::getContext()->getTranslator();
     }
 
     public function track(Order $order)
