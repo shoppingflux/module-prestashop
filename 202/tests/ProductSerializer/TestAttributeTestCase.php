@@ -50,7 +50,7 @@ class TestAttributeTestCase extends TestCase
                 ->setConveyor(['id_token' => $id_token])
                 ->process('ShoppingfeedProductSyncPreloading');
         $product = (new ShoppingfeedPreloading())->findByTokenIdAndProductId($id_token, $id_product);
-        $productContent = Tools::jsonDecode($product['content'], true);
+        $productContent = json_decode($product['content'], true);
         $this->assertIsArray($productContent);
 
         $this->assertEquals($productContent['price'], 28.68);
@@ -103,7 +103,7 @@ class TestAttributeTestCase extends TestCase
 
         $product = (new ShoppingfeedPreloading())->findByTokenIdAndProductId($id_token, $id_product);
         $this->assertArrayHasKey('content', $product);
-        $productContent = Tools::jsonDecode($product['content'], true);
+        $productContent = json_decode($product['content'], true);
         $this->assertIsArray($productContent);
         $this->assertArrayHasKey('attributes', $productContent);
         $this->assertArrayHasKey('availability_label', $productContent['attributes']);
@@ -121,7 +121,7 @@ class TestAttributeTestCase extends TestCase
 
         $product = (new ShoppingfeedPreloading())->findByTokenIdAndProductId($id_token, $id_product);
         $this->assertArrayHasKey('content', $product);
-        $productContent = Tools::jsonDecode($product['content'], true);
+        $productContent = json_decode($product['content'], true);
         $this->assertIsArray($productContent);
         $this->assertArrayHasKey('attributes', $productContent);
         $this->assertArrayNotHasKey('availability_label', $productContent['attributes']);
@@ -139,7 +139,7 @@ class TestAttributeTestCase extends TestCase
 
         $product = (new ShoppingfeedPreloading())->findByTokenIdAndProductId($id_token, $id_product);
         $this->assertArrayHasKey('content', $product);
-        $productContent = Tools::jsonDecode($product['content'], true);
+        $productContent = json_decode($product['content'], true);
 
         $this->assertIsArray($productContent);
         $this->assertArrayHasKey('variations', $productContent);
@@ -161,7 +161,7 @@ class TestAttributeTestCase extends TestCase
 
         $product = (new ShoppingfeedPreloading())->findByTokenIdAndProductId($id_token, $id_product);
         $this->assertArrayHasKey('content', $product);
-        $productContent = Tools::jsonDecode($product['content'], true);
+        $productContent = json_decode($product['content'], true);
         $this->assertIsArray($productContent);
         $this->assertArrayHasKey('variations', $productContent);
         $this->assertArrayHasKey($id_product_attribute, $productContent['variations']);

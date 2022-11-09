@@ -762,7 +762,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         $sql->where('ps.id_shop = ' . (int) $id_shop);
         $product_feed_rule_filters = Configuration::getGlobalValue(Shoppingfeed::PRODUCT_FEED_RULE_FILTERS);
         $product_visibility_nowhere = (bool) Configuration::getGlobalValue(Shoppingfeed::PRODUCT_VISIBILTY_NOWHERE);
-        $product_filters = Tools::jsonDecode($product_feed_rule_filters, true);
+        $product_filters = json_decode($product_feed_rule_filters, true);
         $sqlFilter = [];
 
         if (is_array($product_filters)) {

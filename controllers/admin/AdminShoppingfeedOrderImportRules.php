@@ -563,7 +563,7 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
         $rulesConfiguration = Tools::getValue('rulesConfiguration');
         Configuration::updateValue(
             Shoppingfeed::ORDER_IMPORT_SPECIFIC_RULES_CONFIGURATION,
-            Tools::jsonEncode($rulesConfiguration),
+            json_encode($rulesConfiguration),
             false,
             null,
             $this->context->shop->id
