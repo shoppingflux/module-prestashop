@@ -29,7 +29,6 @@ if (!defined('_PS_VERSION_')) {
 }
 
 use Configuration;
-use Exception;
 use Order;
 use OrderHistory;
 use OrderState;
@@ -231,7 +230,7 @@ class ShippedByMarketplace extends RuleAbstract implements RuleInterface
     {
         try {
             return strpos(strtolower($apiOrder->getPaymentInformation()['method']), 'afn') !== false;
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             return false;
         }
     }
@@ -245,7 +244,7 @@ class ShippedByMarketplace extends RuleAbstract implements RuleInterface
     {
         try {
             return strpos(strtolower($apiOrder->getPaymentInformation()['method']), 'clogistique') !== false;
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             return false;
         }
     }
@@ -259,7 +258,7 @@ class ShippedByMarketplace extends RuleAbstract implements RuleInterface
     {
         try {
             return strtolower($apiOrder->toArray()['additionalFields']['env']) == 'epmm';
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             return false;
         }
     }
