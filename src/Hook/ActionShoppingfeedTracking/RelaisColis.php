@@ -68,9 +68,7 @@ class RelaisColis extends AbstractHook
     {
         try {
             return new RelaisColisOrder($this->getIdRelaisColisOrderFromPsOrder($order));
-        } catch (\Exception $e) {
-            return null;
-        } catch (\Throwable $e) {// Throwable exists from php 7
+        } catch (\Throwable $e) {
             return null;
         }
     }
@@ -79,9 +77,7 @@ class RelaisColis extends AbstractHook
     {
         try {
             return (int) RelaisColisOrder::getRelaisColisOrderId($order->id);
-        } catch (\Exception $e) {
-            return null;
-        } catch (\Throwable $e) {// Throwable exists from php 7
+        } catch (\Throwable $e) {
             return null;
         }
     }
