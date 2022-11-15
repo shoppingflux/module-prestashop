@@ -270,6 +270,8 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             [
                 'apiOrder' => $this->conveyor['apiOrder'],
                 'isSkipImport' => &$this->conveyor['isSkipImport'],
+                'orderData' => $this->conveyor['orderData'],
+                'prestashopProducts' => &$this->conveyor['prestashopProducts'],
             ]
         );
 
