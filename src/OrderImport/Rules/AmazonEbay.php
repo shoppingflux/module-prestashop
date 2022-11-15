@@ -47,17 +47,17 @@ class AmazonEbay extends RuleAbstract implements RuleInterface
 
         $shippingAddress = $apiOrder->getShippingAddress();
         $billingAddress = $apiOrder->getBillingAddress();
-
-        if (preg_match('#^alltricks$#', Tools::strtolower($apiOrder->getChannel()->getName()))) {
-            return true;
-        }
+        $shippingAddressFirstName = $shippingAddress['firstName'] === '.' ? '' : $shippingAddress['firstName'];
+        $shippingAddressLastName = $shippingAddress['lastName'] === '.' ? '' : $shippingAddress['lastName'];
+        $billingAddressFirstName = $billingAddress['firstName'] === '.' ? '' : $billingAddress['firstName'];
+        $billingAddressLastName = $billingAddress['lastName'] === '.' ? '' : $billingAddress['lastName'];
 
         return preg_match('#^(amazon|ebay|laredoute|alltricks)$#', Tools::strtolower($apiOrder->getChannel()->getName()))
             && (
-                empty($shippingAddress['firstName'])
-                || empty($shippingAddress['lastName'])
-                || empty($billingAddress['firstName'])
-                || empty($billingAddress['lastName'])
+                empty($shippingAddressFirstName)
+                || empty($shippingAddressLastName)
+                || empty($billingAddressFirstName)
+                || empty($billingAddressLastName)
             );
     }
 
@@ -148,11 +148,7 @@ class AmazonEbay extends RuleAbstract implements RuleInterface
         return [
             [
                 'type' => 'switch',
-<<<<<<< HEAD
                 'label' => $this->l('Parse firstname/lastname for Amazon, Ebay, Laredoute and Alltricks orders.', 'AmazonEbay'),
-=======
-                'label' => $this->l('Parse firstname/lastname for Amazon and Ebay Laredoute and Alltricks orders.', 'AmazonEbay'),
->>>>>>> refs #36944 - update rule AmazonEbay for oder import
                 'name' => 'enabled',
                 'is_bool' => true,
                 'values' => [
