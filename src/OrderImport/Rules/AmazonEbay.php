@@ -48,7 +48,11 @@ class AmazonEbay extends RuleAbstract implements RuleInterface
         $shippingAddress = $apiOrder->getShippingAddress();
         $billingAddress = $apiOrder->getBillingAddress();
 
-        return preg_match('#^(amazon|ebay|laredoute)$#', Tools::strtolower($apiOrder->getChannel()->getName()))
+        if (preg_match('#^alltricks$#', Tools::strtolower($apiOrder->getChannel()->getName()))) {
+            return true;
+        }
+
+        return preg_match('#^(amazon|ebay|laredoute|alltricks)$#', Tools::strtolower($apiOrder->getChannel()->getName()))
             && (
                 empty($shippingAddress['firstName'])
                 || empty($shippingAddress['lastName'])
@@ -125,7 +129,7 @@ class AmazonEbay extends RuleAbstract implements RuleInterface
      */
     public function getConditions()
     {
-        return $this->l('If the order is from Amazon or Ebay or Laredoute and has an empty "firstname" or "lastname" field in its addresses.', 'AmazonEbay');
+        return $this->l('If the order is from Amazon or Ebay or Laredoute or Alltricks and has an empty "firstname" or "lastname" field in its addresses.', 'AmazonEbay');
     }
 
     /**
@@ -144,7 +148,7 @@ class AmazonEbay extends RuleAbstract implements RuleInterface
         return [
             [
                 'type' => 'switch',
-                'label' => $this->l('Parse firstname/lastname for Amazon and Ebay orders.', 'AmazonEbay'),
+                'label' => $this->l('Parse firstname/lastname for Amazon, Ebay, Laredoute and Alltricks orders.', 'AmazonEbay'),
                 'name' => 'enabled',
                 'is_bool' => true,
                 'values' => [
