@@ -295,7 +295,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         $this->version = '@version@';
         $this->author = '202 ecommerce';
         $this->tab = 'market_place';
-        $this->ps_versions_compliancy = ['min' => '1.6', 'max' => '1.7'];
+        $this->ps_versions_compliancy = ['min' => '1.6', 'max' => '8.99.99'];
         $this->need_instance = false;
         $this->bootstrap = true;
 
