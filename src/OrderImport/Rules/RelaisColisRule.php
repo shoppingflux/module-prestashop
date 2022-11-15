@@ -32,7 +32,6 @@ use Address;
 use Cart;
 use Configuration;
 use Country;
-use Exception;
 use Module;
 use Order;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
@@ -230,7 +229,7 @@ class RelaisColisRule extends RuleAbstract implements RuleInterface
 
         try {
             $relaisColisInfo->save();
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             return new \RelaisColisInfo();
         }
 
