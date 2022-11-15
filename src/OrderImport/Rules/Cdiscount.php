@@ -30,7 +30,6 @@ if (!defined('_PS_VERSION_')) {
 
 use ShoppingFeed\Sdk\Api\Order\OrderItem;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
-use ShoppingfeedAddon\OrderImport\OrderData;
 use ShoppingfeedAddon\OrderImport\OrderItemData;
 use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
@@ -46,15 +45,20 @@ class Cdiscount extends RuleAbstract implements RuleInterface
             && $this->getFees($apiOrder) > 0;
     }
 
-    public function onPreProcess($params)
+    public function onVerifyOrder($params)
     {
-        if (empty($params['orderData']) || empty($params['apiOrder'])) {
+        if (empty($params['orderData']) || empty($params['apiOrder']) || empty($params['prestashopProducts'])) {
             return;
         }
-        /** @var OrderData $orderData */
+        $cdiscountFeeProduct = $this->initCdiscountFeeProduct()->getProduct();
+        if (Validate::isLoadedObject($cdiscountFeeProduct) === false) {
+            return;
+        }
+        $cdiscountFeeProduct->id_product_attribute = null;
+        $params['prestashopProducts'][$cdiscountFeeProduct->reference] = $cdiscountFeeProduct;
         $orderData = $params['orderData'];
         $item = new OrderItem(
-            $this->getReference(),
+            $cdiscountFeeProduct->reference,
             1,
             $this->getFees($params['apiOrder']),
             0
@@ -87,17 +91,6 @@ class Cdiscount extends RuleAbstract implements RuleInterface
     public function getDescription()
     {
         return $this->l('Adds an \'Operation Fee\' product to the order, so the amount will show in the invoice.', 'Cdiscount');
-    }
-
-    protected function getReference()
-    {
-        $product = $this->initCdiscountFeeProduct()->getProduct();
-
-        if (Validate::isLoadedObject($product)) {
-            return $product->reference;
-        }
-
-        return '';
     }
 
     protected function initCdiscountFeeProduct()

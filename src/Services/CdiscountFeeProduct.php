@@ -85,6 +85,17 @@ class CdiscountFeeProduct
         return Configuration::deleteByName(Shoppingfeed::CDISCOUNT_FEE_PRODUCT);
     }
 
+    public function getIdProduct()
+    {
+        $product = new Product(Configuration::get(Shoppingfeed::CDISCOUNT_FEE_PRODUCT));
+
+        if (Validate::isLoadedObject($product)) {
+            return $product->id;
+        }
+
+        return null;
+    }
+
     protected function getReference()
     {
         $reference = 'FDG-ShoppingFlux';

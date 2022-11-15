@@ -621,16 +621,6 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     public function mapPrestashopProduct($sfProductReference, $id_shop, ...$arguments)
     {
         $sfProduct = new ShoppingfeedProduct();
-        $cdiscountFeeProduct = $this->initCdiscountFeeProduct()->getProduct();
-
-        if (Validate::isLoadedObject($cdiscountFeeProduct)) {
-            if ($cdiscountFeeProduct->reference == $sfProductReference) {
-                $cdiscountFeeProduct->id_product_attribute = null;
-
-                return $cdiscountFeeProduct;
-            }
-        }
-
         $sfProductReference = $sfProduct->getReverseShoppingfeedReference($sfProductReference, $id_shop);
 
         Hook::exec(
@@ -745,15 +735,15 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
      */
     public function sqlProductsOnFeed($id_shop = null)
     {
-        $cdiscountFeeProduct = $this->initCdiscountFeeProduct()->getProduct();
+        $cdiscountFeeProductId = $this->initCdiscountFeeProduct()->getIdProduct();
         $sql = new DbQuery();
         $sql->from(Product::$definition['table'] . '_shop', 'ps')
             ->leftJoin(Product::$definition['table'], 'p', 'p.id_product = ps.id_product')
             ->where('ps.active = 1')
             ->where('ps.available_for_order = 1');
 
-        if (Validate::isLoadedObject($cdiscountFeeProduct)) {
-            $sql->where('p.id_product <> ' . $cdiscountFeeProduct->id);
+        if ($cdiscountFeeProductId !== null) {
+            $sql->where('p.id_product <> ' . (int) $cdiscountFeeProductId);
         }
 
         if ($id_shop === null) {
