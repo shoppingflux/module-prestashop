@@ -148,7 +148,7 @@ class AmazonEbay extends RuleAbstract implements RuleInterface
         return [
             [
                 'type' => 'switch',
-                'label' => $this->l('Parse firstname/lastname for Amazon and Ebay Laredoute and Alltricks orders.', 'AmazonEbay'),
+                'label' => $this->l('Parse firstname/lastname for Amazon, Ebay, Laredoute and Alltricks orders.', 'AmazonEbay'),
                 'name' => 'enabled',
                 'is_bool' => true,
                 'values' => [
