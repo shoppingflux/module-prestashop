@@ -170,4 +170,38 @@ class OrderRulesAmazonEbayTest extends AbstractOrdeTestCase
         ];
         $this->assertSame($expedtedAddress, $params['orderData']->billingAddress);
     }
+
+    /**
+     * Test to split name
+     *
+     * @return void
+     */
+    public function testSplitNameAlltricks(): void
+    {
+        $apiOrder = $this->getOrderRessourceFromDataset('order-alltricks.json');
+
+        $rules = new AmazonEbay();
+        $this->assertTrue($rules->isApplicable($apiOrder));
+        $params['orderData'] = new OrderData($apiOrder);
+        $params['apiOrder'] = $apiOrder;
+        $rules->onPreProcess($params);
+
+        $expedtedAddress = [
+                'firstName' => 'Chandonnet',
+                'lastName' => 'Sibyla',
+                'company' => '',
+                'street' => '43, Avenue De Marlioz',
+                'street2' => '',
+                'other' => '',
+                'postalCode' => '13200',
+                'city' => 'Arles',
+                'country' => 'FR',
+                'phone' => '',
+                'mobilePhone' => '0661192586',
+                'province' => '',
+                'email' => '',
+        ];
+
+        $this->assertSame($expedtedAddress, $params['orderData']->billingAddress);
+    }
 }

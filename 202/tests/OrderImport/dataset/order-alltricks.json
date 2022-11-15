@@ -1,0 +1,111 @@
+{
+    "id": 18089105066,
+    "storeId": 39319,
+    "channelId": 30792,
+    "reference": "221005T026057147-27855152-A",
+    "storeReference": "5969",
+    "isTest": false,
+    "acknowledgedAt": "2022-10-05T12:13:35+02:00",
+    "createdAt": "2022-10-05T11:45:35+02:00",
+    "updatedAt": "2022-10-08T13:03:43+02:00",
+    "status": "shipped",
+    "anonymized": false,
+    "payment": {
+      "shippingAmount": 0,
+      "productAmount": 149.95,
+      "totalAmount": 149.95,
+      "currency": "EUR",
+      "method": ""
+    },
+    "shipment": {
+      "carrier": "Standard à domicile",
+      "trackingNumber": "4719131000078916",
+      "trackingLink": "http://localhost/public/suivi_colis/recherche/visubontransport.do?bonTransport=4719131000078916",
+      "returnInfo": {
+        "carrier": null,
+        "trackingNumber": null
+      }
+    },
+    "additionalFields": {
+      "user-email": "sibyla.chandonnet@orange.fr",
+      "channel_code": "INIT",
+      "fulfilled_by": "merchant",
+      "order_status": "SHIPPED",
+      "shipping_type_code": "HOME_72",
+      "fulfillment_center_code": "DEFAULT"
+    },
+    "latestShipDate": "2022-10-07 11:46:31",
+    "errors": [],
+    "itemsReferencesAliases": null,
+    "fulfilledBy": "store",
+    "items": [
+      {
+        "reference": "1_11",
+        "status": "",
+        "quantity": 1,
+        "price": 149.95,
+        "commission": 32.39,
+        "taxAmount": 0,
+        "ecotaxAmount": 0,
+        "channelReference": "221005T026057147-27855152-A-1",
+        "additionalFields": null,
+        "name": "MOUNTAIN TOP 2 - GILET DE PROTECTION",
+        "image": "https://localhost/3129/protections-velo-race-gilet-mountain-top.jpg"
+      }
+    ],
+    "commission": 32.39,
+    "shippingAddress": {
+      "firstName": "Sibyla Chandonnet",
+      "lastName": ".",
+      "company": "",
+      "street": "43, Avenue De Marlioz",
+      "street2": "",
+      "other": "",
+      "postalCode": "13200",
+      "city": "Arles",
+      "country": "FR",
+      "phone": "",
+      "mobilePhone": "0661192586",
+      "province": "",
+      "email": "",
+      "relayId": ""
+    },
+    "billingAddress": {
+      "firstName": "Sibyla Chandonnet",
+      "lastName": ".",
+      "company": "",
+      "street": "43, Avenue De Marlioz",
+      "street2": "",
+      "other": "",
+      "postalCode": "13200",
+      "city": "Arles",
+      "country": "FR",
+      "phone": "",
+      "mobilePhone": "0661192586",
+      "province": "",
+      "email": ""
+    },
+    "_links": {
+      "self": {
+        "href": "/v1/store/39319/order/18089105066"
+      },
+      "store": {
+        "href": "/v1/store/39319"
+      }
+    },
+    "_embedded": {
+        "channel": {
+          "id": 30792,
+          "name": "alltricks",
+          "_links": {
+            "self": {
+              "href": "/v1/channel/30792"
+            },
+            "image": {
+              "href": "https://assets.shopping-feed.com/channel/logo/alltricks.png"
+            }
+          }
+        },
+        "tag": []
+    }
+}
