@@ -148,7 +148,11 @@ class AmazonEbay extends RuleAbstract implements RuleInterface
         return [
             [
                 'type' => 'switch',
+<<<<<<< HEAD
                 'label' => $this->l('Parse firstname/lastname for Amazon, Ebay, Laredoute and Alltricks orders.', 'AmazonEbay'),
+=======
+                'label' => $this->l('Parse firstname/lastname for Amazon and Ebay Laredoute and Alltricks orders.', 'AmazonEbay'),
+>>>>>>> refs #36944 - update rule AmazonEbay for oder import
                 'name' => 'enabled',
                 'is_bool' => true,
                 'values' => [
