@@ -58,11 +58,6 @@ abstract class AbstractColissimo extends RuleAbstract implements RuleInterface
         }
     }
 
-    public function beforeBillingAddressSave($params)
-    {
-        $this->setDefaultPhoneMobile($params['billingAddress']->phone_mobile);
-    }
-
     public function beforeShippingAddressSave($params)
     {
         $this->setDefaultPhoneMobile($params['shippingAddress']->phone_mobile);
@@ -160,7 +155,7 @@ abstract class AbstractColissimo extends RuleAbstract implements RuleInterface
 
     abstract protected function getPointId(OrderResource $apiOrder);
 
-    private function setDefaultPhoneMobile(&$phone_mobile)
+    protected function setDefaultPhoneMobile(&$phone_mobile)
     {
         if (empty($phone_mobile) || Validate::isPhoneNumber($phone_mobile) === false) {
             $phone_mobile = '0611111111';
