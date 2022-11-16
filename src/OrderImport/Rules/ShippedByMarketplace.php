@@ -115,6 +115,18 @@ class ShippedByMarketplace extends RuleAbstract implements RuleInterface
 
     public function onPostProcess($params)
     {
+        if (empty($params['sfOrder'])) {
+            return false;
+        }
+
+        if (empty($params['apiOrder'])) {
+            return false;
+        }
+
+        if (empty($params['id_order'])) {
+            return false;
+        }
+
         $apiOrder = $params['apiOrder'];
         $idOrder = $params['id_order'];
 

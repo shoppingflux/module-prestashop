@@ -54,6 +54,18 @@ class TestingOrder extends RuleAbstract implements RuleInterface
 
     public function onPostProcess($params)
     {
+        if (empty($params['sfOrder'])) {
+            return false;
+        }
+
+        if (empty($params['apiOrder'])) {
+            return false;
+        }
+
+        if (empty($params['orderData'])) {
+            return false;
+        }
+
         /** @var \ShoppingfeedAddon\OrderImport\OrderData $orderData */
         $orderData = $params['orderData'];
         $apiOrder = $params['apiOrder'];

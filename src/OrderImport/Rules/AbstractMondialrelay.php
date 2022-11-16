@@ -57,6 +57,18 @@ abstract class AbstractMondialrelay extends RuleAbstract implements RuleInterfac
 
     public function onPostProcess($params)
     {
+        if (empty($params['sfOrder'])) {
+            return false;
+        }
+
+        if (empty($params['apiOrder'])) {
+            return false;
+        }
+
+        if (empty($params['orderData'])) {
+            return false;
+        }
+
         $apiOrder = $params['apiOrder'];
         $order = new Order($params['sfOrder']->id_order);
         $relayId = $this->getRelayId($params['orderData']);

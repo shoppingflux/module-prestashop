@@ -264,7 +264,6 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         }
 
         // Specific rules validation
-        $this->conveyor['isSkipImport'] = false;
         $this->specificRulesManager->applyRules(
             'onVerifyOrder',
             [
