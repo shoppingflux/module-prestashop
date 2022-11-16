@@ -58,6 +58,11 @@ abstract class AbstractColissimo extends RuleAbstract implements RuleInterface
         }
     }
 
+    public function beforeShippingAddressSave($params)
+    {
+        $this->setDefaultPhoneMobile($params['shippingAddress']->phone_mobile);
+    }
+
     public function afterCartCreation($params)
     {
         if (class_exists(ColissimoPickupPoint::class) === false || class_exists(ColissimoCartPickupPoint::class) === false) {
@@ -149,4 +154,11 @@ abstract class AbstractColissimo extends RuleAbstract implements RuleInterface
     abstract protected function getProductCode(OrderResource $apiOrder);
 
     abstract protected function getPointId(OrderResource $apiOrder);
+
+    protected function setDefaultPhoneMobile(&$phone_mobile)
+    {
+        if (empty($phone_mobile) || Validate::isPhoneNumber($phone_mobile) === false) {
+            $phone_mobile = '0611111111';
+        }
+    }
 }
