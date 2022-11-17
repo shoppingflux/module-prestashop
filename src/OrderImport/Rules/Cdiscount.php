@@ -1,25 +1,20 @@
 <?php
 /**
- * NOTICE OF LICENSE
+ *  Copyright since 2019 Shopping Feed
  *
- * This source file is subject to a commercial license from SARL 202 ecommence
- * Use, copy, modification or distribution of this source file without written
- * license agreement from the SARL 202 ecommence is strictly forbidden.
- * In order to obtain a license, please contact us: tech@202-ecommerce.com
- * ...........................................................................
- * INFORMATION SUR LA LICENCE D'UTILISATION
+ *  NOTICE OF LICENSE
  *
- * L'utilisation de ce fichier source est soumise a une licence commerciale
- * concedee par la societe 202 ecommence
- * Toute utilisation, reproduction, modification ou distribution du present
- * fichier source sans contrat de licence ecrit de la part de la SARL 202 ecommence est
- * expressement interdite.
- * Pour obtenir une licence, veuillez contacter 202-ecommerce <tech@202-ecommerce.com>
- * ...........................................................................
+ *  This source file is subject to the Academic Free License (AFL 3.0)
+ *  that is bundled with this package in the file LICENSE.md.
+ *  It is also available through the world-wide-web at this URL:
+ *  https://opensource.org/licenses/AFL-3.0
+ *  If you did not receive a copy of the license and are unable to
+ *  obtain it through the world-wide-web, please send an email
+ *  to tech@202-ecommerce.com so we can send you a copy immediately.
  *
- * @author    202-ecommerce <tech@202-ecommerce.com>
- * @copyright Copyright (c) 202-ecommerce
- * @license   Commercial license
+ *  @author    202 ecommerce <tech@202-ecommerce.com>
+ *  @copyright Since 2019 Shopping Feed
+ *  @license   https://opensource.org/licenses/AFL-3.0  Academic Free License (AFL 3.0)
  */
 
 namespace ShoppingfeedAddon\OrderImport\Rules;
@@ -30,7 +25,6 @@ if (!defined('_PS_VERSION_')) {
 
 use ShoppingFeed\Sdk\Api\Order\OrderItem;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
-use ShoppingfeedAddon\OrderImport\OrderData;
 use ShoppingfeedAddon\OrderImport\OrderItemData;
 use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
@@ -46,15 +40,20 @@ class Cdiscount extends RuleAbstract implements RuleInterface
             && $this->getFees($apiOrder) > 0;
     }
 
-    public function onPreProcess($params)
+    public function onVerifyOrder($params)
     {
-        if (empty($params['orderData']) || empty($params['apiOrder'])) {
+        if (empty($params['orderData']) || empty($params['apiOrder']) || empty($params['prestashopProducts'])) {
             return;
         }
-        /** @var OrderData $orderData */
+        $cdiscountFeeProduct = $this->initCdiscountFeeProduct()->getProduct();
+        if (Validate::isLoadedObject($cdiscountFeeProduct) === false) {
+            return;
+        }
+        $cdiscountFeeProduct->id_product_attribute = null;
+        $params['prestashopProducts'][$cdiscountFeeProduct->reference] = $cdiscountFeeProduct;
         $orderData = $params['orderData'];
         $item = new OrderItem(
-            $this->getReference(),
+            $cdiscountFeeProduct->reference,
             1,
             $this->getFees($params['apiOrder']),
             0
@@ -87,17 +86,6 @@ class Cdiscount extends RuleAbstract implements RuleInterface
     public function getDescription()
     {
         return $this->l('Adds an \'Operation Fee\' product to the order, so the amount will show in the invoice.', 'Cdiscount');
-    }
-
-    protected function getReference()
-    {
-        $product = $this->initCdiscountFeeProduct()->getProduct();
-
-        if (Validate::isLoadedObject($product)) {
-            return $product->reference;
-        }
-
-        return '';
     }
 
     protected function initCdiscountFeeProduct()

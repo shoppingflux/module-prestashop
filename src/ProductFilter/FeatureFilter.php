@@ -22,10 +22,11 @@ namespace ShoppingfeedAddon\ProductFilter;
 use Context;
 use Feature;
 use FeatureValue;
+use ShoppingfeedClasslib\Utils\Translate\TranslateTrait;
 
 class FeatureFilter implements Filter
 {
-    protected $translator;
+    use TranslateTrait;
 
     protected $featureValue;
 
@@ -35,7 +36,6 @@ class FeatureFilter implements Filter
     {
         $this->featureValue = new FeatureValue($id, Context::getContext()->language->id);
         $this->feature = new Feature($this->featureValue->id_feature, Context::getContext()->language->id);
-        $this->translator = Context::getContext()->getTranslator();
     }
 
     public function getSqlChunk()
@@ -54,7 +54,7 @@ class FeatureFilter implements Filter
 
     public function getType()
     {
-        return $this->translator->trans('Feature', [], 'FeatureFilter');
+        return $this->l('Feature', 'FeatureFilter');
     }
 
     public function getValue()

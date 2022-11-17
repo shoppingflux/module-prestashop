@@ -170,11 +170,11 @@ class ShoppingfeedSyncProductModuleFrontController extends ShoppingfeedCronContr
     {
         return sprintf('
             UPDATE %1$s%2$s sfp
-            INNER JOIN %1$s%3$s p ON p.id_product = sfp.id_product and sfp.date_upd < p.date_upd
+            INNER JOIN `%1$s%3$s` p ON p.id_product = sfp.id_product and sfp.date_upd < p.date_upd
             SET `actions` = "[\"SYNC_ALL\"]"',
             _DB_PREFIX_,
             ShoppingfeedPreloading::$definition['table'],
-            $tableProduct
+            bqSQL($tableProduct)
         );
     }
 

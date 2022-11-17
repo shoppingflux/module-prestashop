@@ -1,25 +1,20 @@
 <?php
 /**
- * NOTICE OF LICENSE
+ *  Copyright since 2019 Shopping Feed
  *
- * This source file is subject to a commercial license from SARL 202 ecommence
- * Use, copy, modification or distribution of this source file without written
- * license agreement from the SARL 202 ecommence is strictly forbidden.
- * In order to obtain a license, please contact us: tech@202-ecommerce.com
- * ...........................................................................
- * INFORMATION SUR LA LICENCE D'UTILISATION
+ *  NOTICE OF LICENSE
  *
- * L'utilisation de ce fichier source est soumise a une licence commerciale
- * concedee par la societe 202 ecommence
- * Toute utilisation, reproduction, modification ou distribution du present
- * fichier source sans contrat de licence ecrit de la part de la SARL 202 ecommence est
- * expressement interdite.
- * Pour obtenir une licence, veuillez contacter 202-ecommerce <tech@202-ecommerce.com>
- * ...........................................................................
+ *  This source file is subject to the Academic Free License (AFL 3.0)
+ *  that is bundled with this package in the file LICENSE.md.
+ *  It is also available through the world-wide-web at this URL:
+ *  https://opensource.org/licenses/AFL-3.0
+ *  If you did not receive a copy of the license and are unable to
+ *  obtain it through the world-wide-web, please send an email
+ *  to tech@202-ecommerce.com so we can send you a copy immediately.
  *
- * @author    202-ecommerce <tech@202-ecommerce.com>
- * @copyright Copyright (c) 202-ecommerce
- * @license   Commercial license
+ *  @author    202 ecommerce <tech@202-ecommerce.com>
+ *  @copyright Since 2019 Shopping Feed
+ *  @license   https://opensource.org/licenses/AFL-3.0  Academic Free License (AFL 3.0)
  */
 
 namespace ShoppingfeedAddon\OrderImport\Rules;
@@ -47,13 +42,17 @@ class AmazonEbay extends RuleAbstract implements RuleInterface
 
         $shippingAddress = $apiOrder->getShippingAddress();
         $billingAddress = $apiOrder->getBillingAddress();
+        $shippingAddressFirstName = $shippingAddress['firstName'] === '.' ? '' : $shippingAddress['firstName'];
+        $shippingAddressLastName = $shippingAddress['lastName'] === '.' ? '' : $shippingAddress['lastName'];
+        $billingAddressFirstName = $billingAddress['firstName'] === '.' ? '' : $billingAddress['firstName'];
+        $billingAddressLastName = $billingAddress['lastName'] === '.' ? '' : $billingAddress['lastName'];
 
-        return preg_match('#^(amazon|ebay|laredoute)$#', Tools::strtolower($apiOrder->getChannel()->getName()))
+        return preg_match('#^(amazon|ebay|laredoute|alltricks)$#', Tools::strtolower($apiOrder->getChannel()->getName()))
             && (
-                empty($shippingAddress['firstName'])
-                || empty($shippingAddress['lastName'])
-                || empty($billingAddress['firstName'])
-                || empty($billingAddress['lastName'])
+                empty($shippingAddressFirstName)
+                || empty($shippingAddressLastName)
+                || empty($billingAddressFirstName)
+                || empty($billingAddressLastName)
             );
     }
 
@@ -125,7 +124,7 @@ class AmazonEbay extends RuleAbstract implements RuleInterface
      */
     public function getConditions()
     {
-        return $this->l('If the order is from Amazon or Ebay or Laredoute and has an empty "firstname" or "lastname" field in its addresses.', 'AmazonEbay');
+        return $this->l('If the order is from Amazon or Ebay or Laredoute or Alltricks and has an empty "firstname" or "lastname" field in its addresses.', 'AmazonEbay');
     }
 
     /**
@@ -144,7 +143,7 @@ class AmazonEbay extends RuleAbstract implements RuleInterface
         return [
             [
                 'type' => 'switch',
-                'label' => $this->l('Parse firstname/lastname for Amazon and Ebay orders.', 'AmazonEbay'),
+                'label' => $this->l('Parse firstname/lastname for Amazon, Ebay, Laredoute and Alltricks orders.', 'AmazonEbay'),
                 'name' => 'enabled',
                 'is_bool' => true,
                 'values' => [

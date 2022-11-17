@@ -295,7 +295,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         $this->version = '@version@';
         $this->author = '202 ecommerce';
         $this->tab = 'market_place';
-        $this->ps_versions_compliancy = ['min' => '1.6', 'max' => '1.7'];
+        $this->ps_versions_compliancy = ['min' => '1.6', 'max' => '8.99.99'];
         $this->need_instance = false;
         $this->bootstrap = true;
 
@@ -432,7 +432,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         $this->setConfigurationDefault(self::ORDER_IMPORT_SHIPPED_MARKETPLACE, 0);
         $this->setConfigurationDefault(self::PRODUCT_FEED_CARRIER_REFERENCE, Configuration::getGlobalValue('PS_CARRIER_DEFAULT'));
         $this->setConfigurationDefault(self::ORDER_DEFAULT_CARRIER_REFERENCE, Configuration::getGlobalValue('PS_CARRIER_DEFAULT'));
-        if (version_compare(_PS_VERSION_, '1.7', '<')) {
+        if (method_exists(ImageType::class, 'getFormatedName')) {
             $this->setConfigurationDefault(self::PRODUCT_FEED_IMAGE_FORMAT, ImageType::getFormatedName('large'));
         } else {
             $this->setConfigurationDefault(self::PRODUCT_FEED_IMAGE_FORMAT, ImageType::getFormattedName('large'));
@@ -621,16 +621,6 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     public function mapPrestashopProduct($sfProductReference, $id_shop, ...$arguments)
     {
         $sfProduct = new ShoppingfeedProduct();
-        $cdiscountFeeProduct = $this->initCdiscountFeeProduct()->getProduct();
-
-        if (Validate::isLoadedObject($cdiscountFeeProduct)) {
-            if ($cdiscountFeeProduct->reference == $sfProductReference) {
-                $cdiscountFeeProduct->id_product_attribute = null;
-
-                return $cdiscountFeeProduct;
-            }
-        }
-
         $sfProductReference = $sfProduct->getReverseShoppingfeedReference($sfProductReference, $id_shop);
 
         Hook::exec(
@@ -745,15 +735,15 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
      */
     public function sqlProductsOnFeed($id_shop = null)
     {
-        $cdiscountFeeProduct = $this->initCdiscountFeeProduct()->getProduct();
+        $cdiscountFeeProductId = $this->initCdiscountFeeProduct()->getIdProduct();
         $sql = new DbQuery();
         $sql->from(Product::$definition['table'] . '_shop', 'ps')
             ->leftJoin(Product::$definition['table'], 'p', 'p.id_product = ps.id_product')
             ->where('ps.active = 1')
             ->where('ps.available_for_order = 1');
 
-        if (Validate::isLoadedObject($cdiscountFeeProduct)) {
-            $sql->where('p.id_product <> ' . $cdiscountFeeProduct->id);
+        if ($cdiscountFeeProductId !== null) {
+            $sql->where('p.id_product <> ' . (int) $cdiscountFeeProductId);
         }
 
         if ($id_shop === null) {
@@ -762,7 +752,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         $sql->where('ps.id_shop = ' . (int) $id_shop);
         $product_feed_rule_filters = Configuration::getGlobalValue(Shoppingfeed::PRODUCT_FEED_RULE_FILTERS);
         $product_visibility_nowhere = (bool) Configuration::getGlobalValue(Shoppingfeed::PRODUCT_VISIBILTY_NOWHERE);
-        $product_filters = Tools::jsonDecode($product_feed_rule_filters, true);
+        $product_filters = json_decode($product_feed_rule_filters, true);
         $sqlFilter = [];
 
         if (is_array($product_filters)) {

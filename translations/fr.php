@@ -106,6 +106,7 @@ $_MODULE['<{shoppingfeed}prestashop>adminprocessmonitorcontroller_f1b81e4990e4ad
 $_MODULE['<{shoppingfeed}prestashop>adminprocessmonitorcontroller_bc33aa1314e7dcd3472db72472b909b2'] = 'Une erreur s\'est produite lors de la suppression.';
 $_MODULE['<{shoppingfeed}prestashop>adminprocessmonitorcontroller_7f290594963a303db17a5e21dc4cf0b7'] = 'Une erreur s\'est produite lors de la suppression de l\'objet';
 $_MODULE['<{shoppingfeed}prestashop>adminprocessmonitorcontroller_77ae44aa6c998166fcf1a87496278ad5'] = '(impossible de charger l\'objet)';
+$_MODULE['<{shoppingfeed}prestashop>ordertracker_31d0f3cedb4b1b9adae78c9ccb92fff1'] = 'Envoyer les infos de tracking pour le token';
 $_MODULE['<{shoppingfeed}prestashop>diagnostics_8b6160bbd95657959f9c5ee36af7fb16'] = 'Le paramètre \" Recalculer les frais de port après modification de la commande\" est réglé sur OUI. Ce paramètre peut modifier le montant de la commande en cas de mise à jour de celle-ci.';
 $_MODULE['<{shoppingfeed}prestashop>diagnostics_55eca46ceddb053c9c98d43e8bc0aeb7'] = 'La classe hook est overridée probablement par un module RGPD (RGPD Pro, Consentement Cookie, ...). Attention à bien autoriser le module Shopppingfeed dans votre module RGPD.';
 $_MODULE['<{shoppingfeed}prestashop>diagnostics_ed9c1914be9e9283776ecc8ff0147be6'] = 'L\'ancien module Shoppingflux Export est disponible sur le serveur. Veuillez le désinstaller et le supprimer du dossier modules.';
@@ -127,9 +128,9 @@ $_MODULE['<{shoppingfeed}prestashop>manomanocolissimo_61c08624dd7294a67910b19e5f
 $_MODULE['<{shoppingfeed}prestashop>manomanocolissimo_d46e11f8bd9e72432aa812eae34372e3'] = 'Règle le transporteur à Colissimo point pickup et ajoute les données nécessaire dans le module associé.';
 $_MODULE['<{shoppingfeed}prestashop>amazonebay_0cc1e925b5703e8da52b7c3e91829499'] = '[Commande: %s]';
 $_MODULE['<{shoppingfeed}prestashop>amazonebay_6efbd4474b0556a3e01989218a4c4745'] = 'Règle déclenchée. Adresses mises à jour.';
-$_MODULE['<{shoppingfeed}prestashop>amazonebay_e1b9234f8eb2fc5b1bc1c05bbac9fb2e'] = 'Si la commande provient d\'Amazon OU Ebay OU Laredoute et que le ”prénom” ou le ”nom” est vide dans l\'adresse';
+$_MODULE['<{shoppingfeed}prestashop>amazonebay_c84b10200552b209d3b8689e5d1d4fee'] = 'Si la commande provient d\'Amazon ou d\'Ebay ou de La Redoute ou d\'Alltricks et que le champs \"firstname\" ou \"lastname\" a une valeur vide dans ses adresses.';
 $_MODULE['<{shoppingfeed}prestashop>amazonebay_ac20d46d995d9bd9423cc822c68b728b'] = 'Effacer le contenu après le premier espace du champs rempli et le reporter dans champs vide';
-$_MODULE['<{shoppingfeed}prestashop>amazonebay_7f360bccbf500d253f8086b2c0c8503e'] = 'Découper prénom/nom pour les commandes Amazon et Ebay';
+$_MODULE['<{shoppingfeed}prestashop>amazonebay_da2f4fd2f9933bc4282d532af828136c'] = 'Découper firstname/lastname pour les commandes Amazon, Ebay, Laredoute et Alltricks.';
 $_MODULE['<{shoppingfeed}prestashop>gosportmondialrelay_6e9466867f15967234095fe9344579a0'] = 'Si la commande doit être expédiée avec Mondial Relais et que le ”shipping_pudo_id” et le ”shipping_type_code” ne sont pas vide dans les champs additionnels.';
 $_MODULE['<{shoppingfeed}prestashop>gosportmondialrelay_7177cc7c0f9dec75e5b34797b469b539'] = 'Ajoute la commande dans les tables du module Mondial Relais.';
 $_MODULE['<{shoppingfeed}prestashop>relaiscolisrule_0cc1e925b5703e8da52b7c3e91829499'] = '[Commande %s]';
@@ -234,6 +235,11 @@ $_MODULE['<{shoppingfeed}prestashop>shippedbymarketplace_07172e18fb8d0ded766f985
 $_MODULE['<{shoppingfeed}prestashop>shippedbymarketplace_1b0ea751dbde31a9f331f83e1e63334a'] = 'Après l\'import d\'une commande expédiée par la marketplace (Amazon, CDiscount ou Manomano ), passer le statut de cette commande à l\'état';
 $_MODULE['<{shoppingfeed}prestashop>shippedbymarketplace_3e1cdfc6da1fd127747e056cbb0c2d8b'] = 'Par défaut : Livré';
 $_MODULE['<{shoppingfeed}prestashop>shippedbymarketplace_7292fe2a20cbb7fdf7206ac1abf70f98'] = 'Règle déclenchée. L\'import a été sauté.';
+$_MODULE['<{shoppingfeed}prestashop>supplierfilter_ec136b444eede3bc85639fac0dd06229'] = 'Fournisseur';
+$_MODULE['<{shoppingfeed}prestashop>featurefilter_21021ea0e52be8e9c599f4dff41e5be0'] = 'Caractéristique';
+$_MODULE['<{shoppingfeed}prestashop>attributefilter_f2bbdf9f72c085adc4d0404e370f0f4c'] = 'Attribut';
+$_MODULE['<{shoppingfeed}prestashop>categoryfilter_3adbdb3ac060038aa0e6e6c138ef9873'] = 'Catégorie';
+$_MODULE['<{shoppingfeed}prestashop>brandfilter_1be6f9eb563f3bf85c78b4219bf09de9'] = 'Marque';
 $_MODULE['<{shoppingfeed}prestashop>displaypdfinvoice_d37c2bf1bd3143847fca087b354f920e'] = 'Référence de client';
 $_MODULE['<{shoppingfeed}prestashop>diagnostic_cd6d39e076b3477cba4d2bd490fc6077'] = 'Diagnostiquer, mettre à jour et réparer votre module Shoppingfeed.';
 $_MODULE['<{shoppingfeed}prestashop>error_multishop_5e463101b19a26686a080b6fbd0d3c93'] = 'Vous devez choisir une boutique en particulier afin de continuer.';

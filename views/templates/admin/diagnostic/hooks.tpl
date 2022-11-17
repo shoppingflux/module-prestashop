@@ -16,7 +16,7 @@
                 {/if}
             </div>
             <div class="form-wrapper justify-content-center col-xl-12 mt-3 {if empty($hooksOnError)}d-none{/if}">
-              <div class="mt-2 alert alert-info">{l s='Check if hooks of %s module are all plugged.' sprintf=[$module_name|escape:'html':'UTF-8'] mod='totsupport'}</div>
+              <div class="mt-2 alert alert-info">{l s='Check if hooks of %s module are all plugged.' sprintf=[$module_name|escape:'html':'UTF-8'] mod='shoppingfeed'}</div>
               <div class="table-wrapper">
                 <table class="table border-bottom">
                   <thead>

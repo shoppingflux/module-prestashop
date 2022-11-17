@@ -446,15 +446,15 @@ class AdminShoppingfeedAccountSettingsController extends ShoppingfeedAdminContro
     public function ajaxProcessActiveConfiguration()
     {
         if (!$id_shoppingfeed_token = (int) Tools::getValue('id_shoppingfeed_token')) {
-            exit(Tools::jsonEncode(['success' => false, 'error' => true, 'text' => $this->l('Failed to update the status')]));
+            exit(json_encode(['success' => false, 'error' => true, 'text' => $this->l('Failed to update the status')]));
         }
         $shoppingfeedToken = new ShoppingfeedToken((int) $id_shoppingfeed_token);
         if (Validate::isLoadedObject($shoppingfeedToken) === false) {
-            exit(Tools::jsonEncode(['success' => false, 'error' => true, 'text' => $this->l('Failed to update the status')]));
+            exit(json_encode(['success' => false, 'error' => true, 'text' => $this->l('Failed to update the status')]));
         }
         $shoppingfeedToken->active = !$shoppingfeedToken->active;
         $shoppingfeedToken->save() ?
-            exit(Tools::jsonEncode(['success' => true, 'text' => $this->l('The status has been updated successfully')])) :
-            exit(Tools::jsonEncode(['success' => false, 'error' => true, 'text' => $this->l('Failed to update the status')]));
+            exit(json_encode(['success' => true, 'text' => $this->l('The status has been updated successfully')])) :
+            exit(json_encode(['success' => false, 'error' => true, 'text' => $this->l('Failed to update the status')]));
     }
 }

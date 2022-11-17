@@ -152,7 +152,7 @@ class ProductGenerator
     /**
      * Determine if every product must be validated.
      * Possible values are:
-     *
+     * 
      * - self::VALIDATE_NONE      : No validation at all, invalid products may be written to the feed
      * - self::VALIDATE_EXCLUDE   : Validated and excluded from the final result if invalid. No error reported
      * - self::VALIDATE_EXCEPTION : An exception is thrown when the first invalid product is met
@@ -290,5 +290,13 @@ class ProductGenerator
         $writerClass = self::$writers[$this->writer];
 
         return new $writerClass();
+    }
+
+    /**
+     * @return ProductFeedMetadata
+     */
+    public function getMetaData()
+    {
+        return $this->metadata;
     }
 }

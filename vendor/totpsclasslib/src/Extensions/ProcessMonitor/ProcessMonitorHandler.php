@@ -59,7 +59,7 @@ class ProcessMonitorHandler
         if (empty($this->process->id)) {
             $this->process = new ProcessMonitorObjectModel();
             $this->process->name = $name;
-            $this->process->data = Tools::jsonEncode(array());
+            $this->process->data = json_encode(array());
             $this->process->date_add = date('Y-m-d H:i:s');
         }
         if (!empty($this->process->pid)) {
@@ -103,7 +103,7 @@ class ProcessMonitorHandler
             );
         }
 
-        return Tools::jsonDecode($this->process->data, true);
+        return json_decode($this->process->data, true);
     }
 
     /**
@@ -120,7 +120,7 @@ class ProcessMonitorHandler
         }
 
         if (false === empty($data)) {
-            $this->process->data = Tools::jsonEncode($data);
+            $this->process->data = json_encode($data);
         }
         $this->process->last_update = date('Y-m-d H:i:s');
         $endTime = $this->microtimeFloat();

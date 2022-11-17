@@ -16,7 +16,7 @@
                 {/if}
             </div>
             <div class="form-wrapper justify-content-center col-xl-12 mt-3 {if $allConfigurationsAreSame}d-none{/if}">
-              <div class="mt-2 alert alert-info">{l s='Verify your %s module setting in a quick view on all shop.' sprintf=[$module_name|escape:'html':'UTF-8'] mod='totsupport'}</div>
+              <div class="mt-2 alert alert-info">{l s='Verify your %s module setting in a quick view on all shop.' sprintf=[$module_name|escape:'html':'UTF-8'] mod='shoppingfeed'}</div>
               <table class="table border-bottom">
                 <thead>
                 <tr>

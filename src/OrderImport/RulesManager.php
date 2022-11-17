@@ -1,25 +1,20 @@
 <?php
 /**
- * NOTICE OF LICENSE
+ *  Copyright since 2019 Shopping Feed
  *
- * This source file is subject to a commercial license from SARL 202 ecommence
- * Use, copy, modification or distribution of this source file without written
- * license agreement from the SARL 202 ecommence is strictly forbidden.
- * In order to obtain a license, please contact us: tech@202-ecommerce.com
- * ...........................................................................
- * INFORMATION SUR LA LICENCE D'UTILISATION
+ *  NOTICE OF LICENSE
  *
- * L'utilisation de ce fichier source est soumise a une licence commerciale
- * concedee par la societe 202 ecommence
- * Toute utilisation, reproduction, modification ou distribution du present
- * fichier source sans contrat de licence ecrit de la part de la SARL 202 ecommence est
- * expressement interdite.
- * Pour obtenir une licence, veuillez contacter 202-ecommerce <tech@202-ecommerce.com>
- * ...........................................................................
+ *  This source file is subject to the Academic Free License (AFL 3.0)
+ *  that is bundled with this package in the file LICENSE.md.
+ *  It is also available through the world-wide-web at this URL:
+ *  https://opensource.org/licenses/AFL-3.0
+ *  If you did not receive a copy of the license and are unable to
+ *  obtain it through the world-wide-web, please send an email
+ *  to tech@202-ecommerce.com so we can send you a copy immediately.
  *
- * @author    202-ecommerce <tech@202-ecommerce.com>
- * @copyright Copyright (c) 202-ecommerce
- * @license   Commercial license
+ *  @author    202 ecommerce <tech@202-ecommerce.com>
+ *  @copyright Since 2019 Shopping Feed
+ *  @license   https://opensource.org/licenses/AFL-3.0  Academic Free License (AFL 3.0)
  */
 
 namespace ShoppingfeedAddon\OrderImport;
@@ -31,7 +26,6 @@ if (!defined('_PS_VERSION_')) {
 use Configuration;
 use Hook;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
-use Tools;
 
 /**
  * This class will manage a list of specific rules, and the execution of hooks
@@ -57,7 +51,7 @@ class RulesManager
     public function __construct($id_shop, OrderResource $apiOrder = null)
     {
         $this->apiOrder = $apiOrder;
-        $this->rulesConfiguration = Tools::jsonDecode(
+        $this->rulesConfiguration = json_decode(
             Configuration::get(
                 \Shoppingfeed::ORDER_IMPORT_SPECIFIC_RULES_CONFIGURATION,
                 null,

@@ -182,7 +182,7 @@ class ProductSerializer
     public function serializeStock($content)
     {
         $contentUpdate = $content;
-        $contentUpdate['quantity'] = $quantity = (int) StockAvailable::getQuantityAvailableByProduct($this->product->id);
+        $contentUpdate['quantity'] = $quantity = (int) StockAvailable::getQuantityAvailableByProduct($this->product->id, null, $this->id_shop);
 
         if ($quantity > 0 && empty($this->product->available_now) === false) {
             $contentUpdate['attributes']['availability_label'] = $this->product->available_now;
@@ -190,7 +190,7 @@ class ProductSerializer
             $contentUpdate['attributes']['availability_label'] = $this->product->available_later;
         }
         foreach ($contentUpdate['variations'] as $id_product_attribute => &$variation) {
-            $variation['quantity'] = $quantity = StockAvailable::getQuantityAvailableByProduct($this->product->id, $id_product_attribute);
+            $variation['quantity'] = $quantity = StockAvailable::getQuantityAvailableByProduct($this->product->id, $id_product_attribute, $this->id_shop);
             if ($quantity > 0 && empty($this->product->available_now) === false) {
                 $variation['attributes']['availability_label'] = $this->product->available_now;
             } elseif ($quantity < 1 && empty($this->product->available_later) === false) {
@@ -360,7 +360,7 @@ class ProductSerializer
         }
 
         if (empty($this->configurations[Shoppingfeed::PRODUCT_FEED_CUSTOM_FIELDS]) === false) {
-            $fields = Tools::jsonDecode($this->configurations[Shoppingfeed::PRODUCT_FEED_CUSTOM_FIELDS], true);
+            $fields = json_decode($this->configurations[Shoppingfeed::PRODUCT_FEED_CUSTOM_FIELDS], true);
             foreach ($this->getOverrideFields() as $fieldname) {
                 if (in_array($fieldname, $fields)) {
                     $attributes[$fieldname] = $this->product->$fieldname;
@@ -664,8 +664,8 @@ class ProductSerializer
             ->where(sprintf('id_country IN (%d, 0)', (int) $id_country))
             ->where(sprintf('id_group IN (%d, 0)', (int) $id_group))
             ->where(sprintf('IF(from_quantity > 1, from_quantity, 0) <= %d', 1))
+            ->where('id_cart = 0 OR id_cart IS NULL')
             ->orderBy('`id_product_attribute` DESC')
-            ->orderBy('`id_cart` DESC')
             ->orderBy('`from_quantity` DESC')
             ->orderBy('`id_specific_price_rule` ASC')
             ->orderBy('`score` DESC')
