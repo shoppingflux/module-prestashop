@@ -1,5 +1,4 @@
 {*
-{*
 * NOTICE OF LICENSE
 *
 * This source file is subject to a commercial license from SARL 202 ecommence
