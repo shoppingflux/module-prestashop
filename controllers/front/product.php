@@ -28,27 +28,34 @@ class ShoppingfeedProductModuleFrontController extends \ModuleFrontController
 {
     protected $sfToken = null;
 
-    public function initContent()
+    public function init()
     {
-        $token = Tools::getValue('token');
-        if (empty($token)) {
-            $token = (new ShoppingfeedToken())->getDefaultToken();
-        } else {
-            $token = (new ShoppingfeedToken())->findByToken($token);
+        parent::init();
+
+        $this->sfToken = (new ShoppingfeedToken())->findByToken(Tools::getValue('token', ''));
+    }
+
+    public function viewAccess()
+    {
+        if (false == empty($this->sfToken)) {
+            header('HTTP/1.1 401 Unauthorized');
+            exit;
         }
 
-        if ($token === false) {
-            exit();
-        }
+        return true;
+    }
+
+    public function initContent()
+    {
         ProcessLoggerHandler::openLogger();
-        $etag = sprintf('"%s"', ShoppingfeedPreloading::getEtag($token['id_shoppingfeed_token']));
+        $etag = sprintf('"%s"', ShoppingfeedPreloading::getEtag($this->sfToken['id_shoppingfeed_token']));
         header('Etag: ' . $etag);
         if (array_key_exists('HTTP_IF_NONE_MATCH', $_SERVER) && $_SERVER['HTTP_IF_NONE_MATCH'] === $etag) {
             http_response_code(304);
             ProcessLoggerHandler::logSuccess(
-                sprintf('Xml for token %s not Modified', $token['id_shoppingfeed_token']),
+                sprintf('Xml for token %s not Modified', $this->sfToken['id_shoppingfeed_token']),
                 'shoppingfeed_token',
-                $token['id_shoppingfeed_token'],
+                $this->sfToken['id_shoppingfeed_token'],
                 'ShoppingfeedProductModuleFrontController'
             );
             ProcessLoggerHandler::closeLogger();
@@ -56,8 +63,7 @@ class ShoppingfeedProductModuleFrontController extends \ModuleFrontController
         }
         header('Content-type: text/xml');
 
-        $this->preparePreloading($token);
-        $this->sfToken = $token;
+        $this->preparePreloading($this->sfToken);
         $productGenerator = new SfProductGenerator('php://output', 'xml');
         $productGenerator->setPlatform('Prestashop', _PS_VERSION_)
                          ->addMapper([$this, 'mapper']);
@@ -70,19 +76,19 @@ class ShoppingfeedProductModuleFrontController extends \ModuleFrontController
         }
 
         $limit = 100;
-        $nb_iteration = ceil((new ShoppingfeedPreloading())->getPreloadingCount($token['id_shoppingfeed_token']) / $limit);
+        $nb_iteration = ceil((new ShoppingfeedPreloading())->getPreloadingCount($this->sfToken['id_shoppingfeed_token']) / $limit);
         $productGenerator->open();
 
         for ($i = 0; $i < $nb_iteration; ++$i) {
-            $products = (new ShoppingfeedPreloading())->findAllByTokenId($token['id_shoppingfeed_token'], $i * $limit, $limit);
+            $products = (new ShoppingfeedPreloading())->findAllByTokenId($this->sfToken['id_shoppingfeed_token'], $i * $limit, $limit);
             $productGenerator->appendProduct($products);
         }
 
         $productGenerator->close();
         ProcessLoggerHandler::logSuccess(
-            sprintf('Generate xml for token %s', $token['id_shoppingfeed_token']),
+            sprintf('Generate xml for token %s', $this->sfToken['id_shoppingfeed_token']),
             'shoppingfeed_token',
-            $token['id_shoppingfeed_token'],
+            $this->sfToken['id_shoppingfeed_token'],
             'ShoppingfeedProductModuleFrontController'
         );
         ProcessLoggerHandler::closeLogger();
