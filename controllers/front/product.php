@@ -35,7 +35,7 @@ class ShoppingfeedProductModuleFrontController extends \ModuleFrontController
         $this->sfToken = (new ShoppingfeedToken())->findByToken(Tools::getValue('token', ''));
     }
 
-    public function viewAccess()
+    public function checkAccess()
     {
         if (empty($this->sfToken)) {
             header('HTTP/1.1 401 Unauthorized');
