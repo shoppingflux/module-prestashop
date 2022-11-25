@@ -37,7 +37,7 @@ class ShoppingfeedProductModuleFrontController extends \ModuleFrontController
 
     public function viewAccess()
     {
-        if (false == empty($this->sfToken)) {
+        if (empty($this->sfToken)) {
             header('HTTP/1.1 401 Unauthorized');
             exit;
         }
