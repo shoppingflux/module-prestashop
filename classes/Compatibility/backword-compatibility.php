@@ -23,8 +23,3 @@ if (version_compare(phpversion(), '7', '<')) {
         }
     }
 }
-
-try {
-} catch (Exception $e) {
-} catch (Throwable $e) {
-}
