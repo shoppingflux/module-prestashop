@@ -153,7 +153,16 @@ abstract class AbstractColissimo extends RuleAbstract implements RuleInterface
 
     abstract protected function getProductCode(OrderResource $apiOrder);
 
-    abstract protected function getPointId(OrderResource $apiOrder);
+    protected function getPointId(OrderResource $apiOrder)
+    {
+        $apiOrderData = $apiOrder->toArray();
+
+        if (empty($apiOrderData['shippingAddress']['relayId'])) {
+            return '';
+        }
+
+        return $apiOrderData['shippingAddress']['relayId'];
+    }
 
     protected function setDefaultPhoneMobile(&$phone_mobile)
     {

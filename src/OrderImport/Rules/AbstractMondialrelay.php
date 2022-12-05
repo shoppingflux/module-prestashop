@@ -378,5 +378,16 @@ abstract class AbstractMondialrelay extends RuleAbstract implements RuleInterfac
         ];
     }
 
-    abstract public function getRelayId($orderData);
+    public function getRelayId($orderData)
+    {
+        if (false === empty($orderData['shippingAddress']['relayId'])) {
+            return $orderData['shippingAddress']['relayId'];
+        }
+
+        if (false === empty($orderData->shippingAddress['relayId'])) {
+            return $orderData['shippingAddress']['relayId'];
+        }
+
+        return '';
+    }
 }

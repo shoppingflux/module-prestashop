@@ -93,6 +93,10 @@ class ColizeyColissimo extends AbstractColissimo implements RuleInterface
 
     protected function getPointId(OrderResource $apiOrder)
     {
+        if ($relayId = parent::getPointId($apiOrder)) {
+            return $relayId;
+        }
+
         $apiOrderData = $apiOrder->toArray();
 
         return $apiOrderData['additionalFields']['shippingRelayId'];

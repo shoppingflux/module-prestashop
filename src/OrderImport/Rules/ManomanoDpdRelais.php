@@ -181,11 +181,15 @@ class ManomanoDpdRelais extends RuleAbstract implements RuleInterface
     {
         $address = $apiOrder->getShippingAddress();
 
-        if (false == empty($address['other'])) {
+        if (false === empty($address['relayId'])) {
+            return $address['relayId'];
+        }
+
+        if (false === empty($address['other'])) {
             return $address['other'];
         }
 
-        if (false == empty($address['relayID'])) {
+        if (false === empty($address['relayID'])) {
             return $address['relayID'];
         }
 

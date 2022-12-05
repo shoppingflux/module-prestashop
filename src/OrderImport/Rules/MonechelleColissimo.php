@@ -82,6 +82,10 @@ class MonechelleColissimo extends AbstractColissimo implements RuleInterface
 
     protected function getPointId(OrderResource $apiOrder)
     {
+        if ($relayId = parent::getPointId($apiOrder)) {
+            return $relayId;
+        }
+
         $address = $apiOrder->getShippingAddress();
 
         if (false == empty($address['other'])) {

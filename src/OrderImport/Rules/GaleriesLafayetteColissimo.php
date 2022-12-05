@@ -64,6 +64,10 @@ class GaleriesLafayetteColissimo extends AbstractColissimo
 
     protected function getPointId(OrderResource $apiOrder)
     {
+        if ($relayId = parent::getPointId($apiOrder)) {
+            return $relayId;
+        }
+
         $apiOrderData = $apiOrder->toArray();
         $relayId = empty($apiOrderData['additionalFields']['relais-id']) ? '' : $apiOrderData['additionalFields']['relais-id'];
 

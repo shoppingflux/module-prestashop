@@ -123,6 +123,10 @@ class ZalandoColissimo extends AbstractColissimo implements RuleInterface
 
     protected function getPointId(OrderResource $apiOrder)
     {
+        if ($relayId = parent::getPointId($apiOrder)) {
+            return $relayId;
+        }
+
         $apiOrderData = $apiOrder->toArray();
         $service_point_id = explode(':', $apiOrderData['additionalFields']['service_point_id']);
         if (count($service_point_id) > 1) {
