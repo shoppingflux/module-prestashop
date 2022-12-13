@@ -83,7 +83,7 @@ abstract class AbstractColissimo extends RuleAbstract implements RuleInterface
             $logPrefix . $this->l('Saving Colissimo pickup point.', 'AbstractColissimo'),
             'Order'
         );
-        $colissimoPickupPointId = $this->getPointId($apiOrder);
+        $colissimoPickupPointId = $this->getRelayId($apiOrder);
 
         if (empty($colissimoPickupPointId)) {
             return true;
@@ -153,7 +153,7 @@ abstract class AbstractColissimo extends RuleAbstract implements RuleInterface
 
     abstract protected function getProductCode(OrderResource $apiOrder);
 
-    protected function getPointId(OrderResource $apiOrder)
+    protected function getRelayId(OrderResource $apiOrder)
     {
         $apiOrderData = $apiOrder->toArray();
 

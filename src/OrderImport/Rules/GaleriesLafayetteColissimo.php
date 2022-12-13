@@ -40,7 +40,7 @@ class GaleriesLafayetteColissimo extends AbstractColissimo
         // Check marketplace, that the additional fields with the pickup point data are there and not empty, and that the "colissimo" module is installed and active
         if (1273 == Tools::strtolower($apiOrder->getChannel()->getId())
             && $this->isModuleColissimoEnabled()
-            && !empty($this->getPointId($apiOrder))
+            && !empty($this->getRelayId($apiOrder))
         ) {
             ProcessLoggerHandler::logInfo(
                 $logPrefix .
@@ -62,9 +62,9 @@ class GaleriesLafayetteColissimo extends AbstractColissimo
         return $code;
     }
 
-    protected function getPointId(OrderResource $apiOrder)
+    protected function getRelayId(OrderResource $apiOrder)
     {
-        if ($relayId = parent::getPointId($apiOrder)) {
+        if ($relayId = parent::getRelayId($apiOrder)) {
             return $relayId;
         }
 
