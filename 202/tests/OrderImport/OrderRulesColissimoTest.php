@@ -3,7 +3,9 @@
 namespace Tests\OrderImport;
 
 use Address;
+use ShoppingfeedAddon\Actions\ActionsHandler;
 use ShoppingfeedAddon\OrderImport\Rules\ManomanoColissimo;
+use ShoppingfeedClasslib\Registry;
 
 class OrderRulesColissimoTest extends AbstractOrdeTestCase
 {
