@@ -18,7 +18,7 @@
        "method":"1X"
     },
     "shipment":{
-       "carrier":"colissimo",
+       "carrier":"Colissimo",
        "trackingNumber":""
     },
     "additionalFields":{
@@ -43,11 +43,12 @@
        }
     ],
     "shippingAddress":{
-       "firstName":"patrice lafont",
-       "lastName":"tabac le phenix",
-       "company":"",
+       "firstName":"patrice",
+       "lastName":"lafont",
+       "company":"tabac le phenix",
        "street":"test street",
        "street2":"",
+       "other":"",
        "postalCode":"75001",
        "city":"Paris",
        "country":"FR",
@@ -81,7 +82,7 @@
     "_embedded":{
        "channel":{
           "id":259,
-          "name":"mamomano",
+          "name":"Mamomano",
           "_links":{
              "self":{
                 "href":"/v1/channel/259"
