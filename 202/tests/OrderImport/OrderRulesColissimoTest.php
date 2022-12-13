@@ -9,7 +9,7 @@ class OrderRulesColissimoTest extends AbstractOrdeTestCase
 {
     public function testColissimo(): void
     {
-        $apiOrder = $this->getOrderRessourceFromDataset('order-manomano-colissimo');
+        $apiOrder = $this->getOrderRessourceFromDataset('order-manomano-colissimo.json');
         $rule = new ManomanoColissimo();
         $this->assertTrue($rule->isApplicable($apiOrder));
 
