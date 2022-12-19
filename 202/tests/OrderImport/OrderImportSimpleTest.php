@@ -112,6 +112,11 @@ class OrderImportSimpleTest extends AbstractOrdeTestCase
 
         $carrier = new \Carrier($psOrder->id_carrier);
         $this->assertEquals($carrier->id_reference, 1);
+        $orderPayments = $psOrder->getOrderPaymentCollection();
+        $this->assertEquals(count($orderPayments), 1);
+        foreach ($orderPayments as $orderPayment) {
+            $this->assertEquals($orderPayment->transaction_id, 'TEST-ORDER-AMAZON');
+        }
     }
 
     /**
@@ -292,6 +297,11 @@ class OrderImportSimpleTest extends AbstractOrdeTestCase
                         'pickup'
                     );
         $this->assertNotEquals($sfCarrier, false);
+        $orderPayments = $psOrder->getOrderPaymentCollection();
+        $this->assertEquals(count($orderPayments), 1);
+        foreach ($orderPayments as $orderPayment) {
+            $this->assertEquals($orderPayment->transaction_id, '10301108385651');
+        }
     }
 
     public function testImportColizey(): void
@@ -376,5 +386,10 @@ class OrderImportSimpleTest extends AbstractOrdeTestCase
         $this->assertEquals($pickupPoint->company_name, 'BUREAU DE POSTE COLAYRAC LPRC RP');
         $this->assertEquals($pickupPoint->product_code, 'A2P');
         $this->assertEquals($pickupPoint->city, 'COLAYRAC ST CIRQ');
+        $orderPayments = $psOrder->getOrderPaymentCollection();
+        $this->assertEquals(count($orderPayments), 1);
+        foreach ($orderPayments as $orderPayment) {
+            $this->assertEquals($orderPayment->transaction_id, '216e3d99-3c73-4d1b-a178-110e0b0369f6');
+        }
     }
 }
