@@ -31,7 +31,7 @@ class OrderShippedByMarketplaceTest extends AbstractOrdeTestCase
     {
         $apiOrder = $this->getOrderRessourceFromDataset('order-shipped-afn.json');
         $rule = new ShippedByMarketplace([
-            \Shoppingfeed::ORDER_IMPORT_SHIPPED_MARKETPLACE => false
+            \Shoppingfeed::ORDER_IMPORT_SHIPPED_MARKETPLACE => false,
         ]);
 
         $this->assertTrue($rule->isApplicable($apiOrder));
