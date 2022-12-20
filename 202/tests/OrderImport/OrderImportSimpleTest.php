@@ -71,6 +71,7 @@ class OrderImportSimpleTest extends AbstractOrdeTestCase
         $this->assertEquals($sfOrder->id_order_marketplace, 'TEST-ORDER-AMAZON');
 
         $psOrder = new \Order((int) $conveyor['id_order']);
+        $psAddress = new \Address($psOrder->id_address_delivery);
         $orderDetails = [];
         $importedItems = $conveyor['orderData']->items;
         //PrestaShop may split the order
@@ -93,6 +94,8 @@ class OrderImportSimpleTest extends AbstractOrdeTestCase
         $this->assertEquals($psOrder->total_paid_tax_excl, 7.830000);
         $this->assertEquals($psOrder->total_products, 3.750000);
         $this->assertEquals($psOrder->total_shipping, 4.900000);
+        //Verification of dni
+        $this->assertEquals('K12345678A', $psAddress->dni);
 
         $invoices = $psOrder->getInvoicesCollection();
         $this->assertEquals(count($invoices), 1);

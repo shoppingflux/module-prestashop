@@ -22,7 +22,9 @@
       }
    },
    "acknowledgedAt":null,
-   "additionalFields":null,
+   "additionalFields": {
+     "buyer_identification_number": "K12345678A"
+   },
    "billingAddress":{
        "firstName":"",
        "lastName":"Bernard Martin",
