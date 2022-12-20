@@ -56,15 +56,15 @@ class ShippedByMarketplace extends RuleAbstract implements RuleInterface
         return false;
     }
 
-    public function onVerifyOrder($params)
+    public function onVerifyOrder(&$params)
     {
         $apiOrder = $params['apiOrder'];
         if ($this->isShippedByMarketplace($apiOrder)) {
-            if (Configuration::get(\Shoppingfeed::ORDER_IMPORT_SHIPPED_MARKETPLACE) === false) {
+            if (Configuration::get(\Shoppingfeed::ORDER_IMPORT_SHIPPED_MARKETPLACE) == false) {
                 $this->logSkipImport($apiOrder);
                 $params['isSkipImport'] = true;
             }
-        } elseif ($apiOrder->getStatus() == 'shipped' && Configuration::get(\Shoppingfeed::ORDER_IMPORT_SHIPPED) === false) {
+        } elseif ($apiOrder->getStatus() === 'shipped' && Configuration::get(\Shoppingfeed::ORDER_IMPORT_SHIPPED) == false) {
             $this->logSkipImport($apiOrder);
             $params['isSkipImport'] = true;
         }
