@@ -21,11 +21,29 @@ namespace Tests\OrderImport;
 
 use Order;
 use ShoppingfeedAddon\Actions\ActionsHandler;
+use ShoppingfeedAddon\OrderImport\Rules\ShippedByMarketplace;
 use ShoppingfeedClasslib\Registry;
 use StockAvailable;
 
 class OrderShippedByMarketplaceTest extends AbstractOrdeTestCase
 {
+    public function testOrderSkipping()
+    {
+        $apiOrder = $this->getOrderRessourceFromDataset('order-shipped-afn.json');
+        $rule = new ShippedByMarketplace([
+            \Shoppingfeed::ORDER_IMPORT_SHIPPED_MARKETPLACE => false
+        ]);
+
+        $this->assertTrue($rule->isApplicable($apiOrder));
+
+        $params = [
+            'isSkipImport' => false,
+            'apiOrder' => $apiOrder,
+        ];
+        $rule->onVerifyOrder($params);
+        $this->assertTrue($params['isSkipImport']);
+    }
+
     public function testImportAfn()
     {
         $apiOrder = $this->getOrderRessourceFromDataset('order-shipped-afn.json');
