@@ -1085,6 +1085,8 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 'total_products_wt' => Tools::ps_round($orderPrices['total_products_tax_incl'], 2),
                 'total_shipping_tax_incl' => Tools::ps_round($orderPrices['total_shipping_tax_incl'], 2),
                 'total_shipping_tax_excl' => Tools::ps_round($orderPrices['total_shipping_tax_excl'], 4),
+                'total_discount_tax_excl' => 0,
+                'total_discount_tax_incl' => 0,
             ];
 
             $updateOrderTracking = [
