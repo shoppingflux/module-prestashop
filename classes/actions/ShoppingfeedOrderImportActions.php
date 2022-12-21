@@ -722,7 +722,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 $amount_paid,
                 Tools::strtolower($apiOrder->getChannel()->getName()),
                 null,
-                [],
+                ['transaction_id' => $apiOrder->getReference()],
                 $cart->id_currency,
                 false,
                 $cart->secure_key,
