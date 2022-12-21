@@ -56,6 +56,22 @@ class ShoppingfeedSyncAllModuleFrontController extends ShoppingfeedCronControlle
         $this->syncProductCron = new ShoppingfeedSyncProductModuleFrontController();
     }
 
+    public function checkAccess()
+    {
+        header('Content-type: text/plain');
+
+        if (Tools::getValue('secure_key') == $this->module->secure_key) {
+            return true;
+        }
+
+        if (false == empty((new ShoppingfeedToken())->findByToken(Tools::getValue('token', '')))) {
+            return true;
+        }
+
+        $return = ['success' => false, 'error' => 'Authentication failed'];
+        $this->ajaxDie(json_encode($return));
+    }
+
     protected function processCron($data)
     {
         try {
