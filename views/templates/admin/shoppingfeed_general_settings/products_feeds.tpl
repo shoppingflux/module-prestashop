@@ -36,7 +36,7 @@
             </a>
         </div>
         <div class="col-sm-6 col-lg-4">
-            <a href="{$link->getModuleLink('shoppingfeed', 'product')|escape:'html':'UTF-8'}" id="box-products-stock" data-toggle="tooltip" class="box-stats label-tooltip color1" data-original-title="{l s='Disabled products are not in the feed.' mod='shoppingfeed'}">
+            <a href="{$productFlowLink|escape:'html':'UTF-8'}" id="box-products-stock" data-toggle="tooltip" class="box-stats label-tooltip color1" data-original-title="{l s='Disabled products are not in the feed.' mod='shoppingfeed'}">
                 <div class="kpi-content">
                     <i class="icon-archive"></i>
                     <span class="title">{l s='Exported products' mod='shoppingfeed'}</span>
