@@ -51,10 +51,8 @@ class OrderTracker
         foreach ($tokens as $token) {
             $api = ShoppingfeedApi::getInstanceByToken($token['id_shoppingfeed_token']);
             $endpoint = sprintf(
-                'order/%s|%d|%s?ip=%s',
-                base64_encode($api->getToken()),
-                (int) $order->id,
-                (string) $order->total_paid,
+                'order/%s?ip=%s',
+                base64_encode(implode('|', [$api->getToken(), $order->id, $order->total_paid])),
                 $this->getIP($order)
             );
             $client->request(

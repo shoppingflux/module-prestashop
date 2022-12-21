@@ -56,4 +56,79 @@ class AdminShoppingfeedProcessMonitorController extends AdminProcessMonitorContr
             );
         }
     }
+
+    public function renderCronTasks()
+    {
+        if (empty($this->module->cronTasks)) {
+            throw new \Exception($this->module->l('Unable to find cronTasks declaration in module.', 'AdminProcessMonitorController'));
+        }
+
+        $fieldsList = [
+            'name' => [
+                'title' => $this->module->l('Technical name', 'AdminProcessMonitorController'),
+                'name' => 'name',
+            ],
+            'title' => [
+                'title' => $this->module->l('Title', 'AdminProcessMonitorController'),
+                'name' => 'title',
+            ],
+            'frequency' => [
+                'title' => $this->module->l('Frequency', 'AdminProcessMonitorController'),
+                'name' => 'frequency',
+            ],
+            'url' => [
+                'title' => $this->l('URL'),
+                'name' => 'url',
+                'class' => 'cron-url',
+            ],
+        ];
+
+        $list = [];
+
+        foreach ($this->module->cronTasks as $controller => $data) {
+            $title = null;
+            $token = (new ShoppingfeedToken())->getDefaultToken();
+
+            if (isset($data['title'][$this->context->language->iso_code])) {
+                $title = $data['title'][$this->context->language->iso_code];
+            } elseif (isset($data['title']['en'])) {
+                $title = $data['title']['en'];
+            }
+
+            $listItem = [
+                'name' => $data['name'],
+                'title' => $title,
+                'frequency' => $data['frequency'],
+            ];
+
+            if ($data['name'] == 'shoppingfeed:syncAll') {
+                $listItem['url'] = $this->context->link->getModuleLink(
+                    $this->module->name,
+                    $controller,
+                    [
+                        'token' => empty($token['content']) ? '' : $token['content'],
+                    ]
+                );
+            } else {
+                $listItem['url'] = $this->context->link->getModuleLink(
+                    $this->module->name,
+                    $controller,
+                    [
+                        'secure_key' => $this->module->secure_key,
+                    ]
+                );
+            }
+
+            $list[] = $listItem;
+        }
+
+        $helper = new HelperList();
+        $this->setHelperDisplay($helper);
+        $helper->title = $this->module->l('Cron Tasks', 'AdminProcessMonitorController');
+        $helper->actions = ['runCron'];
+        $helper->bulk_actions = [];
+        $helper->no_link = true;
+
+        return $helper->generateList($list, $fieldsList);
+    }
 }

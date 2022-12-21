@@ -49,7 +49,15 @@ class GoSportMondialrelay extends AbstractMondialrelay
 
     public function getRelayId($orderData)
     {
-        return $orderData['additionalFields']['shipping_pudo_id'];
+        if ($relayId = parent::getRelayId($orderData)) {
+            return $relayId;
+        }
+
+        if (false === empty($orderData->additionalFields['shipping_pudo_id'])) {
+            return $orderData->additionalFields['shipping_pudo_id'];
+        }
+
+        return '';
     }
 
     /**

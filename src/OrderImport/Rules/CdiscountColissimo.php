@@ -124,8 +124,12 @@ class CdiscountColissimo extends AbstractColissimo implements RuleInterface
         return 'A2P';
     }
 
-    protected function getPointId(OrderResource $apiOrder)
+    protected function getRelayId(OrderResource $apiOrder)
     {
+        if ($relayId = parent::getRelayId($apiOrder)) {
+            return $relayId;
+        }
+
         $shippingAddress = $apiOrder->getShippingAddress();
 
         if (empty($shippingAddress['other'])) {

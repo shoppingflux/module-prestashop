@@ -80,7 +80,7 @@ class RueducommerceMondialrelay extends RuleAbstract implements RuleInterface
         $mondialRelayID = array_pop($explodedCarrier);
 
         // Rebuild the carrier name; it should be found properly
-        $orderData->shipment['carrier'] = implode($explodedCarrier, ' ');
+        $orderData->shipment['carrier'] = implode(' ', $explodedCarrier);
 
         // Save the relay ID in the shipping address "Other" field so it can be
         // used by the main Mondial Relay rule

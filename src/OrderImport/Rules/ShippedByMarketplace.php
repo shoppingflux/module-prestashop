@@ -56,15 +56,15 @@ class ShippedByMarketplace extends RuleAbstract implements RuleInterface
         return false;
     }
 
-    public function onVerifyOrder($params)
+    public function onVerifyOrder(&$params)
     {
         $apiOrder = $params['apiOrder'];
         if ($this->isShippedByMarketplace($apiOrder)) {
-            if (Configuration::get(\Shoppingfeed::ORDER_IMPORT_SHIPPED_MARKETPLACE) === false) {
+            if ($this->configuration[\Shoppingfeed::ORDER_IMPORT_SHIPPED_MARKETPLACE] == false) {
                 $this->logSkipImport($apiOrder);
                 $params['isSkipImport'] = true;
             }
-        } elseif ($apiOrder->getStatus() == 'shipped' && Configuration::get(\Shoppingfeed::ORDER_IMPORT_SHIPPED) === false) {
+        } elseif ($apiOrder->getStatus() === 'shipped' && $this->configuration[\Shoppingfeed::ORDER_IMPORT_SHIPPED] == false) {
             $this->logSkipImport($apiOrder);
             $params['isSkipImport'] = true;
         }
@@ -149,7 +149,7 @@ class ShippedByMarketplace extends RuleAbstract implements RuleInterface
         if (empty($this->configuration['end_order_state_shipped']) === false) {
             $changeStateId = $this->configuration['end_order_state_shipped'];
         } else {
-            $changeStateId = (int) Configuration::get('PS_OS_DELIVERED');
+            $changeStateId = (int) $this->configuration['PS_OS_DELIVERED'];
         }
 
         if (false == $this->isOrderStateValid($changeStateId)) {
@@ -305,5 +305,14 @@ class ShippedByMarketplace extends RuleAbstract implements RuleInterface
             $logPrefix . $this->l('Rule triggered. Import should be skipped.', 'Shoppingfeed.Rule'),
             'Order'
         );
+    }
+
+    protected function getDefaultConfiguration()
+    {
+        return [
+            \Shoppingfeed::ORDER_IMPORT_SHIPPED_MARKETPLACE => Configuration::get(\Shoppingfeed::ORDER_IMPORT_SHIPPED_MARKETPLACE),
+            \Shoppingfeed::ORDER_IMPORT_SHIPPED => Configuration::get(\Shoppingfeed::ORDER_IMPORT_SHIPPED),
+            'PS_OS_DELIVERED' => Configuration::get('PS_OS_DELIVERED'),
+        ];
     }
 }
