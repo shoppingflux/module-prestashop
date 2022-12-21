@@ -40,10 +40,7 @@ abstract class RuleAbstract implements RuleInterface
      */
     public function __construct($configuration = [])
     {
-        if (empty($configuration)) {
-            $configuration = $this->getDefaultConfiguration();
-        }
-        $this->configuration = $configuration;
+        $this->configuration = array_merge($this->getDefaultConfiguration(), $configuration);
     }
 
     /**
