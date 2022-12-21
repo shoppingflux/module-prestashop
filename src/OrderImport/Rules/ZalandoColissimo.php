@@ -78,7 +78,7 @@ class ZalandoColissimo extends AbstractColissimo implements RuleInterface
         $address = $apiOrder->getShippingAddress();
         $address['address2'] = $address['company'];
         $address['company'] = $orderData->additionalFields['service_point_name'];
-        $address['other'] = $this->getPointId($apiOrder);
+        $address['other'] = $this->getRelayId($apiOrder);
 
         $orderData->shippingAddress = $address;
 
@@ -121,8 +121,12 @@ class ZalandoColissimo extends AbstractColissimo implements RuleInterface
         return 'A2P';
     }
 
-    protected function getPointId(OrderResource $apiOrder)
+    protected function getRelayId(OrderResource $apiOrder)
     {
+        if ($relayId = parent::getRelayId($apiOrder)) {
+            return $relayId;
+        }
+
         $apiOrderData = $apiOrder->toArray();
         $service_point_id = explode(':', $apiOrderData['additionalFields']['service_point_id']);
         if (count($service_point_id) > 1) {

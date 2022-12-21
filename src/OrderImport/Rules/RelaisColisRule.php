@@ -30,6 +30,7 @@ use Country;
 use Module;
 use Order;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
+use ShoppingfeedAddon\OrderImport\OrderData;
 use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
 use ShoppingfeedAddon\Services\IsoConvertor;
@@ -89,7 +90,7 @@ class RelaisColisRule extends RuleAbstract implements RuleInterface
         }
 
         $apiOrder = $params['apiOrder'];
-        $idRelais = $params['orderData']->shippingAddress['other'];
+        $idRelais = $this->getRelayId($params['orderData']);
 
         $logPrefix = sprintf(
             $this->l('[Order: %s]', 'Shoppingfeed.Rule'),
@@ -234,5 +235,18 @@ class RelaisColisRule extends RuleAbstract implements RuleInterface
     protected function getIsoConvertor()
     {
         return new IsoConvertor();
+    }
+
+    protected function getRelayId(OrderData $orderData)
+    {
+        if (false === empty($orderData->shippingAddress['relayId'])) {
+            return $orderData->shippingAddress['relayId'];
+        }
+
+        if (false === empty($orderData->shippingAddress['other'])) {
+            return $orderData->shippingAddress['other'];
+        }
+
+        return '';
     }
 }

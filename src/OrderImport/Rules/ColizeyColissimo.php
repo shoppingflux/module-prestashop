@@ -74,7 +74,7 @@ class ColizeyColissimo extends AbstractColissimo implements RuleInterface
         $apiOrder = $params['apiOrder'];
         $orderData = $params['orderData'];
         $address = $apiOrder->getShippingAddress();
-        $address['other'] = $this->getPointId($apiOrder);
+        $address['other'] = $this->getRelayId($apiOrder);
         $orderData->shippingAddress = $address;
     }
 
@@ -91,8 +91,12 @@ class ColizeyColissimo extends AbstractColissimo implements RuleInterface
         return 'A2P';
     }
 
-    protected function getPointId(OrderResource $apiOrder)
+    protected function getRelayId(OrderResource $apiOrder)
     {
+        if ($relayId = parent::getRelayId($apiOrder)) {
+            return $relayId;
+        }
+
         $apiOrderData = $apiOrder->toArray();
 
         return $apiOrderData['additionalFields']['shippingRelayId'];

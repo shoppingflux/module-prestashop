@@ -45,7 +45,7 @@ class MonechelleColissimo extends AbstractColissimo implements RuleInterface
         // Check marketplace, that the additional fields with the pickup point data are there and not empty, and that the "colissimo" module is installed and active
         if ('monechelle' == Tools::strtolower($apiOrder->getChannel()->getName())
             && $this->isModuleColissimoEnabled()
-            && !empty($this->getPointId($apiOrder))
+            && !empty($this->getRelayId($apiOrder))
         ) {
             ProcessLoggerHandler::logInfo(
                 $logPrefix .
@@ -80,8 +80,12 @@ class MonechelleColissimo extends AbstractColissimo implements RuleInterface
         return 'A2P';
     }
 
-    protected function getPointId(OrderResource $apiOrder)
+    protected function getRelayId(OrderResource $apiOrder)
     {
+        if ($relayId = parent::getRelayId($apiOrder)) {
+            return $relayId;
+        }
+
         $address = $apiOrder->getShippingAddress();
 
         if (false == empty($address['other'])) {
