@@ -553,8 +553,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             (string) $paymentInformation['currency'] == '' ?
                 'EUR' : (string) $paymentInformation['currency']
         );
-        $cart->id_lang = Configuration::get('PS_LANG_DEFAULT');
-
+        $cart->id_lang = $this->conveyor['id_lang'];
         $cart->recyclable = 0;
         $cart->secure_key = md5(uniqid(rand(), true));
 
