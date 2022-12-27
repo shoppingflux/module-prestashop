@@ -411,6 +411,11 @@ class ProductSerializer
             if (empty($combination['ean13']) === false) {
                 $variation['gtin'] = $combination['ean13'];
             }
+
+            if (empty($combination['ecotax']) === false) {
+                $variation['attributes']['ecotax_child'] = $combination['ecotax'];
+            }
+
             if (empty($combination['upc']) === false) {
                 $variation['attributes']['upc'] = $combination['upc'];
             }
