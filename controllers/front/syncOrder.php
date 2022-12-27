@@ -338,6 +338,7 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
                     $handler->setConveyor([
                         'id_shop' => $id_shop,
                         'id_token' => $token['id_shoppingfeed_token'],
+                        'id_lang' => $token['id_lang'],
                         'apiOrder' => $apiOrder,
                         'sfOrder' => null,
                         'isSkipImport' => false,
