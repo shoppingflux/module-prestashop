@@ -56,7 +56,7 @@ class Zalando extends RuleAbstract implements RuleInterface
             }
             $psProduct = $params['prestashopProducts'][$apiProduct['reference']];
             $query = new DbQuery();
-            $query->select('od.id_order_detail')
+            $query->select('od.id_order_detail, od.product_name')
                 ->from('order_detail', 'od')
                 ->where('od.id_order = ' . (int) $params['id_order'])
                 ->where('od.product_id = ' . (int) $psProduct->id)
@@ -67,14 +67,14 @@ class Zalando extends RuleAbstract implements RuleInterface
             $productOrderDetail = Db::getInstance()->getRow($query);
             $product_name = sprintf(
                 '%s : %s - %s',
-                substr($apiProduct['name'], 0, 188), // fix size name product to 250 maximum
+                substr($productOrderDetail['product_name'], 0, 188), // fix size name product to 250 maximum
                 $apiProduct['additionalFields']['order_item_id'],
                 $apiProduct['additionalFields']['article_id']
             );
 
             Db::getInstance()->update(
                 'order_detail',
-                ['product_name' => $product_name],
+                ['product_name' => pSQL($product_name)],
                 '`id_order_detail` = ' . (int) $productOrderDetail['id_order_detail']
             );
         }
