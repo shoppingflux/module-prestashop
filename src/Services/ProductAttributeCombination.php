@@ -108,7 +108,6 @@ class ProductAttributeCombination
                 $combinations[$idProductAttribute]['weight'] = $row['weight'];
                 $combinations[$idProductAttribute]['reference'] = $row['reference'];
                 $combinations[$idProductAttribute]['wholesale_price'] = $row['wholesale_price'];
-                $combinations[$idProductAttribute]['ecotax'] = $row['ecotax'];
             }
 
             $combinations[$idProductAttribute]['attributes'][$row['group_name']] = $row['attribute_name'];
