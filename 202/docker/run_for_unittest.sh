@@ -13,7 +13,7 @@ php /var/www/html/bin/console prestashop:module install mondialrelay -e prod
 echo "Add data fixtures for Unit Tests"
 
 mysql -h localhost -u root prestashop -e "
-
+truncate ps_shoppingfeed_preloading;
 truncate ps_mondialrelay_carrier_method;
 INSERT INTO ps_mondialrelay_carrier_method (id_carrier, delivery_mode, insurance_level, is_deleted, id_reference, date_add, date_upd)
 VALUES ('1', '24R', '0', '0', '1', '2022-06-23 11:30:14', '2022-06-23 11:30:14');
@@ -27,6 +27,7 @@ INSERT INTO ps_configuration (id_shop_group, id_shop, name, value, date_add, dat
 (NULL, NULL, 'MONDIALRELAY_WEIGHT_COEFF', '1', now(), now());
 
 UPDATE ps_product_attribute SET reference = 'demo_17_white' WHERE id_product = 11 AND default_on = 1;
+UPDATE ps_product_attribute_shop SET ecotax = 6 WHERE id_product = 5 AND id_product_attribute = 19;;
 
 TRUNCATE ps_shoppingfeed_order;
 UPDATE ps_configuration SET value = '[\"5\",\"4\"]' WHERE name = 'SHOPPINGFEED_SHIPPED_ORDERS';
