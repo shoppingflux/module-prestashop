@@ -87,6 +87,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             [
                 'apiOrder' => $this->conveyor['apiOrder'],
                 'orderData' => $this->conveyor['orderData'],
+                'isSkipImport' => &$this->conveyor['isSkipImport'],
             ]
         );
 
@@ -100,6 +101,16 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 $this->l('No apiOrder found', 'ShoppingfeedOrderImportActions'),
                 'Order'
             );
+
+            return false;
+        }
+
+        if ($this->conveyor['isSkipImport']) {
+            ProcessLoggerHandler::logInfo(
+                $this->logPrefix . $this->l('Skip an order import', 'ShoppingfeedOrderImportActions'),
+                'Order'
+            );
+            $this->forward('acknowledgeOrder');
 
             return false;
         }
@@ -273,16 +284,6 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 'prestashopProducts' => &$this->conveyor['prestashopProducts'],
             ]
         );
-
-        if ($this->conveyor['isSkipImport']) {
-            ProcessLoggerHandler::logInfo(
-                $this->logPrefix . $this->l('Skip an order import', 'ShoppingfeedOrderImportActions'),
-                'Order'
-            );
-            $this->forward('acknowledgeOrder');
-
-            return false;
-        }
 
         ProcessLoggerHandler::logInfo(
             $this->logPrefix .
