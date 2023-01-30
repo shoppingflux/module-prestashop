@@ -433,7 +433,11 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
 
         // Check each ticket, and match it with its task order
         $this->conveyor['successfulTaskOrders'] = [];
-        foreach ($result->getTickets() as $ticket) {
+        $tickets = $this->getTicketsForBatchIds(
+            $result->getBatchIds(),
+            $this->conveyor['id_token']
+        );
+        foreach ($tickets as $ticket) {
             $ticketOrderReference = $ticket->getPayloadProperty('reference');
             $taskOrder = $preparedTaskOrders[$ticketOrderReference]['taskOrder'];
 
@@ -548,8 +552,11 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
             return false;
         }
 
-        $shoppingfeedApi = ShoppingfeedApi::getInstanceByToken($this->conveyor['id_token']);
-        $tickets = $shoppingfeedApi->getTicketsByReference($this->conveyor['preparedTaskOrders']);
+        $tickets = $this->getTicketsForBatchIds(
+            $this->extractBatchIds($this->conveyor['taskOrders']),
+            $this->conveyor['id_token']
+        );
+
         if (!$tickets) {
             return false;
         }
@@ -567,6 +574,11 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
         $this->conveyor['failedTaskOrders'] = [];
         foreach ($tickets as $ticket) {
             $ticketOrderReference = $ticket->getPayloadProperty('reference');
+            //When the module gets the tickets by batch-id, the list might contain the ticket missed in $preparedTaskOrders
+            if (empty($preparedTaskOrders[$ticketOrderReference])) {
+                continue;
+            }
+
             $taskOrder = $preparedTaskOrders[$ticketOrderReference]['taskOrder'];
 
             // Check ticket status.
@@ -826,5 +838,32 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
     protected function initTaskCleaner()
     {
         return new TaskOrderCleaner();
+    }
+
+    protected function extractBatchIds($taskOrders)
+    {
+        $batchIds = [];
+        /** @var ShoppingfeedTaskOrder $taskOrder */
+        foreach ($taskOrders as $taskOrder) {
+            if (in_array($taskOrder->batch_id, $batchIds)) {
+                continue;
+            }
+
+            $batchIds[] = $taskOrder->batch_id;
+        }
+
+        return $batchIds;
+    }
+
+    protected function getTicketsForBatchIds($batchIds, $idShoppingfeedToken)
+    {
+        $shoppingfeedApi = ShoppingfeedApi::getInstanceByToken($idShoppingfeedToken);
+        $tickets = [];
+
+        foreach ($batchIds as $batchId) {
+            array_merge($tickets, $shoppingfeedApi->getTicketsByBatchId($batchId));
+        }
+
+        return $tickets;
     }
 }

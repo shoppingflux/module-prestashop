@@ -446,4 +446,32 @@ class ShoppingfeedApi
     {
         return new SinceDate();
     }
+
+    public function getTicketsByBatchId($batchId, $filters = [])
+    {
+        $tickets = [];
+
+        try {
+            $result = $this->session->getMainStore()->getTicketApi()->getByBatch($batchId, $filters);
+        } catch (Exception $e) {
+        } catch (Throwable $e) {
+        } finally {
+            if (isset($e)) {
+                ProcessLoggerHandler::logError(
+                    sprintf(
+                        'Error in ShoppingfeedApi::getTicketsByBatchId(): %s',
+                        $e->getMessage()
+                    )
+                );
+
+                return $tickets;
+            }
+        }
+
+        foreach ($result->getIterator() as $ticket) {
+            $tickets[] = $ticket;
+        }
+
+        return $tickets;
+    }
 }
