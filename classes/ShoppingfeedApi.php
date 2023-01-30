@@ -461,7 +461,7 @@ class ShoppingfeedApi
                 ProcessLoggerHandler::logError(
                     sprintf(
                         'Error in ShoppingfeedApi::getTicketsByBatchId(): %s',
-                        $e->getMessage()
+                        (empty($e) ? '' : $e->getMessage())
                     )
                 );
 
