@@ -450,13 +450,14 @@ class ShoppingfeedApi
     public function getTicketsByBatchId($batchId, $filters = [])
     {
         $tickets = [];
+        $result = null;
 
         try {
             $result = $this->session->getMainStore()->getTicketApi()->getByBatch($batchId, $filters);
         } catch (Exception $e) {
         } catch (Throwable $e) {
         } finally {
-            if (isset($e)) {
+            if (is_null($result)) {
                 ProcessLoggerHandler::logError(
                     sprintf(
                         'Error in ShoppingfeedApi::getTicketsByBatchId(): %s',
