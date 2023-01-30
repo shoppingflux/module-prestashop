@@ -202,7 +202,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
         $action = $this->conveyor['order_action'];
 
         $query = new DbQuery();
-        $query->select('*')
+        $query->select('sto.*')
             ->from('shoppingfeed_task_order', 'sto')
             ->leftJoin('shoppingfeed_order', 'so', 'so.id_order = sto.id_order')
             ->innerJoin('orders', 'o', 'o.id_order = sto.id_order')
