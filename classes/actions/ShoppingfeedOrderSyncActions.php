@@ -299,8 +299,8 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
                 Registry::increment('syncStatusErrors');
                 continue;
             }
-
-            $orderHistory = $order->getHistory($order->id_lang);
+            // Should reverse the history to set operation is based on a more recent order state
+            $orderHistory = array_reverse($order->getHistory($order->id_lang));
             $taskOrderOperation = null;
             $taskOrderPayload = [];
 
@@ -424,25 +424,11 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
             return false;
         }
 
-        // Index each task order with its order reference
-        $preparedTaskOrders = [];
+        $batchId = current($result->getBatchIds());
+
         foreach ($this->conveyor['preparedTaskOrders'] as $preparedTaskOrder) {
-            $preparedTaskOrders[$preparedTaskOrder['reference_marketplace']] = $preparedTaskOrder;
-        }
-        unset($preparedTaskOrder);
-
-        // Check each ticket, and match it with its task order
-        $this->conveyor['successfulTaskOrders'] = [];
-        $tickets = $this->getTicketsForBatchIds(
-            $result->getBatchIds(),
-            $this->conveyor['id_token']
-        );
-        foreach ($tickets as $ticket) {
-            $ticketOrderReference = $ticket->getPayloadProperty('reference');
-            $taskOrder = $preparedTaskOrders[$ticketOrderReference]['taskOrder'];
-
-            $taskOrder->ticket_number = $ticket->getId();
-            $taskOrder->batch_id = $ticket->getBatchId();
+            $taskOrder = $preparedTaskOrder['taskOrder'];
+            $taskOrder->batch_id = $batchId;
             $taskOrder->action = ShoppingfeedTaskOrder::ACTION_CHECK_TICKET_SYNC_STATUS;
             $taskOrder->save();
 
@@ -450,31 +436,14 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
                 sprintf(
                     static::getLogPrefix($taskOrder->id_order) . ' ' .
                         $this->l('Ticket created for Order %s Status %s', 'ShoppingfeedOrderSyncActions'),
-                    $ticketOrderReference,
-                    $preparedTaskOrders[$ticketOrderReference]['operation']
+                    '',
+                    $preparedTaskOrder['operation']
                 ),
                 'Order',
                 $taskOrder->id_order
             );
 
             $this->conveyor['successfulTaskOrders'][] = $taskOrder;
-            unset($preparedTaskOrders[$ticketOrderReference]);
-        }
-
-        // Any remaining task order is an error
-        $this->conveyor['failedTaskOrders'] = [];
-        foreach ($preparedTaskOrders as $preparedTaskOrder) {
-            ProcessLoggerHandler::logError(
-                sprintf(
-                    static::getLogPrefix($preparedTaskOrder['taskOrder']->id_order) . ' ' .
-                        $this->l('No ticket could be created for Order %s Status %s', 'ShoppingfeedOrderSyncActions'),
-                    $preparedTaskOrder['reference_marketplace'],
-                    $preparedTaskOrder['operation']
-                ),
-                'Order',
-                $preparedTaskOrder['taskOrder']->id_order
-            );
-            $this->conveyor['failedTaskOrders'][] = $preparedTaskOrder['taskOrder'];
         }
 
         return true;
@@ -498,18 +467,6 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
         foreach ($taskOrders as $taskOrder) {
             /** @var $taskOrder ShoppingfeedTaskOrder */
             $logPrefix = self::getLogPrefix($taskOrder->id_order);
-
-            if (!$taskOrder->ticket_number) {
-                ProcessLoggerHandler::logError(
-                    $logPrefix . ' ' .
-                        $this->l('No ticket number set.', 'ShoppingfeedOrderSyncActions'),
-                    'Order',
-                    $taskOrder->id_order
-                );
-                Registry::increment('ticketsErrors');
-                continue;
-            }
-
             $shoppingfeedOrder = ShoppingfeedOrder::getByIdOrder($taskOrder->id_order);
             if (!Validate::isLoadedObject($shoppingfeedOrder)) {
                 ProcessLoggerHandler::logError(
@@ -861,7 +818,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
         $tickets = [];
 
         foreach ($batchIds as $batchId) {
-            array_merge($tickets, $shoppingfeedApi->getTicketsByBatchId($batchId));
+            $tickets = array_merge($tickets, $shoppingfeedApi->getTicketsByBatchId($batchId));
         }
 
         return $tickets;
