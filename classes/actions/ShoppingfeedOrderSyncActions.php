@@ -371,7 +371,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
                 continue;
             }
 
-            $this->conveyor['preparedTaskOrders'][] = [
+            $this->conveyor['preparedTaskOrders'][$taskOrderOperation][] = [
                 'reference_marketplace' => $sfOrder->id_order_marketplace,
                 'marketplace' => $sfOrder->name_marketplace,
                 'taskOrder' => $taskOrder,
@@ -418,32 +418,37 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
             return false;
         }
 
-        $result = $shoppingfeedApi->updateMainStoreOrdersStatus($this->conveyor['preparedTaskOrders']);
+        foreach ($this->conveyor['preparedTaskOrders'] as $preparedTaskOrders) {
+            $result = $shoppingfeedApi->updateMainStoreOrdersStatus($preparedTaskOrders);
 
-        if (!$result) {
-            return false;
+            if (!$result) {
+                continue 1;
+            }
+
+            $batchId = current($result->getBatchIds());
+
+            foreach ($preparedTaskOrders as $preparedTaskOrder) {
+                $taskOrder = $preparedTaskOrder['taskOrder'];
+                $taskOrder->batch_id = $batchId;
+                $taskOrder->action = ShoppingfeedTaskOrder::ACTION_CHECK_TICKET_SYNC_STATUS;
+                $taskOrder->save();
+
+                ProcessLoggerHandler::logSuccess(
+                    sprintf(
+                        static::getLogPrefix($taskOrder->id_order) . ' ' .
+                            $this->l('Ticket created for Order %s Status %s', 'ShoppingfeedOrderSyncActions'),
+                        '',
+                        $preparedTaskOrder['operation']
+                    ),
+                    'Order',
+                    $taskOrder->id_order
+                );
+
+                $this->conveyor['successfulTaskOrders'][] = $taskOrder;
+            }
         }
-
-        $batchId = current($result->getBatchIds());
-
-        foreach ($this->conveyor['preparedTaskOrders'] as $preparedTaskOrder) {
-            $taskOrder = $preparedTaskOrder['taskOrder'];
-            $taskOrder->batch_id = $batchId;
-            $taskOrder->action = ShoppingfeedTaskOrder::ACTION_CHECK_TICKET_SYNC_STATUS;
-            $taskOrder->save();
-
-            ProcessLoggerHandler::logSuccess(
-                sprintf(
-                    static::getLogPrefix($taskOrder->id_order) . ' ' .
-                        $this->l('Ticket created for Order %s Status %s', 'ShoppingfeedOrderSyncActions'),
-                    '',
-                    $preparedTaskOrder['operation']
-                ),
-                'Order',
-                $taskOrder->id_order
-            );
-
-            $this->conveyor['successfulTaskOrders'][] = $taskOrder;
+        if (empty($this->conveyor['successfulTaskOrders'])) {
+            return false;
         }
 
         return true;
