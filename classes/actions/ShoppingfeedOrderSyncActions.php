@@ -422,7 +422,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
             $result = $shoppingfeedApi->updateMainStoreOrdersStatus($preparedTaskOrders);
 
             if (!$result) {
-                continue 1;
+                continue;
             }
 
             $batchId = current($result->getBatchIds());
