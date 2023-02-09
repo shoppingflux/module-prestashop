@@ -57,7 +57,7 @@ class RetifTax extends RuleAbstract implements RuleInterface
         );
         $this->logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
 
-        if (preg_match('#^retif#', Tools::strtolower($apiOrder->getChannel()->getName())) === false) {
+        if (preg_match('#^retif#', Tools::strtolower($apiOrder->getChannel()->getName())) == false) {
             return false;
         }
 

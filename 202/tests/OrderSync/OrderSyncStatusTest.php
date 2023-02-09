@@ -46,7 +46,7 @@ class OrderSyncStatusTest extends TestCase
         );
         $orderStatusHandler->process('ShoppingfeedOrderSync');
         $processData = $orderStatusHandler->getConveyor();
-        $this->assertEquals(7, count($processData['taskOrders']));
+        $this->assertEquals(8, count($processData['taskOrders']));
         $this->assertEquals(2, count($processData['preparedTaskOrders']));
         $this->assertEquals(0, Registry::get('syncStatusErrors', 0));
 
@@ -81,6 +81,6 @@ class OrderSyncStatusTest extends TestCase
         );
         $ticketsHandler->process('ShoppingfeedOrderSync');
         $processData = $ticketsHandler->getConveyor();
-        $this->assertEquals(7, count($processData['preparedTaskOrders']));
+        $this->assertEquals(8, count($processData['preparedTaskOrders']));
     }
 }
