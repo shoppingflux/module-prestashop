@@ -1302,7 +1302,8 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             ShoppingfeedAddon\OrderImport\Rules\GaleriesLafayetteColissimo::class,
             ShoppingfeedAddon\OrderImport\Rules\SymbolConformity::class,
             ShoppingfeedAddon\OrderImport\Rules\Zalando::class,
-            \ShoppingfeedAddon\OrderImport\Rules\SetDniToAddress::class,
+            ShoppingfeedAddon\OrderImport\Rules\SetDniToAddress::class,
+            ShoppingfeedAddon\OrderImport\Rules\RetifTax::class,
         ];
 
         foreach ($defaultRulesClassNames as $ruleClassName) {
