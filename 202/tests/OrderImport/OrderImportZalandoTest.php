@@ -119,8 +119,8 @@ class OrderImportZalandoTest extends AbstractOrdeTestCase
 
         $this->assertTrue(is_array($details));
         $this->assertTrue(count($details) === 2);
-        $this->assertEquals($details[0]['product_name'], 'Haut de maillot triangle maille crochet Dolce noir : 32632708-cc99-32d1-aa43-ca59521a9c9e - JR581J004-Q11009500D');
-        $this->assertEquals($details[1]['product_name'], 'Bas de maillot de bain brésilien en crochet à nouettes réglables Dolce noir : 0c6a3824-272a-3333-87bf-5a6962ad83b1 - JR581I00D-Q110042000');
+        $this->assertEquals($details[0]['product_name'], 'Hummingbird printed t-shirt (Size: S - Color: White) : 32632708-cc99-32d1-aa43-ca59521a9c9e - JR581J004-Q11009500D');
+        $this->assertEquals($details[1]['product_name'], 'Hummingbird printed t-shirt (Size: S - Color: Black) : 0c6a3824-272a-3333-87bf-5a6962ad83b1 - JR581I00D-Q110042000');
     }
 
     /**
