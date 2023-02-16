@@ -24,6 +24,7 @@ use Cart;
 use Configuration;
 use Country;
 use Db;
+use Exception;
 
 class CartCarrierAssociation
 {
@@ -42,7 +43,7 @@ class CartCarrierAssociation
         $relay_detail = $this->glsAdapter->getRelayDetail($relayId);
 
         if (empty($relay_detail)) {
-            return false;
+            throw new Exception('Data of relay point is missing');
         }
 
         $id_country = Country::getByIso($relay_detail['Country']);

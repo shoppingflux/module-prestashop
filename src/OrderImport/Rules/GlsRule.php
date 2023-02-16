@@ -21,6 +21,7 @@ namespace ShoppingfeedAddon\OrderImport\Rules;
 
 use Carrier;
 use Cart;
+use Exception;
 use Module;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use ShoppingfeedAddon\OrderImport\GLS\Adapter;
@@ -100,7 +101,34 @@ class GlsRule extends RuleAbstract implements RuleInterface
 
         $cartCarrierAssociation = $this->initCartCarrierAssociation();
 
-        if (false == $cartCarrierAssociation->create($cart, $this->getRelayId($params['apiOrder']))) {
+        try {
+            $result = $cartCarrierAssociation->create($cart, $this->getRelayId($params['apiOrder']));
+        } catch (Exception $e) {
+            ProcessLoggerHandler::logInfo(
+                $this->logPrefix .
+                sprintf(
+                    $this->l('Fail linking GLS pickup point %s to cart %d. Detail message: %s', 'GlsRule'),
+                    $this->getRelayId($params['apiOrder']),
+                    (int) $cart->id,
+                    $e->getMessage()
+                ),
+                'Cart',
+                $cart->id
+            );
+            return;
+        }
+
+        if (false == $result) {
+            ProcessLoggerHandler::logInfo(
+                $this->logPrefix .
+                sprintf(
+                    $this->l('Fail linking GLS pickup point %s to cart %d.', 'GlsRule'),
+                    $this->getRelayId($params['apiOrder']),
+                    (int) $cart->id
+                ),
+                'Cart',
+                $cart->id
+            );
             return;
         }
 
