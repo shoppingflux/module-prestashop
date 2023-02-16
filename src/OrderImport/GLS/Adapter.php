@@ -24,10 +24,10 @@ use Validate;
 
 class Adapter implements AdapterInterface
 {
-    /** @var \NkmGls*/
+    /** @var \NkmGls */
     protected $glsModule;
 
-    /** @var \Nukium\GLS\Legacy\GlsController*/
+    /** @var \Nukium\GLS\Legacy\GlsController */
     protected $gls;
 
     public function __construct()

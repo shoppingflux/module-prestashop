@@ -36,7 +36,7 @@ class GlsRule extends RuleAbstract implements RuleInterface
 {
     protected $gls;
 
-    /** @var Adapter*/
+    /** @var Adapter */
     protected $glsAdapter;
 
     protected $logPrefix = '';
@@ -86,7 +86,7 @@ class GlsRule extends RuleAbstract implements RuleInterface
 
     public function afterCartCreation($params)
     {
-        /** @var Cart $cart*/
+        /** @var Cart $cart */
         $cart = $params['cart'];
 
         if (empty($cart->id_carrier)) {
@@ -115,6 +115,7 @@ class GlsRule extends RuleAbstract implements RuleInterface
                 'Cart',
                 $cart->id
             );
+
             return;
         }
 
@@ -129,6 +130,7 @@ class GlsRule extends RuleAbstract implements RuleInterface
                 'Cart',
                 $cart->id
             );
+
             return;
         }
 
@@ -168,6 +170,7 @@ class GlsRule extends RuleAbstract implements RuleInterface
     public function setGlsAdapter(AdapterInterface $adapter)
     {
         $this->glsAdapter = $adapter;
+
         return $this;
     }
 }
