@@ -9,6 +9,7 @@ php /var/www/html/bin/console prestashop:module install shoppingfeed -e prod
 php /var/www/html/bin/console prestashop:module install dpdfrance -e prod
 php /var/www/html/bin/console prestashop:module install colissimo -e prod
 php /var/www/html/bin/console prestashop:module install mondialrelay -e prod
+php /var/www/html/bin/console prestashop:module install nkmgls -e prod
 
 echo "Add data fixtures for Unit Tests"
 
