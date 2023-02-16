@@ -1303,7 +1303,8 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             ShoppingfeedAddon\OrderImport\Rules\SymbolConformity::class,
             ShoppingfeedAddon\OrderImport\Rules\Zalando::class,
             ShoppingfeedAddon\OrderImport\Rules\SetDniToAddress::class,
-            ShoppingfeedAddon\OrderImport\Rules\RetifTax::class,
+            ShoppingfeedAddon\OrderImport\Rules\TaxExclMarketplace::class,
+            ShoppingfeedAddon\OrderImport\Rules\SkipTax::class,
         ];
 
         foreach ($defaultRulesClassNames as $ruleClassName) {

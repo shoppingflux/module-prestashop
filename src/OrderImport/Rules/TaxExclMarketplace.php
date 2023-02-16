@@ -28,15 +28,13 @@
 namespace ShoppingfeedAddon\OrderImport\Rules;
 
 use Db;
-use Order;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 use Tools;
-use Validate;
 
-class RetifTax extends RuleAbstract implements RuleInterface
+class TaxExclMarketplace extends RuleAbstract implements RuleInterface
 {
     protected $logPrefix = '';
 
@@ -52,7 +50,7 @@ class RetifTax extends RuleAbstract implements RuleInterface
     public function isApplicable(OrderResource $apiOrder)
     {
         $this->logPrefix = sprintf(
-            $this->l('[Order: %s]', 'RetifTax'),
+            $this->l('[Order: %s]', 'TaxExclMarketplace'),
             $apiOrder->getId()
         );
         $this->logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
@@ -63,47 +61,25 @@ class RetifTax extends RuleAbstract implements RuleInterface
 
         ProcessLoggerHandler::logInfo(
             $this->logPrefix .
-            $this->l('Rule triggered.', 'RetifTax'),
+            $this->l('TaxExclMarketplace - Rule triggered.', 'TaxExclMarketplace'),
             'Order'
         );
 
         return true;
     }
 
+    public function beforeRecalculateOrderPrices($params)
+    {
+        $params['isAmountTaxIncl'] = false;
+    }
+
     public function getDescription()
     {
-        return $this->l('Remove a tax in an order', 'RetifTax');
+        return $this->l('Recompute amount with VAT.', 'TaxExclMarketplace');
     }
 
     public function getConditions()
     {
-        return $this->l('If an order came from Retif.', 'RetifTax');
-    }
-
-    public function onPostProcess($params)
-    {
-        if (empty($params['id_order'])) {
-            return;
-        }
-
-        $order = new Order($params['id_order']);
-
-        if (false == Validate::isLoadedObject($order)) {
-            return;
-        }
-
-        ProcessLoggerHandler::logInfo(
-            $this->logPrefix .
-            $this->l('Reset the tax', 'RetifTax'),
-            'Order',
-            $params['id_order']
-        );
-
-        foreach ($order->getOrderDetailList() as $orderDetail) {
-            $this->db->delete(
-                'order_detail_tax',
-                'id_order_detail = ' . (int) $orderDetail['id_order_detail']
-            );
-        }
+        return $this->l('If an order came from Retif.', 'TaxExclMarketplace');
     }
 }
