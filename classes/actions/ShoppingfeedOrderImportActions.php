@@ -1082,7 +1082,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             // Only on main order
             if ($isResetShipping == false) {
                 // main order
-                $total_paid = Tools::ps_round($total_paid + $total_shipping_tax_incl);
+                $total_paid = Tools::ps_round($total_paid + $total_shipping_tax_incl, 2);
                 $total_paid_tax_excl = Tools::ps_round($orderPrices['total_products_tax_excl'] + $total_shipping_tax_excl, 4);
                 $orderPrices['total_shipping'] = $total_shipping_tax_incl;
                 $orderPrices['total_shipping_tax_incl'] = $total_shipping_tax_incl;

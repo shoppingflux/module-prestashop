@@ -12,8 +12,8 @@
   "anonymized": false,
   "payment": {
     "shippingAmount": 0,
-    "productAmount": 156.67,
-    "totalAmount": 156.67,
+    "productAmount": 4.5,
+    "totalAmount": 4.5,
     "currency": "EUR",
     "method": "B"
   },

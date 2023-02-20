@@ -30,6 +30,8 @@ use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 
 class SkipTax extends RuleAbstract implements RuleInterface
 {
+    protected $logPrefix = '';
+
     public function isApplicable(OrderResource $apiOrder)
     {
         $apiOrderData = $apiOrder->toArray();

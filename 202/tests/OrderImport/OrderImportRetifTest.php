@@ -19,8 +19,7 @@
 
 namespace Tests\OrderImport;
 
-use Db;
-use DbQuery;
+use Order;
 use ShoppingfeedAddon\Actions\ActionsHandler;
 use ShoppingfeedClasslib\Registry;
 
@@ -61,12 +60,9 @@ class OrderImportRetifTest extends AbstractOrdeTestCase
      */
     public function testTax($conveyor)
     {
-        $query = (new DbQuery())
-            ->from('order_detail_tax', 'odt')
-            ->leftJoin('order_detail', 'od', 'odt.id_order_detail = od.id_order_detail')
-            ->where('od.id_order = ' . (int) $conveyor['id_order']);
-        $tax = Db::getInstance()->executeS($query);
+        $order = new Order($conveyor['id_order']);
 
-        $this->assertTrue(empty($tax));
+        $this->assertEquals(5.4, $order->total_paid_tax_incl);
+        $this->assertEquals(4.5, $order->total_paid_tax_excl);
     }
 }

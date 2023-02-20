@@ -126,6 +126,8 @@ class RulesManager
             'afterCartCreation',
             'afterOrderCreation',
             'onPostProcess',
+            'beforeRecalculateOrderPrices',
+            'afterRecalculateOrderPrices',
         ];
         if (in_array($eventName, $availableEvents) === false) {
             return;
