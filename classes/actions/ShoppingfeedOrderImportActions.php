@@ -122,6 +122,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         if (ShoppingfeedOrder::existsInternalId($apiOrder->getId())) {
             $this->conveyor['error'] = $this->l('Order not imported; already present.', 'ShoppingfeedOrderImportActions');
             ProcessLoggerHandler::logInfo($this->logPrefix . $this->conveyor['error'], 'Order');
+            $this->conveyor['isSkipImport'] = true;
             $this->forward('acknowledgeOrder');
 
             return false;
