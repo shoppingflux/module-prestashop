@@ -1004,6 +1004,12 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 );
             } else {
                 // delete tax so that it does not appear in tax details block in invoice
+                ProcessLoggerHandler::logInfo(
+                    $this->logPrefix .
+                    $this->l('Remove order detail tax', 'ShoppingfeedOrderImportActions'),
+                    'Order',
+                    $this->conveyor['id_order']
+                );
                 Db::getInstance()->delete(
                     'order_detail_tax',
                     '`id_order_detail` = ' . (int) $productOrderDetail['id_order_detail']
