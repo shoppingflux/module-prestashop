@@ -14,6 +14,7 @@ echo "Add data fixtures for Unit Tests"
 
 mysql -h localhost -u root prestashop -e "
 
+TRUNCATE ps_shoppingfeed_preloading;
 TRUNCATE ps_mondialrelay_carrier_method;
 INSERT INTO ps_mondialrelay_carrier_method (id_carrier, delivery_mode, insurance_level, is_deleted, id_reference, date_add, date_upd)
 VALUES ('1', '24R', '0', '0', '1', '2022-06-23 11:30:14', '2022-06-23 11:30:14');
@@ -27,6 +28,7 @@ INSERT INTO ps_configuration (id_shop_group, id_shop, name, value, date_add, dat
 (NULL, NULL, 'MONDIALRELAY_WEIGHT_COEFF', '1', now(), now());
 
 UPDATE ps_product_attribute SET reference = 'demo_17_white' WHERE id_product = 11 AND default_on = 1;
+UPDATE ps_product_attribute_shop SET ecotax = 6 WHERE id_product = 5 AND id_product_attribute = 19;;
 
 TRUNCATE ps_shoppingfeed_order;
 TRUNCATE ps_shoppingfeed_task_order;
@@ -59,7 +61,8 @@ REPLACE INTO ps_shoppingfeed_carrier (id_shoppingfeed_carrier, name_marketplace,
 (2,	'NatureEtDecouvertes',	'Point Relais (Chrono Relais)',	2,	0,	'2022-02-17 00:00:00',	'2022-02-17 00:00:00'),
 (3,	'Colizey', 'Colissimo Relais',	7,	0,	'2022-02-17 00:00:00',	'2022-02-17 00:00:00'),
 (4,	'CDiscount', 'SO1',	7,	0,	'2022-02-17 00:00:00',	'2022-02-17 00:00:00'),
-(5,	'Mamomano', 'Colissimo',	7,	0,	'2022-02-17 00:00:00',	'2022-02-17 00:00:00');
+(5,	'Mamomano', 'Colissimo',	7,	0,	'2022-02-17 00:00:00',	'2022-02-17 00:00:00'),
+(6,	'showroomprive', 'Colissimo',	7,	0,	'2022-02-17 00:00:00',	'2022-02-17 00:00:00');
 
 UPDATE ps_product_lang SET available_now = 'disponible', available_later = 'non disponible' WHERE id_product = 1;
 UPDATE ps_product_lang SET available_now = 'disponible', available_later = 'non disponible' WHERE id_product = 3;

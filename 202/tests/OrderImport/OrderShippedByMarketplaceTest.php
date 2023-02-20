@@ -40,7 +40,7 @@ class OrderShippedByMarketplaceTest extends AbstractOrdeTestCase
             'isSkipImport' => false,
             'apiOrder' => $apiOrder,
         ];
-        $rule->onVerifyOrder($params);
+        $rule->onPreProcess($params);
         $this->assertTrue($params['isSkipImport']);
     }
 

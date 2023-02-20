@@ -1816,6 +1816,7 @@ return array(
     'ShoppingfeedAddon\\OrderImport\\Rules\\SetDniToAddress' => $baseDir . '/src/OrderImport/Rules/SetDniToAddress.php',
     'ShoppingfeedAddon\\OrderImport\\Rules\\ShippedByMarketplace' => $baseDir . '/src/OrderImport/Rules/ShippedByMarketplace.php',
     'ShoppingfeedAddon\\OrderImport\\Rules\\SkipTax' => $baseDir . '/src/OrderImport/Rules/SkipTax.php',
+    'ShoppingfeedAddon\\OrderImport\\Rules\\ShowroompriveColissimo' => $baseDir . '/src/OrderImport/Rules/ShowroompriveColissimo.php',
     'ShoppingfeedAddon\\OrderImport\\Rules\\Socolissimo' => $baseDir . '/src/OrderImport/Rules/Socolissimo.php',
     'ShoppingfeedAddon\\OrderImport\\Rules\\SymbolConformity' => $baseDir . '/src/OrderImport/Rules/SymbolConformity.php',
     'ShoppingfeedAddon\\OrderImport\\Rules\\TaxExclMarketplace' => $baseDir . '/src/OrderImport/Rules/TaxExclMarketplace.php',

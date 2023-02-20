@@ -87,6 +87,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             [
                 'apiOrder' => $this->conveyor['apiOrder'],
                 'orderData' => $this->conveyor['orderData'],
+                'isSkipImport' => &$this->conveyor['isSkipImport'],
             ]
         );
 
@@ -100,6 +101,16 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 $this->l('No apiOrder found', 'ShoppingfeedOrderImportActions'),
                 'Order'
             );
+
+            return false;
+        }
+
+        if ($this->conveyor['isSkipImport']) {
+            ProcessLoggerHandler::logInfo(
+                $this->logPrefix . $this->l('Skip an order import', 'ShoppingfeedOrderImportActions'),
+                'Order'
+            );
+            $this->forward('acknowledgeOrder');
 
             return false;
         }
@@ -122,6 +133,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         if (ShoppingfeedOrder::existsInternalId($apiOrder->getId())) {
             $this->conveyor['error'] = $this->l('Order not imported; already present.', 'ShoppingfeedOrderImportActions');
             ProcessLoggerHandler::logInfo($this->logPrefix . $this->conveyor['error'], 'Order');
+            $this->conveyor['isSkipImport'] = true;
             $this->forward('acknowledgeOrder');
 
             return false;
@@ -273,16 +285,6 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 'prestashopProducts' => &$this->conveyor['prestashopProducts'],
             ]
         );
-
-        if ($this->conveyor['isSkipImport']) {
-            ProcessLoggerHandler::logInfo(
-                $this->logPrefix . $this->l('Skip an order import', 'ShoppingfeedOrderImportActions'),
-                'Order'
-            );
-            $this->forward('acknowledgeOrder');
-
-            return false;
-        }
 
         ProcessLoggerHandler::logInfo(
             $this->logPrefix .
@@ -1028,6 +1030,12 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 );
             } else {
                 // delete tax so that it does not appear in tax details block in invoice
+                ProcessLoggerHandler::logInfo(
+                    $this->logPrefix .
+                    $this->l('Remove order detail tax', 'ShoppingfeedOrderImportActions'),
+                    'Order',
+                    $this->conveyor['id_order']
+                );
                 Db::getInstance()->delete(
                     'order_detail_tax',
                     '`id_order_detail` = ' . (int) $productOrderDetail['id_order_detail']
