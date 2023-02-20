@@ -19,6 +19,7 @@
 
 namespace Tests\OrderImport;
 
+use Configuration;
 use Db;
 use Module;
 use ShoppingfeedAddon\Actions\ActionsHandler;
@@ -32,7 +33,10 @@ class OrderImportManoManoDpdRelaisWithDoubleTaxOnProductTest extends AbstractOrd
     public function testAddDpdCarrierAssociation()
     {
         $dpdFrance = Module::getInstanceByName('dpdfrance');
-        $dpdFrance->createCarrier($dpdFrance->config_carrier_world, 'world');
+        //$dpdFrance->createCarrier($dpdFrance->config_carrier_world, 'world');
+        // hack due to protected method createCarrier in the new
+        $_GET['submitCreateCarrierWorld'] = 1;
+        $dpdFrance->getContent();
         $contextData = [
             'carrierReference' => 0,
         ];
@@ -46,6 +50,7 @@ class OrderImportManoManoDpdRelaisWithDoubleTaxOnProductTest extends AbstractOrd
 
         $carrierReference = (int) Db::getInstance()->getValue($query);
         $this->assertTrue($carrierReference > 0);
+        Configuration::updateValue('DPDFRANCE_RELAIS_CARRIER_LOG', $carrierReference);
 
         if (empty($carrierReference)) {
             return $contextData;
@@ -89,6 +94,7 @@ class OrderImportManoManoDpdRelaisWithDoubleTaxOnProductTest extends AbstractOrd
             [
                 'id_shop' => 1,
                 'id_token' => 1,
+                'id_lang' => 1,
                 'apiOrder' => $apiOrder,
             ]
         );
@@ -174,7 +180,7 @@ class OrderImportManoManoDpdRelaisWithDoubleTaxOnProductTest extends AbstractOrd
         $carrier = new \Carrier($psOrder->id_carrier);
         $this->assertEquals($carrier->id_reference, $contextData['carrierReference']);
 
-        $dpdShippingService = \Dpdfrance::getService($psOrder, false);
+        $dpdShippingService = \DPDTools::getService($psOrder, false);
         $expectedValue = 'REL';
         $this->assertEquals($expectedValue, $dpdShippingService);
     }

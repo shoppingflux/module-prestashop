@@ -62,6 +62,7 @@ class OrderShippedByMarketplaceTest extends AbstractOrdeTestCase
             [
                 'id_shop' => 1,
                 'id_token' => 1,
+                'id_lang' => 1,
                 'apiOrder' => $apiOrder,
             ]
         );
@@ -97,6 +98,7 @@ class OrderShippedByMarketplaceTest extends AbstractOrdeTestCase
             [
                 'id_shop' => 1,
                 'id_token' => 1,
+                'id_lang' => 1,
                 'apiOrder' => $apiOrder,
             ]
         );
@@ -132,6 +134,7 @@ class OrderShippedByMarketplaceTest extends AbstractOrdeTestCase
             [
                 'id_shop' => 1,
                 'id_token' => 1,
+                'id_lang' => 1,
                 'apiOrder' => $apiOrder,
             ]
         );
@@ -167,6 +170,7 @@ class OrderShippedByMarketplaceTest extends AbstractOrdeTestCase
             [
                 'id_shop' => 1,
                 'id_token' => 1,
+                'id_lang' => 1,
                 'apiOrder' => $apiOrder,
             ]
         );

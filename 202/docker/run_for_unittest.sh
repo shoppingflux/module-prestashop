@@ -13,8 +13,9 @@ php /var/www/html/bin/console prestashop:module install mondialrelay -e prod
 echo "Add data fixtures for Unit Tests"
 
 mysql -h localhost -u root prestashop -e "
-truncate ps_shoppingfeed_preloading;
-truncate ps_mondialrelay_carrier_method;
+
+TRUNCATE ps_shoppingfeed_preloading;
+TRUNCATE ps_mondialrelay_carrier_method;
 INSERT INTO ps_mondialrelay_carrier_method (id_carrier, delivery_mode, insurance_level, is_deleted, id_reference, date_add, date_upd)
 VALUES ('1', '24R', '0', '0', '1', '2022-06-23 11:30:14', '2022-06-23 11:30:14');
 
@@ -30,12 +31,14 @@ UPDATE ps_product_attribute SET reference = 'demo_17_white' WHERE id_product = 1
 UPDATE ps_product_attribute_shop SET ecotax = 6 WHERE id_product = 5 AND id_product_attribute = 19;;
 
 TRUNCATE ps_shoppingfeed_order;
+TRUNCATE ps_shoppingfeed_task_order;
 UPDATE ps_configuration SET value = '[\"5\",\"4\"]' WHERE name = 'SHOPPINGFEED_SHIPPED_ORDERS';
 UPDATE ps_configuration SET value = '[\"6\"]' WHERE name = 'SHOPPINGFEED_CANCELLED_ORDERS';
 UPDATE ps_configuration SET value = '[\"7\"]' WHERE name = 'SHOPPINGFEED_REFUNDED_ORDERS';
 UPDATE ps_configuration SET value = '{\"ShoppingfeedAddon\\OrderImport\\Rules\\AmazonEbay\":{\"enabled\":\"1\"},\"ShoppingfeedAddon\\OrderImport\\Rules\\ChangeStateOrder\":{\"end_order_state\":\"\"},\"ShoppingfeedAddon\\OrderImport\\Rules\\ShippedByMarketplace\":{\"end_order_state_shipped\":\"5\"},\"ShoppingfeedAddon\\OrderImport\\Rules\\SymbolConformity\":{\"enabled\":\"1\"}}' WHERE name = 'SHOPPINGFEED_ORDER_IMPORT_SPECIFIC_RULES_CONFIGURATION';
 UPDATE ps_configuration SET value = '1' WHERE name = 'PS_CART_RULE_FEATURE_ACTIVE';
 UPDATE ps_configuration SET value = '1' WHERE name = 'SHOPPINGFEED_ORDER_IMPORT_SHIPPED_MARKETPLACE';
+UPDATE ps_configuration SET value = '0' WHERE name = 'SHOPPINGFEED_ORDER_STATUS_TIME_SHIFT';
 
 INSERT IGNORE INTO ps_tax (id_tax, rate, active, deleted) VALUES
 (40, 0.190, 1, 0);
