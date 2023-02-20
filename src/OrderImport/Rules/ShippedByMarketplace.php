@@ -56,7 +56,7 @@ class ShippedByMarketplace extends RuleAbstract implements RuleInterface
         return false;
     }
 
-    public function onVerifyOrder(&$params)
+    public function onPreProcess(&$params)
     {
         $apiOrder = $params['apiOrder'];
         if ($this->isShippedByMarketplace($apiOrder)) {
