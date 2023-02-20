@@ -911,7 +911,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         $this->initProcess($apiOrder);
 
         $isAmountTaxIncl = true;
-        $stripTax = false;
+        $skipTax = false;
         // Specific rules
         $this->specificRulesManager->applyRules(
             'beforeRecalculateOrderPrices',
@@ -924,7 +924,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 'order_reference' => $this->conveyor['order_reference'],
                 'prestashopProducts' => $this->conveyor['prestashopProducts'],
                 'isAmountTaxIncl' => &$isAmountTaxIncl,
-                'stripTax' => &$stripTax,
+                'skipTax' => &$skipTax,
             ]
         );
 
@@ -966,7 +966,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             // The tax may not be defined for the country (linked to the invoice address)
             // Eg: Switzerland invoice address received in french shop (will depends of PS configuration)
             $tax_rate = $productOrderDetail['tax_rate'] === null ? 0 : $productOrderDetail['tax_rate'];
-            if ($stripTax === true) {
+            if ($skipTax === true) {
                 $tax_rate = 0;
             }
 
@@ -1063,7 +1063,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             $address = new Address($psOrder->id_address_delivery);
         }
         $carrier_tax_rate = $carrier->getTaxesRate($address);
-        if ($stripTax === true) {
+        if ($skipTax === true) {
             $carrier_tax_rate = 0;
         }
 
