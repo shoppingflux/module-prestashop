@@ -1,0 +1,106 @@
+{
+  "id": 12345678903,
+  "storeId": 55555,
+  "channelId": 30770,
+  "reference": "TEST-12345678903",
+  "storeReference": "55555",
+  "isTest": true,
+  "acknowledgedAt": "2023-01-04T19:13:40+01:00",
+  "createdAt": "2023-01-04T18:44:43+01:00",
+  "updatedAt": "2023-01-04T18:58:52+01:00",
+  "status": "waiting_shipment",
+  "anonymized": false,
+  "payment": {
+    "shippingAmount": 0,
+    "productAmount": 4.5,
+    "totalAmount": 4.5,
+    "currency": "EUR",
+    "method": "B"
+  },
+  "shipment": {
+    "carrier": "Livraison à votre adresse : 8€ (8€ supplèmentaire)",
+    "trackingNumber": "",
+    "trackingLink": "",
+    "returnInfo": {
+      "carrier": null,
+      "trackingNumber": null
+    }
+  },
+  "additionalFields": {
+    "fulfilled_by": "merchant",
+    "order_status": "SHIPPING",
+    "numero-tva-ue": "FR65606720209",
+    "shipping_type_code": "STD0800-8",
+    "fulfillment_center_code": "DEFAULT",
+    "is_business_order": "1"
+  },
+  "latestShipDate": "2023-01-16 18:53:25",
+  "errors": [],
+  "itemsReferencesAliases": null,
+  "fulfilledBy": "store",
+  "items": [{
+    "reference":"8",
+    "status":"",
+    "quantity":1,
+    "price":4.5,
+    "taxAmount":0,
+    "channelReference": "TEST-12345678903-1",
+    "additionalFields": null,
+    "name":"Mug Today is a good day",
+    "image":"http://localhost/img/p/1/1-small_default.jpg"
+  }],
+  "shippingAddress": {
+    "firstName": "John",
+    "lastName": "Dow",
+    "company": "202 ecommerce",
+    "street": "10 rue Vivienne",
+    "street2": "",
+    "other": "",
+    "postalCode": "75001",
+    "city": "Paris",
+    "country": "FR",
+    "phone": "0123456789",
+    "mobilePhone": "",
+    "province": "",
+    "email": "unique-3@test.com",
+    "relayId": "488411"
+  },
+  "billingAddress": {
+    "firstName": "John",
+    "lastName": "Dow",
+    "company": "202 ecommerce",
+    "street": "10 rue Vivienne",
+    "street2": "",
+    "other": "",
+    "postalCode": "75001",
+    "city": "Paris",
+    "country": "FR",
+    "phone": "",
+    "mobilePhone": "",
+    "province": "",
+    "email": "unique-3@test.com"
+  },
+  "_links": {
+    "self": {
+      "href": "/v1/store/44783/order/12345678903"
+    },
+    "store": {
+      "href": "/v1/store/44783"
+    }
+  },
+  "_embedded": {
+    "channel": {
+      "id": 30770,
+      "name": "retif",
+      "_links": {
+        "self": {
+          "href": "/v1/channel/30770"
+        },
+        "image": {
+          "href": "https://assets.shopping-feed.com/channel/logo/retif.png"
+        }
+      }
+    },
+    "tag": []
+  }
+}

@@ -912,6 +912,24 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         $cart = new Cart($psOrder->id_cart);
         $this->initProcess($apiOrder);
 
+        $isAmountTaxIncl = true;
+        $skipTax = false;
+        // Specific rules
+        $this->specificRulesManager->applyRules(
+            'beforeRecalculateOrderPrices',
+            [
+                'apiOrder' => $apiOrder,
+                'orderData' => &$this->conveyor['orderData'],
+                'psOrder' => $psOrder,
+                'cart' => &$cart,
+                'id_order' => $this->conveyor['id_order'],
+                'order_reference' => $this->conveyor['order_reference'],
+                'prestashopProducts' => $this->conveyor['prestashopProducts'],
+                'isAmountTaxIncl' => &$isAmountTaxIncl,
+                'skipTax' => &$skipTax,
+            ]
+        );
+
         // We may have multiple orders created for the same reference, (advanced stock management)
         // therefore the total price of each orders needs to be calculated separately
         $ordersList = [];
@@ -950,6 +968,9 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             // The tax may not be defined for the country (linked to the invoice address)
             // Eg: Switzerland invoice address received in french shop (will depends of PS configuration)
             $tax_rate = $productOrderDetail['tax_rate'] === null ? 0 : $productOrderDetail['tax_rate'];
+            if ($skipTax === true) {
+                $tax_rate = 0;
+            }
 
             // Retrieve the id_order linked to the order_reference (as there might be multiple orders created
             // from the same reference)
@@ -960,9 +981,14 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                     'total_products_tax_incl' => 0,
                 ];
             }
-
-            $orderDetailPrice_tax_incl = (float) $apiProduct->getTotalPrice();
-            $orderDetailPrice_tax_excl = (float) ($orderDetailPrice_tax_incl / (1 + ($tax_rate / 100)));
+            if ($isAmountTaxIncl === true) {
+                $orderDetailPrice_tax_incl = (float) $apiProduct->getTotalPrice();
+                $orderDetailPrice_tax_excl = (float) ($orderDetailPrice_tax_incl / (1 + ($tax_rate / 100)));
+            } else {
+                $orderDetailPrice_tax_excl = (float) $apiProduct->getTotalPrice();
+                $orderDetailPrice_tax_incl = (float) ($orderDetailPrice_tax_excl * (1 + ($tax_rate / 100)));
+                $apiProduct->unitPrice = $orderDetailPrice_tax_incl;
+            }
 
             $ordersList[(int) $productOrderDetail['id_order']]['total_products_tax_incl'] += $orderDetailPrice_tax_incl;
             $ordersList[(int) $productOrderDetail['id_order']]['total_products_tax_excl'] += $orderDetailPrice_tax_excl;
@@ -1045,7 +1071,17 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             $address = new Address($psOrder->id_address_delivery);
         }
         $carrier_tax_rate = $carrier->getTaxesRate($address);
-        $total_shipping_tax_excl = Tools::ps_round((float) $paymentInformation['shippingAmount'] / (1 + ($carrier_tax_rate / 100)), 2);
+        if ($skipTax === true) {
+            $carrier_tax_rate = 0;
+        }
+
+        if ($isAmountTaxIncl === true) {
+            $total_shipping_tax_excl = Tools::ps_round((float) $paymentInformation['shippingAmount'] / (1 + ($carrier_tax_rate / 100)), 2);
+            $total_shipping_tax_incl = Tools::ps_round((float) $paymentInformation['shippingAmount'], 2);
+        } else {
+            $total_shipping_tax_excl = Tools::ps_round((float) $paymentInformation['shippingAmount'], 2);
+            $total_shipping_tax_incl = Tools::ps_round((float) $paymentInformation['shippingAmount'] * (1 + ($carrier_tax_rate / 100)), 2);
+        }
         $id_order = 0;
 
         foreach ($ordersList as $id_order => $orderPrices) {
@@ -1054,10 +1090,10 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             // Only on main order
             if ($isResetShipping == false) {
                 // main order
-                $total_paid = Tools::ps_round($total_paid + (float) $paymentInformation['shippingAmount'], 2);
-                $total_paid_tax_excl = Tools::ps_round($orderPrices['total_products_tax_excl'] + (float) $total_shipping_tax_excl, 4);
-                $orderPrices['total_shipping'] = Tools::ps_round($paymentInformation['shippingAmount'], 2);
-                $orderPrices['total_shipping_tax_incl'] = Tools::ps_round($paymentInformation['shippingAmount'], 2);
+                $total_paid = Tools::ps_round($total_paid + $total_shipping_tax_incl, 2);
+                $total_paid_tax_excl = Tools::ps_round($orderPrices['total_products_tax_excl'] + $total_shipping_tax_excl, 4);
+                $orderPrices['total_shipping'] = $total_shipping_tax_incl;
+                $orderPrices['total_shipping_tax_incl'] = $total_shipping_tax_incl;
                 $orderPrices['total_shipping_tax_excl'] = $total_shipping_tax_excl;
             } else {
                 $orderPrices['total_shipping'] = 0;
@@ -1144,6 +1180,11 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             Db::getInstance()->delete('order_cart_rule', 'id_order = ' . (int) $psOrder->id);
         }
 
+        if ($isAmountTaxIncl === true) {
+            $totalAmount = Tools::ps_round((float) $paymentInformation['totalAmount'], 4);
+        } else {
+            $totalAmount = $orderPrices['total_paid'];
+        }
         $queryUpdateOrderPayment = sprintf(
             '
                 UPDATE 
@@ -1154,11 +1195,22 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             ',
             _DB_PREFIX_ . 'orders',
             _DB_PREFIX_ . 'order_payment',
-            Tools::ps_round($paymentInformation['totalAmount'], 4),
+            $totalAmount,
             (int) $psOrder->id
         );
         Db::getInstance()->execute($queryUpdateOrderPayment);
         Cache::clean('order_invoice_paid_*');
+
+        // Specific rules
+        $this->specificRulesManager->applyRules(
+            'afterRecalculateOrderPrices',
+            [
+                'apiOrder' => $apiOrder,
+                'psOrder' => $psOrder,
+                'cart' => $cart,
+                'prestashopProducts' => $this->conveyor['prestashopProducts'],
+            ]
+        );
 
         ProcessLoggerHandler::logInfo(
             $this->logPrefix .
