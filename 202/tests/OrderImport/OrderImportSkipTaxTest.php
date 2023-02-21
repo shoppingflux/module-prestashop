@@ -19,14 +19,15 @@
 
 namespace Tests\OrderImport;
 
+use Order;
 use ShoppingfeedAddon\Actions\ActionsHandler;
 use ShoppingfeedClasslib\Registry;
 
-class OrderImportStockTest extends AbstractOrdeTestCase
+class OrderImportSkipTaxTest extends AbstractOrdeTestCase
 {
-    public function testImportStockSimple(): void
+    public function testImport()
     {
-        $apiOrder = $this->getOrderRessourceFromDataset('order-stock.json');
+        $apiOrder = $this->getOrderRessourceFromDataset('order-business.json');
 
         $handler = new ActionsHandler();
         $handler->addActions(
@@ -45,10 +46,22 @@ class OrderImportStockTest extends AbstractOrdeTestCase
                 'apiOrder' => $apiOrder,
             ]
         );
-
         Registry::set('shoppingfeedOrderImportHandler', $handler);
+
         $processResult = $handler->process('shoppingfeedOrderImport');
 
         $this->assertTrue($processResult);
+
+        return $handler->getConveyor();
+    }
+
+    /**
+     * @depends testImport
+     */
+    public function testTax($conveyor)
+    {
+        $order = new Order($conveyor['id_order']);
+
+        $this->assertTrue($order->total_paid_tax_excl == $order->total_paid_tax_incl);
     }
 }

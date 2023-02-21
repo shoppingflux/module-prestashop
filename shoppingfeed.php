@@ -1293,6 +1293,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             ShoppingfeedAddon\OrderImport\Rules\TestingOrder::class,
             ShoppingfeedAddon\OrderImport\Rules\ManomanoColissimo::class,
             ShoppingfeedAddon\OrderImport\Rules\MonechelleColissimo::class,
+            ShoppingfeedAddon\OrderImport\Rules\ShowroompriveColissimo::class,
             ShoppingfeedAddon\OrderImport\Rules\ManomanoDpdRelais::class,
             ShoppingfeedAddon\OrderImport\Rules\ZalandoColissimo::class,
             ShoppingfeedAddon\OrderImport\Rules\MissingCarrier::class, //should be performed before ZalandoCarrier
@@ -1302,7 +1303,9 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             ShoppingfeedAddon\OrderImport\Rules\GaleriesLafayetteColissimo::class,
             ShoppingfeedAddon\OrderImport\Rules\SymbolConformity::class,
             ShoppingfeedAddon\OrderImport\Rules\Zalando::class,
-            \ShoppingfeedAddon\OrderImport\Rules\SetDniToAddress::class,
+            ShoppingfeedAddon\OrderImport\Rules\SetDniToAddress::class,
+            ShoppingfeedAddon\OrderImport\Rules\TaxExclMarketplace::class,
+            ShoppingfeedAddon\OrderImport\Rules\SkipTax::class,
         ];
 
         foreach ($defaultRulesClassNames as $ruleClassName) {

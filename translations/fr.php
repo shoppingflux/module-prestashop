@@ -13,10 +13,6 @@ $_MODULE['<{shoppingfeed}prestashop>shoppingfeed_d2776d1655257149792f979a8347029
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeed_c57b3a8d67d19ba8b7ff2fca88c44012'] = 'Commande %s non importée : %s';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeed_849952f30eb2416a43266be9db32cde3'] = 'Le processus d\'import de la commande %s a démarré';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeed_bd18e419dba0ef2b9f29f5af3528ee7f'] = 'La commande %s n\'a pas pu être importée lors de la synchronisation : %s';
-$_MODULE['<{shoppingfeed}prestashop>sfcustomerrules_3962c13f93dd94baf44f488b47248303'] = 'Règle d\'import de gestion des comportement spécifique de l\'objet Client';
-$_MODULE['<{shoppingfeed}prestashop>sfcustomerrules_876f23178c29dc2552c0b48bf23cd9bd'] = 'Êtes-vous sûr de vouloir désinstaller ?';
-$_MODULE['<{shoppingfeed}prestashop>sfcustomerruleshook_ff209c9bce1c0eef431a006a56cce0db'] = 'Appliquer à toutes les commandes';
-$_MODULE['<{shoppingfeed}prestashop>sfcustomerruleshook_0c1eed0ab46d4b20406944ac54fb3ead'] = 'Règles personnalisées pour la gestion des champs extra téléphone et mobile sur l\'objet Client';
 $_MODULE['<{shoppingfeed}prestashop>adminprocessloggercontroller_d3b206d196cd6be3a2764c1fb90b200f'] = 'Supprimer la sélection';
 $_MODULE['<{shoppingfeed}prestashop>adminprocessloggercontroller_53c6a96a3df980c3270d6ed82b6f174b'] = 'Souhaitez-vous supprimer la sélection ?';
 $_MODULE['<{shoppingfeed}prestashop>adminprocessloggercontroller_b718adec73e04ce3ec720dd11a06a308'] = 'ID';
@@ -118,10 +114,20 @@ $_MODULE['<{shoppingfeed}prestashop>monechellecolissimo_f22690ebca72b016c51a0b9d
 $_MODULE['<{shoppingfeed}prestashop>monechellecolissimo_d46e11f8bd9e72432aa812eae34372e3'] = 'Règle le transporteur à Colissimo point pickup et ajoute les données nécessaire dans le module associé.';
 $_MODULE['<{shoppingfeed}prestashop>amazonmanomanotva_338957761b7beea4f0f0de535551280f'] = 'Ajoute le numéro de TVA intracom';
 $_MODULE['<{shoppingfeed}prestashop>amazonmanomanotva_cc1cbb0097ab693308c18fe5560be3bd'] = 'Si une commande vient de ManoMano ou Amazon';
+$_MODULE['<{shoppingfeed}prestashop>skiptax_0cc1e925b5703e8da52b7c3e91829499'] = '[Commande: %s]';
+$_MODULE['<{shoppingfeed}prestashop>skiptax_7d19930a16163d26fccf93ebe5c54038'] = 'SkipTax - Règle déclenchée.';
+$_MODULE['<{shoppingfeed}prestashop>skiptax_522d585ac3c46c10b5bb3ef323fe1975'] = 'Force la TAV à 0% pour les commandes business';
+$_MODULE['<{shoppingfeed}prestashop>skiptax_a3b67acbb90c113c303c9f3fe39a51ff'] = 'En activant cette option, la TVA pour la commande importée sera portée à 0%.';
+$_MODULE['<{shoppingfeed}prestashop>skiptax_9c036563bd96ad0361096ee08d8b3268'] = 'Si la commande est `is_business_order`';
+$_MODULE['<{shoppingfeed}prestashop>skiptax_9c2a8e88249278963a885253cb2ec79d'] = 'Force la TAV à 0% si l\'option est activée et que la commande contient le paramètre `is_business_order`';
 $_MODULE['<{shoppingfeed}prestashop>zalandocarrier_0cc1e925b5703e8da52b7c3e91829499'] = '[Commande: %s]';
 $_MODULE['<{shoppingfeed}prestashop>zalandocarrier_43b6ade8fd758b0597ad2f31c9cd1b41'] = 'Règle déclenchée.';
 $_MODULE['<{shoppingfeed}prestashop>zalandocarrier_9b03904408244323647649bf095e6b72'] = 'Si la commande provient de Zalando.';
 $_MODULE['<{shoppingfeed}prestashop>zalandocarrier_c080a57a1eec56e1f84db6783c85e7d9'] = 'Régler le transporteur.';
+$_MODULE['<{shoppingfeed}prestashop>showroomprivecolissimo_0cc1e925b5703e8da52b7c3e91829499'] = '[Order: %s]';
+$_MODULE['<{shoppingfeed}prestashop>showroomprivecolissimo_43b6ade8fd758b0597ad2f31c9cd1b41'] = 'Règle déclenchée.';
+$_MODULE['<{shoppingfeed}prestashop>showroomprivecolissimo_c66f5b0ec96debb0e8e2468280e87a28'] = 'Si la commande vient de Showroomprive et a le champs \"relayID\" non-vide.';
+$_MODULE['<{shoppingfeed}prestashop>showroomprivecolissimo_d46e11f8bd9e72432aa812eae34372e3'] = 'Règle le transporteur à Colissimo point pickup et ajoute les données nécessaire dans le module associé.';
 $_MODULE['<{shoppingfeed}prestashop>manomanocolissimo_0cc1e925b5703e8da52b7c3e91829499'] = '[Commande: %s]';
 $_MODULE['<{shoppingfeed}prestashop>manomanocolissimo_43b6ade8fd758b0597ad2f31c9cd1b41'] = 'Règle déclenchée.';
 $_MODULE['<{shoppingfeed}prestashop>manomanocolissimo_61c08624dd7294a67910b19e5f18b510'] = 'Si une commande vient de ManoMano et que le champs `other` ou `relayID` n\'est pas vide.';
@@ -194,6 +200,10 @@ $_MODULE['<{shoppingfeed}prestashop>cdiscountcolissimo_0cc1e925b5703e8da52b7c3e9
 $_MODULE['<{shoppingfeed}prestashop>cdiscountcolissimo_1705267a14f0d6133019291dcf8b03ed'] = 'Règle déclenchée. Sauvegarde du point relais Colissimo.';
 $_MODULE['<{shoppingfeed}prestashop>cdiscountcolissimo_dec006e857c0ad54d3aadd8f00064519'] = 'Si la commande provient de CDiscount ET le transporteur est ”SO1”, ”REL” or ”RCO”.';
 $_MODULE['<{shoppingfeed}prestashop>cdiscountcolissimo_fdbfb223195e682147665bce34d7f680'] = 'Récupération de l\'ID point relais à partir du champs ”nom” et transfert dans le champs ”company”. Si la ”company” est déjà rempli, transfert dans le champs ”address (2)”. Compléter le nom avec le contenu du prénom après le premier espace.';
+$_MODULE['<{shoppingfeed}prestashop>taxexclmarketplace_0cc1e925b5703e8da52b7c3e91829499'] = '[Commande: %s]';
+$_MODULE['<{shoppingfeed}prestashop>taxexclmarketplace_0864f57e7158777184d00e221aa09824'] = 'TaxExclMarketplace - Règle déclenchée.';
+$_MODULE['<{shoppingfeed}prestashop>taxexclmarketplace_b335b19ef2a3c630c546f3d166c278ef'] = 'Importe la commande à partie des prix et montants fournis hors taxe.';
+$_MODULE['<{shoppingfeed}prestashop>taxexclmarketplace_7aed48c9909a116f48a53e3395359090'] = 'Si la commande vient de RETIF.';
 $_MODULE['<{shoppingfeed}prestashop>mondialrelay_7b667cdcb38acfdefc7e872f1718a46d'] = 'Si la commande doit être livrée par ”Mondial Relay”.';
 $_MODULE['<{shoppingfeed}prestashop>mondialrelay_7177cc7c0f9dec75e5b34797b469b539'] = 'Ajout des informations de la commande dans le module Mondial Relay.';
 $_MODULE['<{shoppingfeed}prestashop>abstractcolissimo_0cc1e925b5703e8da52b7c3e91829499'] = '[Commande %s]';
@@ -612,6 +622,7 @@ $_MODULE['<{shoppingfeed}prestashop>shoppingfeedproductsyncpriceactions_73c1f14a
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedproductsyncpriceactions_88f3784c2963bc004558697d67f77e1d'] = '%s non référencé dans le catalogue Shopping Feed - prix : %s';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_0cc1e925b5703e8da52b7c3e91829499'] = '[Commande: %s]';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_a11762ead4c38afafe9cd9fcc729e17f'] = 'Aucune donnée trouvée dans l\'apiOrder';
+$_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_2e32cdbd35c59f552a9826859bf6dbe5'] = 'Sauter un import de commande';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_4528e2041b7be1a9241cbcbc2835b51d'] = 'Sauter un import de commande à cause d\'une devise non supportée.';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_0de7fd990e38ad9216de83e95f5446ce'] = 'Commande non importée; Déjà importée.';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_2d507cd78ac89b9255ac05fcbb8ed6df'] = 'Aucun items trouvés sur la commande provenant de Shopping feed.';
@@ -622,7 +633,6 @@ $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_1d193d7f9d551
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_582eb1e23f1ac722deee9a4acfe02d21'] = 'Transporteur non trouvé ou non valide. Veuillez configurer au moins un transporteur sur votre PrestaShop dans le module  Shoppingfeed > Parametres > Flux des commandes.';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_4a8402cde5f01d66795cb8cc009ef845'] = 'Étape 1/11 : Récupération du transporteur';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_72a66a238d1ae82da4e757953280c054'] = 'Impossible d\'ajotuer un transporteur valide. ';
-$_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_2e32cdbd35c59f552a9826859bf6dbe5'] = 'Sauter un import de commande';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_1f4d41966a2505d93fc50f3c1facfaee'] = 'Étape 2/11 : Vérification de la commande';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_ca1adcba37d0d2a6b1a2dd7d730b94cb'] = 'Echec : %s';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_64b95d1703f3d38fa3eadbe24c08cc80'] = 'Étape 3/11 : Création du compte client';
@@ -646,6 +656,7 @@ $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_47112c325cdb9
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_520287c7a5a62cb7f57f700310fbda50'] = 'Échec lors de l\'acquittement de la commande sur l\'API Shopping feed';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_edddef134d67a9a3b81190c2980996e3'] = 'Étape 10/11 : Commande acquittée sur l\'API Shopping feed';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_5281d369b978d1a255edcec43a380cc5'] = 'Échec lors de la récupération de l\'objet OrderDetail.';
+$_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_c1e25e8b9f252dfd07585b99453c952f'] = 'Supprime les taxes sur les produits de la commande.';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_ab23e0f70670c18fe780e2b0b1226bad'] = 'Suppression des règles de panier de type cadeaux. ID produit :';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_4d4d607d4b221036b26c6e0ecca1f7f4'] = 'Étape 11/11 : Montants et totaux de la commande mis à jour';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_99826d6735215636b30d95cd8bb5d70b'] = 'Commande supprimée. ID Commande :';
@@ -674,8 +685,6 @@ $_MODULE['<{shoppingfeed}prestashop>shoppingfeedordersyncactions_9efff4a10b9ad75
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedordersyncactions_0d3f40ff7690a7a223da70447cd6fb59'] = 'Aucune tâche de traitement des commandes trouvée.';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedordersyncactions_4930df58c29fc86597530234bec3d755'] = 'Impossible de contacter l\'API Shopping Feed.';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedordersyncactions_db1f8322e0af5790765323656aeca3d2'] = 'Ticket créé pour la commande %s portant le statut %s';
-$_MODULE['<{shoppingfeed}prestashop>shoppingfeedordersyncactions_7451257924a055795232ddf1a8007705'] = 'Pas de ticket créé pour la commande %s portant le statut %s';
-$_MODULE['<{shoppingfeed}prestashop>shoppingfeedordersyncactions_1267ade1b1ee922f82a83094bb43d97a'] = 'Aucun numéro de ticket configuré.';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedordersyncactions_948b31dd0f66b9eef27c452608989858'] = 'Impossible de vérifier le statut du ticket; La commande Shoppping feed ne peut pas être chargée.';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedordersyncactions_04a31a2d2c31b9392edec8ed801b01e3'] = 'Aucune tâche de traitement des commandes trouvée.';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedordersyncactions_48154eaa1d8af027e482c6a1edb34c95'] = 'Statut du ticket : %s. Détails du ticket : %s. ';

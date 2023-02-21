@@ -167,4 +167,25 @@ class TestAttributeTestCase extends TestCase
         $this->assertArrayHasKey('attributes', $productContent['variations'][$id_product_attribute]);
         $this->assertArrayNotHasKey('availability_label', $productContent['variations'][$id_product_attribute]['attributes']);
     }
+
+    public function testGetProductEcotaxChild()
+    {
+        $id_product = 5;
+        $id_product_attribute = 19;
+        $id_token = 1;
+        $handler = new ActionsHandler();
+        $handler->addActions('getBatch')
+                ->setConveyor(['id_token' => $id_token])
+                ->process('ShoppingfeedProductSyncPreloading');
+
+        $product = (new ShoppingfeedPreloading())->findByTokenIdAndProductId($id_token, $id_product);
+        $this->assertArrayHasKey('content', $product);
+        $productContent = json_decode($product['content'], true);
+        $this->assertIsArray($productContent);
+        $this->assertArrayHasKey('variations', $productContent);
+        $this->assertArrayHasKey($id_product_attribute, $productContent['variations']);
+        $this->assertArrayHasKey('attributes', $productContent['variations'][$id_product_attribute]);
+        $this->assertArrayHasKey('ecotax_child', $productContent['variations'][$id_product_attribute]['attributes']);
+        $this->assertEquals($productContent['variations'][$id_product_attribute]['attributes']['ecotax_child'], '6.000000');
+    }
 }
