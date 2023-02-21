@@ -5,10 +5,10 @@
     <property name="src-dir" value="${basedir}" />
     <property name="TARGETNAME" value="shoppingfeed" />
     <property name="TARGETBRANCH" value="${env.GIT_BRANCH}" />
-    <property name="TARGETVERSION" value="1.9.2" />
+    <property name="TARGETVERSION" value="1.9.3" />
     <target name="build" depends="build-common,package-zip,psvalidator,tot-testing" />
 
-    <target name="build-common" depends="lint,prepare,npm,doc" />
+    <target name="build-common" depends="lint,prepare" />
 
     <target name="package-zip" depends="build-common" description="Create ZIP package">
         <echo>Create ZIP package</echo>
@@ -89,28 +89,4 @@
         </exec>
     </target>
     <!-- end composer -->
-
-    <!-- start documentation -->
-    <target name="doc.check">
-        <condition property="doc.directory.exist">
-            <available file="${basedir}/202/doc" type="dir"/>
-        </condition>
-    </target>
-    <target name="doc" if="doc.directory.exist" depends="doc.check,npm" description="Build documentation mini site.">
-        <exec executable="npm">
-            <arg value="run" />
-            <arg value="doc-build" />
-        </exec>
-    </target>
-    <target name="npm" depends="clean-npm,npm-install" description="Install or update node dependencies" />
-    <target name="clean-npm" description="Empty node_modules folder">
-        <delete dir="${basedir}/202/node_modules" />
-    </target>
-    <target name="npm-install" description="Installing node deps">
-        <exec executable="npm">
-            <arg value="install" />
-        </exec>
-    </target>
-    <!-- end documentation -->
-
 </project>
