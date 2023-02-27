@@ -15,6 +15,7 @@ echo "Add data fixtures for Unit Tests"
 
 mysql -h localhost -u root prestashop -e "
 
+TRUNCATE ps_shoppingfeed_preloading;
 TRUNCATE ps_mondialrelay_carrier_method;
 INSERT INTO ps_mondialrelay_carrier_method (id_carrier, delivery_mode, insurance_level, is_deleted, id_reference, date_add, date_upd)
 VALUES ('1', '24R', '0', '0', '1', '2022-06-23 11:30:14', '2022-06-23 11:30:14');
@@ -28,13 +29,14 @@ INSERT INTO ps_configuration (id_shop_group, id_shop, name, value, date_add, dat
 (NULL, NULL, 'MONDIALRELAY_WEIGHT_COEFF', '1', now(), now());
 
 UPDATE ps_product_attribute SET reference = 'demo_17_white' WHERE id_product = 11 AND default_on = 1;
+UPDATE ps_product_attribute_shop SET ecotax = 6 WHERE id_product = 5 AND id_product_attribute = 19;;
 
 TRUNCATE ps_shoppingfeed_order;
 TRUNCATE ps_shoppingfeed_task_order;
 UPDATE ps_configuration SET value = '[\"5\",\"4\"]' WHERE name = 'SHOPPINGFEED_SHIPPED_ORDERS';
 UPDATE ps_configuration SET value = '[\"6\"]' WHERE name = 'SHOPPINGFEED_CANCELLED_ORDERS';
 UPDATE ps_configuration SET value = '[\"7\"]' WHERE name = 'SHOPPINGFEED_REFUNDED_ORDERS';
-UPDATE ps_configuration SET value = '{\"ShoppingfeedAddon\\OrderImport\\Rules\\AmazonEbay\":{\"enabled\":\"1\"},\"ShoppingfeedAddon\\OrderImport\\Rules\\ChangeStateOrder\":{\"end_order_state\":\"\"},\"ShoppingfeedAddon\\OrderImport\\Rules\\ShippedByMarketplace\":{\"end_order_state_shipped\":\"5\"},\"ShoppingfeedAddon\\OrderImport\\Rules\\SymbolConformity\":{\"enabled\":\"1\"}}' WHERE name = 'SHOPPINGFEED_ORDER_IMPORT_SPECIFIC_RULES_CONFIGURATION';
+UPDATE ps_configuration SET value = '{\"ShoppingfeedAddon\\\\\\\\OrderImport\\\\\\\\Rules\\\\\\\\SkipTax\":{\"enabled\":\"1\"},\"ShoppingfeedAddon\\OrderImport\\Rules\\AmazonEbay\":{\"enabled\":\"1\"},\"ShoppingfeedAddon\\OrderImport\\Rules\\ChangeStateOrder\":{\"end_order_state\":\"\"},\"ShoppingfeedAddon\\OrderImport\\Rules\\ShippedByMarketplace\":{\"end_order_state_shipped\":\"5\"},\"ShoppingfeedAddon\\OrderImport\\Rules\\SymbolConformity\":{\"enabled\":\"1\"}}' WHERE name = 'SHOPPINGFEED_ORDER_IMPORT_SPECIFIC_RULES_CONFIGURATION';
 UPDATE ps_configuration SET value = '1' WHERE name = 'PS_CART_RULE_FEATURE_ACTIVE';
 UPDATE ps_configuration SET value = '1' WHERE name = 'SHOPPINGFEED_ORDER_IMPORT_SHIPPED_MARKETPLACE';
 UPDATE ps_configuration SET value = '0' WHERE name = 'SHOPPINGFEED_ORDER_STATUS_TIME_SHIFT';
@@ -60,7 +62,8 @@ REPLACE INTO ps_shoppingfeed_carrier (id_shoppingfeed_carrier, name_marketplace,
 (2,	'NatureEtDecouvertes',	'Point Relais (Chrono Relais)',	2,	0,	'2022-02-17 00:00:00',	'2022-02-17 00:00:00'),
 (3,	'Colizey', 'Colissimo Relais',	7,	0,	'2022-02-17 00:00:00',	'2022-02-17 00:00:00'),
 (4,	'CDiscount', 'SO1',	7,	0,	'2022-02-17 00:00:00',	'2022-02-17 00:00:00'),
-(5,	'Mamomano', 'Colissimo',	7,	0,	'2022-02-17 00:00:00',	'2022-02-17 00:00:00');
+(5,	'Mamomano', 'Colissimo',	7,	0,	'2022-02-17 00:00:00',	'2022-02-17 00:00:00'),
+(6,	'showroomprive', 'Colissimo',	7,	0,	'2022-02-17 00:00:00',	'2022-02-17 00:00:00');
 
 UPDATE ps_product_lang SET available_now = 'disponible', available_later = 'non disponible' WHERE id_product = 1;
 UPDATE ps_product_lang SET available_now = 'disponible', available_later = 'non disponible' WHERE id_product = 3;
