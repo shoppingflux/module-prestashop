@@ -4,6 +4,7 @@ namespace Tests\OrderImport;
 
 use Address;
 use Cart;
+use Currency;
 use Db;
 use DbQuery;
 use Shop;
@@ -22,6 +23,7 @@ class OrderGlsRuleTest extends AbstractOrdeTestCase
         $cart->id_shop = $this->getDefaultShop()->id;
         $cart->id_shop_group = $this->getDefaultShop()->id_shop_group;
         $cart->id_carrier = $this->getDefaultIdCarrier();
+        $cart->id_currency = $this->getDefaultIdCurrency()->id;
         $cart->save();
 
         $glsAdapter = $this->getGlsAdapter();
@@ -60,7 +62,7 @@ class OrderGlsRuleTest extends AbstractOrdeTestCase
     {
         $adapter = $this
             ->getMockBuilder(Adapter::class)
-            ->addMethods(['getRelayDetail', 'getGlsProductCode'])
+            ->onlyMethods(['getRelayDetail', 'getGlsProductCode'])
             ->getMock();
         $adapter->method('getRelayDetail')->willReturn([
             'parcelShopById' => '2500976161',
@@ -99,5 +101,10 @@ class OrderGlsRuleTest extends AbstractOrdeTestCase
                     ->where('external_module_name = "nkmgls"')
                     ->where('deleted = 0')
             );
+    }
+
+    protected function getDefaultIdCurrency()
+    {
+        return new Currency(1);
     }
 }
