@@ -107,7 +107,7 @@ $_MODULE['<{shoppingfeed}prestashop>diagnostics_8b6160bbd95657959f9c5ee36af7fb16
 $_MODULE['<{shoppingfeed}prestashop>diagnostics_55eca46ceddb053c9c98d43e8bc0aeb7'] = 'La classe hook est overridée probablement par un module RGPD (RGPD Pro, Consentement Cookie, ...). Attention à bien autoriser le module Shopppingfeed dans votre module RGPD.';
 $_MODULE['<{shoppingfeed}prestashop>diagnostics_ed9c1914be9e9283776ecc8ff0147be6'] = 'L\'ancien module Shoppingflux Export est disponible sur le serveur. Veuillez le désinstaller et le supprimer du dossier modules.';
 $_MODULE['<{shoppingfeed}prestashop>diagnostics_ec6d8e39e6b07b8c4357c568177d0d25'] = 'Le module `hidefeatures` est installé sur votre PrestaShop. Certaines caractéristiques peuvent être cachées dans votre flux produits.';
-$_MODULE['<{shoppingfeed}prestashop>backofficeheader_6929b6fdc007a9eb76276d74a9be29e9'] = 'Attention, votre transporteur par défaut n\'est plus configuré dans Shoppingfeed.';
+$_MODULE['<{shoppingfeed}prestashop>backofficeheader_aff398d0582d2ae3708da0285b315f3b'] = 'Attention, le choix de transporteur pour l\'import des frais de port dans le flux source n\'est pas renseigné (voir l\'onglet \"Gestion des produits\")';
 $_MODULE['<{shoppingfeed}prestashop>monechellecolissimo_0cc1e925b5703e8da52b7c3e91829499'] = '[Commande: %s]';
 $_MODULE['<{shoppingfeed}prestashop>monechellecolissimo_43b6ade8fd758b0597ad2f31c9cd1b41'] = 'Règle déclenchée.';
 $_MODULE['<{shoppingfeed}prestashop>monechellecolissimo_f22690ebca72b016c51a0b9d6ed6149a'] = 'Si une commande vient de ManoMano et que le champs `other` ou `relayID` n\'est pas vide.';
