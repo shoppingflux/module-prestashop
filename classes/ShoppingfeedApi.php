@@ -133,6 +133,16 @@ class ShoppingfeedApi
         return $this->session->getToken();
     }
 
+    public function getStores()
+    {
+        return $this->session->getStores();
+    }
+
+    public function getMainStore()
+    {
+        return $this->session->getMainStore();
+    }
+
     /**
      * Makes the call to update the SF inventory
      *

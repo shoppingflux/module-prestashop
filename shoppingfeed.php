@@ -1451,4 +1451,23 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
 
         return $order->module == 'sfpayment';
     }
+
+    public function updateShoppingfeedStoreId()
+    {
+        $result = true;
+
+        foreach ((new ShoppingfeedToken())->findAll() as $token) {
+            $sft = new ShoppingfeedToken($token['id_shoppingfeed_token']);
+
+            try {
+                $api = ShoppingfeedApi::getInstanceByToken($sft->id);
+                $sft->shoppingfeed_store_id = $api->getMainStore()->getId();
+                $result &= $sft->save();
+            } catch (Exception $e) {
+            } catch (Throwable $e) {
+            }
+        }
+
+        return $result;
+    }
 }
