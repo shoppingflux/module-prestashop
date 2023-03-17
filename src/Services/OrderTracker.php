@@ -23,7 +23,6 @@ use Db;
 use DbQuery;
 use Order;
 use SfGuzzle\GuzzleHttp\Client;
-use ShoppingfeedApi;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 use ShoppingfeedClasslib\Utils\Translate\TranslateTrait;
 use ShoppingfeedToken;
@@ -49,10 +48,9 @@ class OrderTracker
 
         ProcessLoggerHandler::openLogger();
         foreach ($tokens as $token) {
-            $api = ShoppingfeedApi::getInstanceByToken($token['id_shoppingfeed_token']);
             $endpoint = sprintf(
                 'order/%s?ip=%s',
-                base64_encode(implode('|', [$api->getToken(), $order->id, $order->total_paid])),
+                base64_encode(implode('|', [$token['shoppingfeed_store_id'], $order->id, $order->total_paid])),
                 $this->getIP($order)
             );
             $client->request(
@@ -60,7 +58,7 @@ class OrderTracker
                 $endpoint
             );
             ProcessLoggerHandler::addLog(
-                $this->l('Sending the order tracking info for token', 'OrderTracker') . $api->getToken(),
+                $this->l('Sending the order tracking info for token', 'OrderTracker') . $token['content'],
                 'Order',
                 $order->id
             );
