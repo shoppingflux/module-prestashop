@@ -1461,6 +1461,33 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         return $order->module == 'sfpayment';
     }
 
+    /**
+     * update Shoppingfeed Store Id
+     *
+     * @return void
+     */
+    public function updateShoppingfeedStoreId()
+    {
+        $result = true;
+
+        foreach ((new ShoppingfeedToken())->findAll() as $token) {
+            $sft = new ShoppingfeedToken($token['id_shoppingfeed_token']);
+
+            try {
+                $api = ShoppingfeedApi::getInstanceByToken($sft->id);
+                $sft->shoppingfeed_store_id = $api->getMainStore()->getId();
+                $result &= $sft->save();
+            } catch (Exception $e) {
+            } catch (Throwable $e) {
+            }
+        }
+    }
+
+    /**
+     * add Index To Preloading Table
+     *
+     * @return bool
+     */
     public function addIndexToPreloadingTable()
     {
         $result = true;
