@@ -16,7 +16,6 @@
  *  @copyright Since 2019 Shopping Feed
  *  @license   https://opensource.org/licenses/AFL-3.0  Academic Free License (AFL 3.0)
  */
- 
 use ShoppingfeedClasslib\Install\ModuleInstaller;
 
 function upgrade_module_1_10_0($module)
