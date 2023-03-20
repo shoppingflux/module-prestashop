@@ -1354,13 +1354,20 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         if (Validate::isLoadedObject($sfOrder) === false) {
             return '';
         }
+
         $additionalFields = json_decode($sfOrder->additionalFields, true);
-        if (is_array($additionalFields) === false || array_key_exists('customer_number', $additionalFields) === false) {
-            return;
+
+        if (false === empty($additionalFields['customer_number'])) {
+            $this->context->smarty->assign([
+                'id_customer' => $additionalFields['customer_number'],
+            ]);
         }
-        $this->context->smarty->assign([
-            'id_customer' => $additionalFields['customer_number'],
-        ]);
+
+        if (false === empty($additionalFields['order_id'])) {
+            $this->context->smarty->assign([
+                'order_id' => $additionalFields['order_id'],
+            ]);
+        }
 
         return $this->context->smarty->fetch(
             $this->local_path . 'views/templates/hook/displayPDFInvoice.tpl'
