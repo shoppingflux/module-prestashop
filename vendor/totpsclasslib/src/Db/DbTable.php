@@ -101,10 +101,16 @@ class DbTable
             return $result;
         }
         // table exists
-        $alter = $this->alterFields();
+        $alters = $this->alterFields();
 
-        if (!empty($alter)) {
-            return $this->db->execute($alter);
+        if (!empty($alters)) {
+            foreach ($alters as $alter) {
+                $result = $this->db->execute($alter);
+                if ($result === false) {
+                    return false;
+                }
+            }
+
         }
         $this->alterKeys();
 
@@ -128,7 +134,6 @@ class DbTable
                 $describe[$key]['modelDef'] .= Tools::strtoupper($col['Extra']);
             }
         }
-
         $alterToSkip = array();
         $alterToExecute = array();
         $alters = array();
@@ -138,16 +143,16 @@ class DbTable
                     $alterToSkip[$key] = true;
                 } elseif (false !== strpos($column, '`' . $col['Field'] . '`')) {
                     $alterToExecute[$key] = 'MODIFY';
-                    $alters[$key] = "ALTER TABLE `$this->name` MODIFY $column;";
+                    $alters[$key] = "ALTER TABLE `$this->name` MODIFY $column";
                 }
             }
             if (empty($alterToExecute[$key]) && empty($alterToSkip[$key])) {
                 $alterToExecute[$key]['action'] = 'ADD '.$column;
-                $alters[$key] =  "ALTER TABLE `$this->name` ADD $column;";
+                $alters[$key] =  "ALTER TABLE `$this->name` ADD $column";
             }
         }
 
-        return implode("\r\n", $alters);
+        return $alters;
     }
 
     /**

@@ -16,6 +16,7 @@ parameters:
     - '#Instantiated class RelaisColisOrder not found\.#'
     - '#Call to static method getRelaisColisOrderId\(\) on an unknown class RelaisColisOrder\.#'
     - '#Call to an undefined static method ImageType::getFormatedName\(\)#'
+    - '#Call to static method createInstance\(\) on an unknown class Nukium\\GLS\\Legacy\\GlsController\.#'
   excludePaths:
     - ../../classes/Compatibility/backword-compatibility.php
 

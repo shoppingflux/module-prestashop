@@ -1,0 +1,106 @@
+{
+  "id":12345678903,
+  "storeId":25125,
+  "channelId":259,
+  "reference":"TEST-12345678903",
+  "storeReference":"",
+  "isTest":false,
+  "acknowledgedAt":null,
+  "createdAt":"2022-02-01T00:00:00+02:00",
+  "updatedAt":"2022-02-01T00:00:00+02:00",
+  "status":"waiting_shipment",
+  "anonymized":false,
+  "payment":{
+    "shippingAmount":4.8,
+    "productAmount":9.8,
+    "totalAmount":14.6,
+    "currency":"EUR",
+    "method":"1X"
+  },
+  "shipment": {
+    "carrier": "GLS Mondial Relay (FR)",
+    "trackingNumber": "",
+    "trackingLink": "",
+    "returnInfo": {
+      "carrier": null,
+      "trackingNumber": null
+    }
+  },
+  "additionalFields":{
+    "env":"default",
+    "fiscalnb":"",
+    "order_status":"4"
+  },
+  "errors":[
+
+  ],
+  "itemsReferencesAliases":null,
+  "items":[
+    {
+      "reference":"18",
+      "status":"",
+      "quantity":2,
+      "price":4.9,
+      "taxAmount":0.82,
+      "channelReference":"0",
+      "name":"Nettoyant résine pour adoucisseur d'eau",
+      "image":"https://localhost/1-marketplaces/nettoyant-resine-pour-adoucisseur.jpg"
+    }
+  ],
+  "shippingAddress": {
+    "firstName": "John",
+    "lastName": "Dow",
+    "company": "202 ecommerce",
+    "street": "10 rue Vivienne",
+    "street2": "",
+    "other": "",
+    "postalCode": "75001",
+    "city": "Paris",
+    "country": "FR",
+    "phone": "0123456789",
+    "mobilePhone": "",
+    "province": "",
+    "email": "unique-3@test.com",
+    "relayId": "2500976161"
+  },
+  "billingAddress": {
+    "firstName": "John",
+    "lastName": "Dow",
+    "company": "202 ecommerce",
+    "street": "10 rue Vivienne",
+    "street2": "",
+    "other": "",
+    "postalCode": "75001",
+    "city": "Paris",
+    "country": "FR",
+    "phone": "",
+    "mobilePhone": "",
+    "province": "",
+    "email": "unique-3@test.com"
+  },
+  "_links":{
+    "self":{
+      "href":"/v1/store/40822/order/12345678903"
+    },
+    "store":{
+      "href":"/v1/store/40822"
+    }
+  },
+  "_embedded":{
+    "channel":{
+      "id":259,
+      "name":"Monechelle",
+      "_links":{
+        "self":{
+          "href":"/v1/channel/259"
+        },
+        "image":{
+          "href":"https://assets.shopping-feed.com/channel/logo/Monechelle.png"
+        }
+      }
+    },
+    "tag":[
+
+    ]
+  }
+}

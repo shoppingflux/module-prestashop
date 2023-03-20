@@ -415,6 +415,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     {
         $res = parent::install();
         $res &= $this->addDateIndexToLogs();
+        $res &= $this->addIndexToPreloadingTable();
 
         $this->setConfigurationDefault(self::STOCK_SYNC_ENABLED, true);
         $this->setConfigurationDefault(self::PRICE_SYNC_ENABLED, true);
@@ -1306,6 +1307,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             ShoppingfeedAddon\OrderImport\Rules\SetDniToAddress::class,
             ShoppingfeedAddon\OrderImport\Rules\TaxExclMarketplace::class,
             ShoppingfeedAddon\OrderImport\Rules\SkipTax::class,
+            ShoppingfeedAddon\OrderImport\Rules\GlsRule::class,
         ];
 
         foreach ($defaultRulesClassNames as $ruleClassName) {
@@ -1457,5 +1459,43 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         }
 
         return $order->module == 'sfpayment';
+    }
+
+    public function addIndexToPreloadingTable()
+    {
+        $result = true;
+        $sql = 'SHOW INDEX FROM ' . _DB_PREFIX_ . 'shoppingfeed_preloading WHERE Key_name = "%s"';
+
+        if (empty(Db::getInstance()->executeS(sprintf($sql, 'index_1')))) {
+            $result &= Db::getInstance()->execute(
+                'ALTER TABLE ' . _DB_PREFIX_ . 'shoppingfeed_preloading ADD INDEX index_1 (id_token) USING BTREE'
+            );
+        }
+
+        if (empty(Db::getInstance()->executeS(sprintf($sql, 'index_2')))) {
+            $result &= Db::getInstance()->execute(
+                'ALTER TABLE ' . _DB_PREFIX_ . 'shoppingfeed_preloading ADD INDEX index_2 (id_token,content(3)) USING BTREE'
+            );
+        }
+
+        if (empty(Db::getInstance()->executeS(sprintf($sql, 'index_3')))) {
+            $result &= Db::getInstance()->execute(
+                'ALTER TABLE ' . _DB_PREFIX_ . 'shoppingfeed_preloading ADD INDEX index_3 (id_token, actions, content(3)) USING BTREE'
+            );
+        }
+
+        if (empty(Db::getInstance()->executeS(sprintf($sql, 'index_4')))) {
+            $result &= Db::getInstance()->execute(
+                'ALTER TABLE ' . _DB_PREFIX_ . 'shoppingfeed_preloading ADD INDEX index_4 (id_token, actions) USING BTREE'
+            );
+        }
+
+        if (empty(Db::getInstance()->executeS(sprintf($sql, 'index_5')))) {
+            $result &= Db::getInstance()->execute(
+                'ALTER TABLE ' . _DB_PREFIX_ . 'shoppingfeed_preloading ADD INDEX index_5 (id_token, date_upd) USING BTREE'
+            );
+        }
+
+        return $result;
     }
 }

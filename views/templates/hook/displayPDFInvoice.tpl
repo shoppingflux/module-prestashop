@@ -21,7 +21,7 @@
 * @license   Commercial license
 *}
 {if isset($id_customer)}
-    {l s='Customer ID Zalando' mod='shoppingfeed'} : {$id_customer|escape:'html':'UTF-8'} <br />
+    {l s='Customer ID' mod='shoppingfeed'} : {$id_customer|escape:'html':'UTF-8'} <br />
 {/if}
 
 {if isset($order_id)}
