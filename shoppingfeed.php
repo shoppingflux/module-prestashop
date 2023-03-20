@@ -1461,6 +1461,11 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         return $order->module == 'sfpayment';
     }
 
+    /**
+     * update Shoppingfeed Store Id
+     *
+     * @return void
+     */
     public function updateShoppingfeedStoreId()
     {
         $result = true;
@@ -1475,8 +1480,14 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             } catch (Exception $e) {
             } catch (Throwable $e) {
             }
+        }
     }
 
+    /**
+     * add Index To Preloading Table
+     *
+     * @return bool
+     */
     public function addIndexToPreloadingTable()
     {
         $result = true;
