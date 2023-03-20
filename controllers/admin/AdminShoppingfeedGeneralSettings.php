@@ -57,7 +57,6 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
         $this->addJS($this->module->getPathUri() . 'views/js/form_config_filter.js');
         Media::addJsDef(['url_product_selection_form' => $this->context->link->getAdminLink('AdminShoppingfeedGeneralSettings')]);
         $this->content = $this->welcomeForm();
-        $this->content .= $this->renderSynchroConfigForm();
         $this->content .= $this->renderGlobalConfigForm();
         $this->content .= $this->renderFeedConfigForm();
         $this->content .= $this->renderProductSelectionConfigForm();
@@ -340,12 +339,15 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
     }
 
     /**
-     * Renders the HTML for the synchro configuration form
+     * Renders the HTML for the global configuration form
      *
      * @return string the rendered form's HTML
      */
-    public function renderSynchroConfigForm()
+    public function renderFactoryConfigForm()
     {
+        $syncByDateUpdate = (bool) Configuration::get(Shoppingfeed::PRODUCT_SYNC_BY_DATE_UPD);
+        $time_full_update = (int) Configuration::get(Shoppingfeed::PRODUCT_FEED_TIME_FULL_UPDATE);
+        $interval_cron = (int) Configuration::get(Shoppingfeed::PRODUCT_FEED_INTERVAL_CRON);
         $message_realtime = '';
         switch (true) {
             case $this->nbr_products <= 100:
@@ -358,88 +360,6 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
                 $message_realtime = $this->module->l('You have more than 1000 products, Realtime parameter NO is required. You probably use an external tool (like an ERP) to manage your inventory which can lead to many updates at the same time. In this case, the updates are queued and the configuration of a cron job (URL) every 5 minutes will allow you to synchronize of all products waiting for synchronization. This reduce calls sent to the Shopping Flux API and improve page loading performances', 'AdminShoppingfeedGeneralSettings');
                 break;
         }
-
-        $fields_form = [
-            'legend' => [
-                'title' => $this->module->l('Products synchronization type (all shops)', 'AdminShoppingfeedGeneralSettings'),
-                'icon' => 'icon-cog',
-            ],
-            'input' => [
-                [
-                    'type' => 'html',
-                    'name' => 'real_synch',
-                    'html_content' => '<div id="real_synch_notice" class="alert alert-info">
-                    ' . sprintf(
-                        $this->module->l('You should select the type of synchronization (in real time or via a %s Cron job %s) for updating your product stocks and / or prices.', 'AdminShoppingfeedGeneralSettings'),
-                        '<a href="' . $this->context->link->getAdminLink('AdminShoppingfeedProcessMonitor') . '">',
-                        '</a>'
-                    ) . '</div>',
-                ],
-                [
-                    'type' => 'html',
-                    'name' => 'real_synch_help',
-                    'html_content' => '<div id="real_synch" class="alert alert-info">
-                    ' . $message_realtime . '</div>',
-                ],
-                [
-                    'type' => 'switch',
-                    'is_bool' => true,
-                    'values' => [
-                        [
-                            'id' => 'ok',
-                            'value' => 1,
-                        ],
-                        [
-                            'id' => 'ko',
-                            'value' => 0,
-                        ],
-                    ],
-                    'label' => $this->module->l('Real-time synchronization', 'AdminShoppingfeedGeneralSettings'),
-                    'hint' => $this->module->l('If checked, no CRON will be needed. Synchronization will occur as soon as the changes are made. This may impact user performance.', 'AdminShoppingfeedGeneralSettings'),
-                    'name' => Shoppingfeed::REAL_TIME_SYNCHRONIZATION,
-                ],
-                [
-                    'type' => 'html',
-                    'name' => 'for_real',
-                    'html_content' => '<div id="for_real" class="alert alert-warning">
-                    ' . $this->module->l('The Max product update parameter is reserved for experts (100 by default). You can configure the number of products to be processed each time the cron job is called. The more you increase this number, the greater the number of database queries. The value of this parameter is to be calibrated according to the capacities of your MySQL server and your stock rotation rate to process the queue in the time that suits you.', 'AdminShoppingfeedGeneralSettings') . '</div>',
-                ],
-                [
-                    'type' => 'text',
-                    'label' => $this->module->l('Max. product update per request', 'AdminShoppingfeedGeneralSettings'),
-                    'name' => Shoppingfeed::STOCK_SYNC_MAX_PRODUCTS,
-                    'required' => true,
-                    'class' => 'for_real',
-                ],
-            ],
-            'submit' => [
-                'title' => $this->module->l('Save', 'AdminShoppingfeedGeneralSettings'),
-                'name' => 'saveSynchroConfig',
-            ],
-        ];
-        $fields_value = [
-            Shoppingfeed::REAL_TIME_SYNCHRONIZATION => Configuration::get(Shoppingfeed::REAL_TIME_SYNCHRONIZATION),
-            Shoppingfeed::STOCK_SYNC_MAX_PRODUCTS => Configuration::get(Shoppingfeed::STOCK_SYNC_MAX_PRODUCTS),
-        ];
-
-        $helper = new HelperForm();
-        $this->setHelperDisplay($helper);
-        $helper->fields_value = $fields_value;
-        $helper->tpl_vars = $this->getTemplateFormVars();
-
-        return $helper->generateForm([['form' => $fields_form]]);
-    }
-
-    /**
-     * Renders the HTML for the global configuration form
-     *
-     * @return string the rendered form's HTML
-     */
-    public function renderFactoryConfigForm()
-    {
-        $syncByDateUpdate = (bool) Configuration::get(Shoppingfeed::PRODUCT_SYNC_BY_DATE_UPD);
-        $time_full_update = (int) Configuration::get(Shoppingfeed::PRODUCT_FEED_TIME_FULL_UPDATE);
-        $interval_cron = (int) Configuration::get(Shoppingfeed::PRODUCT_FEED_INTERVAL_CRON);
 
         $fields_form = [
             'legend' => [
@@ -525,6 +445,54 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
                     'disabled' => (Tools::getValue('with_factory') !== false) ? $syncByDateUpdate : true,
                     'class' => 'for_real',
                 ],
+                [
+                    'type' => 'html',
+                    'name' => 'real_synch',
+                    'html_content' => '<div id="real_synch_notice" class="alert alert-info">
+                    ' . sprintf(
+                            $this->module->l('You should select the type of synchronization (in real time or via a %s Cron job %s) for updating your product stocks and / or prices.', 'AdminShoppingfeedGeneralSettings'),
+                            '<a href="' . $this->context->link->getAdminLink('AdminShoppingfeedProcessMonitor') . '">',
+                            '</a>'
+                        ) . '</div>',
+                ],
+                [
+                    'type' => 'html',
+                    'name' => 'real_synch_help',
+                    'html_content' => '<div id="real_synch" class="alert alert-info">
+                    ' . $message_realtime . '</div>',
+                ],
+                [
+                    'type' => 'switch',
+                    'is_bool' => true,
+                    'values' => [
+                        [
+                            'id' => 'ok',
+                            'value' => 1,
+                        ],
+                        [
+                            'id' => 'ko',
+                            'value' => 0,
+                        ],
+                    ],
+                    'label' => $this->module->l('Real-time synchronization', 'AdminShoppingfeedGeneralSettings'),
+                    'hint' => $this->module->l('If checked, no CRON will be needed. Synchronization will occur as soon as the changes are made. This may impact user performance.', 'AdminShoppingfeedGeneralSettings'),
+                    'name' => Shoppingfeed::REAL_TIME_SYNCHRONIZATION,
+                    'disabled' => (Tools::getValue('with_factory') !== false) ? $syncByDateUpdate : true,
+                ],
+                [
+                    'type' => 'html',
+                    'name' => 'for_real',
+                    'html_content' => '<div id="for_real" class="alert alert-warning">
+                    ' . $this->module->l('The Max product update parameter is reserved for experts (100 by default). You can configure the number of products to be processed each time the cron job is called. The more you increase this number, the greater the number of database queries. The value of this parameter is to be calibrated according to the capacities of your MySQL server and your stock rotation rate to process the queue in the time that suits you.', 'AdminShoppingfeedGeneralSettings') . '</div>',
+                ],
+                [
+                    'type' => 'text',
+                    'label' => $this->module->l('Max. product update per request', 'AdminShoppingfeedGeneralSettings'),
+                    'name' => Shoppingfeed::STOCK_SYNC_MAX_PRODUCTS,
+                    'required' => true,
+                    'class' => 'for_real',
+                    'disabled' => (Tools::getValue('with_factory') !== false) ? $syncByDateUpdate : true,
+                ],
             ],
         ];
         if (Tools::getValue('with_factory') !== false) {
@@ -543,6 +511,8 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
             Shoppingfeed::PRODUCT_SYNC_BY_DATE_UPD => $syncByDateUpdate,
             Shoppingfeed::PRODUCT_FEED_TIME_FULL_UPDATE => $time_full_update,
             Shoppingfeed::PRODUCT_FEED_INTERVAL_CRON => $interval_cron,
+            Shoppingfeed::REAL_TIME_SYNCHRONIZATION => Configuration::get(Shoppingfeed::REAL_TIME_SYNCHRONIZATION),
+            Shoppingfeed::STOCK_SYNC_MAX_PRODUCTS => Configuration::get(Shoppingfeed::STOCK_SYNC_MAX_PRODUCTS),
             'with_factory' => Tools::getValue('with_factory'),
         ];
 
@@ -602,8 +572,6 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
             return true;
         } elseif (Tools::isSubmit('saveGlobalConfig')) {
             return $this->saveGlobalConfig();
-        } elseif (Tools::isSubmit('saveSynchroConfig')) {
-            return $this->saveSynchroConfig();
         } elseif (Tools::isSubmit('saveFeedConfig')) {
             $this->purgePrealoading();
 
@@ -683,25 +651,13 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
         $sync_by_date = Tools::getValue(Shoppingfeed::PRODUCT_SYNC_BY_DATE_UPD);
         $time_full_update = Tools::getValue(Shoppingfeed::PRODUCT_FEED_TIME_FULL_UPDATE);
         $interval_cron = Tools::getValue(Shoppingfeed::PRODUCT_FEED_INTERVAL_CRON);
+        $realtime_sync = Tools::getValue(Shoppingfeed::REAL_TIME_SYNCHRONIZATION);
+        $stock_sync_max_products = (int) Tools::getValue(Shoppingfeed::STOCK_SYNC_MAX_PRODUCTS);
 
         Configuration::updateGlobalValue(Shoppingfeed::PRODUCT_FEED_REFERENCE_FORMAT, $reference_format);
         Configuration::updateGlobalValue(Shoppingfeed::PRODUCT_SYNC_BY_DATE_UPD, $sync_by_date);
         Configuration::updateGlobalValue(Shoppingfeed::PRODUCT_FEED_TIME_FULL_UPDATE, $time_full_update);
         Configuration::updateGlobalValue(Shoppingfeed::PRODUCT_FEED_INTERVAL_CRON, $interval_cron);
-
-        return true;
-    }
-
-    /**
-     * Saves the synchro configuration for the module
-     *
-     * @return bool
-     */
-    public function saveSynchroConfig()
-    {
-        $realtime_sync = Tools::getValue(Shoppingfeed::REAL_TIME_SYNCHRONIZATION);
-        $stock_sync_max_products = (int) Tools::getValue(Shoppingfeed::STOCK_SYNC_MAX_PRODUCTS);
-
         Configuration::updateGlobalValue(Shoppingfeed::REAL_TIME_SYNCHRONIZATION, ($realtime_sync ? true : false));
 
         if (!is_numeric($stock_sync_max_products) || $stock_sync_max_products > 2000 || $stock_sync_max_products <= 0) {

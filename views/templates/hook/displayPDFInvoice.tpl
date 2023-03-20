@@ -20,5 +20,10 @@
 * @copyright Copyright (c) 202-ecommerce
 * @license   Commercial license
 *}
-{l s='Customer ID' mod='shoppingfeed'} : {$id_customer|escape:'html':'UTF-8'} <br />
+{if isset($id_customer)}
+    {l s='Customer ID' mod='shoppingfeed'} : {$id_customer|escape:'html':'UTF-8'} <br />
+{/if}
 
+{if isset($order_id)}
+    {l s='Order ID Zalando' mod='shoppingfeed'} : {$order_id|escape:'html':'UTF-8'} <br />
+{/if}
