@@ -25,5 +25,5 @@
 {/if}
 
 {if isset($order_id)}
-    {l s='Order ID' mod='shoppingfeed'} : {$order_id|escape:'html':'UTF-8'} <br />
+    {l s='Order ID Zalando' mod='shoppingfeed'} : {$order_id|escape:'html':'UTF-8'} <br />
 {/if}
