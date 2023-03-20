@@ -117,4 +117,4 @@ docker exec -t temp-unittest-ps sh /var/www/html/modules/shoppingfeed/202/docker
 [2]: http://doc.prestashop.com/display/PS16/How+to+write+a+commit+message
 [3]: https://help.github.com/articles/using-pull-requests
 [composer-doc]: https://getcomposer.org/doc/04-schema.md
-[module-doc]: https://docs.202-ecommerce.com/shoppingfeed/
+[module-doc]: https://desk.202-ecommerce.com/portal/en/kb/articles/shoppingfeed-prestashop-module-developper-guide
