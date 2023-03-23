@@ -81,6 +81,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     const CDISCOUNT_FEE_PRODUCT = 'SHOPPINGFEED_CDISCOUNT_FEE_PRODUCT';
     const NEED_UPDATE_HOOK = 'SHOPPINGFEED_IS_NEED_UPDATE_HOOK';
     const ORDER_TRACKING = 'SHOPPINGFEED_ORDER_TRACKING';
+    const COMPRESS_PRODUCTS_FEED = 'SHOPPINGFEED_COMPRESS_PRODUCTS_FEED';
 
     public $extensions = [
         \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerExtension::class,
@@ -433,6 +434,8 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         $this->setConfigurationDefault(self::ORDER_IMPORT_SHIPPED_MARKETPLACE, 0);
         $this->setConfigurationDefault(self::PRODUCT_FEED_CARRIER_REFERENCE, Configuration::getGlobalValue('PS_CARRIER_DEFAULT'));
         $this->setConfigurationDefault(self::ORDER_DEFAULT_CARRIER_REFERENCE, Configuration::getGlobalValue('PS_CARRIER_DEFAULT'));
+        $this->setConfigurationDefault(self::COMPRESS_PRODUCTS_FEED, 1);
+
         if (method_exists(ImageType::class, 'getFormatedName')) {
             $this->setConfigurationDefault(self::PRODUCT_FEED_IMAGE_FORMAT, ImageType::getFormatedName('large'));
         } else {

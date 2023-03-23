@@ -28,11 +28,14 @@ class ShoppingfeedProductModuleFrontController extends \ModuleFrontController
 {
     protected $sfToken = null;
 
+    protected $isCompressFeed;
+
     public function init()
     {
         parent::init();
 
         $this->sfToken = (new ShoppingfeedToken())->findByToken(Tools::getValue('token', ''));
+        $this->isCompressFeed = (int) Configuration::get(Shoppingfeed::COMPRESS_PRODUCTS_FEED);
     }
 
     public function checkAccess()
@@ -61,10 +64,18 @@ class ShoppingfeedProductModuleFrontController extends \ModuleFrontController
             ProcessLoggerHandler::closeLogger();
             exit;
         }
-        header('Content-type: text/xml');
 
+        header('Content-type: text/xml');
         $this->preparePreloading($this->sfToken);
-        $productGenerator = new SfProductGenerator('php://output', 'xml');
+
+        if ($this->isCompressFeed) {
+            $fileXmlGz = sprintf('shoppingfeed-%s.xml.gz', Tools::hash($this->sfToken['id_shoppingfeed_token']));
+            header('Content-Encoding: gzip');
+            $productGenerator = new SfProductGenerator('compress.zlib://' . $fileXmlGz, 'xml');
+        } else {
+            $productGenerator = new SfProductGenerator('php://output', 'xml');
+        }
+
         $productGenerator->setPlatform('Prestashop', _PS_VERSION_)
                          ->addMapper([$this, 'mapper']);
 
@@ -85,6 +96,7 @@ class ShoppingfeedProductModuleFrontController extends \ModuleFrontController
         }
 
         $productGenerator->close();
+
         ProcessLoggerHandler::logSuccess(
             sprintf('Generate xml for token %s', $this->sfToken['id_shoppingfeed_token']),
             'shoppingfeed_token',
@@ -92,6 +104,15 @@ class ShoppingfeedProductModuleFrontController extends \ModuleFrontController
             'ShoppingfeedProductModuleFrontController'
         );
         ProcessLoggerHandler::closeLogger();
+
+        if ($this->isCompressFeed) {
+            Tools::redirect(
+                $this->getBaseLink($this->sfToken['id_shop']) . $fileXmlGz,
+                __PS_BASE_URI__,
+                null,
+                ['HTTP/1.1 302 Moved Temporarily']
+            );
+        }
 
         exit;
     }
