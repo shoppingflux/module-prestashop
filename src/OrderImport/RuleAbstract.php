@@ -19,6 +19,7 @@
 
 namespace ShoppingfeedAddon\OrderImport;
 
+use Context;
 use OrderState;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use Validate;
@@ -35,12 +36,20 @@ abstract class RuleAbstract implements RuleInterface
 {
     protected $configuration;
 
+    protected $id_shop;
+
     /**
      * {@inheritdoc}
      */
-    public function __construct($configuration = [])
+    public function __construct($configuration = [], $id_shop = null)
     {
         $this->configuration = array_merge($this->getDefaultConfiguration(), $configuration);
+
+        if ($id_shop) {
+            $this->id_shop = $id_shop;
+        } else {
+            $this->id_shop = Context::getContext()->shop->id;
+        }
     }
 
     /**

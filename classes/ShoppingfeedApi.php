@@ -43,9 +43,16 @@ class ShoppingfeedApi
     /** @var \ShoppingFeed\Sdk\Api\Session\SessionResource */
     private $session = null;
 
+    protected $id_shop;
+
     private function __construct($session)
     {
         $this->session = $session;
+        $sfToken = (new ShoppingfeedToken())->findByToken($this->session->getToken());
+
+        if (isset($sfToken['id_shop'])) {
+            $this->id_shop = (int) $sfToken['id_shop'];
+        }
     }
 
     /**
@@ -348,6 +355,9 @@ class ShoppingfeedApi
         $status = 'waiting_shipment';
         if ($iShipped === true) {
             $status = 'shipped';
+            $since = $this->getSinceDateService()->getForShipped(SinceDate::DATE_FORMAT_SF, $this->id_shop);
+        } else {
+            $since = $this->getSinceDateService()->get(SinceDate::DATE_FORMAT_SF, $this->id_shop);
         }
         // Criteria used to query order API
         $criteria = [
@@ -358,7 +368,7 @@ class ShoppingfeedApi
                 // created, waiting_store_acceptance, refused, waiting_shipment, shipped,
                 // cancelled, refunded, partially_refunded, partially_shipped
                 'status' => $status,
-                'since' => $this->getSinceDateService()->get(SinceDate::DATE_FORMAT_SF),
+                'since' => $since,
             ],
         ];
 

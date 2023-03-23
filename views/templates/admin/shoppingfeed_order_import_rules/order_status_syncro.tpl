@@ -30,6 +30,43 @@
                 {$input.message nofilter}
             </div>
         {/if}
+    {elseif $input.type == 'shoppingfeed_switch_with_date'}
+        <div class="form-group">
+            <label class="control-label col-lg-3">
+                <span class="label-tooltip" data-toggle="tooltip" data-html="true" title="">{$input.label|escape:'htmlall':'UTF-8'}</span>
+            </label>
+
+            <div class="col-lg-2">
+                <span class="switch prestashop-switch fixed-width-lg">
+										{foreach $input.values as $value}
+                                            <input type="radio" name="{$input.name}"{if $value.value == 1} id="{$input.name}_on"{else} id="{$input.name}_off"{/if} value="{$value.value}"{if $fields_value[$input.name] == $value.value} checked="checked"{/if}{if (isset($input.disabled) && $input.disabled) or (isset($value.disabled) && $value.disabled)} disabled="disabled"{/if}/>
+										{strip}
+                                            <label {if $value.value == 1} for="{$input.name}_on"{else} for="{$input.name}_off"{/if}>
+											{if $value.value == 1}
+                                                {l s='Yes' d='Admin.Global'}
+                                            {else}
+                                                {l s='No' d='Admin.Global'}
+                                            {/if}
+										</label>
+                                        {/strip}
+                                        {/foreach}
+										<a class="slide-button btn"></a>
+									</span>
+            </div>
+
+            <div class="input-group col-lg-3">
+                <input
+                        id="{$input.date}"
+                        type="text"
+                        data-hex="true"
+                        class="datepicker"
+                        name="{$input.date}"
+                        value="{$fields_value[$input.date]|escape:'html':'UTF-8'}" />
+                <span class="input-group-addon">
+												<i class="icon-calendar-empty"></i>
+											</span>
+            </div>
+        </div>
     {elseif $input.type == 'shoppingfeed_open-section'}
         <div id="{$input.id|escape:'htmlall':'UTF-8'}" class="shoppingfeed_form-section">
             {if isset($input.title)}

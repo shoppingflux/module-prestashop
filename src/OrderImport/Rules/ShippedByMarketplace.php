@@ -24,12 +24,14 @@ if (!defined('_PS_VERSION_')) {
 }
 
 use Configuration;
+use DateTimeImmutable;
 use Order;
 use OrderHistory;
 use OrderState;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
+use ShoppingfeedAddon\OrderImport\SinceDate;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 use StockAvailable;
 use Tools;
@@ -43,6 +45,15 @@ use Validate;
  */
 class ShippedByMarketplace extends RuleAbstract implements RuleInterface
 {
+    protected $sinceDate;
+
+    public function __construct($configuration = [])
+    {
+        parent::__construct($configuration);
+
+        $this->sinceDate = new SinceDate();
+    }
+
     public function isApplicable(OrderResource $apiOrder)
     {
         if ($apiOrder->getStatus() == 'shipped') {
@@ -61,6 +72,9 @@ class ShippedByMarketplace extends RuleAbstract implements RuleInterface
         $apiOrder = $params['apiOrder'];
         if ($this->isShippedByMarketplace($apiOrder)) {
             if ($this->configuration[\Shoppingfeed::ORDER_IMPORT_SHIPPED_MARKETPLACE] == false) {
+                $this->logSkipImport($apiOrder);
+                $params['isSkipImport'] = true;
+            } elseif ($this->isSkipByDate($apiOrder)) {
                 $this->logSkipImport($apiOrder);
                 $params['isSkipImport'] = true;
             }
@@ -314,5 +328,16 @@ class ShippedByMarketplace extends RuleAbstract implements RuleInterface
             \Shoppingfeed::ORDER_IMPORT_SHIPPED => Configuration::get(\Shoppingfeed::ORDER_IMPORT_SHIPPED),
             'PS_OS_DELIVERED' => Configuration::get('PS_OS_DELIVERED'),
         ];
+    }
+
+    protected function isSkipByDate(OrderResource $apiOrder)
+    {
+        $createDate = $apiOrder->getCreatedAt();
+        $restrictDate = DateTimeImmutable::createFromFormat(
+            SinceDate::DATE_FORMAT_PS,
+            $this->sinceDate->getForShippedByMarketplace(SinceDate::DATE_FORMAT_PS, $this->id_shop)
+        );
+
+        return $createDate->getTimestamp() < $restrictDate->getTimestamp();
     }
 }
