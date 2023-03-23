@@ -22,9 +22,10 @@ namespace ShoppingfeedAddon\OrderImport;
 use Configuration;
 use DateInterval;
 use DateTime;
+use DateTimeInterface;
 use Shoppingfeed;
 
-class SinceDate
+class SinceDate implements SinceDateInterface
 {
     const DATE_FORMAT_PS = 'Y-m-d';
 
@@ -96,7 +97,7 @@ class SinceDate
         return $date->format($format);
     }
 
-    public function set(DateTime $date, $id_shop = null)
+    public function set(DateTimeInterface $date, $id_shop = null)
     {
         Configuration::updateValue(
             Shoppingfeed::ORDER_IMPORT_PERMANENT_SINCE_DATE,
@@ -109,7 +110,7 @@ class SinceDate
         return $this;
     }
 
-    public function setForShipped(DateTime $date, $id_shop = null)
+    public function setForShipped(DateTimeInterface $date, $id_shop = null)
     {
         Configuration::updateValue(
             Shoppingfeed::ORDER_SHIPPED_IMPORT_PERMANENT_SINCE_DATE,
@@ -122,7 +123,7 @@ class SinceDate
         return $this;
     }
 
-    public function setForShippedByMarketplace(DateTime $date, $id_shop = null)
+    public function setForShippedByMarketplace(DateTimeInterface $date, $id_shop = null)
     {
         Configuration::updateValue(
             Shoppingfeed::ORDER_SHIPPED_BY_MARKETPLACE_IMPORT_PERMANENT_SINCE_DATE,

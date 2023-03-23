@@ -32,6 +32,7 @@ use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
 use ShoppingfeedAddon\OrderImport\SinceDate;
+use ShoppingfeedAddon\OrderImport\SinceDateInterface;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 use StockAvailable;
 use Tools;
@@ -45,13 +46,18 @@ use Validate;
  */
 class ShippedByMarketplace extends RuleAbstract implements RuleInterface
 {
+    /** @var SinceDateInterface */
     protected $sinceDate;
 
-    public function __construct($configuration = [])
+    public function __construct($configuration = [], $id_shop = null, SinceDateInterface $sinceDate = null)
     {
-        parent::__construct($configuration);
+        parent::__construct($configuration, $id_shop);
 
-        $this->sinceDate = new SinceDate();
+        if ($sinceDate) {
+            $this->sinceDate = $sinceDate;
+        } else {
+            $this->sinceDate = $this->initDefaultSinceDate();
+        }
     }
 
     public function isApplicable(OrderResource $apiOrder)
@@ -339,5 +345,10 @@ class ShippedByMarketplace extends RuleAbstract implements RuleInterface
         );
 
         return $createDate->getTimestamp() < $restrictDate->getTimestamp();
+    }
+
+    protected function initDefaultSinceDate()
+    {
+        return new SinceDate();
     }
 }
