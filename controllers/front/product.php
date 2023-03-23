@@ -67,6 +67,7 @@ class ShoppingfeedProductModuleFrontController extends \ModuleFrontController
 
         header('Content-type: text/xml');
         $this->preparePreloading($this->sfToken);
+        $fileXmlGz = '';
 
         if ($this->isCompressFeed) {
             $fileXmlGz = sprintf('shoppingfeed-%s.xml.gz', Tools::hash($this->sfToken['id_shoppingfeed_token']));
