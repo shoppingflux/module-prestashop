@@ -20,7 +20,13 @@ use ShoppingfeedClasslib\Install\ModuleInstaller;
 
 function upgrade_module_1_10_0($module)
 {
+    /**
+     * @var Shoppingfeed $module
+     */
     $installer = new ModuleInstaller($module);
     $installer->installObjectModel(ShoppingfeedToken::class);
     $module->addIndexToPreloadingTable();
+    $module->setConfigurationDefault(Shoppingfeed::COMPRESS_PRODUCTS_FEED, 1);
+
+    return true;
 }

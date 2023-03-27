@@ -493,6 +493,23 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
                     'class' => 'for_real',
                     'disabled' => (Tools::getValue('with_factory') !== false) ? $syncByDateUpdate : true,
                 ],
+                [
+                    'type' => 'switch',
+                    'is_bool' => true,
+                    'values' => [
+                        [
+                            'id' => 'ok',
+                            'value' => 1,
+                        ],
+                        [
+                            'id' => 'ko',
+                            'value' => 0,
+                        ],
+                    ],
+                    'label' => $this->module->l('Compress products feed', 'AdminShoppingfeedGeneralSettings'),
+                    'name' => Shoppingfeed::COMPRESS_PRODUCTS_FEED,
+                    'disabled' => (Tools::getValue('with_factory') !== false) ? $syncByDateUpdate : true,
+                ],
             ],
         ];
         if (Tools::getValue('with_factory') !== false) {
@@ -513,6 +530,7 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
             Shoppingfeed::PRODUCT_FEED_INTERVAL_CRON => $interval_cron,
             Shoppingfeed::REAL_TIME_SYNCHRONIZATION => Configuration::get(Shoppingfeed::REAL_TIME_SYNCHRONIZATION),
             Shoppingfeed::STOCK_SYNC_MAX_PRODUCTS => Configuration::get(Shoppingfeed::STOCK_SYNC_MAX_PRODUCTS),
+            Shoppingfeed::COMPRESS_PRODUCTS_FEED => Configuration::get(Shoppingfeed::COMPRESS_PRODUCTS_FEED),
             'with_factory' => Tools::getValue('with_factory'),
         ];
 
@@ -653,12 +671,14 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
         $interval_cron = Tools::getValue(Shoppingfeed::PRODUCT_FEED_INTERVAL_CRON);
         $realtime_sync = Tools::getValue(Shoppingfeed::REAL_TIME_SYNCHRONIZATION);
         $stock_sync_max_products = (int) Tools::getValue(Shoppingfeed::STOCK_SYNC_MAX_PRODUCTS);
+        $compressProductsFeed = (int) Tools::getValue(Shoppingfeed::COMPRESS_PRODUCTS_FEED);
 
         Configuration::updateGlobalValue(Shoppingfeed::PRODUCT_FEED_REFERENCE_FORMAT, $reference_format);
         Configuration::updateGlobalValue(Shoppingfeed::PRODUCT_SYNC_BY_DATE_UPD, $sync_by_date);
         Configuration::updateGlobalValue(Shoppingfeed::PRODUCT_FEED_TIME_FULL_UPDATE, $time_full_update);
         Configuration::updateGlobalValue(Shoppingfeed::PRODUCT_FEED_INTERVAL_CRON, $interval_cron);
         Configuration::updateGlobalValue(Shoppingfeed::REAL_TIME_SYNCHRONIZATION, ($realtime_sync ? true : false));
+        Configuration::updateGlobalValue(Shoppingfeed::COMPRESS_PRODUCTS_FEED, $compressProductsFeed);
 
         if (!is_numeric($stock_sync_max_products) || $stock_sync_max_products > 2000 || $stock_sync_max_products <= 0) {
             $this->errors[] = $this->module->l('You must specify a \'Max. product update per request\' number (between 1 and 2000 included).', 'AdminShoppingfeedGeneralSettings');
