@@ -38,11 +38,11 @@
 
             <div class="col-lg-2">
                 <span class="switch prestashop-switch fixed-width-lg">
-										{foreach $input.values as $value}
-                                            <input type="radio" name="{$input.name}"{if $value.value == 1} id="{$input.name}_on"{else} id="{$input.name}_off"{/if} value="{$value.value}"{if $fields_value[$input.name] == $value.value} checked="checked"{/if}{if (isset($input.disabled) && $input.disabled) or (isset($value.disabled) && $value.disabled)} disabled="disabled"{/if}/>
-										{strip}
-                                            <label {if $value.value == 1} for="{$input.name}_on"{else} for="{$input.name}_off"{/if}>
-											{if $value.value == 1}
+                                        {foreach $input.values as $value}
+                                            <input type="radio" name="{$input.name|escape:'htmlall':'UTF-8'}"{if $value.value == 1} id="{$input.name|escape:'htmlall':'UTF-8'}_on"{else} id="{$input.name|escape:'htmlall':'UTF-8'}_off"{/if} value="{$value.value|escape:'htmlall':'UTF-8'}"{if $fields_value[$input.name] == $value.value} checked="checked"{/if}{if (isset($input.disabled) && $input.disabled) or (isset($value.disabled) && $value.disabled)} disabled="disabled"{/if}/>
+					{strip}
+                                            <label {if $value.value == 1} for="{$input.name|escape:'htmlall':'UTF-8'}_on"{else} for="{$input.name|escape:'htmlall':'UTF-8'}_off"{/if}>
+                                            {if $value.value == 1}
                                                 {l s='Yes' d='Admin.Global'}
                                             {else}
                                                 {l s='No' d='Admin.Global'}
@@ -56,11 +56,11 @@
 
             <div class="input-group col-lg-3">
                 <input
-                        id="{$input.date}"
+                        id="{$input.date|escape:'htmlall':'UTF-8'}"
                         type="text"
                         data-hex="true"
                         class="datepicker"
-                        name="{$input.date}"
+                        name="{$input.date|escape:'htmlall':'UTF-8'}"
                         value="{$fields_value[$input.date]|escape:'html':'UTF-8'}" />
                 <span class="input-group-addon">
 												<i class="icon-calendar-empty"></i>
