@@ -226,9 +226,10 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
                             'message' => $this->module->l('The Shopping Feed module (shoppingfluxexport) is installed on your shop for enabling the orders import synchronization. The “Order importation” option must be disabled in the module for enabling this type of synchronization in this module. If you disable the options in the shoppingfluxexport\'s module and you enable it again later the button "New orders import" will be disabled automatically in the Shopping feed 15 min module.', 'AdminShoppingfeedOrderImportRules'),
                         ],
                         [
-                            'type' => 'switch',
+                            'type' => 'shoppingfeed_switch_with_date',
                             'label' => $this->module->l('New orders import', 'AdminShoppingfeedOrderImportRules'),
                             'name' => Shoppingfeed::ORDER_IMPORT_ENABLED,
+                            'date' => Shoppingfeed::ORDER_IMPORT_PERMANENT_SINCE_DATE,
                             'id' => 'shoppingfeed_order-import-switch',
                             'is_bool' => true,
                             'disabled' => !$order_import_available,
@@ -262,13 +263,14 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
                             ],
                         ],
                         [
-                            'type' => 'switch',
+                            'type' => 'shoppingfeed_switch_with_date',
                             'label' => $this->module->l('Import orders already in "shipped" status on Shopping Feed, except orders shipped by market places', 'AdminShoppingfeedOrderImportRules'),
                             'name' => Shoppingfeed::ORDER_IMPORT_SHIPPED,
                             'id' => 'shoppingfeed_order-import-switch',
                             'desc' => $this->module->l('Let\'s import order with status ”shipped” order on Shopping feed. Your stock won\'t decrease for these orders.', 'AdminShoppingfeedOrderImportRules'),
                             'hint' => $this->module->l('By default, a ”shipped” order will be imported as ”delivered” on PrestaShop. This can be configured.', 'AdminShoppingfeedOrderImportRules'),
                             'is_bool' => true,
+                            'date' => Shoppingfeed::ORDER_SHIPPED_IMPORT_PERMANENT_SINCE_DATE,
                             'disabled' => !Configuration::get(Shoppingfeed::ORDER_IMPORT_ENABLED),
                             'values' => [
                                 [
@@ -282,12 +284,13 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
                             ],
                         ],
                         [
-                            'type' => 'switch',
+                            'type' => 'shoppingfeed_switch_with_date',
                             'label' => $this->module->l('Allow import orders shipped by Marketplaces', 'AdminShoppingfeedOrderImportRules'),
                             'name' => Shoppingfeed::ORDER_IMPORT_SHIPPED_MARKETPLACE,
                             'id' => 'shoppingfeed_order-import-switch',
                             'hint' => $this->module->l('Order will be imported regardless of its status on Shopping Feed side', 'AdminShoppingfeedOrderImportRules'),
                             'is_bool' => true,
+                            'date' => Shoppingfeed::ORDER_SHIPPED_BY_MARKETPLACE_IMPORT_PERMANENT_SINCE_DATE,
                             'disabled' => !Configuration::get(Shoppingfeed::ORDER_IMPORT_ENABLED),
                             'values' => [
                                 [
@@ -480,11 +483,6 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
                             'class' => 'number_require',
                         ],
                         [
-                            'type' => 'date',
-                            'label' => $this->module->l('Import the orders since', 'AdminShoppingfeedOrderImportRules'),
-                            'name' => Shoppingfeed::ORDER_IMPORT_PERMANENT_SINCE_DATE,
-                        ],
-                        [
                             'type' => 'select',
                             'label' => $this->module->l('First order state after import', 'AdminShoppingfeedOrderImportRules'),
                             'name' => Shoppingfeed::IMPORT_ORDER_STATE,
@@ -521,6 +519,8 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
             Shoppingfeed::ORDER_IMPORT_PERMANENT_SINCE_DATE => $this->getSinceDateService()->get(),
             Shoppingfeed::IMPORT_ORDER_STATE => $this->initSfOrderState()->get()->id,
             Shoppingfeed::ORDER_TRACKING => (int) Configuration::get(Shoppingfeed::ORDER_TRACKING),
+            Shoppingfeed::ORDER_SHIPPED_IMPORT_PERMANENT_SINCE_DATE => $this->getSinceDateService()->getForShipped(),
+            Shoppingfeed::ORDER_SHIPPED_BY_MARKETPLACE_IMPORT_PERMANENT_SINCE_DATE => $this->getSinceDateService()->getForShippedByMarketplace(),
         ];
 
         $helper->base_folder = $this->getTemplatePath() . $this->override_folder;
@@ -658,6 +658,28 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
 
             if ($sinceDate instanceof DateTime) {
                 $this->getSinceDateService()->set($sinceDate);
+            }
+        }
+
+        if (Tools::isSubmit(Shoppingfeed::ORDER_SHIPPED_IMPORT_PERMANENT_SINCE_DATE)) {
+            $sinceDate = DateTime::createFromFormat(
+                SinceDate::DATE_FORMAT_PS,
+                Tools::getValue(Shoppingfeed::ORDER_SHIPPED_IMPORT_PERMANENT_SINCE_DATE)
+            );
+
+            if ($sinceDate instanceof DateTime) {
+                $this->getSinceDateService()->setForShipped($sinceDate);
+            }
+        }
+
+        if (Tools::isSubmit(Shoppingfeed::ORDER_SHIPPED_BY_MARKETPLACE_IMPORT_PERMANENT_SINCE_DATE)) {
+            $sinceDate = DateTime::createFromFormat(
+                SinceDate::DATE_FORMAT_PS,
+                Tools::getValue(Shoppingfeed::ORDER_SHIPPED_BY_MARKETPLACE_IMPORT_PERMANENT_SINCE_DATE)
+            );
+
+            if ($sinceDate instanceof DateTime) {
+                $this->getSinceDateService()->setForShippedByMarketplace($sinceDate);
             }
         }
 

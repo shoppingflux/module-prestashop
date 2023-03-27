@@ -26,7 +26,8 @@ INSERT INTO ps_configuration (id_shop_group, id_shop, name, value, date_add, dat
 (NULL, NULL, 'MONDIALRELAY_WEBSERVICE_BRAND_CODE', '11', now(), now()),
 (NULL, NULL, 'MONDIALRELAY_WEBSERVICE_KEY', 'PrivateK', now(), now()),
 (NULL, NULL, 'MONDIALRELAY_LABEL_LANG', 'FR', now(), now()),
-(NULL, NULL, 'MONDIALRELAY_WEIGHT_COEFF', '1', now(), now());
+(NULL, NULL, 'MONDIALRELAY_WEIGHT_COEFF', '1', now(), now()),
+(NULL, NULL, 'SHOPPINGFEED_ORDER_SHIPPED_BY_MARKETPLACE_IMPORT_PERMANENT_SINCE_DATE', '2022-01-01', now(), now());
 
 UPDATE ps_product_attribute SET reference = 'demo_17_white' WHERE id_product = 11 AND default_on = 1;
 UPDATE ps_product_attribute_shop SET ecotax = 6 WHERE id_product = 5 AND id_product_attribute = 19;;

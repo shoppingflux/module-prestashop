@@ -22,6 +22,7 @@ namespace Tests\OrderImport;
 use Order;
 use ShoppingfeedAddon\Actions\ActionsHandler;
 use ShoppingfeedAddon\OrderImport\Rules\ShippedByMarketplace;
+use ShoppingfeedAddon\OrderImport\SinceDate;
 use ShoppingfeedClasslib\Registry;
 use StockAvailable;
 
@@ -186,5 +187,31 @@ class OrderShippedByMarketplaceTest extends AbstractOrdeTestCase
 
         $this->assertEquals(5, $psOrder->current_state);
         $this->assertEquals($stockBeforeImport, $stockAfterImport);
+    }
+
+    public function testDateRestriction()
+    {
+        $sinceDate = $this
+            ->getMockBuilder(SinceDate::class)
+            ->onlyMethods(['getForShippedByMarketplace'])
+            ->getMock();
+        $sinceDate->method('getForShippedByMarketplace')->willReturn('2022-11-01');
+        $apiOrder = $this->getOrderRessourceFromDataset('order-shipped-afn.json');
+        $rule = new ShippedByMarketplace(
+            [
+                \Shoppingfeed::ORDER_IMPORT_SHIPPED_MARKETPLACE => true,
+            ],
+            null,
+            $sinceDate
+        );
+
+        $this->assertTrue($rule->isApplicable($apiOrder));
+
+        $params = [
+            'isSkipImport' => false,
+            'apiOrder' => $apiOrder,
+        ];
+        $rule->onPreProcess($params);
+        $this->assertTrue($params['isSkipImport']);
     }
 }
