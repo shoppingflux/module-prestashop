@@ -21,6 +21,7 @@ namespace ShoppingfeedAddon\Services;
 
 use Carrier;
 use Configuration;
+use Context;
 use Db;
 use DbQuery;
 use Order;
@@ -32,9 +33,12 @@ class CarrierFinder
 {
     protected $db;
 
-    public function __construct()
+    protected $id_shop;
+
+    public function __construct($id_shop = null)
     {
         $this->db = Db::getInstance();
+        $this->id_shop = ((int) $id_shop ? (int) $id_shop : (int) Context::getContext()->shop->id);
     }
 
     public function findByOrder(Order $order)
@@ -58,7 +62,7 @@ class CarrierFinder
 
     public function findProductFeedCarrier()
     {
-        $carrier = Carrier::getCarrierByReference((int) Configuration::get(Shoppingfeed::PRODUCT_FEED_CARRIER_REFERENCE));
+        $carrier = Carrier::getCarrierByReference((int) Configuration::getGlobalValue(Shoppingfeed::PRODUCT_FEED_CARRIER_REFERENCE));
         $carrier = is_object($carrier) ? $carrier : new Carrier();
 
         return $carrier;
@@ -76,12 +80,12 @@ class CarrierFinder
             $carrier = Carrier::getCarrierByReference($sfCarrier->id_carrier_reference);
         }
 
-        if (!Validate::isLoadedObject($carrier) && !empty(Configuration::get(Shoppingfeed::ORDER_DEFAULT_CARRIER_REFERENCE))) {
-            $carrier = Carrier::getCarrierByReference(Configuration::get(Shoppingfeed::ORDER_DEFAULT_CARRIER_REFERENCE));
+        if (!Validate::isLoadedObject($carrier) && !empty(Configuration::getGlobalValue(Shoppingfeed::ORDER_DEFAULT_CARRIER_REFERENCE))) {
+            $carrier = Carrier::getCarrierByReference(Configuration::getGlobalValue(Shoppingfeed::ORDER_DEFAULT_CARRIER_REFERENCE));
         }
 
-        if (!Validate::isLoadedObject($carrier) && !empty(Configuration::get('PS_CARRIER_DEFAULT'))) {
-            $carrier = new Carrier(Configuration::get('PS_CARRIER_DEFAULT'));
+        if (!Validate::isLoadedObject($carrier) && !empty(Configuration::get('PS_CARRIER_DEFAULT', null, null, $this->id_shop))) {
+            $carrier = new Carrier(Configuration::get('PS_CARRIER_DEFAULT', null, null, $this->id_shop));
         }
 
         return $carrier;

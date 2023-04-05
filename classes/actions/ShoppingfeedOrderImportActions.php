@@ -1424,7 +1424,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
 
     protected function initCarrierFinder()
     {
-        return new CarrierFinder();
+        return new CarrierFinder($this->getIdShop());
     }
 
     protected function checkQtyProduct($id_product, $id_product_attribute, $qty)
