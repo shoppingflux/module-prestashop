@@ -105,7 +105,7 @@ class ProductSerializer
                 'full' => $this->product->description,
                 'short' => $this->product->description_short,
             ],
-            'ecotax' => $this->product->ecotax,
+            'ecotax' => $this->product->ecotax * (1 + $this->product->tax_rate),
             'vat' => $this->product->tax_rate,
             'images' => $this->getImages(),
             'attributes' => $this->getAttributes(),
@@ -311,7 +311,7 @@ class ProductSerializer
             'state' => $this->product->condition,
             'available_for_order' => $this->product->available_for_order,
             'out_of_stock' => $this->product->out_of_stock,
-            'ecotax' => $this->product->ecotax,
+            'ecotax' => $this->product->ecotax * (1 + $this->product->tax_rate),
             'vat' => $this->product->tax_rate,
             'on_sale' => (int) $this->product->on_sale,
             'hierararchy' => 'parent',
@@ -412,7 +412,7 @@ class ProductSerializer
             }
 
             if (empty($combination['ecotax']) === false) {
-                $variation['attributes']['ecotax_child'] = $combination['ecotax'];
+                $variation['attributes']['ecotax_child'] = $combination['ecotax'] * (1 + $this->product->tax_rate);
             }
 
             if (empty($combination['upc']) === false) {
