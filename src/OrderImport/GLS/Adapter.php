@@ -38,6 +38,9 @@ class Adapter implements AdapterInterface
         if (false == Validate::isLoadedObject($glsModule)) {
             return;
         }
+        if (version_compare($glsModule->version, '3.0.0') < 0) {
+            return;
+        }
 
         if (false == class_exists('GlsController')) {
             return;
