@@ -34,6 +34,8 @@ class ShoppingfeedToken extends ObjectModel
 
     public $active;
 
+    public $shoppingfeed_store_id;
+
     public $date_add;
 
     public $date_upd;
@@ -66,6 +68,10 @@ class ShoppingfeedToken extends ObjectModel
             'active' => [
                 'type' => ObjectModel::TYPE_BOOL,
                 'validate' => 'isBool',
+            ],
+            'shoppingfeed_store_id' => [
+                'type' => self::TYPE_INT,
+                'validate' => 'isUnsignedInt',
             ],
             'date_add' => [
                 'type' => self::TYPE_DATE,
@@ -167,6 +173,7 @@ class ShoppingfeedToken extends ObjectModel
 
         if (version_compare(_PS_VERSION_, '1.7.6.0', '>=')) {
             $sql->select('sft.id_shop, sft.id_shoppingfeed_token, sft.content as token, sft.active, s.name as shop_name, l.name as lang_name, cl.name as currency_name')
+                ->select('sft.shoppingfeed_store_id')
                 ->innerJoin(\Currency::$definition['table'] . '_lang', 'cl', 'cl.id_currency = sft.id_currency and cl.id_lang = ' . Context::getContext()->language->id);
         } else {
             $sql->select('sft.id_shop, sft.id_shoppingfeed_token, sft.content as token, sft.active, s.name as shop_name, l.name as lang_name, c.name as currency_name');

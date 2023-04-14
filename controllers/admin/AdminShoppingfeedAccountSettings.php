@@ -284,15 +284,20 @@ class AdminShoppingfeedAccountSettingsController extends ShoppingfeedAdminContro
     {
         parent::postProcess();
 
+        $result = true;
         $shop_id = Tools::getValue('shop');
         $lang_id = Tools::getValue('language');
         $currency_id = Tools::getValue('currency');
 
         if (Tools::isSubmit('saveToken')) {
-            return $this->saveToken($shop_id, $lang_id, $currency_id);
+            $result &= $this->saveToken($shop_id, $lang_id, $currency_id);
         } elseif (Tools::isSubmit('login')) {
-            return $this->login($shop_id, $lang_id, $currency_id);
+            $result &= $this->login($shop_id, $lang_id, $currency_id);
         }
+
+        $result &= $this->module->updateShoppingfeedStoreId();
+
+        return $result;
     }
 
     /**
@@ -415,6 +420,10 @@ class AdminShoppingfeedAccountSettingsController extends ShoppingfeedAdminContro
             ],
             'currency_name' => [
                 'title' => $this->module->l('Currency', 'AdminShoppingfeedAccountSettings'),
+                'search' => false,
+            ],
+            'shoppingfeed_store_id' => [
+                'title' => $this->module->l('Store ID', 'AdminShoppingfeedAccountSettings'),
                 'search' => false,
             ],
             'link' => [

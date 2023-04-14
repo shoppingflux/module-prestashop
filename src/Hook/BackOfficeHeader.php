@@ -44,7 +44,7 @@ class BackOfficeHeader extends AbstractHook
         $carrier = $this->carrierFinder->findProductFeedCarrier();
 
         if (false == Validate::isLoadedObject($carrier)) {
-            Context::getContext()->controller->errors[] = $this->module->l('Be careful, your Shopping Feed default carrier is no longer configured', 'BackOfficeHeader');
+            Context::getContext()->controller->errors[] = $this->module->l('Be careful, the choice of carrier for the import of shipping costs in the source feed is not filled in (see the "Products feed" tab)', 'BackOfficeHeader');
         }
     }
 }

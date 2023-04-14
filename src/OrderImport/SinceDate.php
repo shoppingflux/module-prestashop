@@ -22,19 +22,25 @@ namespace ShoppingfeedAddon\OrderImport;
 use Configuration;
 use DateInterval;
 use DateTime;
+use DateTimeInterface;
 use Shoppingfeed;
 
-class SinceDate
+class SinceDate implements SinceDateInterface
 {
     const DATE_FORMAT_PS = 'Y-m-d';
 
     const DATE_FORMAT_SF = 'Y-m-dTH:i:s';
 
-    public function get($format = self::DATE_FORMAT_PS)
+    public function get($format = self::DATE_FORMAT_PS, $id_shop = null)
     {
         $date = DateTime::createFromFormat(
             self::DATE_FORMAT_PS,
-            Configuration::get(Shoppingfeed::ORDER_IMPORT_PERMANENT_SINCE_DATE)
+            Configuration::get(
+                Shoppingfeed::ORDER_IMPORT_PERMANENT_SINCE_DATE,
+                null,
+                null,
+                $id_shop
+            )
         );
 
         if ($date instanceof DateTime) {
@@ -47,11 +53,84 @@ class SinceDate
         return $date->format($format);
     }
 
-    public function set(DateTime $date)
+    public function getForShipped($format = self::DATE_FORMAT_PS, $id_shop = null)
+    {
+        $date = DateTime::createFromFormat(
+            self::DATE_FORMAT_PS,
+            Configuration::get(
+                Shoppingfeed::ORDER_SHIPPED_IMPORT_PERMANENT_SINCE_DATE,
+                null,
+                null,
+                $id_shop
+            )
+        );
+
+        if ($date instanceof DateTime) {
+            return $date->format($format);
+        }
+
+        $date = new DateTime();
+        $date->sub($this->getDefaultInterval());
+
+        return $date->format($format);
+    }
+
+    public function getForShippedByMarketplace($format = self::DATE_FORMAT_PS, $id_shop = null)
+    {
+        $date = DateTime::createFromFormat(
+            self::DATE_FORMAT_PS,
+            Configuration::get(
+                Shoppingfeed::ORDER_SHIPPED_BY_MARKETPLACE_IMPORT_PERMANENT_SINCE_DATE,
+                null,
+                null,
+                $id_shop
+            )
+        );
+
+        if ($date instanceof DateTime) {
+            return $date->format($format);
+        }
+
+        $date = new DateTime();
+        $date->sub($this->getDefaultInterval());
+
+        return $date->format($format);
+    }
+
+    public function set(DateTimeInterface $date, $id_shop = null)
     {
         Configuration::updateValue(
             Shoppingfeed::ORDER_IMPORT_PERMANENT_SINCE_DATE,
-            $date->format(self::DATE_FORMAT_PS)
+            $date->format(self::DATE_FORMAT_PS),
+            false,
+            null,
+            $id_shop
+        );
+
+        return $this;
+    }
+
+    public function setForShipped(DateTimeInterface $date, $id_shop = null)
+    {
+        Configuration::updateValue(
+            Shoppingfeed::ORDER_SHIPPED_IMPORT_PERMANENT_SINCE_DATE,
+            $date->format(self::DATE_FORMAT_PS),
+            false,
+            null,
+            $id_shop
+        );
+
+        return $this;
+    }
+
+    public function setForShippedByMarketplace(DateTimeInterface $date, $id_shop = null)
+    {
+        Configuration::updateValue(
+            Shoppingfeed::ORDER_SHIPPED_BY_MARKETPLACE_IMPORT_PERMANENT_SINCE_DATE,
+            $date->format(self::DATE_FORMAT_PS),
+            false,
+            null,
+            $id_shop
         );
 
         return $this;

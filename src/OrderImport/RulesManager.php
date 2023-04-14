@@ -73,7 +73,8 @@ class RulesManager
         foreach ($rulesClassNames as $ruleClassName) {
             $this->addRule(
                 new $ruleClassName(
-                isset($this->rulesConfiguration[$ruleClassName]) ? $this->rulesConfiguration[$ruleClassName] : []
+                    isset($this->rulesConfiguration[$ruleClassName]) ? $this->rulesConfiguration[$ruleClassName] : [],
+                    $id_shop
             )
             );
         }

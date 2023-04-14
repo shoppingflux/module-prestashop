@@ -13,6 +13,10 @@ $_MODULE['<{shoppingfeed}prestashop>shoppingfeed_d2776d1655257149792f979a8347029
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeed_c57b3a8d67d19ba8b7ff2fca88c44012'] = 'Commande %s non importée : %s';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeed_849952f30eb2416a43266be9db32cde3'] = 'Le processus d\'import de la commande %s a démarré';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeed_bd18e419dba0ef2b9f29f5af3528ee7f'] = 'La commande %s n\'a pas pu être importée lors de la synchronisation : %s';
+$_MODULE['<{shoppingfeed}prestashop>sfcustomerrules_3962c13f93dd94baf44f488b47248303'] = 'Règles d\'import ShoppingFeed pour gérer les comportements spécifiques';
+$_MODULE['<{shoppingfeed}prestashop>sfcustomerrules_876f23178c29dc2552c0b48bf23cd9bd'] = 'Êtes-vous sûr de désinstaller ?';
+$_MODULE['<{shoppingfeed}prestashop>sfcustomerruleshook_ff209c9bce1c0eef431a006a56cce0db'] = 'Appliquer à toutes les commandes';
+$_MODULE['<{shoppingfeed}prestashop>sfcustomerruleshook_0c1eed0ab46d4b20406944ac54fb3ead'] = 'Règles d\'import des gestions des champs supplémentaires téléphone et portable sur l\'objet Customer';
 $_MODULE['<{shoppingfeed}prestashop>adminprocessloggercontroller_d3b206d196cd6be3a2764c1fb90b200f'] = 'Supprimer la sélection';
 $_MODULE['<{shoppingfeed}prestashop>adminprocessloggercontroller_53c6a96a3df980c3270d6ed82b6f174b'] = 'Souhaitez-vous supprimer la sélection ?';
 $_MODULE['<{shoppingfeed}prestashop>adminprocessloggercontroller_b718adec73e04ce3ec720dd11a06a308'] = 'ID';
@@ -107,7 +111,7 @@ $_MODULE['<{shoppingfeed}prestashop>diagnostics_8b6160bbd95657959f9c5ee36af7fb16
 $_MODULE['<{shoppingfeed}prestashop>diagnostics_55eca46ceddb053c9c98d43e8bc0aeb7'] = 'La classe hook est overridée probablement par un module RGPD (RGPD Pro, Consentement Cookie, ...). Attention à bien autoriser le module Shopppingfeed dans votre module RGPD.';
 $_MODULE['<{shoppingfeed}prestashop>diagnostics_ed9c1914be9e9283776ecc8ff0147be6'] = 'L\'ancien module Shoppingflux Export est disponible sur le serveur. Veuillez le désinstaller et le supprimer du dossier modules.';
 $_MODULE['<{shoppingfeed}prestashop>diagnostics_ec6d8e39e6b07b8c4357c568177d0d25'] = 'Le module `hidefeatures` est installé sur votre PrestaShop. Certaines caractéristiques peuvent être cachées dans votre flux produits.';
-$_MODULE['<{shoppingfeed}prestashop>backofficeheader_6929b6fdc007a9eb76276d74a9be29e9'] = 'Attention, votre transporteur par défaut n\'est plus configuré dans Shoppingfeed.';
+$_MODULE['<{shoppingfeed}prestashop>backofficeheader_aff398d0582d2ae3708da0285b315f3b'] = 'Attention, le choix de transporteur pour l\'import des frais de port dans le flux source n\'est pas renseigné (voir l\'onglet \"Gestion des produits\")';
 $_MODULE['<{shoppingfeed}prestashop>monechellecolissimo_0cc1e925b5703e8da52b7c3e91829499'] = '[Commande: %s]';
 $_MODULE['<{shoppingfeed}prestashop>monechellecolissimo_43b6ade8fd758b0597ad2f31c9cd1b41'] = 'Règle déclenchée.';
 $_MODULE['<{shoppingfeed}prestashop>monechellecolissimo_f22690ebca72b016c51a0b9d6ed6149a'] = 'Si une commande vient de ManoMano et que le champs `other` ou `relayID` n\'est pas vide.';
@@ -219,6 +223,13 @@ $_MODULE['<{shoppingfeed}prestashop>testingorder_7c5a72dfd28d60e1195279cf5c443d3
 $_MODULE['<{shoppingfeed}prestashop>galerieslafayettecolissimo_0cc1e925b5703e8da52b7c3e91829499'] = '[Commande %s]';
 $_MODULE['<{shoppingfeed}prestashop>galerieslafayettecolissimo_43b6ade8fd758b0597ad2f31c9cd1b41'] = 'Règle déclenchée.';
 $_MODULE['<{shoppingfeed}prestashop>galerieslafayettecolissimo_44ec55560c396c0155f033420a501498'] = 'Si la commande provient de Galeries Lafayette et n\'a pas le champs \"other\" ou \"relayID\" vide.';
+$_MODULE['<{shoppingfeed}prestashop>glsrule_0cc1e925b5703e8da52b7c3e91829499'] = '[Commande: %s]';
+$_MODULE['<{shoppingfeed}prestashop>glsrule_43b6ade8fd758b0597ad2f31c9cd1b41'] = 'Règle déclenchée.';
+$_MODULE['<{shoppingfeed}prestashop>glsrule_e2284cd4172835c110767a63f2e94580'] = 'Liaison entre le point relais GLS avec le panier.';
+$_MODULE['<{shoppingfeed}prestashop>glsrule_69739e7822b7bdb66cc47135e2a5b46e'] = 'Si la commande est livrée par GLS et que le module \"nkmgls\" v3+ est installé.';
+$_MODULE['<{shoppingfeed}prestashop>glsrule_980d0cbf2f6f4a671e29e25f247cc1ef'] = 'Échec de la liaison entre le point relais GLS %s et le panier%d. Message: %s';
+$_MODULE['<{shoppingfeed}prestashop>glsrule_c9af6dcd51c3094d7143d34d987bc796'] = 'Échec de la liaison entre le point relais GLS %s et le panier%d.';
+$_MODULE['<{shoppingfeed}prestashop>glsrule_e4dcc257a3d1caec2a750cd8affb8348'] = 'Liaison entre le point relais GLS %s et le panier%d.';
 $_MODULE['<{shoppingfeed}prestashop>socolissimo_0cc1e925b5703e8da52b7c3e91829499'] = '[Commande %s]';
 $_MODULE['<{shoppingfeed}prestashop>socolissimo_43b6ade8fd758b0597ad2f31c9cd1b41'] = 'Règle déclenchée.';
 $_MODULE['<{shoppingfeed}prestashop>socolissimo_e2fac82fe38a82dbf371b301c40238a2'] = 'Données insérées dans le module Soliberte.';
@@ -257,6 +268,7 @@ $_MODULE['<{shoppingfeed}prestashop>attributefilter_f2bbdf9f72c085adc4d0404e370f
 $_MODULE['<{shoppingfeed}prestashop>categoryfilter_3adbdb3ac060038aa0e6e6c138ef9873'] = 'Catégorie';
 $_MODULE['<{shoppingfeed}prestashop>brandfilter_1be6f9eb563f3bf85c78b4219bf09de9'] = 'Marque';
 $_MODULE['<{shoppingfeed}prestashop>displaypdfinvoice_d37c2bf1bd3143847fca087b354f920e'] = 'Référence de client';
+$_MODULE['<{shoppingfeed}prestashop>displaypdfinvoice_93db6e8ab0d64ce8a0fa16ee57ea45fe'] = 'ID commande Zalando';
 $_MODULE['<{shoppingfeed}prestashop>diagnostic_cd6d39e076b3477cba4d2bd490fc6077'] = 'Diagnostiquer, mettre à jour et réparer votre module Shoppingfeed.';
 $_MODULE['<{shoppingfeed}prestashop>error_multishop_5e463101b19a26686a080b6fbd0d3c93'] = 'Vous devez choisir une boutique en particulier afin de continuer.';
 $_MODULE['<{shoppingfeed}prestashop>welcome_7422face65a1744cd7bd694f57980b31'] = 'Accélérer la vitesse de synchronisation sur les Marketplaces avec le module Shoppingfeed.';
@@ -497,6 +509,7 @@ $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedaccountsettings_c795621ab03
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedaccountsettings_8206cd915d13f963c3eb63d3775b92ab'] = 'Authentifié avec succès. Votre Token a été sauvegardé.';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedaccountsettings_f6861770bdf2fb702a665f1b34e4f9ed'] = 'Tokens';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedaccountsettings_df4d92b521abb80c1e9b0a40f1c30930'] = 'Langue';
+$_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedaccountsettings_1feafb67c1da8183793afe1f61bce2f4'] = 'Store ID';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedaccountsettings_11e707ce9327a614622f52dfe732b78b'] = 'URL du flux produit';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedaccountsettings_4d3d769b812b6faa6b76e1a8abaece2d'] = 'Actif';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedaccountsettings_f86f7b91afe27e79305a6b07bdb0d3c0'] = 'Echec lors de la mise à jour du statut';
@@ -535,7 +548,6 @@ $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_5215c379ae
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_ad05c3a58e994bbb0140ab240c998dbb'] = 'Synchronisation des commandes remboursées';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_e3212a6266bce4b9444bfb291b89e719'] = 'Le paramètre \"Nombre de commande max par requête\" est reservée aux expert (100 par défaut). Vous pouvez configurer le nombre de commandes qui seront traitées à chaque appel de la tâche CRON. Plus vous augmentez ce nombre, plus il y aura de requête en base de données. La valeur de ce paramètre doit être ajustée en fonction de la capacité de votre serveur MYSQL.';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_e4efbb5b13b21b642f301a34a7dc6607'] = 'Nombre de commande max par requête';
-$_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_105c3acfc6df5996bfbd91ead7868356'] = 'Importer les commandes depuis';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_c8878a5464c72f58e4a4f1e40532eb34'] = 'Premier état de commande après import';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_b9d1b8558d2d7145794f697158b6f253'] = 'Shoppingfeed Prestashop Plugin (Feed&Order)';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_ceff443491edd888ee91e6bef87446a6'] = 'Vous devez spécifier un \"Délai avant la synchronisation du numéro de suivi\" supérieur à 0.';
@@ -569,12 +581,6 @@ $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_19ee59b152a
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_ab172765a622443a20f2c18f06b6fb05'] = 'Vous avez moins de 100 produits, nous vous recommandons de mettre le paramètre RealTime (Temps réel) à OUI. Vous avez peu de stock pour chaque référence et pour vous la précision est fondamentale. De plus, il n\'est pas nécessaire de mettre en place une tâche CRON). L\'envoi en temps réel de la mise à jour de votre inventaire à l\'API Shopping Feed vous permet de synchroniser votre inventaire en moins de 15 minutes. Cependant, la multitude de requetes vers l\'API Shopping Feed peux impacter le temps de chargement des pages qui augmentent ou diminuent le stock, en particulier pendant la mise à jours des statuts de commande.';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_6a20984e21f5f88f29df12b2d33429b2'] = 'Pour vous, le paramètre temps réél à NON est conseillé. Les mises à jour sont mis en file d’attente et la configuration d’une tâche cron (URL) toutes les 5 minutes  permettra de synchroniser tous les produits en attente de synchronisation. Cela optimise les appels à l’API  Shopping Flux et les performances de chargement des pages.';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_b64313787f100e22dda1770ce3a4cae2'] = 'Pour vous, le paramètre temps réél à NON est indispensable. Vous utilisez probablement un outil externe (type ERP) pour gérer vos stocks ce qui peut engendrer de nombreuses mises à jour en parallèle.  Dans ce cas, les mises à jour sont mis en file d’attente et la configuration d’une tâche cron (URL) toutes les 5 minutes   permettra de synchroniser tous les produits en attente de synchronisation. Cela optimise les appels à l’API Shopping   Flux et les performances de chargement des pages.';
-$_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_2a2643f83ad07a525d96b9efc8fd48a8'] = 'Type de synchronisation des produits (Toutes boutiques)';
-$_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_a20d0342abfbfddd2b8247b0e0966e7c'] = 'Vous devez sélectionner le type de synchronisation (temps réel ou par la tache CRON) pour mettre à jour les quantités et prix de vos produits.';
-$_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_ac715a83144f3c02f2b5ec41ae740866'] = 'Synchronisation en temps réel';
-$_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_b2c0b3fc1d2812bf71b9ad1559655e9b'] = 'Si coché, aucune tâche Cron sera nécessaire. La synchronisation sera effectuée dès qu\'un changement est effectué. Cela peut impacter les performances générales du site en cas de mises à jour nombreuses des stocks.';
-$_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_1110c4e66540bdf83b5442e7e3244000'] = 'Le paramètre \"Nombre de produits max par requête de mise à jour produit\" est réservé aux experts(100 par défaut). Vous pouvez configurer le nombre de produits à gérer par appel dans la tâche CRON. Plus vous augmentez ce nombre, plus il y aura de requête en base de données. La valeur de ce paramètre doit être ajustée en fonction de la capacité de votre serveur MYSQL.';
-$_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_ec5714076eb1196bd416508b54da3a01'] = 'Nombre de produits max par requête de mise à jour produit';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_b539865b235ed13a67510474171feea9'] = 'Paramètres usine';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_afec276c2c0e3d9ce329b58b20459b42'] = 'Ces paramètres ne peuvent être mis à jour que par l\'équipe support de Shoppingfeed.';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_15ef500fb5183ade195dae415605e8c9'] = 'Valeur par défaut (ID produit with ID attribut)';
@@ -588,6 +594,12 @@ $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_779542eb200
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_e40ba930b9c7e6d656e463b20a47d816'] = 'Doit valoir : valeur par défaut, référence, référence fournisseur, isbn, ean13, upc ou mpn.';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_d5da0cbe31101afb9f4c62e56b006690'] = 'Mettre à jour l\'ensemble des produits du flux XML chaque X heures';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_71e8c20f3031a16ebad590890172478d'] = 'Mise à jour du cron chaque X minutes';
+$_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_a20d0342abfbfddd2b8247b0e0966e7c'] = 'Vous devez sélectionner le type de synchronisation (temps réel ou par la tache CRON) pour mettre à jour les quantités et prix de vos produits.';
+$_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_ac715a83144f3c02f2b5ec41ae740866'] = 'Synchronisation en temps réel';
+$_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_b2c0b3fc1d2812bf71b9ad1559655e9b'] = 'Si coché, aucune tâche Cron sera nécessaire. La synchronisation sera effectuée dès qu\'un changement est effectué. Cela peut impacter les performances générales du site en cas de mises à jour nombreuses des stocks.';
+$_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_1110c4e66540bdf83b5442e7e3244000'] = 'Le paramètre \"Nombre de produits max par requête de mise à jour produit\" est réservé aux experts(100 par défaut). Vous pouvez configurer le nombre de produits à gérer par appel dans la tâche CRON. Plus vous augmentez ce nombre, plus il y aura de requête en base de données. La valeur de ce paramètre doit être ajustée en fonction de la capacité de votre serveur MYSQL.';
+$_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_ec5714076eb1196bd416508b54da3a01'] = 'Nombre de produits max par requête de mise à jour produit';
+$_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_54f327717fd70f49b83705ecfac102d2'] = 'Compression Gzip du flux';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_618ff511e37a426d996068934ca4bed6'] = 'Vous devez spécifier le \'Nombre maximum de produit à mettre à jour par requête\' (nombre ente 1 et 2 000 inclus)';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimport_b9d1b8558d2d7145794f697158b6f253'] = 'Shoppingfeed Prestashop Plugin (Flux et Commandes)';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimport_dc8d604aec1f3ff0ccf7f947cfa17ccc'] = 'Le module shoppingfluxexport n\'est pas installé, il est impossible d\'importer les commandes Shopping Feed depuis ce module';

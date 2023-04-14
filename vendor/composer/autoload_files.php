@@ -15,8 +15,8 @@ return array(
     '6124b4c8570aa390c21fafd04a26c69f' => $vendorDir . '/myclabs/deep-copy/src/DeepCopy/deep_copy.php',
     'ec07570ca5a812141189b1fa81503674' => $vendorDir . '/phpunit/phpunit/src/Framework/Assert/Functions.php',
     '1fcaacb5a22154c13db6129480b5e77c' => $vendorDir . '/shoppingfeed/php-feed-generator/src/functions.php',
-    '454f97bd9f49193f9584219f382e1101' => $vendorDir . '/prefixed/guzzlehttp/guzzle/src/functions_include.php',
-    '65a66ec60d4919a4da0e932ab2da4543' => $vendorDir . '/prefixed/guzzlehttp/psr7/src/functions_include.php',
-    '3b2deaad72ce74d74d2993b336bde5b3' => $vendorDir . '/prefixed/guzzlehttp/promises/src/functions_include.php',
-    '26110cc9145f9e0c51d9e8a05896da79' => $baseDir . '/classes/Compatibility/backword-compatibility.php',
+    '0ee8b6ecec63c67adce7da7d28a82bca' => $vendorDir . '/prefixed/guzzlehttp/guzzle/src/functions_include.php',
+    'f518717aebc2d93d5ef463dec16332c0' => $vendorDir . '/prefixed/guzzlehttp/psr7/src/functions_include.php',
+    '9430778163f91ef9840ccad471ea2d3d' => $vendorDir . '/prefixed/guzzlehttp/promises/src/functions_include.php',
+    '89ccf3c286b135e70ca201fce846cf81' => $baseDir . '/classes/Compatibility/backword-compatibility.php',
 );

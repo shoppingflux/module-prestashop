@@ -77,10 +77,13 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     const PRODUCT_FEED_TIME_FULL_UPDATE = 'SHOPPINGFEED_PRODUCT_FEED_TIME_FULL_UPDATE';
     const PRODUCT_FEED_INTERVAL_CRON = 'SHOPPINGFEED_PRODUCT_FEED_INTERVAL_CRON';
     const ORDER_IMPORT_PERMANENT_SINCE_DATE = 'SHOPPINGFEED_ORDER_IMPORT_PERMANENT_SINCE_DATE';
+    const ORDER_SHIPPED_IMPORT_PERMANENT_SINCE_DATE = 'SHOPPINGFEED_ORDER_SHIPPED_IMPORT_PERMANENT_SINCE_DATE';
+    const ORDER_SHIPPED_BY_MARKETPLACE_IMPORT_PERMANENT_SINCE_DATE = 'SHOPPINGFEED_ORDER_SHIPPED_BY_MARKETPLACE_IMPORT_PERMANENT_SINCE_DATE';
     const IMPORT_ORDER_STATE = 'SHOPPINGFEED_FIRST_STATE_AFTER_IMPORT';
     const CDISCOUNT_FEE_PRODUCT = 'SHOPPINGFEED_CDISCOUNT_FEE_PRODUCT';
     const NEED_UPDATE_HOOK = 'SHOPPINGFEED_IS_NEED_UPDATE_HOOK';
     const ORDER_TRACKING = 'SHOPPINGFEED_ORDER_TRACKING';
+    const COMPRESS_PRODUCTS_FEED = 'SHOPPINGFEED_COMPRESS_PRODUCTS_FEED';
 
     public $extensions = [
         \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerExtension::class,
@@ -415,6 +418,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     {
         $res = parent::install();
         $res &= $this->addDateIndexToLogs();
+        $res &= $this->addIndexToPreloadingTable();
 
         $this->setConfigurationDefault(self::STOCK_SYNC_ENABLED, true);
         $this->setConfigurationDefault(self::PRICE_SYNC_ENABLED, true);
@@ -432,6 +436,8 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         $this->setConfigurationDefault(self::ORDER_IMPORT_SHIPPED_MARKETPLACE, 0);
         $this->setConfigurationDefault(self::PRODUCT_FEED_CARRIER_REFERENCE, Configuration::getGlobalValue('PS_CARRIER_DEFAULT'));
         $this->setConfigurationDefault(self::ORDER_DEFAULT_CARRIER_REFERENCE, Configuration::getGlobalValue('PS_CARRIER_DEFAULT'));
+        $this->setConfigurationDefault(self::COMPRESS_PRODUCTS_FEED, 1);
+
         if (method_exists(ImageType::class, 'getFormatedName')) {
             $this->setConfigurationDefault(self::PRODUCT_FEED_IMAGE_FORMAT, ImageType::getFormatedName('large'));
         } else {
@@ -1306,6 +1312,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             ShoppingfeedAddon\OrderImport\Rules\SetDniToAddress::class,
             ShoppingfeedAddon\OrderImport\Rules\TaxExclMarketplace::class,
             ShoppingfeedAddon\OrderImport\Rules\SkipTax::class,
+            ShoppingfeedAddon\OrderImport\Rules\GlsRule::class,
         ];
 
         foreach ($defaultRulesClassNames as $ruleClassName) {
@@ -1352,13 +1359,20 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         if (Validate::isLoadedObject($sfOrder) === false) {
             return '';
         }
+
         $additionalFields = json_decode($sfOrder->additionalFields, true);
-        if (is_array($additionalFields) === false || array_key_exists('customer_number', $additionalFields) === false) {
-            return;
+
+        if (false === empty($additionalFields['customer_number'])) {
+            $this->context->smarty->assign([
+                'id_customer' => $additionalFields['customer_number'],
+            ]);
         }
-        $this->context->smarty->assign([
-            'id_customer' => $additionalFields['customer_number'],
-        ]);
+
+        if (false === empty($additionalFields['order_id'])) {
+            $this->context->smarty->assign([
+                'order_id' => $additionalFields['order_id'],
+            ]);
+        }
 
         return $this->context->smarty->fetch(
             $this->local_path . 'views/templates/hook/displayPDFInvoice.tpl'
@@ -1450,5 +1464,70 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         }
 
         return $order->module == 'sfpayment';
+    }
+
+    /**
+     * update Shoppingfeed Store Id
+     *
+     * @return void
+     */
+    public function updateShoppingfeedStoreId()
+    {
+        $result = true;
+
+        foreach ((new ShoppingfeedToken())->findAll() as $token) {
+            $sft = new ShoppingfeedToken($token['id_shoppingfeed_token']);
+
+            try {
+                $api = ShoppingfeedApi::getInstanceByToken($sft->id);
+                $sft->shoppingfeed_store_id = $api->getMainStore()->getId();
+                $result &= $sft->save();
+            } catch (Exception $e) {
+            } catch (Throwable $e) {
+            }
+        }
+    }
+
+    /**
+     * add Index To Preloading Table
+     *
+     * @return bool
+     */
+    public function addIndexToPreloadingTable()
+    {
+        $result = true;
+        $sql = 'SHOW INDEX FROM ' . _DB_PREFIX_ . 'shoppingfeed_preloading WHERE Key_name = "%s"';
+
+        if (empty(Db::getInstance()->executeS(sprintf($sql, 'index_1')))) {
+            $result &= Db::getInstance()->execute(
+                'ALTER TABLE ' . _DB_PREFIX_ . 'shoppingfeed_preloading ADD INDEX index_1 (id_token) USING BTREE'
+            );
+        }
+
+        if (empty(Db::getInstance()->executeS(sprintf($sql, 'index_2')))) {
+            $result &= Db::getInstance()->execute(
+                'ALTER TABLE ' . _DB_PREFIX_ . 'shoppingfeed_preloading ADD INDEX index_2 (id_token,content(3)) USING BTREE'
+            );
+        }
+
+        if (empty(Db::getInstance()->executeS(sprintf($sql, 'index_3')))) {
+            $result &= Db::getInstance()->execute(
+                'ALTER TABLE ' . _DB_PREFIX_ . 'shoppingfeed_preloading ADD INDEX index_3 (id_token, actions, content(3)) USING BTREE'
+            );
+        }
+
+        if (empty(Db::getInstance()->executeS(sprintf($sql, 'index_4')))) {
+            $result &= Db::getInstance()->execute(
+                'ALTER TABLE ' . _DB_PREFIX_ . 'shoppingfeed_preloading ADD INDEX index_4 (id_token, actions) USING BTREE'
+            );
+        }
+
+        if (empty(Db::getInstance()->executeS(sprintf($sql, 'index_5')))) {
+            $result &= Db::getInstance()->execute(
+                'ALTER TABLE ' . _DB_PREFIX_ . 'shoppingfeed_preloading ADD INDEX index_5 (id_token, date_upd) USING BTREE'
+            );
+        }
+
+        return $result;
     }
 }
