@@ -16,6 +16,9 @@
  * @copyright Since 2019 Shopping Feed
  * @license   https://opensource.org/licenses/AFL-3.0  Academic Free License (AFL 3.0)
  */
+
+use ShoppingfeedAddon\Services\SfTools;
+
 if (!defined('_PS_VERSION_')) {
     exit;
 }
@@ -284,9 +287,12 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
      *
      * @var string Unique token depend on _COOKIE_KEY_ which is unique to this website
      *
-     * @see Tools::encrypt()
+     * @see SfTools::hash()
      */
     public $secure_key;
+
+    /** @var SfTools */
+    public $tools;
 
     /**
      * creates an instance of the module
@@ -301,6 +307,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         $this->ps_versions_compliancy = ['min' => '1.6', 'max' => '8.99.99'];
         $this->need_instance = false;
         $this->bootstrap = true;
+        $this->tools = new SfTools();
 
         parent::__construct();
 
@@ -309,7 +316,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
 
         $this->confirmUninstall = $this->l('Are you sure you want to uninstall?');
 
-        $this->secure_key = Tools::encrypt($this->name);
+        $this->secure_key = $this->tools->hash($this->name);
         if (version_compare(_PS_VERSION_, '1.7', '<')) {
             $this->moduleAdminControllers = [
                 [
