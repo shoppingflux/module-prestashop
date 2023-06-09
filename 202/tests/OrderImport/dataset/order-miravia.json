@@ -26,7 +26,7 @@
       }
     },
     "additionalFields": {
-      "user-email": "unique.id.1@test.net",
+      "user-email": "unique.id.2@test.net",
       "channel_code": "INIT",
       "fulfilled_by": "merchant",
       "order_status": "SHIPPED",
@@ -65,7 +65,7 @@
       "country":"FR",
       "phone":"0123456789",
       "mobilePhone":"0623456789",
-      "email":"unique.id.1@test.net"
+      "email":"unique.id.2@test.net"
     },
     "billingAddress": {
       "firstName":"",
@@ -79,7 +79,7 @@
       "country":"FR",
       "phone":"0123456789",
       "mobilePhone":"0623456789",
-      "email":"unique.id.1@test.net"
+      "email":"unique.id.2@test.net"
     },
     "_links": {
       "self": {
@@ -92,7 +92,7 @@
     "_embedded": {
         "channel": {
           "id": 30792,
-          "name": "alltricks",
+          "name": "miravia",
           "_links": {
             "self": {
               "href": "/v1/channel/30792"

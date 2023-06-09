@@ -187,19 +187,46 @@ class OrderRulesAmazonEbayTest extends AbstractOrdeTestCase
         $rules->onPreProcess($params);
 
         $expedtedAddress = [
-                'firstName' => 'Chandonnet',
-                'lastName' => 'Sibyla',
-                'company' => '',
-                'street' => '43, Avenue De Marlioz',
-                'street2' => '',
-                'other' => '',
-                'postalCode' => '13200',
-                'city' => 'Arles',
-                'country' => 'FR',
-                'phone' => '',
-                'mobilePhone' => '0661192586',
-                'province' => '',
-                'email' => '',
+            'firstName' => 'Martin',
+            'lastName' => 'Bernard',
+            'company' => '202 ecommerce',
+            'street' => '10 rue Vivienne',
+            'street2' => '',
+            'other' => '',
+            'postalCode' => '75002',
+            'city' => 'Paris',
+            'country' => 'FR',
+            'phone' => '0123456789',
+            'mobilePhone' => '0623456789',
+            'email' => 'unique.id.1@test.net',
+        ];
+
+        $this->assertSame($expedtedAddress, $params['orderData']->billingAddress);
+    }
+
+    public function testSplitNameMiravia(): void
+    {
+        $apiOrder = $this->getOrderRessourceFromDataset('order-miravia.json');
+
+        $rules = new AmazonEbay();
+        $this->assertTrue($rules->isApplicable($apiOrder));
+        $params['orderData'] = new OrderData($apiOrder);
+        $params['apiOrder'] = $apiOrder;
+        $rules->onPreProcess($params);
+
+        $expedtedAddress = [
+            'firstName' => 'Martin',
+            'lastName' => 'Bernard',
+            'company' => '202 ecommerce',
+            'street' => '10 rue Vivienne',
+            'street2' => '',
+            'other' => '',
+            'postalCode' => '75002',
+            'city' => 'Paris',
+            'country' => 'FR',
+            'phone' => '0123456789',
+            'mobilePhone' => '0623456789',
+            'email' => 'unique.id.2@test.net',
         ];
 
         $this->assertSame($expedtedAddress, $params['orderData']->billingAddress);
