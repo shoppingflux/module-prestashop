@@ -259,7 +259,7 @@ $_MODULE['<{shoppingfeed}prestashop>shippedbymarketplace_4ad367ed9d85670d0aee2e5
 $_MODULE['<{shoppingfeed}prestashop>shippedbymarketplace_bf6268797ddbc9e9333d906763b31069'] = 'Règle déclenchée. Configuration dela commande sur LIVRÉ.';
 $_MODULE['<{shoppingfeed}prestashop>shippedbymarketplace_b54bf972c4560b820f51e3e33a9c7d47'] = 'Si une commande est expédiée par la marketplace OU le statut d\'import de commande est Expédié.';
 $_MODULE['<{shoppingfeed}prestashop>shippedbymarketplace_07172e18fb8d0ded766f9851a25aab96'] = 'Ne décrémente pas de stock pour cette commande. Affecte le statut LIVRÉ après le processus d\'import ou le statut configuré ci-dessus.';
-$_MODULE['<{shoppingfeed}prestashop>shippedbymarketplace_1b0ea751dbde31a9f331f83e1e63334a'] = 'Après l\'import d\'une commande expédiée par la marketplace (Amazon, CDiscount ou Manomano ), passer le statut de cette commande à l\'état';
+$_MODULE['<{shoppingfeed}prestashop>shippedbymarketplace_b6410f922b6d10bace29d01ec5424daf'] = 'Après l\'import d\'une commande en statut expédié ou expédiée par la marketplace, changer le statut de commande pour';
 $_MODULE['<{shoppingfeed}prestashop>shippedbymarketplace_3e1cdfc6da1fd127747e056cbb0c2d8b'] = 'Par défaut : Livré';
 $_MODULE['<{shoppingfeed}prestashop>shippedbymarketplace_7292fe2a20cbb7fdf7206ac1abf70f98'] = 'Règle déclenchée. L\'import a été sauté.';
 $_MODULE['<{shoppingfeed}prestashop>supplierfilter_ec136b444eede3bc85639fac0dd06229'] = 'Fournisseur';
