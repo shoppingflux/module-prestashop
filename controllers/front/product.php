@@ -89,6 +89,7 @@ class ShoppingfeedProductModuleFrontController extends \ModuleFrontController
 
         $limit = 100;
         $nb_iteration = ceil((new ShoppingfeedPreloading())->getPreloadingCount($this->sfToken['id_shoppingfeed_token']) / $limit);
+        ob_end_clean();
         $productGenerator->open();
 
         for ($i = 0; $i < $nb_iteration; ++$i) {
