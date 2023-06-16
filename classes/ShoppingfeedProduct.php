@@ -168,6 +168,8 @@ class ShoppingfeedProduct extends ObjectModel
             $sql = new DbQuery();
             $sql->select('p.`id_product`, pa.`id_product_attribute`');
             $sql->from('product', 'p');
+            $sql->leftJoin('product_attribute', 'pa', 'pa.`id_product` = p.`id_product`');
+            $sql->leftJoin('product_attribute_shop', 'pas', 'pas.id_product_attribute = pa.id_product_attribute');
 
             if ($idShop) {
                 $sql->join(
@@ -184,8 +186,6 @@ class ShoppingfeedProduct extends ObjectModel
                 $sql->join($this->getShopAssociator()->addAssociation('product', 'p'));
             }
 
-            $sql->leftJoin('product_attribute', 'pa', 'pa.`id_product` = p.`id_product`');
-
             if ($reference_format === 'supplier_reference') {
                 $where = 'EXISTS(
                         SELECT * FROM `' . _DB_PREFIX_ . 'product_supplier` sp
@@ -193,7 +193,7 @@ class ShoppingfeedProduct extends ObjectModel
                             AND `product_supplier_reference` = "' . pSQL($sfReference) . '"
                     )';
             } else {
-                $where = 'pa.`' . bqSQL($reference_format) . '` = "' . pSQL($sfReference) . '"';
+                $where = 'pa.`' . bqSQL($reference_format) . '` = "' . pSQL($sfReference) . '" AND pas.id_shop = ' . ($idShop ? (int) $idShop : (int) Shop::getContextShopID());
             }
 
             $sql->where($where);
