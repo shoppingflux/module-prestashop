@@ -39,11 +39,11 @@ class Zalando extends RuleAbstract implements RuleInterface
         if (key_exists('channelId', $data) === false) {
             return false;
         }
-        if (preg_match('#^zalando#', Tools::strtolower($apiOrder->getChannel()->getName())) === false) {
-            return false;
+        if (preg_match('#^zalando#', Tools::strtolower($apiOrder->getChannel()->getName()))) {
+            return true;
         }
 
-        return true;
+        return false;
     }
 
     public function afterOrderCreation($params)
