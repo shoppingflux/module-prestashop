@@ -70,7 +70,10 @@ class ShoppingfeedProductModuleFrontController extends \ModuleFrontController
         $fileXmlGz = '';
 
         if ($this->isCompressFeed) {
-            $fileXmlGz = sprintf('shoppingfeed-%s.xml.gz', Tools::hash($this->sfToken['id_shoppingfeed_token']));
+            $fileXmlGz = sprintf(
+                'shoppingfeed-%s.xml.gz',
+                $this->module->tools->hash($this->sfToken['id_shoppingfeed_token'])
+            );
             header('Content-Encoding: gzip');
             $productGenerator = new SfProductGenerator('compress.zlib://' . $fileXmlGz, 'xml');
         } else {
@@ -89,6 +92,7 @@ class ShoppingfeedProductModuleFrontController extends \ModuleFrontController
 
         $limit = 100;
         $nb_iteration = ceil((new ShoppingfeedPreloading())->getPreloadingCount($this->sfToken['id_shoppingfeed_token']) / $limit);
+        ob_end_clean();
         $productGenerator->open();
 
         for ($i = 0; $i < $nb_iteration; ++$i) {

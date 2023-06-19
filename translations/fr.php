@@ -13,10 +13,6 @@ $_MODULE['<{shoppingfeed}prestashop>shoppingfeed_d2776d1655257149792f979a8347029
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeed_c57b3a8d67d19ba8b7ff2fca88c44012'] = 'Commande %s non importée : %s';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeed_849952f30eb2416a43266be9db32cde3'] = 'Le processus d\'import de la commande %s a démarré';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeed_bd18e419dba0ef2b9f29f5af3528ee7f'] = 'La commande %s n\'a pas pu être importée lors de la synchronisation : %s';
-$_MODULE['<{shoppingfeed}prestashop>sfcustomerrules_3962c13f93dd94baf44f488b47248303'] = 'Règles d\'import ShoppingFeed pour gérer les comportements spécifiques';
-$_MODULE['<{shoppingfeed}prestashop>sfcustomerrules_876f23178c29dc2552c0b48bf23cd9bd'] = 'Êtes-vous sûr de désinstaller ?';
-$_MODULE['<{shoppingfeed}prestashop>sfcustomerruleshook_ff209c9bce1c0eef431a006a56cce0db'] = 'Appliquer à toutes les commandes';
-$_MODULE['<{shoppingfeed}prestashop>sfcustomerruleshook_0c1eed0ab46d4b20406944ac54fb3ead'] = 'Règles d\'import des gestions des champs supplémentaires téléphone et portable sur l\'objet Customer';
 $_MODULE['<{shoppingfeed}prestashop>adminprocessloggercontroller_d3b206d196cd6be3a2764c1fb90b200f'] = 'Supprimer la sélection';
 $_MODULE['<{shoppingfeed}prestashop>adminprocessloggercontroller_53c6a96a3df980c3270d6ed82b6f174b'] = 'Souhaitez-vous supprimer la sélection ?';
 $_MODULE['<{shoppingfeed}prestashop>adminprocessloggercontroller_b718adec73e04ce3ec720dd11a06a308'] = 'ID';
@@ -259,7 +255,7 @@ $_MODULE['<{shoppingfeed}prestashop>shippedbymarketplace_4ad367ed9d85670d0aee2e5
 $_MODULE['<{shoppingfeed}prestashop>shippedbymarketplace_bf6268797ddbc9e9333d906763b31069'] = 'Règle déclenchée. Configuration dela commande sur LIVRÉ.';
 $_MODULE['<{shoppingfeed}prestashop>shippedbymarketplace_b54bf972c4560b820f51e3e33a9c7d47'] = 'Si une commande est expédiée par la marketplace OU le statut d\'import de commande est Expédié.';
 $_MODULE['<{shoppingfeed}prestashop>shippedbymarketplace_07172e18fb8d0ded766f9851a25aab96'] = 'Ne décrémente pas de stock pour cette commande. Affecte le statut LIVRÉ après le processus d\'import ou le statut configuré ci-dessus.';
-$_MODULE['<{shoppingfeed}prestashop>shippedbymarketplace_1b0ea751dbde31a9f331f83e1e63334a'] = 'Après l\'import d\'une commande expédiée par la marketplace (Amazon, CDiscount ou Manomano ), passer le statut de cette commande à l\'état';
+$_MODULE['<{shoppingfeed}prestashop>shippedbymarketplace_b6410f922b6d10bace29d01ec5424daf'] = 'Après l\'import d\'une commande en statut expédié ou expédiée par la marketplace, changer le statut de commande pour';
 $_MODULE['<{shoppingfeed}prestashop>shippedbymarketplace_3e1cdfc6da1fd127747e056cbb0c2d8b'] = 'Par défaut : Livré';
 $_MODULE['<{shoppingfeed}prestashop>shippedbymarketplace_7292fe2a20cbb7fdf7206ac1abf70f98'] = 'Règle déclenchée. L\'import a été sauté.';
 $_MODULE['<{shoppingfeed}prestashop>supplierfilter_ec136b444eede3bc85639fac0dd06229'] = 'Fournisseur';
@@ -664,6 +660,7 @@ $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_658d3d759bad7
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_360a3977539fdec48be717c15a48a317'] = 'Commande importée !';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_ee6ee73bed6c5cc16f24191a6bfe61ec'] = 'Étape 9/11 : Commande validée';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_4930df58c29fc86597530234bec3d755'] = 'Impossible d\'accéder à l\'API Shopping feed.';
+$_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_d8686c1ca05e11e72f1ca89a8066c1a8'] = 'Étape 10/11 : Commande déjà acquittée en erreur sur l\'API Shopping feed';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_47112c325cdb9466af9c508be26eb7eb'] = 'Une erreur s\'est produite durant l\'aquittement de la commande. Message d\'erreur : %s.';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_520287c7a5a62cb7f57f700310fbda50'] = 'Échec lors de l\'acquittement de la commande sur l\'API Shopping feed';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedorderimportactions_edddef134d67a9a3b81190c2980996e3'] = 'Étape 10/11 : Commande acquittée sur l\'API Shopping feed';

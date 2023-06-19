@@ -860,6 +860,17 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             $isSucess = true;
         }
 
+        if (!$isSucess && !empty($apiOrder->toArray()['errors'])) {
+            ProcessLoggerHandler::logInfo(
+                $this->logPrefix .
+                $this->l('Step 10/11: Order already acknowledged in error with SF API.', 'ShoppingfeedOrderImportActions'),
+                'Order',
+                empty($this->conveyor['sfOrder']) === false ? $this->conveyor['sfOrder']->id_order : ''
+            );
+
+            return true;
+        }
+
         try {
             $result = $shoppingfeedApi->acknowledgeOrder(
                 $apiOrder->getReference(),

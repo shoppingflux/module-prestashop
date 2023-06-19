@@ -186,6 +186,6 @@ class TestAttributeTestCase extends TestCase
         $this->assertArrayHasKey($id_product_attribute, $productContent['variations']);
         $this->assertArrayHasKey('attributes', $productContent['variations'][$id_product_attribute]);
         $this->assertArrayHasKey('ecotax_child', $productContent['variations'][$id_product_attribute]['attributes']);
-        $this->assertEquals($productContent['variations'][$id_product_attribute]['attributes']['ecotax_child'], '6.000000');
+        $this->assertEquals((6 * 1.2), $productContent['variations'][$id_product_attribute]['attributes']['ecotax_child']);
     }
 }
