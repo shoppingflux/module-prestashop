@@ -846,6 +846,7 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
             ->from('category_lang', 'cl')
             ->leftJoin('category', 'c', 'cl.id_category = c.id_category')
             ->where('cl.id_lang = ' . (int) $this->context->language->id)
+            ->where('cl.id_shop = ' . (int) $this->context->shop->id)
             ->where('c.id_parent <> 0')
             ->orderBy('c.id_category ASC')
             ->select('c.id_category as id, CONCAT("(", c.id_category, ")", " ", cl.name) as title');
