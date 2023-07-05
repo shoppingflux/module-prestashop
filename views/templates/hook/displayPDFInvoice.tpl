@@ -20,10 +20,10 @@
 * @copyright Copyright (c) 202-ecommerce
 * @license   Commercial license
 *}
-{if empty($id_customer) != false}
+{if empty($id_customer) === false}
     {l s='Customer ID' mod='shoppingfeed'} : {$id_customer|escape:'html':'UTF-8'} <br />
 {/if}
 
-{if empty($order_id) != false}
+{if empty($order_id) === false}
     {l s='Order ID Zalando' mod='shoppingfeed'} : {$order_id|escape:'html':'UTF-8'} <br />
 {/if}
