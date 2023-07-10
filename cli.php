@@ -41,8 +41,13 @@ foreach ($_SERVER['argv'] as $argv) {
 
 if (empty($params['controller']) || empty($params['secure_key']) || empty($path) === true) {
     echo 'Please define cli in absolute path, controller and secure_key as expected.' . "\r\n";
-    echo 'Usage: php ' . dirname(__FILE__) . '/cli.php controller=syncAll secure_key=db7a3a582a43e797a55842eced563d4a' . "\r\n";
+    echo 'Usage: php ' . dirname(__FILE__) . '/cli.php controller=syncAll secure_key=db7a3a582a43e797a55842eced563d4a ssl=off' . "\r\n";
     exit;
+}
+
+// prevent image URL with double schema
+if ($params['ssl'] != 'off') {
+    $_SERVER['SSL'] = 'on';
 }
 
 $_GET['fc'] = 'module';
