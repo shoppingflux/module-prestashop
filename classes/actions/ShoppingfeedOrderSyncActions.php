@@ -426,6 +426,9 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
             }
 
             $batchId = current($result->getBatchIds());
+            if (empty($batchId) === true) {
+                continue;
+            }
 
             foreach ($preparedTaskOrders as $preparedTaskOrder) {
                 $taskOrder = $preparedTaskOrder['taskOrder'];
