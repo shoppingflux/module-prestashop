@@ -2,7 +2,7 @@
 namespace ShoppingFeed\Sdk\Test\Http\Middleware;
 
 use PHPUnit\Framework\TestCase;
-use Psr\Http\Message;
+use SfPsr\Psr\Http\Message;
 use ShoppingFeed\Sdk\Http\Middleware\ServerErrorHandler;
 
 class ServerErrorHandlerTest extends TestCase

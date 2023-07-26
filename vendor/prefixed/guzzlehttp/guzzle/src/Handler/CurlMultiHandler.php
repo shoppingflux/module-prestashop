@@ -4,7 +4,7 @@ namespace SfGuzzle\GuzzleHttp\Handler;
 use SfGuzzle\GuzzleHttp\Promise as P;
 use SfGuzzle\GuzzleHttp\Promise\Promise;
 use SfGuzzle\GuzzleHttp\Utils;
-use Psr\Http\Message\RequestInterface;
+use SfPsr\Psr\Http\Message\RequestInterface;
 
 /**
  * Returns an asynchronous response using curl_multi_* functions.

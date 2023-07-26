@@ -1,9 +1,9 @@
 <?php
 namespace SfGuzzle\GuzzleHttp;
 
-use Psr\Http\Message\MessageInterface;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
+use SfPsr\Psr\Http\Message\MessageInterface;
+use SfPsr\Psr\Http\Message\RequestInterface;
+use SfPsr\Psr\Http\Message\ResponseInterface;
 
 /**
  * Formats log messages using variable substitutions for requests, responses,

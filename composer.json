@@ -47,6 +47,9 @@
       "SfGuzzle\\GuzzleHttp\\":          "vendor/prefixed/guzzlehttp/guzzle/src/",
       "SfGuzzle\\GuzzleHttp\\Psr7\\":    "vendor/prefixed/guzzlehttp/psr7/src/",
       "SfGuzzle\\GuzzleHttp\\Promise\\": "vendor/prefixed/guzzlehttp/promises/src/",
+      "SfPsr\\Psr\\Http\\Message\\": "vendor/prefixed/psr/http-message/src/",
+      "SfPsr\\Psr\\EventDispatcher\\": "vendor/prefixed/psr/event-dispatcher/src/",
+      "SfPsr\\Psr\\Log\\": "vendor/prefixed/psr/log/Psr/Log/",
       "ShoppingFeed\\Sdk\\":             "vendor/prefixed/shoppingfeed/php-sdk/src/",
       "ShoppingfeedAddon\\":             "src"
     }
@@ -57,7 +60,7 @@
       }
   },
   "scripts": {
-    "pre-autoload-dump": "if [ ${TOTPSCLASSLIB_DEV_PATH} ]; then php ${TOTPSCLASSLIB_DEV_PATH}/classlib/refresh.php .; fi"
+    "pre-autoload-dump": ""
   },
   "type": "prestashop-module"
 }

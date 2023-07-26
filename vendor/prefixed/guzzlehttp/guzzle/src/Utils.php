@@ -2,7 +2,7 @@
 namespace SfGuzzle\GuzzleHttp;
 
 use SfGuzzle\GuzzleHttp\Exception\InvalidArgumentException;
-use Psr\Http\Message\UriInterface;
+use SfPsr\Psr\Http\Message\UriInterface;
 use Symfony\Polyfill\Intl\Idn\Idn;
 
 final class Utils

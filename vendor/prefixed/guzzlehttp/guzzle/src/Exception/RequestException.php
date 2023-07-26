@@ -2,9 +2,9 @@
 namespace SfGuzzle\GuzzleHttp\Exception;
 
 use SfGuzzle\GuzzleHttp\Promise\PromiseInterface;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\UriInterface;
+use SfPsr\Psr\Http\Message\RequestInterface;
+use SfPsr\Psr\Http\Message\ResponseInterface;
+use SfPsr\Psr\Http\Message\UriInterface;
 
 /**
  * HTTP Request exception

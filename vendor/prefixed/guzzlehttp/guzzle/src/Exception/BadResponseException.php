@@ -1,8 +1,8 @@
 <?php
 namespace SfGuzzle\GuzzleHttp\Exception;
 
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
+use SfPsr\Psr\Http\Message\RequestInterface;
+use SfPsr\Psr\Http\Message\ResponseInterface;
 
 /**
  * Exception when an HTTP error occurs (4xx or 5xx error)

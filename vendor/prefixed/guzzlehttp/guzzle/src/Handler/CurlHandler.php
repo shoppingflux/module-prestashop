@@ -2,7 +2,7 @@
 namespace SfGuzzle\GuzzleHttp\Handler;
 
 use SfGuzzle\GuzzleHttp\Psr7;
-use Psr\Http\Message\RequestInterface;
+use SfPsr\Psr\Http\Message\RequestInterface;
 
 /**
  * HTTP handler that uses cURL easy handles as a transport layer.

@@ -3,9 +3,9 @@ namespace ShoppingFeed\Sdk\Test\Http\Adapter;
 
 use SfGuzzle\GuzzleHttp;
 use PHPUnit\Framework\TestCase;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Log\LoggerInterface;
+use SfPsr\Psr\Http\Message\RequestInterface;
+use SfPsr\Psr\Http\Message\ResponseInterface;
+use SfPsr\Psr\Log\LoggerInterface;
 use ShoppingFeed\Sdk\Client\ClientOptions;
 use ShoppingFeed\Sdk\Hal\HalResource;
 use ShoppingFeed\Sdk\Http\Adapter\AdapterInterface;

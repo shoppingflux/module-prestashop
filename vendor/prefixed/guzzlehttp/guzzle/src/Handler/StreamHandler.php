@@ -8,9 +8,9 @@ use SfGuzzle\GuzzleHttp\Promise\PromiseInterface;
 use SfGuzzle\GuzzleHttp\Psr7;
 use SfGuzzle\GuzzleHttp\TransferStats;
 use SfGuzzle\GuzzleHttp\Utils;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\StreamInterface;
+use SfPsr\Psr\Http\Message\RequestInterface;
+use SfPsr\Psr\Http\Message\ResponseInterface;
+use SfPsr\Psr\Http\Message\StreamInterface;
 
 /**
  * HTTP handler that uses PHP's HTTP stream wrapper.

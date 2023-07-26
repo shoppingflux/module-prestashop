@@ -3,9 +3,9 @@ namespace SfGuzzle\GuzzleHttp;
 
 use SfGuzzle\GuzzleHttp\Exception\GuzzleException;
 use SfGuzzle\GuzzleHttp\Promise\PromiseInterface;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\UriInterface;
+use SfPsr\Psr\Http\Message\RequestInterface;
+use SfPsr\Psr\Http\Message\ResponseInterface;
+use SfPsr\Psr\Http\Message\UriInterface;
 
 /**
  * Client interface for sending HTTP requests.

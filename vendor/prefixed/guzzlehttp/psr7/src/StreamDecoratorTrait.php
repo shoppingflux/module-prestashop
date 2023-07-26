@@ -2,7 +2,7 @@
 
 namespace SfGuzzle\GuzzleHttp\Psr7;
 
-use Psr\Http\Message\StreamInterface;
+use SfPsr\Psr\Http\Message\StreamInterface;
 
 /**
  * Stream decorator trait
