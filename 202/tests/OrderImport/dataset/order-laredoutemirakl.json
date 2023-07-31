@@ -1,0 +1,94 @@
+{
+    "id":16984336913,
+    "storeId":25125,
+    "channelId":152,
+    "reference":"1-2022.041.4342060",
+    "storeReference":"6362",
+    "isTest":false,
+    "acknowledgedAt":null,
+    "createdAt":"2022-02-10T23:59:16+01:00",
+    "updatedAt":"2022-02-11T03:03:23+01:00",
+    "status":"waiting_shipment",
+    "anonymized":false,
+    "payment":{
+       "shippingAmount":5.9,
+       "productAmount":59.9,
+       "totalAmount":65.8,
+       "currency":"EUR",
+       "method":""
+    },
+    "shipment":{
+       "carrier":"Home",
+       "trackingNumber":""
+    },
+    "additionalFields":null,
+    "errors":[
+       
+    ],
+    "itemsReferencesAliases":null,
+    "items":[
+       {
+          "reference":"14",
+          "status":"toship",
+          "quantity":1,
+          "price":59.9,
+          "taxAmount":0,
+          "channelReference":"1-2022.041.4342060-7",
+          "name":"Grand sac en Cuir Ultrech, noir",
+          "image":"https://www.duponddurand.com/11232-large_default/grand-sac-en-cuir-ultrech-noir.jpg"
+       }
+    ],
+    "shippingAddress":{
+       "firstName":"",
+       "lastName":"CARRA CELINE",
+       "company":"",
+       "street":"10 rue Vivienne",
+       "street2":"",
+       "other":"",
+       "postalCode":"75000",
+       "city":"Paris",
+       "country":"FR",
+       "phone":"0698765432",
+       "mobilePhone":"0698765432",
+       "email":"mp+20220414342060+000010890@web.redoute.fr"
+    },
+    "billingAddress":{
+       "firstName":"",
+       "lastName":"CARRA CELINE",
+       "company":"",
+       "street":"10 rue Vivienne",
+       "street2":"",
+       "other":"",
+       "postalCode":"75000",
+       "city":"Paris",
+       "country":"FR",
+       "phone":"",
+       "mobilePhone":"",
+       "email":"mp+20220414342060+000010890@web.redoute.fr"
+    },
+    "_links":{
+       "self":{
+          "href":"/v1/store/43311/order/16984336913"
+       },
+       "store":{
+          "href":"/v1/store/43311"
+       }
+    },
+    "_embedded":{
+       "channel":{
+          "id":152,
+          "name":"laredoutemirakl",
+          "_links":{
+             "self":{
+                "href":"/v1/channel/152"
+             },
+             "image":{
+                "href":"https://assets.shopping-feed.com/channel/logo/Laredoute.png"
+             }
+          }
+       },
+       "tag":[
+          
+       ]
+    }
+ }

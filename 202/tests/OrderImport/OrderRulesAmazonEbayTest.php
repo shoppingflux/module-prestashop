@@ -106,6 +106,34 @@ class OrderRulesAmazonEbayTest extends AbstractOrdeTestCase
         $this->assertSame($expedtedAddress, $params['orderData']->billingAddress);
     }
 
+    public function testSplitNameLaredoutemirakl(): void
+    {
+        $apiOrder = $this->getOrderRessourceFromDataset('order-laredoutemirakl.json');
+
+        $rules = new AmazonEbay();
+        $this->assertTrue($rules->isApplicable($apiOrder));
+
+        $params['orderData'] = new OrderData($apiOrder);
+        $params['apiOrder'] = $apiOrder;
+        $rules->onPreProcess($params);
+
+        $expedtedAddress = [
+            'firstName' => 'CELINE',
+            'lastName' => 'CARRA',
+            'company' => '',
+            'street' => '10 rue Vivienne',
+            'street2' => '',
+            'other' => '',
+            'postalCode' => '75000',
+            'city' => 'Paris',
+            'country' => 'FR',
+            'phone' => '',
+            'mobilePhone' => '',
+            'email' => 'mp+20220414342060+000010890@web.redoute.fr',
+        ];
+        $this->assertSame($expedtedAddress, $params['orderData']->billingAddress);
+    }
+
     /**
      * Test to split name
      *
