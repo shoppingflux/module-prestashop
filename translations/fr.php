@@ -624,7 +624,7 @@ $_MODULE['<{shoppingfeed}prestashop>shoppingfeedproductsyncpreloadingactions_c25
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedproductsyncstockactions_4930df58c29fc86597530234bec3d755'] = 'Impossible de joindre l\'API Shopping Feed.';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedproductsyncstockactions_91a52bd73ffd6131082b73af846e6ecd'] = 'Impossible de trouver un produit avec la référence ';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedproductsyncstockactions_a801d70330993ebbd73da8a839c41b47'] = 'Mise à jour du produit %s quantité : %s';
-$_MODULE['<{shoppingfeed}prestashop>shoppingfeedproductsyncstockactions_59b4172bec9ed00538763238770c907b'] = '%s non référencé dans le catalogue Shopping Feed - quantité : %s';
+$_MODULE['<{shoppingfeed}prestashop>shoppingfeedproductsyncstockactions_ad54f1ab77c3bc3b7763e0465bc067e1'] = '%s non référencé dans le catalogue Shoppingfeed ou stock inchangé sur Shoppingfeed - qté: %s';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedproductsyncpriceactions_4930df58c29fc86597530234bec3d755'] = 'Impossible de joindre l\'API Shopping Feed.';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedproductsyncpriceactions_73c1f14a52d64e32c681f6bc2b587189'] = 'Mise à jour du produit %s prix : %s';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedproductsyncpriceactions_88f3784c2963bc004558697d67f77e1d'] = '%s non référencé dans le catalogue Shopping Feed - prix : %s';
