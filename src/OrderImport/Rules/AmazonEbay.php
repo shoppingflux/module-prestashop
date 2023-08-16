@@ -47,7 +47,7 @@ class AmazonEbay extends RuleAbstract implements RuleInterface
         $billingAddressFirstName = $billingAddress['firstName'] === '.' ? '' : $billingAddress['firstName'];
         $billingAddressLastName = $billingAddress['lastName'] === '.' ? '' : $billingAddress['lastName'];
 
-        return preg_match('#^(amazon|ebay|laredoute|alltricks|miravia)$#', Tools::strtolower($apiOrder->getChannel()->getName()))
+        return preg_match('#^(amazon|ebay|laredoute|laredoutemirakl|alltricks|miravia)$#', Tools::strtolower($apiOrder->getChannel()->getName()))
             && (
                 empty($shippingAddressFirstName)
                 || empty($shippingAddressLastName)
