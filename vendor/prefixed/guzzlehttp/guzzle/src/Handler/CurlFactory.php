@@ -7,7 +7,7 @@ use SfGuzzle\GuzzleHttp\Promise\FulfilledPromise;
 use SfGuzzle\GuzzleHttp\Psr7;
 use SfGuzzle\GuzzleHttp\Psr7\LazyOpenStream;
 use SfGuzzle\GuzzleHttp\TransferStats;
-use Psr\Http\Message\RequestInterface;
+use SfPsr\Psr\Http\Message\RequestInterface;
 
 /**
  * Creates curl resources from a request

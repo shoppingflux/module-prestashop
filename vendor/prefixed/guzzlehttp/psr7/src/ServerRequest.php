@@ -3,10 +3,10 @@
 namespace SfGuzzle\GuzzleHttp\Psr7;
 
 use InvalidArgumentException;
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\StreamInterface;
-use Psr\Http\Message\UploadedFileInterface;
-use Psr\Http\Message\UriInterface;
+use SfPsr\Psr\Http\Message\ServerRequestInterface;
+use SfPsr\Psr\Http\Message\StreamInterface;
+use SfPsr\Psr\Http\Message\UploadedFileInterface;
+use SfPsr\Psr\Http\Message\UriInterface;
 
 /**
  * Server-side HTTP request

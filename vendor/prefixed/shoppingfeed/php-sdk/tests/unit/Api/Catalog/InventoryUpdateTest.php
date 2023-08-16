@@ -2,7 +2,7 @@
 namespace ShoppingFeed\Sdk\Test\Api\Catalog;
 
 use PHPUnit\Framework\TestCase;
-use Psr\Http\Message\RequestInterface;
+use SfPsr\Psr\Http\Message\RequestInterface;
 use ShoppingFeed\Sdk;
 
 class InventoryUpdateTest extends TestCase

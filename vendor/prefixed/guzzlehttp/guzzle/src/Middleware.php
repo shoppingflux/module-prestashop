@@ -5,8 +5,8 @@ use SfGuzzle\GuzzleHttp\Cookie\CookieJarInterface;
 use SfGuzzle\GuzzleHttp\Exception\RequestException;
 use SfGuzzle\GuzzleHttp\Promise\RejectedPromise;
 use SfGuzzle\GuzzleHttp\Psr7;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Log\LoggerInterface;
+use SfPsr\Psr\Http\Message\ResponseInterface;
+use SfPsr\Psr\Log\LoggerInterface;
 
 /**
  * Functions used to create and wrap handlers with handler middleware.
@@ -182,7 +182,7 @@ final class Middleware
      *
      * @return callable Returns a function that accepts the next handler.
      */
-    public static function log(LoggerInterface $logger, MessageFormatter $formatter, $logLevel = 'info' /* \Psr\Log\LogLevel::INFO */)
+    public static function log(LoggerInterface $logger, MessageFormatter $formatter, $logLevel = 'info' /* \SfPsr\Psr\Log\LogLevel::INFO */)
     {
         return function (callable $handler) use ($logger, $formatter, $logLevel) {
             return function ($request, array $options) use ($handler, $logger, $formatter, $logLevel) {

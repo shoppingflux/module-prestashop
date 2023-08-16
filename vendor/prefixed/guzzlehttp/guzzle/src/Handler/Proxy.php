@@ -2,7 +2,7 @@
 namespace SfGuzzle\GuzzleHttp\Handler;
 
 use SfGuzzle\GuzzleHttp\RequestOptions;
-use Psr\Http\Message\RequestInterface;
+use SfPsr\Psr\Http\Message\RequestInterface;
 
 /**
  * Provides basic proxies for handlers.

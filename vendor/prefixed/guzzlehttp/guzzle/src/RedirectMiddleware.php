@@ -5,9 +5,9 @@ use SfGuzzle\GuzzleHttp\Exception\BadResponseException;
 use SfGuzzle\GuzzleHttp\Exception\TooManyRedirectsException;
 use SfGuzzle\GuzzleHttp\Promise\PromiseInterface;
 use SfGuzzle\GuzzleHttp\Psr7;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\UriInterface;
+use SfPsr\Psr\Http\Message\RequestInterface;
+use SfPsr\Psr\Http\Message\ResponseInterface;
+use SfPsr\Psr\Http\Message\UriInterface;
 
 /**
  * Request redirect middleware.

@@ -2,8 +2,8 @@
 namespace ShoppingFeed\Sdk\Test\Http\Middleware;
 
 use PHPUnit\Framework\TestCase;
-use Psr\Http\Message;
-use Psr\Log\LoggerInterface;
+use SfPsr\Psr\Http\Message;
+use SfPsr\Psr\Log\LoggerInterface;
 use ShoppingFeed\Sdk\Http\Middleware\RateLimitHandler;
 
 class RateLimitHandlerTest extends TestCase

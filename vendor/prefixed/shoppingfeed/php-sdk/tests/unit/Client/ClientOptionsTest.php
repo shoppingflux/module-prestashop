@@ -2,7 +2,7 @@
 namespace ShoppingFeed\Sdk\Test\Client;
 
 use PHPUnit\Framework\TestCase;
-use Psr\Log\LoggerInterface;
+use SfPsr\Psr\Log\LoggerInterface;
 use ShoppingFeed\Sdk\Client\Client;
 use ShoppingFeed\Sdk\Client\ClientOptions;
 

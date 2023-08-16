@@ -1,7 +1,7 @@
 <?php
 namespace SfGuzzle\GuzzleHttp\Handler;
 
-use Psr\Http\Message\RequestInterface;
+use SfPsr\Psr\Http\Message\RequestInterface;
 
 interface CurlFactoryInterface
 {

@@ -1,8 +1,8 @@
 <?php
 namespace ShoppingFeed\Sdk\Http\Middleware;
 
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
+use SfPsr\Psr\Http\Message\RequestInterface;
+use SfPsr\Psr\Http\Message\ResponseInterface;
 
 class ServerErrorHandler
 {

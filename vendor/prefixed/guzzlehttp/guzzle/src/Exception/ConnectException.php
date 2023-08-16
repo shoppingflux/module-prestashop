@@ -1,7 +1,7 @@
 <?php
 namespace SfGuzzle\GuzzleHttp\Exception;
 
-use Psr\Http\Message\RequestInterface;
+use SfPsr\Psr\Http\Message\RequestInterface;
 
 /**
  * Exception thrown when a connection cannot be established.

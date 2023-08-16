@@ -4,7 +4,7 @@ namespace SfGuzzle\GuzzleHttp;
 use SfGuzzle\GuzzleHttp\Promise\EachPromise;
 use SfGuzzle\GuzzleHttp\Promise\PromiseInterface;
 use SfGuzzle\GuzzleHttp\Promise\PromisorInterface;
-use Psr\Http\Message\RequestInterface;
+use SfPsr\Psr\Http\Message\RequestInterface;
 
 /**
  * Sends an iterator of requests concurrently using a capped pool size.

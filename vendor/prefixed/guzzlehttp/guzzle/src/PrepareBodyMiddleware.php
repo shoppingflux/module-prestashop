@@ -3,7 +3,7 @@ namespace SfGuzzle\GuzzleHttp;
 
 use SfGuzzle\GuzzleHttp\Promise\PromiseInterface;
 use SfGuzzle\GuzzleHttp\Psr7;
-use Psr\Http\Message\RequestInterface;
+use SfPsr\Psr\Http\Message\RequestInterface;
 
 /**
  * Prepares requests that contain a body, adding the Content-Length,

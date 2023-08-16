@@ -2,10 +2,10 @@
 
 namespace SfGuzzle\GuzzleHttp\Psr7;
 
-use Psr\Http\Message\MessageInterface;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\StreamInterface;
-use Psr\Http\Message\UriInterface;
+use SfPsr\Psr\Http\Message\MessageInterface;
+use SfPsr\Psr\Http\Message\RequestInterface;
+use SfPsr\Psr\Http\Message\StreamInterface;
+use SfPsr\Psr\Http\Message\UriInterface;
 
 /**
  * Returns the string representation of an HTTP message.
@@ -49,7 +49,7 @@ function uri_for($uri)
  * - size: Size of the stream.
  *
  * This method accepts the following `$resource` types:
- * - `Psr\Http\Message\StreamInterface`: Returns the value as-is.
+ * - `SfPsr\Psr\Http\Message\StreamInterface`: Returns the value as-is.
  * - `string`: Creates a stream object that uses the given string as the contents.
  * - `resource`: Creates a stream object that wraps the given PHP stream resource.
  * - `Iterator`: If the provided value implements `Iterator`, then a read-only

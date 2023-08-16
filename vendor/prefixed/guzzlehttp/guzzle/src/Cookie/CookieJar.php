@@ -1,8 +1,8 @@
 <?php
 namespace SfGuzzle\GuzzleHttp\Cookie;
 
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
+use SfPsr\Psr\Http\Message\RequestInterface;
+use SfPsr\Psr\Http\Message\ResponseInterface;
 
 /**
  * Cookie jar that stores cookies as an array

@@ -5,9 +5,9 @@ use SfGuzzle\GuzzleHttp\Cookie\CookieJar;
 use SfGuzzle\GuzzleHttp\Exception\GuzzleException;
 use SfGuzzle\GuzzleHttp\Promise;
 use SfGuzzle\GuzzleHttp\Psr7;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\UriInterface;
+use SfPsr\Psr\Http\Message\RequestInterface;
+use SfPsr\Psr\Http\Message\ResponseInterface;
+use SfPsr\Psr\Http\Message\UriInterface;
 
 /**
  * @method ResponseInterface get(string|UriInterface $uri, array $options = [])

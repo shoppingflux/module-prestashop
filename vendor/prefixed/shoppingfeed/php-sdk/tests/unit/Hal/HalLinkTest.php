@@ -3,8 +3,8 @@ namespace ShoppingFeed\Sdk\Test\Hal;
 
 use SfGuzzle\GuzzleHttp\Exception\RequestException;
 use PHPUnit\Framework\TestCase;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
+use SfPsr\Psr\Http\Message\RequestInterface;
+use SfPsr\Psr\Http\Message\ResponseInterface;
 use ShoppingFeed\Sdk\Hal\HalClient;
 use ShoppingFeed\Sdk\Hal\HalLink;
 use ShoppingFeed\Sdk\Hal\HalResource;
