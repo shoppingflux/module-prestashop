@@ -1,7 +1,7 @@
 <?php
 namespace SfGuzzle\GuzzleHttp\Exception;
 
-use Psr\Http\Message\StreamInterface;
+use SfPsr\Psr\Http\Message\StreamInterface;
 
 /**
  * Exception thrown when a seek fails on a stream.

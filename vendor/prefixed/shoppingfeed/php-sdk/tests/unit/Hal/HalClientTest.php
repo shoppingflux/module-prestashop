@@ -2,7 +2,7 @@
 namespace ShoppingFeed\Sdk\Test\Hal;
 
 use PHPUnit\Framework\TestCase;
-use Psr\Http\Message;
+use SfPsr\Psr\Http\Message;
 use ShoppingFeed\Sdk\Hal;
 use ShoppingFeed\Sdk\Hal\HalResource;
 use ShoppingFeed\Sdk\Http;

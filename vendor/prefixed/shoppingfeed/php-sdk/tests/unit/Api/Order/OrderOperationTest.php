@@ -3,8 +3,8 @@ namespace ShoppingFeed\Sdk\Test\Api\Order;
 
 use SfGuzzle\GuzzleHttp\Psr7;
 use PHPUnit\Framework\TestCase;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\UriInterface;
+use SfPsr\Psr\Http\Message\RequestInterface;
+use SfPsr\Psr\Http\Message\UriInterface;
 use ShoppingFeed\Sdk;
 
 class OrderOperationTest extends TestCase

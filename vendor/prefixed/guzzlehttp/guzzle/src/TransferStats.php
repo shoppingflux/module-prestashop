@@ -1,9 +1,9 @@
 <?php
 namespace SfGuzzle\GuzzleHttp;
 
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\UriInterface;
+use SfPsr\Psr\Http\Message\RequestInterface;
+use SfPsr\Psr\Http\Message\ResponseInterface;
+use SfPsr\Psr\Http\Message\UriInterface;
 
 /**
  * Represents data at the point after it was transferred either successfully

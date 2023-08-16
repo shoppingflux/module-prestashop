@@ -1368,7 +1368,11 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         }
 
         $additionalFields = json_decode($sfOrder->additionalFields, true);
-
+        // reset assigned variable in case of mass pdf export
+        $this->context->smarty->assign([
+            'id_customer' => '',
+            'order_id' => '',
+        ]);
         if (false === empty($additionalFields['customer_number'])) {
             $this->context->smarty->assign([
                 'id_customer' => $additionalFields['customer_number'],

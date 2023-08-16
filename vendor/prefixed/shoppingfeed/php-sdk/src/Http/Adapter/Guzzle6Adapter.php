@@ -2,7 +2,7 @@
 namespace ShoppingFeed\Sdk\Http\Adapter;
 
 use SfGuzzle\GuzzleHttp;
-use Psr\Http\Message\RequestInterface;
+use SfPsr\Psr\Http\Message\RequestInterface;
 use ShoppingFeed\Sdk\Client;
 use ShoppingFeed\Sdk\Client\ClientOptions;
 use ShoppingFeed\Sdk\Hal\HalClient;
