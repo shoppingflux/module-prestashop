@@ -43,8 +43,11 @@ class SkipTax extends RuleAbstract implements RuleInterface
         );
         $this->logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
 
-        if ((empty($apiOrderAdditionalFields['is_business_order']) === false
-            && $this->configuration['enabled']) === false) {
+        if (
+            ((empty($apiOrderAdditionalFields['is_business_order']) === false || 
+                 preg_match('#^retif#i', $apiOrder->getChannel()->getName()) === true)
+            && $this->configuration['enabled']) === false
+        ) {
             return false;
         }
 
