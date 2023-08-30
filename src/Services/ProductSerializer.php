@@ -405,8 +405,8 @@ class ProductSerializer
                 ],
                 'attributes' => [
                     'hierararchy' => 'child',
+                    'min_quantity_for_sale' => $combination['minimal_quantity'],
                 ],
-                'min_quantity_for_sale' => $combination['minimal_quantity'],
             ];
 
             if (empty($combination['ean13']) === false) {
