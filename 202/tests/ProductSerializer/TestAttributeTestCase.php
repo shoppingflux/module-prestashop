@@ -52,7 +52,6 @@ class TestAttributeTestCase extends TestCase
         $productContent = json_decode($product['content'], true);
         $this->assertIsArray($productContent);
 
-        $this->assertEquals($productContent['min_quantity_for_sale'], 1);
         $this->assertEquals($productContent['price'], 28.68);
         $this->assertEquals($productContent['category']['name'], 'Root > Home > Clothes > Men');
         $this->assertEquals($productContent['brand']['name'], 'Studio Design');
@@ -67,6 +66,7 @@ class TestAttributeTestCase extends TestCase
         $this->assertEquals($productContent['attributes']['hierararchy'], 'parent');
         $this->assertEquals($productContent['attributes']['mpn'], 'demo_1');
         $this->assertEquals($productContent['attributes']['supplier'], 'Fashion supplier');
+        $this->assertEquals($productContent['attributes']['min_quantity_for_sale'], 1);
         $this->assertIsString($productContent['attributes']['supplier_link']);
         $this->assertIsArray($productContent['images']);
         $this->assertEquals($productContent['attributes']['Composition'], 'Cotton');
