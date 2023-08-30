@@ -52,6 +52,7 @@ class TestAttributeTestCase extends TestCase
         $productContent = json_decode($product['content'], true);
         $this->assertIsArray($productContent);
 
+        $this->assertEquals($productContent['min_quantity_for_sale'], 1);
         $this->assertEquals($productContent['price'], 28.68);
         $this->assertEquals($productContent['category']['name'], 'Root > Home > Clothes > Men');
         $this->assertEquals($productContent['brand']['name'], 'Studio Design');
@@ -78,6 +79,7 @@ class TestAttributeTestCase extends TestCase
         $this->assertEquals($productContent['variations'][1]['attributes']['Colorhexa'], '#ffffff');
         $this->assertEquals($productContent['variations'][1]['attributes']['Size'], 'S');
         $this->assertEquals($productContent['variations'][1]['attributes']['Color'], 'White');
+        $this->assertEquals($productContent['variations'][1]['min_quantity_for_sale'], 1);
     }
 
     public function testPrelodingTablePrice()

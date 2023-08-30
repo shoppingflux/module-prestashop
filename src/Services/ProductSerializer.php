@@ -110,6 +110,7 @@ class ProductSerializer
             'images' => $this->getImages(),
             'attributes' => $this->getAttributes(),
             'variations' => $this->getVariations($carrier, $productLink),
+            'min_quantity_for_sale' => $this->product->minimal_quantity,
         ];
         if (empty($this->product->weight) === false && $this->product->weight != 0) {
             $content['weight'] = $this->product->weight;
@@ -405,6 +406,7 @@ class ProductSerializer
                 'attributes' => [
                     'hierararchy' => 'child',
                 ],
+                'min_quantity_for_sale' => $combination['minimal_quantity'],
             ];
 
             if (empty($combination['ean13']) === false) {
