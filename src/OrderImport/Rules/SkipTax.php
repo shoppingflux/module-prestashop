@@ -45,7 +45,7 @@ class SkipTax extends RuleAbstract implements RuleInterface
 
         if (
             ((empty($apiOrderAdditionalFields['is_business_order']) === false ||
-                 preg_match('#^retif#i', $apiOrder->getChannel()->getName()) === true)
+                 preg_match('#^retif#i', $apiOrder->getChannel()->getName()) === 1)
             && $this->configuration['enabled']) === false
         ) {
             return false;
