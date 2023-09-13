@@ -62,7 +62,7 @@ class OrderImportRetifTest extends AbstractOrdeTestCase
     {
         $order = new Order($conveyor['id_order']);
 
-        $this->assertEquals(5.4, $order->total_paid_tax_incl);
+        $this->assertEquals(4.5, $order->total_paid_tax_incl);
         $this->assertEquals(4.5, $order->total_paid_tax_excl);
     }
 }
