@@ -405,15 +405,15 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
         $thirtyDaysAgo = (new DateTime())->sub(new DateInterval('P30D'));
 
         foreach ($list_id_shops as $id_shop) {
-            if (new DateTime($sinceDate->get(null, $id_shop)) < $thirtyDaysAgo) {
+            if (new DateTime($sinceDate->get(SinceDate::DATE_FORMAT_PS, $id_shop)) < $thirtyDaysAgo) {
                 $sinceDate->set($thirtyDaysAgo, $id_shop);
             }
 
-            if (new DateTime($sinceDate->getForShipped(null, $id_shop)) < $thirtyDaysAgo) {
+            if (new DateTime($sinceDate->getForShipped(SinceDate::DATE_FORMAT_PS, $id_shop)) < $thirtyDaysAgo) {
                 $sinceDate->setForShipped($thirtyDaysAgo, $id_shop);
             }
 
-            if (new DateTime($sinceDate->getForShippedByMarketplace(null, $id_shop)) < $thirtyDaysAgo) {
+            if (new DateTime($sinceDate->getForShippedByMarketplace(SinceDate::DATE_FORMAT_PS, $id_shop)) < $thirtyDaysAgo) {
                 $sinceDate->setForShippedByMarketplace($thirtyDaysAgo, $id_shop);
             }
         }
