@@ -40,7 +40,7 @@ class TestingOrder extends RuleAbstract implements RuleInterface
         // There's no check on the carrier name in the old module, so we won't
         // do it here either
         $orderRawData = $apiOrder->toArray();
-        if ($orderRawData['isTest']) {
+        if ($orderRawData['isTest'] && ((int) $this->configuration['order_status_after_test_order'])) {
             return true;
         }
 
@@ -118,6 +118,38 @@ class TestingOrder extends RuleAbstract implements RuleInterface
      */
     public function getDescription()
     {
-        return $this->l('Set order to CANCELED after the process.', 'TestingOrder');
+        return $this->l('After a successfull test import, turn this order into "Canceled" status', 'TestingOrder');
+    }
+
+    public function getConfigurationSubform()
+    {
+        $context = \Context::getContext();
+
+        $states[] = [
+            'type' => 'switch',
+            'label' => $this->l('After a successfull test import, turn this order into "Canceled" status', 'TestingOrder'),
+            'name' => 'order_status_after_test_order',
+            'required' => false,
+            'is_bool' => true,
+            'values' => [
+                [
+                    'id' => 'ok',
+                    'value' => 1,
+                ],
+                [
+                    'id' => 'ko',
+                    'value' => 0,
+                ],
+            ],
+        ];
+
+        return $states;
+    }
+
+    protected function getDefaultConfiguration()
+    {
+        return [
+            'order_status_after_test_order' => 1,
+        ];
     }
 }

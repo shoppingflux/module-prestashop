@@ -39,6 +39,22 @@ class OrderRulesTestingTest extends AbstractOrdeTestCase
         $this->assertTrue($rules->isApplicable($apiOrder));
     }
 
+    public function testOrderStatusChange(): void
+    {
+        $apiOrder = $this->getOrderRessourceFromDataset('order-amazon.json');
+
+        $rules = new TestingOrder(['order_status_after_test_order' => 1]);
+        $this->assertTrue($rules->isApplicable($apiOrder));
+    }
+
+    public function testOrderStatusRemainsSame(): void
+    {
+        $apiOrder = $this->getOrderRessourceFromDataset('order-amazon.json');
+
+        $rules = new TestingOrder(['order_status_after_test_order' => 0]);
+        $this->assertFalse($rules->isApplicable($apiOrder));
+    }
+
     /**
      * Test to import a standard order
      *

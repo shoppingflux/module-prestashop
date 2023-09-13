@@ -414,6 +414,7 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
             }
 
             if (new DateTime($sinceDate->getForShippedByMarketplace(SinceDate::DATE_FORMAT_PS, $id_shop)) < $thirtyDaysAgo) {
+
                 $sinceDate->setForShippedByMarketplace($thirtyDaysAgo, $id_shop);
             }
         }
