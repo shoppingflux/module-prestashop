@@ -314,6 +314,7 @@ class ProductSerializer
             'ecotax' => $this->product->ecotax * (1 + ($this->product->tax_rate / 100)),
             'vat' => $this->product->tax_rate,
             'on_sale' => (int) $this->product->on_sale,
+            'min_quantity_for_sale' => $this->product->minimal_quantity,
             'hierararchy' => 'parent',
         ];
         if (empty($this->product->meta_title) === false) {
@@ -404,6 +405,7 @@ class ProductSerializer
                 ],
                 'attributes' => [
                     'hierararchy' => 'child',
+                    'min_quantity_for_sale' => $combination['minimal_quantity'],
                 ],
             ];
 
