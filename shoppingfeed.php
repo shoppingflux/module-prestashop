@@ -16,9 +16,6 @@
  * @copyright Since 2019 Shopping Feed
  * @license   https://opensource.org/licenses/AFL-3.0  Academic Free License (AFL 3.0)
  */
-
-use ShoppingfeedAddon\Services\SfTools;
-
 if (!defined('_PS_VERSION_')) {
     exit;
 }
@@ -37,6 +34,7 @@ require_once _PS_MODULE_DIR_ . 'shoppingfeed/vendor/autoload.php';
 // use ShoppingfeedAddon\Hook\HookDispatcher;
 // use ShoppingfeedAddon\ProductFilter\FilterFactory;
 // use ShoppingfeedAddon\Services\OrderTracker;
+// use ShoppingfeedAddon\Services\SfTools;
 
 /**
  * The base module class
@@ -307,7 +305,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         $this->ps_versions_compliancy = ['min' => '1.6', 'max' => '8.99.99'];
         $this->need_instance = false;
         $this->bootstrap = true;
-        $this->tools = new SfTools();
+        $this->tools = new \ShoppingfeedAddon\Services\SfTools();
 
         parent::__construct();
 
