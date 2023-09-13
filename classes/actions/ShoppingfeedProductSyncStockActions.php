@@ -145,7 +145,7 @@ class ShoppingfeedProductSyncStockActions extends ShoppingfeedProductSyncActions
                 ProcessLoggerHandler::logInfo(
                     sprintf(
                         static::getLogPrefix($this->conveyor['id_token']) . ' ' .
-                            $this->l('%s not in Shopping Feed catalog - qty: %s', 'ShoppingfeedProductSyncStockActions'),
+                            $this->l('%s not referenced in the Shopping Feed catalog or unmodified Shopping Feed stock - qty: %s', 'ShoppingfeedProductSyncStockActions'),
                         $data['reference'],
                         $data['quantity']
                     ),

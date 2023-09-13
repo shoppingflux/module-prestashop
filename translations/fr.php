@@ -216,6 +216,7 @@ $_MODULE['<{shoppingfeed}prestashop>testingorder_4ad367ed9d85670d0aee2e5d8feb114
 $_MODULE['<{shoppingfeed}prestashop>testingorder_eba2574749f45707a84aa0c6264d7207'] = 'Règle déclenchée. Configuration du statut de commande sur ANNULÉ.';
 $_MODULE['<{shoppingfeed}prestashop>testingorder_7523b11cd5b28c4360a2dd5b108245ae'] = 'Si la commande est un test';
 $_MODULE['<{shoppingfeed}prestashop>testingorder_7c5a72dfd28d60e1195279cf5c443d31'] = 'Régler la commande à ANNULEE après l\'import.';
+$_MODULE['<{shoppingfeed}prestashop>testingorder_ab48a2c29aa6f9bdd94c52ba6a4371e8'] = "Après l'import d'une commande de test, passer la commande au statut 'Annulé'";
 $_MODULE['<{shoppingfeed}prestashop>galerieslafayettecolissimo_0cc1e925b5703e8da52b7c3e91829499'] = '[Commande %s]';
 $_MODULE['<{shoppingfeed}prestashop>galerieslafayettecolissimo_43b6ade8fd758b0597ad2f31c9cd1b41'] = 'Règle déclenchée.';
 $_MODULE['<{shoppingfeed}prestashop>galerieslafayettecolissimo_44ec55560c396c0155f033420a501498'] = 'Si la commande provient de Galeries Lafayette et n\'a pas le champs \"other\" ou \"relayID\" vide.';
@@ -624,7 +625,7 @@ $_MODULE['<{shoppingfeed}prestashop>shoppingfeedproductsyncpreloadingactions_c25
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedproductsyncstockactions_4930df58c29fc86597530234bec3d755'] = 'Impossible de joindre l\'API Shopping Feed.';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedproductsyncstockactions_91a52bd73ffd6131082b73af846e6ecd'] = 'Impossible de trouver un produit avec la référence ';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedproductsyncstockactions_a801d70330993ebbd73da8a839c41b47'] = 'Mise à jour du produit %s quantité : %s';
-$_MODULE['<{shoppingfeed}prestashop>shoppingfeedproductsyncstockactions_59b4172bec9ed00538763238770c907b'] = '%s non référencé dans le catalogue Shopping Feed - quantité : %s';
+$_MODULE['<{shoppingfeed}prestashop>shoppingfeedproductsyncstockactions_ad54f1ab77c3bc3b7763e0465bc067e1'] = '%s non référencé dans le catalogue Shoppingfeed ou stock inchangé sur Shoppingfeed - qté: %s';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedproductsyncpriceactions_4930df58c29fc86597530234bec3d755'] = 'Impossible de joindre l\'API Shopping Feed.';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedproductsyncpriceactions_73c1f14a52d64e32c681f6bc2b587189'] = 'Mise à jour du produit %s prix : %s';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedproductsyncpriceactions_88f3784c2963bc004558697d67f77e1d'] = '%s non référencé dans le catalogue Shopping Feed - prix : %s';

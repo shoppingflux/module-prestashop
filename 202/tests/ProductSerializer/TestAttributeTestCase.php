@@ -66,6 +66,7 @@ class TestAttributeTestCase extends TestCase
         $this->assertEquals($productContent['attributes']['hierararchy'], 'parent');
         $this->assertEquals($productContent['attributes']['mpn'], 'demo_1');
         $this->assertEquals($productContent['attributes']['supplier'], 'Fashion supplier');
+        $this->assertEquals($productContent['attributes']['min_quantity_for_sale'], 1);
         $this->assertIsString($productContent['attributes']['supplier_link']);
         $this->assertIsArray($productContent['images']);
         $this->assertEquals($productContent['attributes']['Composition'], 'Cotton');
@@ -78,6 +79,7 @@ class TestAttributeTestCase extends TestCase
         $this->assertEquals($productContent['variations'][1]['attributes']['Colorhexa'], '#ffffff');
         $this->assertEquals($productContent['variations'][1]['attributes']['Size'], 'S');
         $this->assertEquals($productContent['variations'][1]['attributes']['Color'], 'White');
+        $this->assertEquals($productContent['variations'][1]['attributes']['min_quantity_for_sale'], 1);
     }
 
     public function testPrelodingTablePrice()

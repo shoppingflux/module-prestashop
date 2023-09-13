@@ -23,6 +23,7 @@ if (!defined('_PS_VERSION_')) {
 require_once _PS_MODULE_DIR_ . 'shoppingfeed/vendor/autoload.php';
 
 use ShoppingfeedAddon\Actions\ActionsHandler as SfActionsHandler;
+use ShoppingfeedAddon\OrderImport\SinceDate;
 use ShoppingfeedClasslib\Actions\ActionsHandler;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 use ShoppingfeedClasslib\Registry;
@@ -265,8 +266,12 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
         $sft = new ShoppingfeedToken();
         $tokens = $sft->findAllActive();
         $result = [];
+        $list_id_shops = [];
         foreach ($tokens as $token) {
             $id_shop = (int) $token['id_shop'];
+            if (in_array($id_shop, $list_id_shops) === false) {
+                $list_id_shops[] = $id_shop;
+            }
 
             // If order import is not available
             if (!Shoppingfeed::isOrderImportAvailable($id_shop)) {
@@ -380,6 +385,7 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
                 }
             }
         }
+        $this->setOrderImportSinceDate($list_id_shops);
 
         ProcessLoggerHandler::logSuccess(
             sprintf(
@@ -391,5 +397,25 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
             $this->processMonitor->getProcessObjectModelName(),
             $this->processMonitor->getProcessObjectModelId()
         );
+    }
+
+    protected function setOrderImportSinceDate($list_id_shops)
+    {
+        $sinceDate = new SinceDate();
+        $thirtyDaysAgo = (new DateTime())->sub(new DateInterval('P30D'));
+
+        foreach ($list_id_shops as $id_shop) {
+            if (new DateTime($sinceDate->get(SinceDate::DATE_FORMAT_PS, $id_shop)) < $thirtyDaysAgo) {
+                $sinceDate->set($thirtyDaysAgo, $id_shop);
+            }
+
+            if (new DateTime($sinceDate->getForShipped(SinceDate::DATE_FORMAT_PS, $id_shop)) < $thirtyDaysAgo) {
+                $sinceDate->setForShipped($thirtyDaysAgo, $id_shop);
+            }
+
+            if (new DateTime($sinceDate->getForShippedByMarketplace(SinceDate::DATE_FORMAT_PS, $id_shop)) < $thirtyDaysAgo) {
+                $sinceDate->setForShippedByMarketplace($thirtyDaysAgo, $id_shop);
+            }
+        }
     }
 }
