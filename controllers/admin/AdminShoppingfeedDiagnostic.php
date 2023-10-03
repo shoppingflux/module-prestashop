@@ -35,9 +35,20 @@ class AdminShoppingfeedDiagnosticController extends AdminDiagnosticController
             $this->module->getPathUri() . 'views/css/shoppingfeed_configuration/form.css',
             $this->module->getPathUri() . 'views/css/font-awesome.min.css',
         ]);
-        $this->content = $this->welcomeForm();
+
+        $this->content = $this->compatibiltyPrestashop();
+        $this->content .= $this->welcomeForm();
 
         parent::initContent();
+    }
+
+    public function compatibiltyPrestashop()
+    {
+        if (version_compare(phpversion(), '7.1', '<') || version_compare(_PS_VERSION_, '1.7.6', '<')) {
+            return $this->context->smarty->fetch(_PS_MODULE_DIR_ . 'shoppingfeed/views/templates/admin/shoppingfeed_compatibility/diagnostic.tpl');
+        }
+
+        return '';
     }
 
     public function welcomeForm()
