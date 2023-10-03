@@ -23,7 +23,7 @@
     },
     "additionalFields":{
        "env":"default",
-       "fiscalnb":"38191140300065",
+       "billing_fiscal_number":"38191140300065",
        "order_status":"3"
     },
     "errors":[
