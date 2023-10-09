@@ -1440,10 +1440,10 @@ class ShoppingfeedOrderImportActions extends DefaultActions
 
     protected function checkQtyProduct($id_product, $id_product_attribute, $qty)
     {
-        if (Product::isAvailableWhenOutOfStock(StockAvailable::outOfStock($id_product))) {
+        if (Product::isAvailableWhenOutOfStock(StockAvailable::outOfStock($id_product, $this->getIdShop()))) {
             return true;
         }
-        $availableQuantity = StockAvailable::getQuantityAvailableByProduct($id_product, $id_product_attribute);
+        $availableQuantity = StockAvailable::getQuantityAvailableByProduct($id_product, $id_product_attribute, $this->getIdShop());
 
         return $qty <= $availableQuantity;
     }
