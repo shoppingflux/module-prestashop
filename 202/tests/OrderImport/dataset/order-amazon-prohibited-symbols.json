@@ -24,8 +24,8 @@
    "acknowledgedAt":null,
    "additionalFields":null,
    "billingAddress":{
-       "firstName":"John+\/_+!@#$%^&?",
-       "lastName":" Martin+/_+!@#$%^&?",
+       "firstName":"John+\/_.+!@#$%^&?",
+       "lastName":" Martin+/_.+!@#$%^&?",
        "company":"202 ecommerce",
        "street":"10 rue Vivienne",
        "street2":"",
