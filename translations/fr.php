@@ -704,3 +704,7 @@ $_MODULE['<{shoppingfeed}prestashop>shoppingfeedproductsyncactions_3aab7c78f5902
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedproductsyncactions_5ddd4edf83584480ff1bd170fd0e45cf'] = 'Produit %s non enregistré pour synchronisation; aucune Action trouvée';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedproductsyncactions_bad55bce65539f218fb53a038f2a3083'] = 'Impossible de récupérer le lot à synchroniser; aucune Action trouvée';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedproductsyncactions_aa9800bc9533a049e2c71cf7cad950e7'] = 'Rien à synchroniser.';
+$_MODULE['<{shoppingfeed}prestashop>message_81e7092f5ac6c2d77e236d7256ccc484'] = "La release 2.0.0 du module Shopping Feed n'est compatible qu'avec les configurations suivantes :";
+$_MODULE['<{shoppingfeed}prestashop>message_394b63847ed0c29f3b40f457a137c47f'] = 'PrestaShop 1.7.6 et supérieur.';
+$_MODULE['<{shoppingfeed}prestashop>message_0002a739c8473ae94b9ad3c43e1e1c75'] = 'PHP 7.1 et supérieur.';
+$_MODULE['<{shoppingfeed}prestashop>message_8cb6571c2e49747935c3f090f7403421'] = "Au vu de votre environnement actuel, l'installation du module Shopping feed 2.0.0 et supérieur n'est pas possible.";
