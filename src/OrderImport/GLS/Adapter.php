@@ -19,7 +19,6 @@
 
 namespace ShoppingfeedAddon\OrderImport\GLS;
 
-use Exception;
 use Module;
 use Validate;
 
