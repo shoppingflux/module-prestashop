@@ -44,7 +44,7 @@ class Adapter implements AdapterInterface
             return;
         }
 
-        if (version_compare($glsModule->version, '3.0.0') < 0) {
+        if (version_compare($glsModule->version, '3.0.8') < 0) {
             if (false == class_exists(\Nukium\GLS\Legacy\GlsController::class)) {
                 throw new Exception('GlsController not found');
                 return;
