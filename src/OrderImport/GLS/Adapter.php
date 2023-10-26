@@ -36,21 +36,9 @@ class Adapter implements AdapterInterface
         $glsModule = Module::getInstanceByName('nkmgls');
 
         if (false == Validate::isLoadedObject($glsModule)) {
-            throw new Exception('nkmgls not loaded');
-
             return;
         }
         if (version_compare($glsModule->version, '3.0.0') < 0) {
-            throw new Exception('nkmgls < 3.0.0');
-
-            return;
-        }
-
-        if (false == class_exists(\Nukium\GLS\Common\Legacy\GlsController::class)
-            && false == class_exists(\Nukium\GLS\Legacy\GlsController::class)
-        ) {
-            throw new Exception('GlsController not found');
-
             return;
         }
 
