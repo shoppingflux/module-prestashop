@@ -106,8 +106,8 @@ class AmazonManomanoTva extends RuleAbstract implements RuleInterface
             return $data['additionalFields']['tax_registration_id'];
         }
 
-        if (false == empty($data['additionalFields']['fiscalnb'])) {
-            return $data['additionalFields']['fiscalnb'];
+        if (false == empty($data['additionalFields']['billing_fiscal_number'])) {
+            return $data['additionalFields']['billing_fiscal_number'];
         }
 
         return '';

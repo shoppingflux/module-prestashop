@@ -46,10 +46,12 @@ class AdminShoppingfeedAccountSettingsController extends ShoppingfeedAdminContro
 
         $tokens = new ShoppingfeedToken();
         $listTokens = $tokens->findAll();
+        $this->content = $this->compatibiltyPrestashop();
+
         if (empty($listTokens) === false) {
-            $this->content = $this->welcomeForm();
+            $this->content .= $this->welcomeForm();
         } else {
-            $this->content = $this->registerForm();
+            $this->content .= $this->registerForm();
         }
         $this->content .= $this->renderTokensList();
         $this->content .= $this->renderLoginForm($shops, $currencies, $languagues);
@@ -77,11 +79,20 @@ class AdminShoppingfeedAccountSettingsController extends ShoppingfeedAdminContro
         return $helper->generateForm([['form' => $fields_form]]);
     }
 
+    public function compatibiltyPrestashop()
+    {
+        if (version_compare(phpversion(), '7.1', '<') || version_compare(_PS_VERSION_, '1.7.6', '<')) {
+            return $this->context->smarty->fetch(_PS_MODULE_DIR_ . 'shoppingfeed/views/templates/admin/shoppingfeed_compatibility/account_settings.tpl');
+        }
+
+        return '';
+    }
+
     public function registerForm()
     {
         $fields_form = [
             'legend' => [
-                'title' => $this->module->l('Shoppingfeed Prestashop Plugin (Feed&Order)', 'AdminShoppingfeedAccountSettings'),
+                'title' => $this->module->l('Shoppingfeed PrestaShop Plugin (Feed & Order)', 'AdminShoppingfeedAccountSettings'),
             ],
         ];
 

@@ -144,6 +144,7 @@ class OrderData
             $firstName = Tools::substr($this->billingAddress['firstName'], 0, 32);
             // Numbers are forbidden in firstname / lastname
             $firstName = preg_replace('/\-?\d+/', '', $firstName);
+            $firstName = str_replace('.', '-', $firstName);
             $this->customer->setFirstName($firstName);
         }
 
@@ -151,6 +152,7 @@ class OrderData
             $lastName = Tools::substr($this->billingAddress['lastName'], 0, 32);
             // Numbers are forbidden in firstname / lastname
             $lastName = preg_replace('/\-?\d+/', '', $lastName);
+            $lastName = str_replace('.', '-', $lastName);
             $this->customer->setLastName($lastName);
         }
 

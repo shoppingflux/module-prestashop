@@ -159,13 +159,13 @@ class ProductSerializer
 
                 if (isset($contentUpdate['variations'][$idProductAttribute]['shipping'])) {
                     $weight = @$contentUpdate['variations'][$idProductAttribute]['attributes']['weight'];
-                    $contentUpdate['variations'][$idProductAttribute]['shipping']['amount'] = $this->getShippingCost($carrier, $address, $idProductAttribute);
+                    $contentUpdate['variations'][$idProductAttribute]['shipping']['amount'] = $this->getShippingCost($carrier, $address, $idProductAttribute, $weight);
                 }
             }
         }
 
         $contentUpdate['shipping'] = [
-            'amount' => $this->getShippingCost($carrier, $address, null),
+            'amount' => $this->getShippingCost($carrier, $address, null, null),
             'label' => $carrier->delay[$this->id_lang],
         ];
 
@@ -485,7 +485,7 @@ class ProductSerializer
         return implode(' > ', $categoryTree);
     }
 
-    protected function getShippingCost($carrier, $address, $id_product_attribute)
+    protected function getShippingCost($carrier, $address, $id_product_attribute, $weight = null)
     {
         $cart = new Cart();
         $country = new Country($address->id_country);
@@ -497,7 +497,7 @@ class ProductSerializer
             'id_shop' => $this->id_shop,
             'id_customization' => 0,
             'is_virtual' => $this->product->is_virtual,
-            'weight' => $this->product->weight,
+            'weight' => (empty($weight) ? $this->product->weight : $weight),
             'additional_shipping_cost' => $this->product->additional_shipping_cost,
         ];
 

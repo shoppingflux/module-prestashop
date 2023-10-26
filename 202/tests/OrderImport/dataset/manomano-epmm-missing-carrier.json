@@ -24,7 +24,7 @@
   },
   "additionalFields": {
     "env": "epmm",
-    "fiscalnb": "",
+    "billing_fiscal_number": "",
     "order_status": "3"
   },
   "errors": [],
