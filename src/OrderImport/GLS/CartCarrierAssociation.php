@@ -40,7 +40,11 @@ class CartCarrierAssociation
 
     public function create(Cart $cart, $relayId)
     {
-        $relay_detail = $this->glsAdapter->getRelayDetail($relayId);
+        try {
+            $relay_detail = $this->glsAdapter->getRelayDetail($relayId);
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
+        }
 
         if (empty($relay_detail)) {
             throw new Exception('Data of relay point is missing');
