@@ -92,10 +92,18 @@ class GlsRule extends RuleAbstract implements RuleInterface
         if (empty($cart->id_carrier)) {
             return;
         }
-
         $carrier = new Carrier($cart->id_carrier);
-
         if ($carrier->external_module_name != $this->gls->name) {
+            ProcessLoggerHandler::logError(
+                $this->logPrefix .
+                sprintf(
+                    $this->l('Fail linking GLS pickup point %s to cart %d. GLS carrier no properly set on carrier matching of ShoppingFeed module.', 'GlsRule'),
+                    $this->getRelayId($params['apiOrder']),
+                    (int) $cart->id,
+                ),
+                'Cart',
+                $cart->id
+            );
             return;
         }
 
@@ -104,7 +112,7 @@ class GlsRule extends RuleAbstract implements RuleInterface
         try {
             $result = $cartCarrierAssociation->create($cart, $this->getRelayId($params['apiOrder']));
         } catch (Exception $e) {
-            ProcessLoggerHandler::logInfo(
+            ProcessLoggerHandler::logError(
                 $this->logPrefix .
                 sprintf(
                     $this->l('Fail linking GLS pickup point %s to cart %d. Detail message: %s', 'GlsRule'),
