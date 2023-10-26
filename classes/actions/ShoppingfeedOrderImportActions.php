@@ -739,7 +739,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 $amount_paid,
                 $paymentMethod,
                 null,
-                ['transaction_id' => $apiOrder->getReference()],
+                ['transaction_id' => $transactionId],
                 $cart->id_currency,
                 false,
                 $cart->secure_key,

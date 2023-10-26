@@ -214,8 +214,7 @@ class ShippedByMarketplace extends RuleAbstract implements RuleInterface
             || strcasecmp($apiOrderArray['fulfilledBy'], 'channel') !== 0) {
             return;
         }
-
-        $params['paymentMethod'] = sprintf('fullfilment - [%s]', $apiOrder->getChannel()->getName());
+        $params['paymentMethod'] = 'fullfilment - ' . $apiOrder->getChannel()->getName();
     }
 
     /**
