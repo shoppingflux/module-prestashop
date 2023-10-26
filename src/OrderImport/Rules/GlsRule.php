@@ -104,6 +104,7 @@ class GlsRule extends RuleAbstract implements RuleInterface
                 'Cart',
                 $cart->id
             );
+
             return;
         }
 
