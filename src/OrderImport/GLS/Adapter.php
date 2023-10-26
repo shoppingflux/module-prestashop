@@ -46,22 +46,18 @@ class Adapter implements AdapterInterface
             return;
         }
 
-        if (version_compare($glsModule->version, '3.0.8') < 0) {
-            if (false == class_exists(\Nukium\GLS\Legacy\GlsController::class)) {
-                throw new Exception('GlsController not found');
+        if (false == class_exists(\Nukium\GLS\Common\Legacy\GlsController::class)
+            && false == class_exists(\Nukium\GLS\Legacy\GlsController::class)
+        ) {
+            throw new Exception('GlsController not found');
 
-                return;
-            }
+            return;
+        }
 
+        if (true == class_exists(\Nukium\GLS\Legacy\GlsController::class)) {
             $this->glsModule = $glsModule;
             $this->gls = \Nukium\GLS\Legacy\GlsController::createInstance($this->glsModule->getConfigFormValues());
-        } else {
-            if (false == class_exists(\Nukium\GLS\Common\Legacy\GlsController::class)) {
-                throw new Exception('GlsController not found');
-
-                return;
-            }
-
+        } elseif (true == class_exists(\Nukium\GLS\Common\Legacy\GlsController::class)) {
             $this->glsModule = $glsModule;
             $this->gls = \Nukium\GLS\Common\Legacy\GlsController::createInstance($this->glsModule->getConfigFormValues());
         }
