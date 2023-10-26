@@ -19,9 +19,9 @@
 
 namespace ShoppingfeedAddon\OrderImport\GLS;
 
+use Exception;
 use Module;
 use Validate;
-use Exception;
 
 class Adapter implements AdapterInterface
 {
@@ -65,7 +65,6 @@ class Adapter implements AdapterInterface
             $this->glsModule = $glsModule;
             $this->gls = \Nukium\GLS\Common\Legacy\GlsController::createInstance($this->glsModule->getConfigFormValues());
         }
-        
     }
 
     public function getRelayDetail($relayId)
