@@ -81,7 +81,7 @@ class AdminShoppingfeedAccountSettingsController extends ShoppingfeedAdminContro
     {
         $fields_form = [
             'legend' => [
-                'title' => $this->module->l('Shoppingfeed Prestashop Plugin (Feed&Order)', 'AdminShoppingfeedAccountSettings'),
+                'title' => $this->module->l('Shoppingfeed PrestaShop Plugin (Feed & Order)', 'AdminShoppingfeedAccountSettings'),
             ],
         ];
 

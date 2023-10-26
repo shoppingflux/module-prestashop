@@ -26,27 +26,27 @@
 {block name="legend" append}
    <div class="form-group welcome_shoppingfeed">
        <div class="col-lg-6 logo_shoppingfeed">
-           <img class="mb-0" id="" src="{$img_path|escape:'htmlall':'UTF-8'}ad.png"/>
+           <img class="mb-0" id="" src="{$img_path|escape:'htmlall':'UTF-8'}picture_prestashop_module.png"/>
        </div>
        <div class="col-lg-6 desc_shoppingfeed">
-        <h2><b>{l s='Shopping Feed exports your products to the largest marketplaces in the world, all from a single intuitive platform.' mod='shoppingfeed'}</b>
-        {l s='Through our free setup and expert support, we help thousands of storefronts increase their sales and visibility.' mod='shoppingfeed'}</h2>
-           <p class="text-center">
-        <a class="btn btn-success btn-lg" target="_blank" href="https://register.shopping-feed.com/sign/prestashop?phone={$phone|urlencode}&email={$email|urlencode}&feed={$link->getModuleLink('shoppingfeed', 'product')|escape:'html'|urlencode}?token={$shoppingfeed_token|urlencode}&lang={$lang|urlencode}" value="{l s='Send' mod='shoppingfeed'}">{l s='Register Now!' mod='shoppingfeed'}</a>
-           </p>
-        <br/>
-        <b>{l s='Put your feeds to work:' mod='shoppingfeed'} </b>{l s='A single platform to manage your products and sales on the world\'s marketplaces.' mod='shoppingfeed'}<br />
-        <b>{l s='Set it and forget it:' mod='shoppingfeed'} </b>{l s='Automated order processes for each marketplace channel you sell on, quadrupling your revenue, and not your workload.' mod='shoppingfeed'}<br />
-        <b>{l s='Try Before You Buy:' mod='shoppingfeed'} </b> {l s='Expert Channel Setup is always free on Shopping Feed, giving you risk-free access to your brand new channel before becoming a member.' mod='shoppingfeed'} <br />
-        <br/>
-        <ol style="line-height:2em; list-style-type:circle; padding: 0 0 0 20px">
-        <li>{l s='Optimize your channels, and calculate realtime Return On Investment for all the leading comparison shopping engines like Google Shopping, Ratuken, shopping.com, NextTag, ShopZilla and more.' mod='shoppingfeed'}</li>
-        <li>{l s='Connect your storefront to all the major marketplaces like eBay, Amazon, Sears and 11 Main, while managing your pricing, inventory, and merchandising through a single, intuitive platform.' mod='shoppingfeed'}</li>
-        <li>{l s='Prepare for an evolving ecosystem: New features, tools, and integrations are being created every month, at no extra cost.' mod='shoppingfeed'}</li>
-        <li>{l s='Be seen: With over 50 different marketplaces and shopping engines under one roof, Shopping Feed helps you find your right audience.' mod='shoppingfeed'}</li>
-        </ol><br/>
-        {l s='With over 1400 Members worldwide, helping them achieve over $13 Million in monthly revenue,'}<b>
-        {l s='Lets us help you put your feeds to work.' mod='shoppingfeed'}</b>
+            {l s='With Shoppingfeed, you can finally export your products to your favorite marketing channels and marketplaces.' mod='shoppingfeed'}  <br/>
+            {l s='With our guidance included from setup and our expert support, we help thousands of brands, retailers, and pure-players increase their sales.' mod='shoppingfeed'}  <br/>
+            <br/>
+            {l s='Simplify your daily routine: a single platform to manage the distribution of your products worldwide.' mod='shoppingfeed'}  <br/>
+            <br/>
+            {l s='Set up in just a few clicks!' mod='shoppingfeed'}  <br/>
+            {l s='Adjust your prices, modify your data with our search/replace tool.' mod='shoppingfeed'}  <br/>
+            <br/>
+            {l s='So why not you? Take the plunge now.' mod='shoppingfeed'}  <br/>
+            {l s='More than 2500 merchants connect to Shoppingfeed every day to boost their sales.' mod='shoppingfeed'}  <br/>
+            <br/>
+            {l s='Export your offerings to the most reputable marketplaces: Amazon, Leboncoin, La Redoute, Cdiscount, and dozens more.' mod='shoppingfeed'}  <br/>
+            {l s='Over 200 marketplaces are connected to Shoppingfeed! The complete and updated list is available on our website.' mod='shoppingfeed'}  <br/>
+            <br/>
+            {l s='Shoppingfeed will automatically synchronize your orders within your PrestaShop environment and keep all your stock and prices updated.' mod='shoppingfeed'}  <br/>
+            <br/>
+            {l s='We are constantly innovating. Get ready for new features and tools every month, at no extra cost.' mod='shoppingfeed'}  <br/>
+            <br/>
        </div>
    </div>
 {/block}
