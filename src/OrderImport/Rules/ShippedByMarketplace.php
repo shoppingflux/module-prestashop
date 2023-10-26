@@ -205,6 +205,19 @@ class ShippedByMarketplace extends RuleAbstract implements RuleInterface
         $history->addWithemail();
     }
 
+    public function onValidateOrder($params)
+    {
+        $apiOrder = $params['apiOrder'];
+        $apiOrderArray = $apiOrder->toArray();
+
+        if (array_key_exists('fulfilledBy', $apiOrderArray) === false
+            || strcasecmp($apiOrderArray['fulfilledBy'], 'channel') !== 0) {
+            return;
+        }
+
+        $params['paymentMethod'] = sprintf('fullfilment - [%s]', $apiOrder->getChannel()->getName());
+    }
+
     /**
      * {@inheritdoc}
      */
