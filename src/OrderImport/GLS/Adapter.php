@@ -49,7 +49,7 @@ class Adapter implements AdapterInterface
                 throw new Exception('GlsController not found');
                 return;
             }
-    
+
             $this->glsModule = $glsModule;
             $this->gls = \Nukium\GLS\Legacy\GlsController::createInstance($this->glsModule->getConfigFormValues());
         } else {
@@ -57,7 +57,7 @@ class Adapter implements AdapterInterface
                 throw new Exception('GlsController not found');
                 return;
             }
-    
+
             $this->glsModule = $glsModule;
             $this->gls = \Nukium\GLS\Common\Legacy\GlsController::createInstance($this->glsModule->getConfigFormValues());
         }
