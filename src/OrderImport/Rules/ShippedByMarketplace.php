@@ -257,6 +257,7 @@ class ShippedByMarketplace extends RuleAbstract implements RuleInterface
     {
         try {
             $paymentInformation = $apiOrder->getPaymentInformation();
+
             return
                 isset($paymentInformation['method']) &&
                 strpos(strtolower($paymentInformation['method']), 'afn') !== false;
@@ -274,6 +275,7 @@ class ShippedByMarketplace extends RuleAbstract implements RuleInterface
     {
         try {
             $paymentOrderInformation = $apiOrder->getPaymentInformation();
+
             return
                 isset($paymentOrderInformation['method']) &&
                 strpos(strtolower($paymentOrderInformation['method']), 'clogistique') !== false;
@@ -291,6 +293,7 @@ class ShippedByMarketplace extends RuleAbstract implements RuleInterface
     {
         try {
             $apiOrderArray = $apiOrder->toArray();
+
             return
                 isset($apiOrderArray['additionalFields']['env']) &&
                 strtolower($apiOrderArray['additionalFields']['env']) == 'epmm';
