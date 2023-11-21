@@ -283,11 +283,11 @@ class ShippedByMarketplace extends RuleAbstract implements RuleInterface
      */
     protected function isShippedManomano(OrderResource $apiOrder)
     {
-        try {
-            return strtolower($apiOrder->toArray()['additionalFields']['env']) == 'epmm';
-        } catch (\Throwable $e) {
+        if (empty($apiOrder->toArray()['additionalFields']['env'])) {
             return false;
         }
+
+        return strtolower($apiOrder->toArray()['additionalFields']['env']) === 'epmm';
     }
 
     protected function isShippedByMarketplace(OrderResource $apiOrder)
