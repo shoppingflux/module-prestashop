@@ -99,7 +99,7 @@ class GlsRule extends RuleAbstract implements RuleInterface
                 sprintf(
                     $this->l('Fail linking GLS pickup point %s to cart %d. GLS carrier no properly set on carrier matching of ShoppingFeed module.', 'GlsRule'),
                     $this->getRelayId($params['apiOrder']),
-                    (int) $cart->id,
+                    (int) $cart->id
                 ),
                 'Cart',
                 $cart->id
