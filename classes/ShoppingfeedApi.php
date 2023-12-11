@@ -27,7 +27,7 @@ use ShoppingFeed\Sdk\Client\Client;
 use ShoppingFeed\Sdk\Client\ClientOptions;
 use ShoppingFeed\Sdk\Credential\Password;
 use ShoppingFeed\Sdk\Credential\Token;
-use ShoppingFeed\Sdk\Http\Adapter\Guzzle6Adapter;
+use ShoppingFeed\Sdk\Http\Adapter\GuzzleHTTPAdapter;
 use ShoppingfeedAddon\OrderImport\SinceDate;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 
@@ -82,7 +82,7 @@ class ShoppingfeedApi
             $credential = new Token($token);
             // Add Guzzle as HTTP interface
             $clientOptions = new ClientOptions();
-            $clientOptions->setHttpAdapter(new Guzzle6Adapter());
+            $clientOptions->setHttpAdapter(new GuzzleHTTPAdapter());
             /** @var \ShoppingFeed\Sdk\Api\Session\SessionResource $session */
             $session = Client::createSession($credential, $clientOptions);
 
@@ -117,7 +117,7 @@ class ShoppingfeedApi
             $credential = new Password($username, $password);
             // Add Guzzle as HTTP interface
             $clientOptions = new ClientOptions();
-            $clientOptions->setHttpAdapter(new Guzzle6Adapter());
+            $clientOptions->setHttpAdapter(new GuzzleHTTPAdapter());
             /** @var \ShoppingFeed\Sdk\Api\Session\SessionResource $session */
             $session = Client::createSession($credential, $clientOptions);
             static::$instance = new ShoppingfeedApi($session);
@@ -456,7 +456,7 @@ class ShoppingfeedApi
         }
 
         $clientOptions = new ClientOptions();
-        $clientOptions->setHttpAdapter(new Guzzle6Adapter());
+        $clientOptions->setHttpAdapter(new GuzzleHTTPAdapter());
         $client = new Client($clientOptions);
 
         return $client->ping();
