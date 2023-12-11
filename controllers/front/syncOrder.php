@@ -234,27 +234,17 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
                 );
             }
 
-            // Delete all processed task orders
-            $processedTaskOrders = array_merge(
-                $successfulTicketsStatusTaskOrders,
-                $failedTicketsStatusTaskOrders
-            );
-            foreach ($processedTaskOrders as $taskOrder) {
+            // Delete successfully processed task orders
+            foreach ($successfulTicketsStatusTaskOrders as $taskOrder) {
                 $taskOrder->delete();
             }
-
             //Resend failed tickets.
-            $handler = new ActionsHandler();
-
             foreach ($failedTicketsStatusTaskOrders as $failedTicket) {
                 /* @var ShoppingfeedTaskOrder $failedTicket*/
-                $handler
-                    ->setConveyor([
-                        'id_order' => $failedTicket->id_order,
-                        'order_action' => ShoppingfeedTaskOrder::ACTION_SYNC_STATUS,
-                    ])
-                    ->addActions('saveTaskOrder');
-                $handler->process('shoppingfeedOrderSync');
+                $failedTicket->action = ShoppingfeedTaskOrder::ACTION_SYNC_STATUS;
+                $failedTicket->ticket_number = '';
+                $failedTicket->batch_id = '';
+                $failedTicket->save();
             }
         }
     }
