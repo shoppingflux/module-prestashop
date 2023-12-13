@@ -413,19 +413,29 @@ class ShoppingfeedApi
         return $filteredOrders;
     }
 
-    public function acknowledgeOrder($id_order_marketplace, $name_marketplace, $id_order_prestashop, $is_success = true, $message = '')
-    {
+    public function acknowledgeOrder(
+        $id_order_marketplace,
+        $ref_order_marketplace,
+        $name_marketplace,
+        $id_order_prestashop,
+        $is_success = true,
+        $message = ''
+    ) {
         try {
             $orderApi = $this->session->getMainStore()->getOrderApi();
-            $operation = new \ShoppingFeed\Sdk\Api\Order\OrderOperation();
-            $operation
-                ->acknowledge(
-                    (string) $id_order_marketplace,
-                    (string) $name_marketplace,
-                    (string) $id_order_prestashop,
-                    ($is_success === true) ? 'success' : 'error',
-                    $message
-                );
+            $operation = new OrderOperation();
+            $operation->addOperation(
+                (string) $ref_order_marketplace,
+                (string) $name_marketplace,
+                OrderOperation::TYPE_ACKNOWLEDGE,
+                [
+                    'id' => (string) $id_order_marketplace,
+                    'status' => ($is_success === true) ? 'success' : 'error',
+                    'storeReference' => (string) $id_order_prestashop,
+                    'message' => (string) $message,
+                    'acknowledgedAt' => date_create()->format('c'),
+                ]
+            );
 
             return $orderApi->execute($operation);
         } catch (Exception $e) {
