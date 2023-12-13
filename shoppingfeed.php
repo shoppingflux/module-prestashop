@@ -60,6 +60,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     const SHIPPED_ORDERS = 'SHOPPINGFEED_SHIPPED_ORDERS';
     const CANCELLED_ORDERS = 'SHOPPINGFEED_CANCELLED_ORDERS';
     const REFUNDED_ORDERS = 'SHOPPINGFEED_REFUNDED_ORDERS';
+    const DELIVERED_ORDERS = 'SHOPPINGFEED_DELIVERED_ORDERS';
     const ORDER_IMPORT_ENABLED = 'SHOPPINGFEED_ORDER_IMPORT_ENABLED';
     const ORDER_IMPORT_TEST = 'SHOPPINGFEED_ORDER_IMPORT_TEST';
     const ORDER_IMPORT_SHIPPED = 'SHOPPINGFEED_ORDER_IMPORT_SHIPPED';
@@ -435,6 +436,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         $this->setConfigurationDefault(self::SHIPPED_ORDERS, json_encode([]));
         $this->setConfigurationDefault(self::CANCELLED_ORDERS, json_encode([]));
         $this->setConfigurationDefault(self::REFUNDED_ORDERS, json_encode([]));
+        $this->setConfigurationDefault(self::DELIVERED_ORDERS, json_encode([]));
         $this->setConfigurationDefault(self::ORDER_IMPORT_ENABLED, true);
         $this->setConfigurationDefault(self::ORDER_IMPORT_SHIPPED, false);
         $this->setConfigurationDefault(self::ORDER_IMPORT_SPECIFIC_RULES_CONFIGURATION, json_encode([]));

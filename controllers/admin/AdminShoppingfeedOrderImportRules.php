@@ -174,15 +174,20 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
         $allState = OrderState::getOrderStates($this->context->language->id);
 
         $orderShippedState = [];
+        $orderDeliveredState = [];
         $orderCancelledState = [];
         $orderRefundedState = [];
 
         $ids_shipped_status_selected = json_decode(Configuration::get(Shoppingfeed::SHIPPED_ORDERS));
         $ids_cancelled_status_selected = json_decode(Configuration::get(Shoppingfeed::CANCELLED_ORDERS));
-
         $ids_refunded_status_selected = json_decode(Configuration::get(Shoppingfeed::REFUNDED_ORDERS));
+        $ids_delivered_status_selected = json_decode(Configuration::get(Shoppingfeed::DELIVERED_ORDERS));
+
         if (!is_array($ids_refunded_status_selected)) {
             $ids_refunded_status_selected = [$ids_refunded_status_selected];
+        }
+        if (!is_array($ids_delivered_status_selected)) {
+            $ids_delivered_status_selected = [];
         }
 
         $orderShippedState['selected'] = [];
@@ -204,6 +209,11 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
             ];
 
             $orderRefundedState[in_array($state['id_order_state'], $ids_refunded_status_selected) ? 'selected' : 'unselected'][] = [
+                'value' => $state['id_order_state'],
+                'label' => $state['name'],
+            ];
+
+            $orderDeliveredState[in_array($state['id_order_state'], $ids_delivered_status_selected) ? 'selected' : 'unselected'][] = [
                 'value' => $state['id_order_state'],
                 'label' => $state['name'],
             ];
@@ -427,6 +437,30 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
                         ],
                         [
                             'type' => 'shoppingfeed_double-list',
+                            'name' => 'status_delivered_order',
+                            'label' => $this->module->l('Delivery orders synchronization + Status mapping', 'AdminShoppingfeedOrderImportRules'),
+                            'hint' => $this->module->l('When the order has been delivered to the customer, for platforms managing this status', 'AdminShoppingfeedOrderImportRules'),
+                            'unselected' => [
+                                'id' => 'status_delivered_order_add',
+                                'label' => $this->module->l('Unselected order status', 'AdminShoppingfeedOrderImportRules'),
+                                'options' => $orderDeliveredState['unselected'],
+                                'btn' => [
+                                    'id' => 'status_delivered_order_btn',
+                                    'label' => $this->module->l('Add', 'AdminShoppingfeedOrderImportRules'),
+                                ],
+                            ],
+                            'selected' => [
+                                'id' => 'status_delivered_order_remove',
+                                'label' => $this->module->l('Selected order status', 'AdminShoppingfeedOrderImportRules'),
+                                'options' => $orderDeliveredState['selected'],
+                                'btn' => [
+                                    'id' => 'status_delivered_order_remove_btn',
+                                    'label' => $this->module->l('Remove', 'AdminShoppingfeedOrderImportRules'),
+                                ],
+                            ],
+                        ],
+                        [
+                            'type' => 'shoppingfeed_double-list',
                             'name' => 'status_cancelled_order',
                             'label' => $this->module->l('Cancelled orders synchronization', 'AdminShoppingfeedOrderImportRules'),
                             'unselected' => [
@@ -611,6 +645,11 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
             $orderStatusesShipped = [];
         }
 
+        $orderStatusesDelivered = Tools::getValue('status_delivered_order');
+        if (!is_array($orderStatusesDelivered)) {
+            $orderStatusesDelivered = [];
+        }
+
         $orderStatusesCancelled = Tools::getValue('status_cancelled_order');
         if (!$orderStatusesCancelled) {
             $orderStatusesCancelled = [];
@@ -633,6 +672,7 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
             Configuration::updateValue(Shoppingfeed::ORDER_STATUS_TIME_SHIFT, (int) $tracking_timeshift);
             Configuration::updateValue(Shoppingfeed::CANCELLED_ORDERS, json_encode($orderStatusesCancelled));
             Configuration::updateValue(Shoppingfeed::REFUNDED_ORDERS, json_encode($orderStatusRefunded));
+            Configuration::updateValue(Shoppingfeed::DELIVERED_ORDERS, json_encode($orderStatusesDelivered));
             Configuration::updateValue(Shoppingfeed::ORDER_STATUS_MAX_ORDERS, $max_orders);
             Configuration::updateValue(Shoppingfeed::ORDER_DEFAULT_CARRIER_REFERENCE, Tools::getValue(Shoppingfeed::ORDER_DEFAULT_CARRIER_REFERENCE));
         }
