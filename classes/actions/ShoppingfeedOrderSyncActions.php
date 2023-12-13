@@ -372,6 +372,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
             }
 
             $this->conveyor['preparedTaskOrders'][$taskOrderOperation][] = [
+                'id_internal_shoppingfeed' => $sfOrder->id_internal_shoppingfeed,
                 'reference_marketplace' => $sfOrder->id_order_marketplace,
                 'marketplace' => $sfOrder->name_marketplace,
                 'taskOrder' => $taskOrder,

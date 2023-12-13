@@ -246,24 +246,36 @@ class ShoppingfeedApi
             foreach ($taskOrders as $taskOrder) {
                 switch ($taskOrder['operation']) {
                     case OrderOperation::TYPE_SHIP:
-                        $operation->ship(
-                            $taskOrder['reference_marketplace'],
-                            $taskOrder['marketplace'],
-                            $taskOrder['payload']['carrier_name'],
-                            $taskOrder['payload']['tracking_number'],
-                            $taskOrder['payload']['tracking_url']
+                        $operation->addOperation(
+                            (string) $taskOrder['reference_marketplace'],
+                            (string) $taskOrder['marketplace'],
+                            $taskOrder['operation'],
+                            [
+                                'id' => (string) $taskOrder['id_internal_shoppingfeed'],
+                                'carrier' => (string) $taskOrder['payload']['carrier_name'],
+                                'trackingNumber' => (string) $taskOrder['payload']['tracking_number'],
+                                'trackingLink' => (string) $taskOrder['payload']['tracking_url'],
+                            ]
                         );
                         continue 2;
                     case OrderOperation::TYPE_CANCEL:
-                        $operation->cancel(
-                            $taskOrder['reference_marketplace'],
-                            $taskOrder['marketplace']
+                        $operation->addOperation(
+                            (string) $taskOrder['reference_marketplace'],
+                            (string) $taskOrder['marketplace'],
+                            $taskOrder['operation'],
+                            [
+                                'id' => (string) $taskOrder['id_internal_shoppingfeed'],
+                            ]
                         );
                         continue 2;
                     case OrderOperation::TYPE_REFUND:
-                        $operation->refund(
-                            $taskOrder['reference_marketplace'],
-                            $taskOrder['marketplace']
+                        $operation->addOperation(
+                            (string) $taskOrder['reference_marketplace'],
+                            (string) $taskOrder['marketplace'],
+                            $taskOrder['operation'],
+                            [
+                                'id' => (string) $taskOrder['id_internal_shoppingfeed'],
+                            ]
                         );
                         continue 2;
                 }
