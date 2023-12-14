@@ -278,6 +278,16 @@ class ShoppingfeedApi
                             ]
                         );
                         continue 2;
+                    case OrderOperation::TYPE_DELIVER:
+                        $operation->addOperation(
+                            (string) $taskOrder['reference_marketplace'],
+                            (string) $taskOrder['marketplace'],
+                            $taskOrder['operation'],
+                            [
+                                'id' => (string) $taskOrder['id_internal_shoppingfeed'],
+                            ]
+                        );
+                        continue 2;
                 }
             }
 

@@ -256,9 +256,10 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
         }
         $taskOrders = $this->conveyor['taskOrders'];
 
-        $shipped_status = json_decode(Configuration::get(Shoppingfeed::SHIPPED_ORDERS, null, null, $id_shop));
-        $cancelled_status = json_decode(Configuration::get(Shoppingfeed::CANCELLED_ORDERS, null, null, $id_shop));
-        $refunded_status = json_decode(Configuration::get(Shoppingfeed::REFUNDED_ORDERS, null, null, $id_shop));
+        $shipped_status = json_decode(Configuration::get(Shoppingfeed::SHIPPED_ORDERS, null, null, $id_shop), true);
+        $cancelled_status = json_decode(Configuration::get(Shoppingfeed::CANCELLED_ORDERS, null, null, $id_shop), true);
+        $refunded_status = json_decode(Configuration::get(Shoppingfeed::REFUNDED_ORDERS, null, null, $id_shop), true);
+        $delivered_status = json_decode(Configuration::get(Shoppingfeed::DELIVERED_ORDERS, null, null, $id_shop), true);
 
         $this->conveyor['preparedTaskOrders'] = [];
         foreach ($taskOrders as $taskOrder) {
@@ -353,8 +354,10 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
                 } elseif (in_array($idOrderState, $refunded_status)) {
                     $taskOrderOperation = OrderOperation::TYPE_REFUND;
                     continue;
-                    // No partial refund (at least for now), so no optional
+                // No partial refund (at least for now), so no optional
                     // parameters to set.
+                } elseif (in_array($idOrderState, $delivered_status)) {
+                    $taskOrderOperation = OrderOperation::TYPE_DELIVER;
                 }
             }
 
