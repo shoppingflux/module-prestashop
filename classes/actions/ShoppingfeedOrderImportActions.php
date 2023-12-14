@@ -873,6 +873,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
 
         try {
             $result = $shoppingfeedApi->acknowledgeOrder(
+                $apiOrder->getId(),
                 $apiOrder->getReference(),
                 $apiOrder->getChannel()->getName(),
                 isset($this->conveyor['id_order']) ? $this->conveyor['id_order'] : null,

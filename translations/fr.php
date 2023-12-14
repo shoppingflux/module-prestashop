@@ -558,6 +558,8 @@ $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_b9d1b8558d
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_ceff443491edd888ee91e6bef87446a6'] = 'Vous devez spécifier un \"Délai avant la synchronisation du numéro de suivi\" supérieur à 0.';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_23b574c89c8eafae9531357e5763d00f'] = 'Vous devez spécifier un \"Nombre de commandes maximum\" entre 1 et 200.';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_67838a580a67c01392c8bc906654228a'] = 'Séelctionner un transporteur';
+$_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_541d50ff4f79ad3c125b154568146103'] = 'Synchronisation des commandes reçues + Status mapping';
+$_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_0147ea0808683b0b0b2a66d987b3db2d'] = 'Lorsque la commande a bien été livrée chez le client, pour les plateformes gérant ce statut';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedprocessmonitor_b6543e6dabc6a1cbf66f92026508ec24'] = 'Impossible de troiuver la déclaration des tâches cron dans le module.';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedprocessmonitor_965834fed9e23894a358742da10f6343'] = 'Nom technique';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedprocessmonitor_b78a3223503896721cca1303f776159b'] = 'Titre';
