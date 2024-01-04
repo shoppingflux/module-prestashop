@@ -394,6 +394,7 @@ abstract class AbstractMondialrelay extends RuleAbstract implements RuleInterfac
             try {
                 $client = new SoapClient($config);
             } catch (\SoapFault $e) {
+                continue;
             }
 
             return $client;
