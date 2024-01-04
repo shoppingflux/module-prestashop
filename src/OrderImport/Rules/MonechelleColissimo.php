@@ -115,4 +115,27 @@ class MonechelleColissimo extends AbstractColissimo implements RuleInterface
 
         return parent::afterCartCreation($params);
     }
+
+    public function onPreProcess($params)
+    {
+        /** @var \ShoppingfeedAddon\OrderImport\OrderData $orderData */
+        $orderData = $params['orderData'];
+        $fullNameArray = explode(' ', trim($orderData->shippingAddress['firstName']));
+        $lastName = $orderData->shippingAddress['lastName'];
+
+        if (false === empty($orderData->shippingAddress['company'])) {
+            return;
+        }
+        if (count($fullNameArray) < 2) {
+            return;
+        }
+
+        $orderData->shippingAddress['firstName'] = $fullNameArray[0];
+        $orderData->shippingAddress['lastName'] = implode(' ', array_slice($fullNameArray, 1));
+        $orderData->shippingAddress['company'] = sprintf(
+            '%s (%s)',
+            (string) $lastName,
+            (string) $this->getRelayId($params['apiOrder'])
+        );
+    }
 }
