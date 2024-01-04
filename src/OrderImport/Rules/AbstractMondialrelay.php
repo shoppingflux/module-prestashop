@@ -288,7 +288,6 @@ abstract class AbstractMondialrelay extends RuleAbstract implements RuleInterfac
      */
     public function getRelayData(OrderResource $apiOrder, $relayId, $countryIso)
     {
-        $urlWebService = 'http://www.mondialrelay.fr/webservice/Web_Services.asmx?WSDL';
         $logPrefix = sprintf(
             $this->l('[Order: %s]', 'Mondialrelay'),
             $apiOrder->getId()
@@ -301,15 +300,11 @@ abstract class AbstractMondialrelay extends RuleAbstract implements RuleInterfac
             return false;
         }
 
-        $client = new SoapClient($urlWebService);
+        $client = $this->initSoapClient();
         if (!is_object($client)) {
             // Error connecting to webservice
             ProcessLoggerHandler::logInfo(
-                sprintf(
-                    $logPrefix .
-                        $this->l('Could not create SOAP client for URL %s', 'Mondialrelay'),
-                    $urlWebService
-                ),
+                $logPrefix . $this->l('Could not create SOAP client for URL', 'Mondialrelay'),
                 'Order'
             );
 
@@ -385,5 +380,25 @@ abstract class AbstractMondialrelay extends RuleAbstract implements RuleInterfac
         }
 
         return '';
+    }
+
+    protected function initSoapClient()
+    {
+        $client = null;
+        $configs = [
+            'https://api.mondialrelay.com/Web_Services.asmx?WSDL',
+            'https://www.mondialrelay.fr/webservice/Web_Services.asmx?WSDL',
+        ];
+
+        foreach ($configs as $config) {
+            try {
+                $client = new SoapClient($config);
+            } catch (\SoapFault $e) {
+            }
+
+            return $client;
+        }
+
+        return $client;
     }
 }
