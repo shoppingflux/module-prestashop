@@ -1148,6 +1148,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 'shipping_cost_tax_incl' => Tools::ps_round($orderPrices['total_shipping'], 2),
                 'shipping_cost_tax_excl' => Tools::ps_round($orderPrices['total_shipping_tax_excl'], 4),
                 'id_carrier' => $carrier->id,
+                'id_order' => (int) $id_order,
             ];
 
             foreach ($updateOrder as $key => $value) {
@@ -1155,9 +1156,20 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             }
 
             $psOrder->save(true);
+            $id_order_carrier = (int) Db::getInstance()->getValue(
+                (new DbQuery())
+                    ->from('order_carrier')
+                    ->where('id_order = ' . (int) $id_order)
+                    ->select('id_order_carrier')
+            );
 
             Db::getInstance()->update('order_invoice', $updateOrderInvoice, '`id_order` = ' . (int) $id_order);
-            Db::getInstance()->update('order_carrier', $updateOrderTracking, '`id_order` = ' . (int) $id_order);
+
+            if ($id_order_carrier) {
+                Db::getInstance()->update('order_carrier', $updateOrderTracking, '`id_order_carrier` = ' . (int) $id_order_carrier);
+            } else {
+                Db::getInstance()->insert('order_carrier', $updateOrderTracking);
+            }
         }
 
         $query = (new DbQuery())

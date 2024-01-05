@@ -23,6 +23,7 @@ use Db;
 use DbQuery;
 use Order;
 use SfGuzzle\GuzzleHttp\Client;
+use ShoppingFeed\Sdk\Client\ClientOptions;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 use ShoppingfeedClasslib\Utils\Translate\TranslateTrait;
 use ShoppingfeedToken;
@@ -42,8 +43,10 @@ class OrderTracker
     {
         $sft = new ShoppingfeedToken();
         $tokens = $sft->findAllActive();
+        $clientOptions = new ClientOptions();
         $client = new Client([
             'base_uri' => 'https://tag.shopping-flux.com',
+            'headers' => $clientOptions->getHeaders(),
         ]);
 
         ProcessLoggerHandler::openLogger();
