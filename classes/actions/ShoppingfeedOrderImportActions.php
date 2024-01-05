@@ -738,6 +738,9 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                     $paymentModule->currentOrder = $order->id;
                     $paymentModule->currentOrderReference = $order->reference;
                 }
+                if (!$order->getCurrentState()) {
+                    $order->setCurrentState($this->initSfOrderState()->get()->id);
+                }
             }
 
             $log = [

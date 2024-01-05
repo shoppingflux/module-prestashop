@@ -60,7 +60,20 @@
       }
   },
   "scripts": {
-    "pre-autoload-dump": ""
+    "pre-autoload-dump": "#if [ ${TOTPSCLASSLIB_DEV_PATH} ]; then php ${TOTPSCLASSLIB_DEV_PATH}/classlib/refresh.php .; fi",
+    "phpcs": "vendor/bin/php-cs-fixer fix",
+    "phpstan": [
+      "@phpstan-run-env",
+      "@phpstan-run"
+    ],
+    "test": [
+      "@run-test-env",
+      "@run-test"
+    ],
+    "phpstan-run-env": "if [ $(docker ps | grep -c temp-phpstan-env) = '0' ]; then docker run -tid --rm -v ps-volume:/var/www/html --name temp-phpstan-env prestashop/prestashop ;fi",
+    "phpstan-run": "docker run --rm --volumes-from temp-phpstan-env -v $PWD:/var/www/html/modules/shoppingfeed -e _PS_ROOT_DIR_=/var/www/html --workdir=/var/www/html/modules/shoppingfeed phpstan/phpstan:0.12 analyse --configuration=/var/www/html/modules/shoppingfeed/202/phpstan/phpstan.neon",
+    "run-test-env": "if [ $(docker ps | grep -c temp-unittest-ps) = '0' ]; then docker run -tid --rm -v $PWD:/var/www/html/modules/shoppingfeed --name temp-unittest-ps 202ecommerce/prestashop:8.1.3 ;fi",
+    "run-test": "docker exec -t temp-unittest-ps sh /var/www/html/modules/shoppingfeed/202/docker/run_for_unittest.sh"
   },
   "type": "prestashop-module"
 }
