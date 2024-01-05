@@ -717,14 +717,29 @@ class ShoppingfeedOrderImportActions extends DefaultActions
 
             return false;
         }
+
+        $transactionId = $apiOrder->getReference();
+        $paymentMethod = Tools::strtolower($apiOrder->getChannel()->getName());
+
+        $this->specificRulesManager->applyRules(
+            'onValidateOrder',
+            [
+                'apiOrder' => $apiOrder,
+                'orderData' => &$this->conveyor['orderData'],
+                'cart' => &$cart,
+               'paymentMethod' => &$paymentMethod,
+               'transactionId' => &$transactionId,
+            ]
+        );
+
         try {
             $paymentModule->validateOrder(
                 (int) $cart->id,
                 $this->initSfOrderState()->get()->id,
                 $amount_paid,
-                Tools::strtolower($apiOrder->getChannel()->getName()),
+                $paymentMethod,
                 null,
-                ['transaction_id' => $apiOrder->getReference()],
+                ['transaction_id' => $transactionId],
                 $cart->id_currency,
                 false,
                 $cart->secure_key,
