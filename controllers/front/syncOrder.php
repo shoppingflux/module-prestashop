@@ -281,7 +281,7 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
                         $this->processMonitor->getProcessObjectModelId()
                     );
 
-                    return false;
+                    continue;
                 }
 
                 $result = $shoppingfeedApi->getUnacknowledgedOrders();
@@ -299,7 +299,7 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
                     $this->processMonitor->getProcessObjectModelId()
                 );
 
-                return false;
+                continue;
             }
             if (empty($result) === true) {
                 ProcessLoggerHandler::logInfo(
