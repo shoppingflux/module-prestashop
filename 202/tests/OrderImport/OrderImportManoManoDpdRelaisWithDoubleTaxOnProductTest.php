@@ -22,9 +22,9 @@ namespace Tests\OrderImport;
 use Configuration;
 use Db;
 use Module;
+use PrestaShop\Module\DPDFrance\Util\DPDTools;
 use ShoppingfeedAddon\Actions\ActionsHandler;
 use ShoppingfeedClasslib\Registry;
-
 /**
  * Order Rules CDiscount Test
  */
@@ -180,7 +180,7 @@ class OrderImportManoManoDpdRelaisWithDoubleTaxOnProductTest extends AbstractOrd
         $carrier = new \Carrier($psOrder->id_carrier);
         $this->assertEquals($carrier->id_reference, $contextData['carrierReference']);
 
-        $dpdShippingService = \DPDTools::getService($psOrder, false);
+        $dpdShippingService = DPDTools::getService($psOrder, false);
         $expectedValue = 'REL';
         $this->assertEquals($expectedValue, $dpdShippingService);
     }
