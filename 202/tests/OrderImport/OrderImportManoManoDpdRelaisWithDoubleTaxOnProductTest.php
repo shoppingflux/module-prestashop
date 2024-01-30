@@ -25,6 +25,7 @@ use Module;
 use PrestaShop\Module\DPDFrance\Util\DPDTools;
 use ShoppingfeedAddon\Actions\ActionsHandler;
 use ShoppingfeedClasslib\Registry;
+
 /**
  * Order Rules CDiscount Test
  */
