@@ -9,7 +9,7 @@
 
 >
 	<php>
-		<ini name="error_reporting" value="-1" />
+		<ini name="error_reporting" value="E_ALL &amp; ~E_DEPRECATED &amp; ~E_USER_DEPRECATED" />
 			    <env name="SYMFONY_DEPRECATIONS_HELPER" value="disabled" />
 	</php>
 	<testsuites>

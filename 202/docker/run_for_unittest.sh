@@ -5,11 +5,11 @@ set -x
 
 /etc/init.d/mariadb start
 
-php /var/www/html/bin/console prestashop:module install shoppingfeed -e prod
-php /var/www/html/bin/console prestashop:module install dpdfrance -e prod
-php /var/www/html/bin/console prestashop:module install colissimo -e prod
-php /var/www/html/bin/console prestashop:module install mondialrelay -e prod
-php /var/www/html/bin/console prestashop:module install nkmgls -e prod
+php /var/www/html/bin/console prestashop:module install shoppingfeed
+php /var/www/html/bin/console prestashop:module install dpdfrance
+php /var/www/html/bin/console prestashop:module install colissimo 
+php /var/www/html/bin/console prestashop:module install mondialrelay 
+php /var/www/html/bin/console prestashop:module install nkmgls 
 
 echo "Add data fixtures for Unit Tests"
 
@@ -18,7 +18,7 @@ mysql -h localhost -u root prestashop -e "
 TRUNCATE ps_shoppingfeed_preloading;
 TRUNCATE ps_mondialrelay_carrier_method;
 INSERT INTO ps_mondialrelay_carrier_method (id_carrier, delivery_mode, insurance_level, is_deleted, id_reference, date_add, date_upd)
-VALUES ('1', '24R', '0', '0', '1', '2022-06-23 11:30:14', '2022-06-23 11:30:14');
+VALUES ('1', 'HOM', '0', '0', '1', '2022-06-23 11:30:14', '2022-06-23 11:30:14');
 
 DELETE FROM ps_configuration WHERE name LIKE 'MONDIALRELAY_%';
 INSERT INTO ps_configuration (id_shop_group, id_shop, name, value, date_add, date_upd) VALUES

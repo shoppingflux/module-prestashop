@@ -54,6 +54,11 @@ abstract class AbstractProduct
     private $additionalImages = [];
 
     /**
+     * @var float
+     */
+    private $weight = .0;
+
+    /**
      * @return string
      */
     public function getReference()
@@ -164,12 +169,14 @@ abstract class AbstractProduct
 
     /**
      * @param float $value
+     * @param string $startDateTime
+     * @param string $endDateTime
      *
      * @return $this
      */
-    public function addDiscount($value)
+    public function addDiscount($value, $startDateTime = '', $endDateTime = '')
     {
-        $this->discounts[] = new ProductDiscount($value);
+        $this->discounts[] = new ProductDiscount($value, $startDateTime, $endDateTime);
 
         return $this;
     }
@@ -334,5 +341,25 @@ abstract class AbstractProduct
     public function isValid()
     {
         return $this->reference && isset($this->price);
+    }
+
+    /**
+     * @return float
+     */
+    public function getWeight()
+    {
+        return (float) $this->weight;
+    }
+
+    /**
+     * @param float $weight
+     *
+     * @return $this
+     */
+    public function setWeight($weight)
+    {
+        $this->weight = (float) $weight;
+
+        return $this;
     }
 }
