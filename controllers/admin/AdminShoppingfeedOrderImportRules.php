@@ -51,6 +51,7 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
         $this->addJS($this->module->getPathUri() . 'views/js/form_config.js');
         $this->content = $this->welcomeForm();
         $id_shop = $this->context->shop->id;
+        $this->identifier = 'className';
 
         $sft = new ShoppingfeedToken();
         $tokens = $sft->findAllActive();
