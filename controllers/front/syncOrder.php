@@ -312,6 +312,8 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
 
             Registry::set('errors', 0);
             Registry::set('importedOrders', 0);
+            Shop::setContext(Shop::CONTEXT_SHOP, $id_shop);
+            $this->context->shop = new Shop($id_shop);
             foreach ($result as $apiOrder) {
                 $logPrefix = sprintf(
                     $this->module->l('[Order: %s]', 'syncOrder'),
