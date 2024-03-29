@@ -528,9 +528,9 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
             Shoppingfeed::PRODUCT_SYNC_BY_DATE_UPD => $syncByDateUpdate,
             Shoppingfeed::PRODUCT_FEED_TIME_FULL_UPDATE => $time_full_update,
             Shoppingfeed::PRODUCT_FEED_INTERVAL_CRON => $interval_cron,
-            Shoppingfeed::REAL_TIME_SYNCHRONIZATION => Configuration::get(Shoppingfeed::REAL_TIME_SYNCHRONIZATION),
+            Shoppingfeed::REAL_TIME_SYNCHRONIZATION => (int) Configuration::get(Shoppingfeed::REAL_TIME_SYNCHRONIZATION),
             Shoppingfeed::STOCK_SYNC_MAX_PRODUCTS => Configuration::get(Shoppingfeed::STOCK_SYNC_MAX_PRODUCTS),
-            Shoppingfeed::COMPRESS_PRODUCTS_FEED => Configuration::get(Shoppingfeed::COMPRESS_PRODUCTS_FEED),
+            Shoppingfeed::COMPRESS_PRODUCTS_FEED => (int) Configuration::get(Shoppingfeed::COMPRESS_PRODUCTS_FEED),
             'with_factory' => Tools::getValue('with_factory'),
         ];
 
