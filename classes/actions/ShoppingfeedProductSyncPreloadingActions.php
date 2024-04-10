@@ -108,23 +108,22 @@ class ShoppingfeedProductSyncPreloadingActions extends DefaultActions
         $sfp = new ShoppingfeedPreloading();
         $sfModule = Module::getInstanceByName('shoppingfeed');
         $db = Db::getInstance(_PS_USE_SQL_SLAVE_);
-        $sql = $sfModule->sqlProductsOnFeed()
+
+        foreach ($tokens as $token) {
+            $sql = $sfModule->sqlProductsOnFeed($token['id_shop'])
                 ->select('ps.id_product')
                 ->where('ps.id_product IN (' . implode(', ', array_map('intval', $this->conveyor['products_id'])) . ')');
 
-        $result = $db->executeS($sql, true, false);
-        $productsAvailable = ($result === []) ? [] : array_column($result, 'id_product');
+            $result = $db->executeS($sql, true, false);
+            $productsAvailable = ($result === []) ? [] : array_column($result, 'id_product');
 
-        foreach ($this->conveyor['products_id'] as $product_id) {
-            if (in_array($product_id, $productsAvailable)) {
-                foreach ($tokens as $token) {
+            foreach ($this->conveyor['products_id'] as $product_id) {
+                if (in_array($product_id, $productsAvailable)) {
                     $this->conveyor['id_token'] = $token['id_shoppingfeed_token'];
                     $sfp->addAction($product_id, $token['id_shoppingfeed_token'], $action);
+                } else {
+                    $sfp->deleteProduct($product_id, $token['id_shoppingfeed_token']);
                 }
-                continue;
-            }
-            foreach ($tokens as $token) {
-                $sfp->deleteProduct($product_id, $token['id_shoppingfeed_token']);
             }
         }
 
