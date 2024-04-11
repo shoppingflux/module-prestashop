@@ -29,23 +29,23 @@ use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 
-class VeepeegroupColissimo extends AbstractColissimo implements RuleInterface
+class BhvColissimo extends AbstractColissimo implements RuleInterface
 {
     public function isApplicable(OrderResource $apiOrder)
     {
         $logPrefix = sprintf(
-            $this->l('[Order: %s]', 'VeepeegroupColissimo'),
+            $this->l('[Order: %s]', 'BhvColissimo'),
             $apiOrder->getId()
         );
         $logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
 
-        if (preg_match('#^veepeegroup#i', $apiOrder->getChannel()->getName())
+        if (preg_match('#^bhv#i', $apiOrder->getChannel()->getName())
             && $this->isModuleColissimoEnabled()
             && !empty($this->getRelayId($apiOrder))
         ) {
             ProcessLoggerHandler::logInfo(
                 $logPrefix .
-                    $this->l('Rule triggered.', 'VeepeegroupColissimo'),
+                    $this->l('Rule triggered.', 'BhvColissimo'),
                 'Order'
             );
 
@@ -60,7 +60,7 @@ class VeepeegroupColissimo extends AbstractColissimo implements RuleInterface
      */
     public function getConditions()
     {
-        return $this->l('If the order comes from Veepeegroup and has non-empty "other" or "relayID" field.', 'VeepeegroupColissimo');
+        return $this->l('If the order comes from BHV and has non-empty "other" or "relayID" field.', 'BhvColissimo');
     }
 
     /**
@@ -68,7 +68,7 @@ class VeepeegroupColissimo extends AbstractColissimo implements RuleInterface
      */
     public function getDescription()
     {
-        return $this->l('Set the carrier to Colissimo Pickup Point and add necessary data in the colissimo module accordingly.', 'VeepeegroupColissimo');
+        return $this->l('Set the carrier to Colissimo Pickup Point and add necessary data in the colissimo module accordingly.', 'BhvColissimo');
     }
 
     protected function getProductCode(OrderResource $apiOrder)

@@ -1317,6 +1317,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             ShoppingfeedAddon\OrderImport\Rules\SkipTax::class,
             ShoppingfeedAddon\OrderImport\Rules\GlsRule::class,
             ShoppingfeedAddon\OrderImport\Rules\VeepeegroupColissimo::class,
+            ShoppingfeedAddon\OrderImport\Rules\BhvColissimo::class,
         ];
 
         foreach ($defaultRulesClassNames as $ruleClassName) {

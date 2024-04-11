@@ -109,4 +109,37 @@ class OrderRulesColissimoTest extends AbstractOrdeTestCase
         $this->assertEquals($address->city, $pickupPoint->city);
         $this->assertEquals($address->postcode, $pickupPoint->zipcode);
     }
+
+    public function testBhvColissimo()
+    {
+        $apiOrder = $this->getOrderRessourceFromDataset('order-bhv-colissimo.json');
+        $rule = new VeepeegroupColissimo();
+        $this->assertTrue($rule->isApplicable($apiOrder));
+
+        $handler = new ActionsHandler();
+        $handler->addActions(
+            'registerSpecificRules',
+            'verifyOrder',
+            'createOrderCart'
+        );
+        $handler->setConveyor(
+            [
+                'id_shop' => 1,
+                'id_token' => 1,
+                'id_lang' => 1,
+                'apiOrder' => $apiOrder,
+            ]
+        );
+
+        Registry::set('shoppingfeedOrderImportHandler', $handler);
+        $handler->process('shoppingfeedOrderImport');
+        $conveyor = $handler->getConveyor();
+        $address = new Address($conveyor['cart']->id_address_delivery);
+        $pickupPoint = \ColissimoPickupPoint::getPickupPointByIdColissimo('488411');
+        $this->assertEquals($address->company, $pickupPoint->company_name);
+        $this->assertEquals($address->address1, $pickupPoint->address1);
+        $this->assertEquals($address->address2, $pickupPoint->address2);
+        $this->assertEquals($address->city, $pickupPoint->city);
+        $this->assertEquals($address->postcode, $pickupPoint->zipcode);
+    }
 }
