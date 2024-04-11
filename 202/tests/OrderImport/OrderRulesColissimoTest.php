@@ -4,6 +4,7 @@ namespace Tests\OrderImport;
 
 use Address;
 use ShoppingfeedAddon\Actions\ActionsHandler;
+use ShoppingfeedAddon\OrderImport\Rules\BhvColissimo;
 use ShoppingfeedAddon\OrderImport\Rules\ManomanoColissimo;
 use ShoppingfeedAddon\OrderImport\Rules\ShowroompriveColissimo;
 use ShoppingfeedAddon\OrderImport\Rules\VeepeegroupColissimo;
@@ -113,7 +114,7 @@ class OrderRulesColissimoTest extends AbstractOrdeTestCase
     public function testBhvColissimo()
     {
         $apiOrder = $this->getOrderRessourceFromDataset('order-bhv-colissimo.json');
-        $rule = new VeepeegroupColissimo();
+        $rule = new BhvColissimo();
         $this->assertTrue($rule->isApplicable($apiOrder));
 
         $handler = new ActionsHandler();
