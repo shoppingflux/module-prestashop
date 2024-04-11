@@ -1,0 +1,102 @@
+{
+  "id": 19372757000,
+  "storeId": 26898,
+  "channelId": 35639,
+  "reference": "TEST-19372757000",
+  "storeReference": "55555",
+  "isTest": true,
+  "acknowledgedAt": null,
+  "createdAt": "2023-01-24T09:49:04+01:00",
+  "updatedAt": "2023-02-01T02:40:44+01:00",
+  "status": "waiting_shipment",
+  "anonymized": false,
+  "payment":{
+    "shippingAmount":4.9,
+    "productAmount":4.5,
+    "totalAmount":9.4,
+    "currency":"EUR",
+    "method":"PayPal"
+  },
+  "shipment": {
+    "carrier": "Colissimo",
+    "trackingNumber": "",
+    "trackingLink": "",
+    "returnInfo": {
+      "carrier": null,
+      "trackingNumber": null
+    }
+  },
+  "additionalFields": {
+    "fulfilled_by": "merchant"
+  },
+  "errors": [],
+  "itemsReferencesAliases": null,
+  "fulfilledBy": "store",
+  "items": [ {
+    "reference":"8",
+    "status":"",
+    "quantity":1,
+    "price":4.5,
+    "taxAmount":0,
+    "channelReference": "TEST-19372757000-1",
+    "additionalFields": null,
+    "name":"Mug Today is a good day",
+    "image":"http://localhost/img/p/1/1-small_default.jpg"
+  }
+  ],
+  "commission": 15.4,
+  "shippingAddress": {
+    "firstName": "John",
+    "lastName": "Dow",
+    "company": "202 ecommerce",
+    "street": "10 rue Vivienne",
+    "street2": "",
+    "other": "",
+    "postalCode": "75001",
+    "city": "Paris",
+    "country": "FR",
+    "phone": "0123456789",
+    "mobilePhone": "",
+    "province": "",
+    "email": "unique-1@test.com",
+    "relayId": "488411"
+  },
+  "billingAddress": {
+    "firstName": "John",
+    "lastName": "Dow",
+    "company": "202 ecommerce",
+    "street": "10 rue Vivienne",
+    "street2": "",
+    "other": "",
+    "postalCode": "75001",
+    "city": "Paris",
+    "country": "FR",
+    "phone": "",
+    "mobilePhone": "",
+    "province": "",
+    "email": "unique-1@test.com"
+  },
+  "_links": {
+    "self": {
+      "href": "/v1/store/26898/order/19372757000"
+    },
+    "store": {
+      "href": "/v1/store/26898"
+    }
+  },
+  "_embedded": {
+    "channel": {
+      "id": 35639,
+      "name": "bhv",
+      "_links": {
+        "self": {
+          "href": "/v1/channel/35639"
+        },
+        "image": {
+          "href": "https://assets.shopping-feed.com/channel/logo/bhv.png"
+        }
+      }
+    },
+    "tag": []
+  }
+}
