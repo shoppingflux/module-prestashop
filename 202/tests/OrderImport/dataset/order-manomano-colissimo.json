@@ -82,7 +82,7 @@
     "_embedded":{
        "channel":{
           "id":259,
-          "name":"Mamomano",
+          "name":"Manomano",
           "_links":{
              "self":{
                 "href":"/v1/channel/259"

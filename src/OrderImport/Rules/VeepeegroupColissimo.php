@@ -25,30 +25,27 @@ if (!defined('_PS_VERSION_')) {
 
 use Carrier;
 use Cart;
-use Module;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 
-class ManomanoColissimo extends AbstractColissimo implements RuleInterface
+class VeepeegroupColissimo extends AbstractColissimo implements RuleInterface
 {
     public function isApplicable(OrderResource $apiOrder)
     {
-        $apiOrderData = $apiOrder->toArray();
         $logPrefix = sprintf(
-            $this->l('[Order: %s]', 'ManomanoColissimo'),
+            $this->l('[Order: %s]', 'VeepeegroupColissimo'),
             $apiOrder->getId()
         );
         $logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
 
-        // Check marketplace, that the additional fields with the pickup point data are there and not empty, and that the "colissimo" module is installed and active
-        if (preg_match('#^manomano#i', $apiOrder->getChannel()->getName())
+        if (preg_match('#^veepeegroup#i', $apiOrder->getChannel()->getName())
             && $this->isModuleColissimoEnabled()
             && !empty($this->getRelayId($apiOrder))
         ) {
             ProcessLoggerHandler::logInfo(
                 $logPrefix .
-                    $this->l('Rule triggered.', 'ManomanoColissimo'),
+                    $this->l('Rule triggered.', 'VeepeegroupColissimo'),
                 'Order'
             );
 
@@ -63,7 +60,7 @@ class ManomanoColissimo extends AbstractColissimo implements RuleInterface
      */
     public function getConditions()
     {
-        return $this->l('If the order comes from Manomano and has non-empty "other" or "relayID" field.', 'ManomanoColissimo');
+        return $this->l('If the order comes from Veepeegroup and has non-empty "other" or "relayID" field.', 'VeepeegroupColissimo');
     }
 
     /**
@@ -71,7 +68,7 @@ class ManomanoColissimo extends AbstractColissimo implements RuleInterface
      */
     public function getDescription()
     {
-        return $this->l('Set the carrier to Colissimo Pickup Point and add necessary data in the colissimo module accordingly.', 'ManomanoColissimo');
+        return $this->l('Set the carrier to Colissimo Pickup Point and add necessary data in the colissimo module accordingly.', 'VeepeegroupColissimo');
     }
 
     protected function getProductCode(OrderResource $apiOrder)
@@ -93,6 +90,10 @@ class ManomanoColissimo extends AbstractColissimo implements RuleInterface
 
         if (false == empty($address['relayID'])) {
             return $address['relayID'];
+        }
+
+        if (false === empty($apiOrder->toArray()['additionalFields']['pickup_point_id'])) {
+            return $apiOrder->toArray()['additionalFields']['pickup_point_id'];
         }
 
         return '';

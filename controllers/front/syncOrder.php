@@ -281,7 +281,7 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
                         $this->processMonitor->getProcessObjectModelId()
                     );
 
-                    return false;
+                    continue;
                 }
 
                 $result = $shoppingfeedApi->getUnacknowledgedOrders();
@@ -299,7 +299,7 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
                     $this->processMonitor->getProcessObjectModelId()
                 );
 
-                return false;
+                continue;
             }
             if (empty($result) === true) {
                 ProcessLoggerHandler::logInfo(
@@ -312,6 +312,8 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
 
             Registry::set('errors', 0);
             Registry::set('importedOrders', 0);
+            Shop::setContext(Shop::CONTEXT_SHOP, $id_shop);
+            $this->context->shop = new Shop($id_shop);
             foreach ($result as $apiOrder) {
                 $logPrefix = sprintf(
                     $this->module->l('[Order: %s]', 'syncOrder'),

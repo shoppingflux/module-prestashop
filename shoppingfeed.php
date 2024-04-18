@@ -543,17 +543,17 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
      */
     public static function isOrderSyncAvailable($id_shop = null)
     {
+        $shoppingfluxexport = Module::getInstanceByName('shoppingfluxexport');
         // Is the old module installed ?
-        if (Module::isInstalled('shoppingfluxexport')
-            && Module::isEnabled('shoppingfluxexport')
-            && (
-                // Is order "shipped" status sync disabled in the old module ?
-                Configuration::get('SHOPPING_FLUX_STATUS_SHIPPED', null, null, $id_shop) != ''
-                // Is order "canceled" status sync disabled in the old module ?
-                || Configuration::get('SHOPPING_FLUX_STATUS_CANCELED', null, null, $id_shop) != ''
-        )
-        ) {
-            return false;
+        if (Validate::isLoadedObject($shoppingfluxexport) && $shoppingfluxexport->active) {
+            // Is order "shipped" status sync disabled in the old module ?
+            if (false === empty(Configuration::get('SHOPPING_FLUX_STATUS_SHIPPED', null, null, $id_shop))) {
+                return false;
+            }
+            // Is order "canceled" status sync disabled in the old module ?
+            if (false === empty(Configuration::get('SHOPPING_FLUX_STATUS_CANCELED', null, null, $id_shop))) {
+                return false;
+            }
         }
 
         return true;
@@ -566,15 +566,12 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
      */
     public static function isOrderImportAvailable($id_shop = null)
     {
+        $shoppingfluxexport = Module::getInstanceByName('shoppingfluxexport');
         // Is the old module installed ?
-        if (Module::isInstalled('shoppingfluxexport')
-            && Module::isEnabled('shoppingfluxexport')
-            && (
-                // Is order import disabled in the old module ?
-                Configuration::get('SHOPPING_FLUX_ORDERS', null, null, $id_shop) != ''
-               )
-        ) {
-            return false;
+        if (Validate::isLoadedObject($shoppingfluxexport) && $shoppingfluxexport->active) {
+            if (Configuration::get('SHOPPING_FLUX_ORDERS', null, null, $id_shop) != '') {
+                return false;
+            }
         }
 
         return true;
@@ -1319,6 +1316,8 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             ShoppingfeedAddon\OrderImport\Rules\TaxExclMarketplace::class,
             ShoppingfeedAddon\OrderImport\Rules\SkipTax::class,
             ShoppingfeedAddon\OrderImport\Rules\GlsRule::class,
+            ShoppingfeedAddon\OrderImport\Rules\VeepeegroupColissimo::class,
+            ShoppingfeedAddon\OrderImport\Rules\BhvColissimo::class,
         ];
 
         foreach ($defaultRulesClassNames as $ruleClassName) {
