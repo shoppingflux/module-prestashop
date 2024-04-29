@@ -420,6 +420,10 @@ class ProductSerializer
             if (empty($combination['upc']) === false) {
                 $variation['attributes']['upc'] = $combination['upc'];
             }
+
+            if (empty($combination['mpn']) === false) {
+                $variation['attributes']['mpn'] = $combination['mpn'];
+            }
             if (empty($combination['weight']) === false && $combination['weight'] != 0) {
                 $variation['attributes']['weight'] = $combination['weight'];
                 $variation['attributes']['weight'] = (float) $this->product->weight + (float) $combination['weight'];
