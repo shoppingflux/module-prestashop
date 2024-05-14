@@ -16,6 +16,9 @@
  * @copyright Since 2019 Shopping Feed
  * @license   https://opensource.org/licenses/AFL-3.0  Academic Free License (AFL 3.0)
  */
+
+use ShoppingfeedAddon\Services\SfTools;
+
 if (!defined('_PS_VERSION_')) {
     exit;
 }
@@ -35,6 +38,8 @@ class ShoppingfeedToken extends ObjectModel
     public $active;
 
     public $shoppingfeed_store_id;
+
+    public $feed_key;
 
     public $date_add;
 
@@ -72,6 +77,13 @@ class ShoppingfeedToken extends ObjectModel
             'shoppingfeed_store_id' => [
                 'type' => self::TYPE_INT,
                 'validate' => 'isUnsignedInt',
+            ],
+            'feed_key' => [
+                'type' => self::TYPE_STRING,
+                'validate' => 'isCleanHtml',
+                'unique' => true,
+                'required' => true,
+                'size' => 50,
             ],
             'date_add' => [
                 'type' => self::TYPE_DATE,
@@ -125,7 +137,7 @@ class ShoppingfeedToken extends ObjectModel
         return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
     }
 
-    public function addToken($id_shop, $id_lang, $id_currency, $token)
+    public function addToken($id_shop, $id_lang, $id_currency, $token, $shoppingfeed_store_id)
     {
         if ($this->findByToken($token) !== false) {
             throw new Exception("Duplicate entry for token $token");
@@ -134,6 +146,8 @@ class ShoppingfeedToken extends ObjectModel
         $this->id_lang = $id_lang;
         $this->id_currency = $id_currency;
         $this->content = $token;
+        $this->shoppingfeed_store_id = $shoppingfeed_store_id;
+        $this->feed_key = (new SfTools())->hash(uniqid());
         $this->active = true;
 
         return $this->save();
@@ -172,13 +186,22 @@ class ShoppingfeedToken extends ObjectModel
         ;
 
         if (version_compare(_PS_VERSION_, '1.7.6.0', '>=')) {
-            $sql->select('sft.id_shop, sft.id_shoppingfeed_token, sft.content as token, sft.active, s.name as shop_name, l.name as lang_name, cl.name as currency_name')
+            $sql->select('sft.id_shop, sft.id_shoppingfeed_token, sft.content as token, sft.active, sft.feed_key, s.name as shop_name, l.name as lang_name, cl.name as currency_name')
                 ->select('sft.shoppingfeed_store_id')
                 ->innerJoin(\Currency::$definition['table'] . '_lang', 'cl', 'cl.id_currency = sft.id_currency and cl.id_lang = ' . Context::getContext()->language->id);
         } else {
-            $sql->select('sft.id_shop, sft.id_shoppingfeed_token, sft.content as token, sft.active, s.name as shop_name, l.name as lang_name, c.name as currency_name');
+            $sql->select('sft.id_shop, sft.id_shoppingfeed_token, sft.content as token, sft.active, sft.feed_key, s.name as shop_name, l.name as lang_name, c.name as currency_name');
         }
 
         return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
+    }
+
+    public function findByFeedKey($feed_key)
+    {
+        return Db::getInstance()->getRow(
+            (new DbQuery())
+                ->from(self::$definition['table'])
+                ->where(sprintf('feed_key="%s"', pSQL($feed_key)))
+        );
     }
 }

@@ -43,6 +43,7 @@ class AdminShoppingfeedAccountSettingsController extends ShoppingfeedAdminContro
             $this->module->getPathUri() . 'views/css/shoppingfeed_configuration/form.css',
             $this->module->getPathUri() . 'views/css/font-awesome.min.css',
         ]);
+        $this->addJS($this->module->getPathUri() . 'views/js/account-settings-page.js');
 
         $tokens = new ShoppingfeedToken();
         $listTokens = $tokens->findAll();
@@ -145,6 +146,10 @@ class AdminShoppingfeedAccountSettingsController extends ShoppingfeedAdminContro
                     'required' => true,
                 ],
                 [
+                    'type' => 'shoppingfeed-button-get-store-id',
+                    'name' => '',
+                ],
+                [
                     'type' => 'select',
                     'label' => $this->l('Shop'),
                     'name' => 'shop',
@@ -177,6 +182,17 @@ class AdminShoppingfeedAccountSettingsController extends ShoppingfeedAdminContro
                         'name' => 'name',
                     ],
                 ],
+                [
+                    'type' => 'select',
+                    'label' => $this->l('StoreID ShoppingFeed'),
+                    'name' => 'store_id',
+                    'required' => true,
+                    'options' => [
+                        'query' => [],
+                        'id' => 'store_id',
+                        'name' => 'name',
+                    ],
+                ],
             ],
             'submit' => [
                 'title' => $this->l('Save', 'AdminShoppingfeedAccountSettings'),
@@ -194,6 +210,8 @@ class AdminShoppingfeedAccountSettingsController extends ShoppingfeedAdminContro
         $helper = new HelperForm();
         $this->setHelperDisplay($helper);
         $helper->fields_value = $fields_value;
+        $helper->base_folder = $this->getTemplatePath() . $this->override_folder;
+        $helper->base_tpl = 'token-form.tpl';
 
         return $helper->generateForm([['form' => $fields_form]]);
     }
@@ -231,6 +249,10 @@ class AdminShoppingfeedAccountSettingsController extends ShoppingfeedAdminContro
                     'required' => true,
                 ],
                 [
+                    'type' => 'shoppingfeed-button-get-store-id',
+                    'name' => '',
+                ],
+                [
                     'type' => 'select',
                     'label' => $this->l('Shop'),
                     'name' => 'shop',
@@ -260,6 +282,17 @@ class AdminShoppingfeedAccountSettingsController extends ShoppingfeedAdminContro
                     'options' => [
                         'query' => $currencies,
                         'id' => 'id_currency',
+                        'name' => 'name',
+                    ],
+                ],
+                [
+                    'type' => 'select',
+                    'label' => $this->l('StoreID ShoppingFeed'),
+                    'name' => 'store_id',
+                    'required' => true,
+                    'options' => [
+                        'query' => [],
+                        'id' => 'store_id',
                         'name' => 'name',
                     ],
                 ],
@@ -319,6 +352,7 @@ class AdminShoppingfeedAccountSettingsController extends ShoppingfeedAdminContro
     public function saveToken($shop_id, $lang_id, $currency_id)
     {
         $token = Tools::getValue(Shoppingfeed::AUTH_TOKEN);
+        $store_id = Tools::getValue('store_id', '');
 
         if (!$token || !preg_match("/^[\w\-\.\~\+\/]+=*$/", $token)) { // See https://tools.ietf.org/html/rfc6750
             $this->errors[] = $this->module->l('You must specify a valid token.', 'AdminShoppingfeedAccountSettings');
@@ -334,7 +368,12 @@ class AdminShoppingfeedAccountSettingsController extends ShoppingfeedAdminContro
 
                 return false;
             }
-            (new ShoppingfeedToken())->addToken($shop_id, $lang_id, $currency_id, $token);
+            if (false === $shoppingFeedApi->isExistedStore($store_id)) {
+                $this->errors[] = $this->module->l('You must specify a valid store ID.', 'AdminShoppingfeedAccountSettings');
+
+                return false;
+            }
+            (new ShoppingfeedToken())->addToken($shop_id, $lang_id, $currency_id, $token, $store_id);
         } catch (SfGuzzle\GuzzleHttp\Exception\ClientException $e) {
             if ($e->getResponse()->getStatusCode() == 401) {
                 $this->errors[] = $this->module->l('This token was not recognized by the Shopping Feed API.', 'AdminShoppingfeedAccountSettings');
@@ -363,6 +402,7 @@ class AdminShoppingfeedAccountSettingsController extends ShoppingfeedAdminContro
     {
         $username = Tools::getValue('username');
         $password = Tools::getValue('password');
+        $store_id = Tools::getValue('store_id');
 
         try {
             $shoppingFeedApi = ShoppingfeedApi::getInstanceByCredentials($username, $password);
@@ -372,7 +412,12 @@ class AdminShoppingfeedAccountSettingsController extends ShoppingfeedAdminContro
 
                 return false;
             }
-            (new ShoppingfeedToken())->addToken($shop_id, $lang_id, $currency_id, $shoppingFeedApi->getToken());
+            if (false === $shoppingFeedApi->isExistedStore($store_id)) {
+                $this->errors[] = $this->module->l('You must specify a valid store ID.', 'AdminShoppingfeedAccountSettings');
+
+                return false;
+            }
+            (new ShoppingfeedToken())->addToken($shop_id, $lang_id, $currency_id, $shoppingFeedApi->getToken(), $store_id);
         } catch (SfGuzzle\GuzzleHttp\Exception\ClientException $e) {
             if ($e->getResponse()->getStatusCode() == 401) {
                 $this->errors[] = $this->module->l('These credentials were not recognized by the Shopping Feed API.', 'AdminShoppingfeedAccountSettings');
@@ -408,7 +453,7 @@ class AdminShoppingfeedAccountSettingsController extends ShoppingfeedAdminContro
             $link = $this->context->link->getModuleLink(
                 'shoppingfeed',
                 'product',
-                ['token' => $listToken['token']],
+                ['feed_key' => $listToken['feed_key']],
                 true,
                 Configuration::get('PS_LANG_DEFAULT'),
                 $listToken['id_shop']
@@ -435,6 +480,10 @@ class AdminShoppingfeedAccountSettingsController extends ShoppingfeedAdminContro
             ],
             'shoppingfeed_store_id' => [
                 'title' => $this->module->l('Store ID', 'AdminShoppingfeedAccountSettings'),
+                'search' => false,
+            ],
+            'feed_key' => [
+                'title' => $this->module->l('Feed key', 'AdminShoppingfeedAccountSettings'),
                 'search' => false,
             ],
             'link' => [
@@ -476,5 +525,39 @@ class AdminShoppingfeedAccountSettingsController extends ShoppingfeedAdminContro
         $shoppingfeedToken->save() ?
             exit(json_encode(['success' => true, 'text' => $this->l('The status has been updated successfully')])) :
             exit(json_encode(['success' => false, 'error' => true, 'text' => $this->l('Failed to update the status')]));
+    }
+
+    public function ajaxProcessGetStoreId()
+    {
+        $api = null;
+        $storeID = [];
+
+        try {
+            if (Tools::getValue(Shoppingfeed::AUTH_TOKEN)) {
+                $api = ShoppingfeedApi::getInstanceByToken(null, Tools::getValue(Shoppingfeed::AUTH_TOKEN));
+            } elseif (Tools::getValue('username') && Tools::getValue('password')) {
+                $api = ShoppingfeedApi::getInstanceByCredentials(
+                    Tools::getValue('username'),
+                    Tools::getValue('password')
+                );
+            }
+        } catch (\SfGuzzle\GuzzleHttp\Exception\ClientException $e) {
+        }
+
+        if (!$api) {
+            exit(json_encode([
+                'success' => false,
+                'message' => $this->l('Wrong credentials'),
+            ]));
+        }
+
+        foreach ($api->getStores() as $store) {
+            $storeID[] = $store->getId();
+        }
+
+        exit(json_encode([
+            'success' => true,
+            'storeID' => $storeID,
+        ]));
     }
 }

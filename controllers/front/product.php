@@ -35,6 +35,11 @@ class ShoppingfeedProductModuleFrontController extends \ModuleFrontController
         parent::init();
 
         $this->sfToken = (new ShoppingfeedToken())->findByToken(Tools::getValue('token', ''));
+
+        if (false === Validate::isLoadedObject($this->sfToken)) {
+            $this->sfToken = (new ShoppingfeedToken())->findByFeedKey(Tools::getValue('feed_key', ''));
+        }
+
         $this->isCompressFeed = (int) Configuration::get(Shoppingfeed::COMPRESS_PRODUCTS_FEED);
     }
 

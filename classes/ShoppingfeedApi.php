@@ -495,4 +495,15 @@ class ShoppingfeedApi
 
         return $tickets;
     }
+
+    public function isExistedStore($store_id)
+    {
+        foreach ($this->getStores() as $store) {
+            if ($store->getId() == $store_id) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }
