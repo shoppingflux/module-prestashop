@@ -352,7 +352,7 @@ class AdminShoppingfeedAccountSettingsController extends ShoppingfeedAdminContro
     public function saveToken($shop_id, $lang_id, $currency_id)
     {
         $token = Tools::getValue(Shoppingfeed::AUTH_TOKEN);
-        $store_id = Tools::getValue('store_id', '');
+        $store_id = (int) Tools::getValue('store_id');
 
         if (!$token || !preg_match("/^[\w\-\.\~\+\/]+=*$/", $token)) { // See https://tools.ietf.org/html/rfc6750
             $this->errors[] = $this->module->l('You must specify a valid token.', 'AdminShoppingfeedAccountSettings');
@@ -402,7 +402,7 @@ class AdminShoppingfeedAccountSettingsController extends ShoppingfeedAdminContro
     {
         $username = Tools::getValue('username');
         $password = Tools::getValue('password');
-        $store_id = Tools::getValue('store_id');
+        $store_id = (int) Tools::getValue('store_id');
 
         try {
             $shoppingFeedApi = ShoppingfeedApi::getInstanceByCredentials($username, $password);

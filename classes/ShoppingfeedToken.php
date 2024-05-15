@@ -142,11 +142,11 @@ class ShoppingfeedToken extends ObjectModel
         if ($this->findByToken($token) !== false) {
             throw new Exception("Duplicate entry for token $token");
         }
-        $this->id_shop = $id_shop;
-        $this->id_lang = $id_lang;
-        $this->id_currency = $id_currency;
+        $this->id_shop = (int) $id_shop;
+        $this->id_lang = (int) $id_lang;
+        $this->id_currency = (int) $id_currency;
         $this->content = $token;
-        $this->shoppingfeed_store_id = $shoppingfeed_store_id;
+        $this->shoppingfeed_store_id = (int) $shoppingfeed_store_id;
         $this->feed_key = (new SfTools())->hash(uniqid());
         $this->active = true;
 
