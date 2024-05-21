@@ -284,10 +284,10 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
                     continue;
                 }
 
-                $result = $shoppingfeedApi->getUnacknowledgedOrders();
+                $result = $shoppingfeedApi->getUnacknowledgedOrders(false, $token['shoppingfeed_store_id']);
                 if (Configuration::get(\Shoppingfeed::ORDER_IMPORT_SHIPPED) == true
                     || Configuration::get(\Shoppingfeed::ORDER_IMPORT_SHIPPED_MARKETPLACE) == true) {
-                    $result = array_merge($result, $shoppingfeedApi->getUnacknowledgedOrders(true));
+                    $result = array_merge($result, $shoppingfeedApi->getUnacknowledgedOrders(true, $token['shoppingfeed_store_id']));
                 }
             } catch (Throwable $e) {
                 ProcessLoggerHandler::logError(

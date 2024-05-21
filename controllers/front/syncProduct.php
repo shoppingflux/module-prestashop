@@ -121,6 +121,7 @@ class ShoppingfeedSyncProductModuleFrontController extends ShoppingfeedCronContr
                 $logPrefix = $actionClassname::getLogPrefix($token['id_shoppingfeed_token']);
                 $handler->setConveyor([
                     'id_token' => $token['id_shoppingfeed_token'],
+                    'shoppingfeed_store_id' => $token['shoppingfeed_store_id'],
                     'product_action' => $action,
                 ]);
 

@@ -93,7 +93,7 @@ class ShoppingfeedProductSyncStockActions extends ShoppingfeedProductSyncActions
         $limit = Configuration::getGlobalValue(Shoppingfeed::STOCK_SYNC_MAX_PRODUCTS);
         $preparedBatch = $this->conveyor['preparedBatch'];
         foreach (array_chunk($preparedBatch, $limit, true) as $products) {
-            $res = $shoppingfeedApi->updateMainStoreInventory($products);
+            $res = $shoppingfeedApi->updateMainStoreInventory($products, $this->conveyor['shoppingfeed_store_id']);
             /*
              * If we send a product reference that isn't in SF's catalog, the API
              * doesn't send a confirmation for this product.

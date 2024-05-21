@@ -108,7 +108,7 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
             $this->context->link->getModuleLink(
                 'shoppingfeed',
                 'product',
-                ['token' => empty($token['content']) ? '' : $token['content']],
+                ['feed_key' => empty($token['feed_key']) ? '' : $token['feed_key']],
                 true
             )
         );
