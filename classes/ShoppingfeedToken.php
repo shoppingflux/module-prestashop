@@ -37,6 +37,8 @@ class ShoppingfeedToken extends ObjectModel
 
     public $active;
 
+    public $merchant;
+
     public $shoppingfeed_store_id;
 
     public $feed_key;
@@ -73,6 +75,11 @@ class ShoppingfeedToken extends ObjectModel
             'active' => [
                 'type' => ObjectModel::TYPE_BOOL,
                 'validate' => 'isBool',
+            ],
+            'merchant' => [
+                'type' => self::TYPE_STRING,
+                'validate' => 'isCleanHtml',
+                'size' => 100,
             ],
             'shoppingfeed_store_id' => [
                 'type' => self::TYPE_INT,
@@ -137,7 +144,7 @@ class ShoppingfeedToken extends ObjectModel
         return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
     }
 
-    public function addToken($id_shop, $id_lang, $id_currency, $token, $shoppingfeed_store_id)
+    public function addToken($id_shop, $id_lang, $id_currency, $token, $shoppingfeed_store_id, $merchant)
     {
         if ($this->findByToken($token) !== false) {
             throw new Exception("Duplicate entry for token $token");
@@ -147,6 +154,7 @@ class ShoppingfeedToken extends ObjectModel
         $this->id_currency = (int) $id_currency;
         $this->content = $token;
         $this->shoppingfeed_store_id = (int) $shoppingfeed_store_id;
+        $this->merchant = pSQL($merchant);
         $this->feed_key = (new SfTools())->hash(uniqid());
         $this->active = true;
 
@@ -182,8 +190,8 @@ class ShoppingfeedToken extends ObjectModel
             ->from(self::$definition['table'], 'sft')
             ->innerJoin(\Shop::$definition['table'], 's', 's.id_shop = sft.id_shop')
             ->innerJoin(\Language::$definition['table'], 'l', 'l.id_lang = sft.id_lang')
-            ->innerJoin(\Currency::$definition['table'], 'c', 'c.id_currency = sft.id_currency')
-        ;
+            ->innerJoin(\Currency::$definition['table'], 'c', 'c.id_currency = sft.id_currency');
+        $sql->select('sft.merchant');
 
         if (version_compare(_PS_VERSION_, '1.7.6.0', '>=')) {
             $sql->select('sft.id_shop, sft.id_shoppingfeed_token, sft.content as token, sft.active, sft.feed_key, s.name as shop_name, l.name as lang_name, cl.name as currency_name')

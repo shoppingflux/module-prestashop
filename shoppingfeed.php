@@ -482,7 +482,8 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
                 Configuration::get('PS_LANG_DEFAULT', null, null, $shop['id_shop']),
                 Configuration::get('PS_CURRENCY_DEFAULT', null, null, $shop['id_shop']),
                 $tokenConfig,
-                $api->getMainStore()->getId()
+                $api->getMainStore()->getId(),
+                $api->getMainStore()->getName()
             );
         }
     }
