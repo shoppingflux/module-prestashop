@@ -373,7 +373,14 @@ class AdminShoppingfeedAccountSettingsController extends ShoppingfeedAdminContro
 
                 return false;
             }
-            (new ShoppingfeedToken())->addToken($shop_id, $lang_id, $currency_id, $token, $store_id);
+            (new ShoppingfeedToken())->addToken(
+                $shop_id,
+                $lang_id,
+                $currency_id,
+                $token,
+                $store_id,
+                $shoppingFeedApi->getMainStore()->getName()
+            );
         } catch (SfGuzzle\GuzzleHttp\Exception\ClientException $e) {
             if ($e->getResponse()->getStatusCode() == 401) {
                 $this->errors[] = $this->module->l('This token was not recognized by the Shopping Feed API.', 'AdminShoppingfeedAccountSettings');
@@ -417,7 +424,14 @@ class AdminShoppingfeedAccountSettingsController extends ShoppingfeedAdminContro
 
                 return false;
             }
-            (new ShoppingfeedToken())->addToken($shop_id, $lang_id, $currency_id, $shoppingFeedApi->getToken(), $store_id);
+            (new ShoppingfeedToken())->addToken(
+                $shop_id,
+                $lang_id,
+                $currency_id,
+                $shoppingFeedApi->getToken(),
+                $store_id,
+                $shoppingFeedApi->getMainStore()->getName()
+            );
         } catch (SfGuzzle\GuzzleHttp\Exception\ClientException $e) {
             if ($e->getResponse()->getStatusCode() == 401) {
                 $this->errors[] = $this->module->l('These credentials were not recognized by the Shopping Feed API.', 'AdminShoppingfeedAccountSettings');
@@ -476,6 +490,10 @@ class AdminShoppingfeedAccountSettingsController extends ShoppingfeedAdminContro
             ],
             'currency_name' => [
                 'title' => $this->module->l('Currency', 'AdminShoppingfeedAccountSettings'),
+                'search' => false,
+            ],
+            'merchant' => [
+                'title' => $this->module->l('Merchant', 'AdminShoppingfeedAccountSettings'),
                 'search' => false,
             ],
             'shoppingfeed_store_id' => [
