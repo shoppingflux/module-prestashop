@@ -104,6 +104,7 @@ class ProductAttributeCombination
                 $combinations[$idProductAttribute]['id_product_attribute'] = $idProductAttribute;
                 $combinations[$idProductAttribute]['ean13'] = $row['ean13'];
                 $combinations[$idProductAttribute]['upc'] = $row['upc'];
+                $combinations[$idProductAttribute]['mpn'] = $row['mpn'];
                 $combinations[$idProductAttribute]['quantity'] = \Cache::retrieve($cache_key);
                 $combinations[$idProductAttribute]['weight'] = $row['weight'];
                 $combinations[$idProductAttribute]['reference'] = $row['reference'];
