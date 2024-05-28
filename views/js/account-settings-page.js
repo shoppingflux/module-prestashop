@@ -23,11 +23,18 @@
 
 var AccountSettingsPage = function() {
     this.registerEventListeners();
+    this.checkLoginForm();
 };
 
 AccountSettingsPage.prototype.registerEventListeners = function() {
     document.querySelectorAll('[btn-get-storeid]').forEach(function(button) {
         button.addEventListener('click', this.updateStoreId.bind(this));
+    }.bind(this));
+    document.querySelectorAll('[name="username"]').forEach(function(username) {
+        username.addEventListener('change', this.checkLoginForm.bind(this));
+    }.bind(this));
+    document.querySelectorAll('[name="password"]').forEach(function(password) {
+        password.addEventListener('change', this.checkLoginForm.bind(this));
     }.bind(this));
 };
 
@@ -90,6 +97,25 @@ AccountSettingsPage.prototype.buildOptions = function(storeID) {
     }
 
     return options;
+}
+
+AccountSettingsPage.prototype.checkLoginForm = function() {
+    var username = document.querySelector('[name="username"]');
+    var password = document.querySelector('[name="password"]');
+
+    if (username && password) {
+        console.log([username.value, password.value]);
+        var form = username.closest('form');
+        if (username.value && password.value) {
+            if (form) {
+                form.querySelector('button[type="submit"]').disabled = false;
+            }
+        } else {
+            if (form) {
+                form.querySelector('button[type="submit"]').disabled = true;
+            }
+        }
+    }
 }
 
 window.addEventListener('load', function() {
