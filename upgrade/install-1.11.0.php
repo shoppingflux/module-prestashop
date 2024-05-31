@@ -20,7 +20,7 @@
 use ShoppingfeedAddon\Services\SfTools;
 use ShoppingfeedClasslib\Install\ModuleInstaller;
 
-function upgrade_module_1_10_8($module)
+function upgrade_module_1_11_0($module)
 {
     /**
      * @var Shoppingfeed $module

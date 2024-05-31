@@ -146,9 +146,11 @@ class ShoppingfeedToken extends ObjectModel
 
     public function addToken($id_shop, $id_lang, $id_currency, $token, $shoppingfeed_store_id, $merchant)
     {
-        if ($this->findByToken($token) !== false) {
-            throw new Exception("Duplicate entry for token $token");
+        if ($this->findByToken($token, $shoppingfeed_store_id) !== false) {
+            $module = Module::getInstanceByName('shoppingfeed');
+            throw new Exception(sprintf($module->l('Duplicate entry for Store ID %d', 'ShoppingfeedToken'), (int) $shoppingfeed_store_id));
         }
+
         $this->id_shop = (int) $id_shop;
         $this->id_lang = (int) $id_lang;
         $this->id_currency = (int) $id_currency;
@@ -161,13 +163,17 @@ class ShoppingfeedToken extends ObjectModel
         return $this->save();
     }
 
-    public function findByToken($token)
+    public function findByToken($token, $shoppingfeed_store_id = null)
     {
         $query = (new DbQuery())
             ->select('*')
             ->from(self::$definition['table'])
             ->where('content = "' . pSQL($token) . '"')
         ;
+
+        if ($shoppingfeed_store_id) {
+            $query->where('shoppingfeed_store_id = ' . (int) $shoppingfeed_store_id);
+        }
 
         return Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($query);
     }
