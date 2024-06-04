@@ -508,7 +508,7 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
                     ],
                     'label' => $this->module->l('Compress products feed', 'AdminShoppingfeedGeneralSettings'),
                     'name' => Shoppingfeed::COMPRESS_PRODUCTS_FEED,
-                    'disabled' => (Tools::getValue('with_factory') !== false) ? $syncByDateUpdate : true,
+                    'disabled' => (Tools::isSubmit('with_factory') === false),
                 ],
             ],
         ];
