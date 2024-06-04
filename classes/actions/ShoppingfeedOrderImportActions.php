@@ -1168,6 +1168,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             if ($id_order_carrier) {
                 Db::getInstance()->update('order_carrier', $updateOrderTracking, '`id_order_carrier` = ' . (int) $id_order_carrier);
             } else {
+                $updateOrderTracking['date_add'] = date('Y-m-d H:i:s');
                 Db::getInstance()->insert('order_carrier', $updateOrderTracking);
             }
         }
