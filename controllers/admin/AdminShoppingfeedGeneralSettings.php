@@ -491,7 +491,7 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
                     'name' => Shoppingfeed::STOCK_SYNC_MAX_PRODUCTS,
                     'required' => true,
                     'class' => 'for_real',
-                    'disabled' => (Tools::getValue('with_factory') !== false) ? $syncByDateUpdate : true,
+                    'disabled' => (Tools::isSubmit('with_factory') === false),
                 ],
                 [
                     'type' => 'switch',
