@@ -23,12 +23,6 @@
 
 {extends file="helpers/form/form.tpl"}
 
-{block name="legend" append}
-    <p>
-        {l s='You may enter your Shopping Feed credentials here to retrieve your token.' mod='shoppingfeed'}
-    </p>
-{/block}
-
 {block name="input" append}
     {if $input.type == 'shoppingfeed-button-get-store-id'}
         {include file="./_partial/button-get-store-id.tpl"}

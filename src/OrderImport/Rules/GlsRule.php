@@ -57,14 +57,9 @@ class GlsRule extends RuleAbstract implements RuleInterface
         );
         $this->logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
 
-        if (false == $this->isModuleGlsInstalled() || empty($this->getRelayId($apiOrder))) {
+        if (false == $this->isModuleGlsInstalled()) {
             return false;
         }
-
-        ProcessLoggerHandler::logInfo(
-            $this->logPrefix .
-            $this->l('Rule triggered.', 'GlsRule')
-        );
 
         return true;
     }
@@ -92,19 +87,22 @@ class GlsRule extends RuleAbstract implements RuleInterface
         if (empty($cart->id_carrier)) {
             return;
         }
-
         $carrier = new Carrier($cart->id_carrier);
-
         if ($carrier->external_module_name != $this->gls->name) {
             return;
         }
+
+        ProcessLoggerHandler::logInfo(
+            $this->logPrefix .
+            $this->l('Rule triggered.', 'GlsRule')
+        );
 
         $cartCarrierAssociation = $this->initCartCarrierAssociation();
 
         try {
             $result = $cartCarrierAssociation->create($cart, $this->getRelayId($params['apiOrder']));
         } catch (Exception $e) {
-            ProcessLoggerHandler::logInfo(
+            ProcessLoggerHandler::logError(
                 $this->logPrefix .
                 sprintf(
                     $this->l('Fail linking GLS pickup point %s to cart %d. Detail message: %s', 'GlsRule'),

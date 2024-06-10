@@ -419,7 +419,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
         }
 
         foreach ($this->conveyor['preparedTaskOrders'] as $preparedTaskOrders) {
-            $result = $shoppingfeedApi->updateMainStoreOrdersStatus($preparedTaskOrders);
+            $result = $shoppingfeedApi->updateMainStoreOrdersStatus($preparedTaskOrders, $this->conveyor['shoppingfeed_store_id']);
 
             if (!$result) {
                 continue;

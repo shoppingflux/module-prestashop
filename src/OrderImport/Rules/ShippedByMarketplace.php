@@ -291,7 +291,11 @@ class ShippedByMarketplace extends RuleAbstract implements RuleInterface
     protected function isShippedAmazon(OrderResource $apiOrder)
     {
         try {
-            return strpos(strtolower($apiOrder->getPaymentInformation()['method']), 'afn') !== false;
+            $paymentInformation = $apiOrder->getPaymentInformation();
+
+            return
+                isset($paymentInformation['method']) &&
+                strpos(strtolower($paymentInformation['method']), 'afn') !== false;
         } catch (\Throwable $e) {
             return false;
         }
@@ -305,7 +309,11 @@ class ShippedByMarketplace extends RuleAbstract implements RuleInterface
     protected function isShippedCdiscount(OrderResource $apiOrder)
     {
         try {
-            return strpos(strtolower($apiOrder->getPaymentInformation()['method']), 'clogistique') !== false;
+            $paymentOrderInformation = $apiOrder->getPaymentInformation();
+
+            return
+                isset($paymentOrderInformation['method']) &&
+                strpos(strtolower($paymentOrderInformation['method']), 'clogistique') !== false;
         } catch (\Throwable $e) {
             return false;
         }
@@ -319,7 +327,11 @@ class ShippedByMarketplace extends RuleAbstract implements RuleInterface
     protected function isShippedManomano(OrderResource $apiOrder)
     {
         try {
-            return strtolower($apiOrder->toArray()['additionalFields']['env']) == 'epmm';
+            $apiOrderArray = $apiOrder->toArray();
+
+            return
+                isset($apiOrderArray['additionalFields']['env']) &&
+                strtolower($apiOrderArray['additionalFields']['env']) == 'epmm';
         } catch (\Throwable $e) {
             return false;
         }

@@ -23,7 +23,7 @@
     },
     "additionalFields":{
        "env":"default",
-       "fiscalnb":"",
+       "billing_fiscal_number":"",
        "order_status":"4"
     },
     "errors":[
@@ -82,7 +82,7 @@
     "_embedded":{
        "channel":{
           "id":259,
-          "name":"Mamomano",
+          "name":"Manomano",
           "_links":{
              "self":{
                 "href":"/v1/channel/259"

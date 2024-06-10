@@ -21,16 +21,20 @@
 * @license   Commercial license
 *}
 
-{extends file="helpers/form/form.tpl"}
-
-{block name="legend" append}
-    <p>
-        {l s='You may enter your Shopping Feed credentials here to retrieve your token.' mod='shoppingfeed'}
-    </p>
-{/block}
-
-{block name="input" append}
-    {if $input.type == 'shoppingfeed-button-get-store-id'}
-        {include file="./_partial/button-get-store-id.tpl"}
-    {/if}
-{/block}
+<div class="w-100 mb-3">
+  <div class="row">
+    <div class="col-sm-12">
+      <div class="row justify-content-center">
+        <div class="col-xl-12 pr-5 pl-5">
+          <div class="card">
+            <div class="card-header d-flex justify-content-between">
+              <div class="form-group ">
+                {include file="./message.tpl"}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

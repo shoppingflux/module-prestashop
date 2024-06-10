@@ -25,31 +25,27 @@ if (!defined('_PS_VERSION_')) {
 
 use Carrier;
 use Cart;
-use Module;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
-use Tools;
 
-class MonechelleColissimo extends AbstractColissimo implements RuleInterface
+class BhvColissimo extends AbstractColissimo implements RuleInterface
 {
     public function isApplicable(OrderResource $apiOrder)
     {
-        $apiOrderData = $apiOrder->toArray();
         $logPrefix = sprintf(
-            $this->l('[Order: %s]', 'MonechelleColissimo'),
+            $this->l('[Order: %s]', 'BhvColissimo'),
             $apiOrder->getId()
         );
         $logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
 
-        // Check marketplace, that the additional fields with the pickup point data are there and not empty, and that the "colissimo" module is installed and active
-        if ('monechelle' == Tools::strtolower($apiOrder->getChannel()->getName())
+        if (preg_match('#^bhv#i', $apiOrder->getChannel()->getName())
             && $this->isModuleColissimoEnabled()
             && !empty($this->getRelayId($apiOrder))
         ) {
             ProcessLoggerHandler::logInfo(
                 $logPrefix .
-                    $this->l('Rule triggered.', 'MonechelleColissimo'),
+                    $this->l('Rule triggered.', 'BhvColissimo'),
                 'Order'
             );
 
@@ -64,7 +60,7 @@ class MonechelleColissimo extends AbstractColissimo implements RuleInterface
      */
     public function getConditions()
     {
-        return $this->l('If the order comes from Monechelle and has non-empty "other" or "relayID" field.', 'MonechelleColissimo');
+        return $this->l('If the order comes from BHV and has non-empty "other" or "relayID" field.', 'BhvColissimo');
     }
 
     /**
@@ -72,7 +68,7 @@ class MonechelleColissimo extends AbstractColissimo implements RuleInterface
      */
     public function getDescription()
     {
-        return $this->l('Set the carrier to Colissimo Pickup Point and add necessary data in the colissimo module accordingly.', 'MonechelleColissimo');
+        return $this->l('Set the carrier to Colissimo Pickup Point and add necessary data in the colissimo module accordingly.', 'BhvColissimo');
     }
 
     protected function getProductCode(OrderResource $apiOrder)
@@ -96,6 +92,10 @@ class MonechelleColissimo extends AbstractColissimo implements RuleInterface
             return $address['relayID'];
         }
 
+        if (false === empty($apiOrder->toArray()['additionalFields']['pickup_point_id'])) {
+            return $apiOrder->toArray()['additionalFields']['pickup_point_id'];
+        }
+
         return '';
     }
 
@@ -114,28 +114,5 @@ class MonechelleColissimo extends AbstractColissimo implements RuleInterface
         }
 
         return parent::afterCartCreation($params);
-    }
-
-    public function onPreProcess($params)
-    {
-        /** @var \ShoppingfeedAddon\OrderImport\OrderData $orderData */
-        $orderData = $params['orderData'];
-        $fullNameArray = explode(' ', trim($orderData->shippingAddress['firstName']));
-        $lastName = $orderData->shippingAddress['lastName'];
-
-        if (false === empty($orderData->shippingAddress['company'])) {
-            return;
-        }
-        if (count($fullNameArray) < 2) {
-            return;
-        }
-
-        $orderData->shippingAddress['firstName'] = $fullNameArray[0];
-        $orderData->shippingAddress['lastName'] = implode(' ', array_slice($fullNameArray, 1));
-        $orderData->shippingAddress['company'] = sprintf(
-            '%s (%s)',
-            (string) $lastName,
-            (string) $this->getRelayId($params['apiOrder'])
-        );
     }
 }

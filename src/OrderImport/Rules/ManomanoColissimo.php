@@ -42,7 +42,7 @@ class ManomanoColissimo extends AbstractColissimo implements RuleInterface
         $logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
 
         // Check marketplace, that the additional fields with the pickup point data are there and not empty, and that the "colissimo" module is installed and active
-        if (preg_match('#^mamomano#i', $apiOrder->getChannel()->getName())
+        if (preg_match('#^manomano#i', $apiOrder->getChannel()->getName())
             && $this->isModuleColissimoEnabled()
             && !empty($this->getRelayId($apiOrder))
         ) {

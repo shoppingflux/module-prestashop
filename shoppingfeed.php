@@ -466,11 +466,24 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             if ($tokenTable !== false) {
                 continue;
             }
+
+            try {
+                $api = ShoppingfeedApi::getInstanceByToken(null, $tokenConfig);
+            } catch (\SfGuzzle\GuzzleHttp\Exception\ClientException $e) {
+                continue;
+            }
+
+            if (empty($api->getMainStore())) {
+                continue;
+            }
+
             $sfToken->addToken(
                 $shop['id_shop'],
                 Configuration::get('PS_LANG_DEFAULT', null, null, $shop['id_shop']),
                 Configuration::get('PS_CURRENCY_DEFAULT', null, null, $shop['id_shop']),
-                $tokenConfig
+                $tokenConfig,
+                $api->getMainStore()->getId(),
+                $api->getMainStore()->getName()
             );
         }
     }
@@ -543,17 +556,17 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
      */
     public static function isOrderSyncAvailable($id_shop = null)
     {
+        $shoppingfluxexport = Module::getInstanceByName('shoppingfluxexport');
         // Is the old module installed ?
-        if (Module::isInstalled('shoppingfluxexport')
-            && Module::isEnabled('shoppingfluxexport')
-            && (
-                // Is order "shipped" status sync disabled in the old module ?
-                Configuration::get('SHOPPING_FLUX_STATUS_SHIPPED', null, null, $id_shop) != ''
-                // Is order "canceled" status sync disabled in the old module ?
-                || Configuration::get('SHOPPING_FLUX_STATUS_CANCELED', null, null, $id_shop) != ''
-        )
-        ) {
-            return false;
+        if (Validate::isLoadedObject($shoppingfluxexport) && $shoppingfluxexport->active) {
+            // Is order "shipped" status sync disabled in the old module ?
+            if (false === empty(Configuration::get('SHOPPING_FLUX_STATUS_SHIPPED', null, null, $id_shop))) {
+                return false;
+            }
+            // Is order "canceled" status sync disabled in the old module ?
+            if (false === empty(Configuration::get('SHOPPING_FLUX_STATUS_CANCELED', null, null, $id_shop))) {
+                return false;
+            }
         }
 
         return true;
@@ -566,15 +579,12 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
      */
     public static function isOrderImportAvailable($id_shop = null)
     {
+        $shoppingfluxexport = Module::getInstanceByName('shoppingfluxexport');
         // Is the old module installed ?
-        if (Module::isInstalled('shoppingfluxexport')
-            && Module::isEnabled('shoppingfluxexport')
-            && (
-                // Is order import disabled in the old module ?
-                Configuration::get('SHOPPING_FLUX_ORDERS', null, null, $id_shop) != ''
-               )
-        ) {
-            return false;
+        if (Validate::isLoadedObject($shoppingfluxexport) && $shoppingfluxexport->active) {
+            if (Configuration::get('SHOPPING_FLUX_ORDERS', null, null, $id_shop) != '') {
+                return false;
+            }
         }
 
         return true;
@@ -1290,6 +1300,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     public function hookActionShoppingfeedOrderImportRegisterSpecificRules($params)
     {
         $defaultRulesClassNames = [
+            ShoppingfeedAddon\OrderImport\Rules\LeroyMerlinColissimo::class,
             ShoppingfeedAddon\OrderImport\Rules\AmazonB2B::class,
             ShoppingfeedAddon\OrderImport\Rules\AmazonEbay::class,
             ShoppingfeedAddon\OrderImport\Rules\AmazonPrime::class,
@@ -1318,6 +1329,8 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             ShoppingfeedAddon\OrderImport\Rules\TaxExclMarketplace::class,
             ShoppingfeedAddon\OrderImport\Rules\SkipTax::class,
             ShoppingfeedAddon\OrderImport\Rules\GlsRule::class,
+            ShoppingfeedAddon\OrderImport\Rules\VeepeegroupColissimo::class,
+            ShoppingfeedAddon\OrderImport\Rules\BhvColissimo::class,
         ];
 
         foreach ($defaultRulesClassNames as $ruleClassName) {
@@ -1489,8 +1502,11 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
 
             try {
                 $api = ShoppingfeedApi::getInstanceByToken($sft->id);
-                $sft->shoppingfeed_store_id = $api->getMainStore()->getId();
-                $result &= $sft->save();
+
+                if (false === $api->isExistedStore($sft->shoppingfeed_store_id)) {
+                    $sft->shoppingfeed_store_id = $api->getMainStore()->getId();
+                    $result &= $sft->save();
+                }
             } catch (Exception $e) {
             } catch (Throwable $e) {
             }

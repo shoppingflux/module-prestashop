@@ -28,7 +28,7 @@
   },
   "additionalFields":{
     "env":"default",
-    "fiscalnb":"",
+    "billing_fiscal_number":"",
     "order_status":"4"
   },
   "errors":[
