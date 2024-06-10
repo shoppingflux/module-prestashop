@@ -380,7 +380,7 @@ class ShippedByMarketplace extends RuleAbstract implements RuleInterface
             \Shoppingfeed::ORDER_IMPORT_SHIPPED_MARKETPLACE => Configuration::get(\Shoppingfeed::ORDER_IMPORT_SHIPPED_MARKETPLACE),
             \Shoppingfeed::ORDER_IMPORT_SHIPPED => Configuration::get(\Shoppingfeed::ORDER_IMPORT_SHIPPED),
             'PS_OS_DELIVERED' => Configuration::get('PS_OS_DELIVERED'),
-            'payment_method_name_fulfillment' => 0
+            'payment_method_name_fulfillment' => 0,
         ];
     }
 
