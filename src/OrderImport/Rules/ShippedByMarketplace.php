@@ -257,6 +257,25 @@ class ShippedByMarketplace extends RuleAbstract implements RuleInterface
             'required' => false,
         ];
 
+        $states[] = [
+            'type' => 'switch',
+            'label' => $this->l('Prefix the payment method of orders shipped by the marketplace with `fullfilment - `', 'ShippedByMarketplace'),
+            'desc' => $this->l('By default: the marketplace name', 'ShippedByMarketplace'),
+            'name' => 'payment_method_name_fullfilment',
+            'required' => false,
+            'is_bool' => true,
+            'values' => [
+                [
+                    'id' => 'ok',
+                    'value' => 1,
+                ],
+                [
+                    'id' => 'ko',
+                    'value' => 0,
+                ],
+            ],
+        ];
+
         return $states;
     }
 
