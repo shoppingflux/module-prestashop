@@ -475,6 +475,8 @@ $_MODULE['<{shoppingfeed}prestashop>shippedbymarketplace_07172e18fb8d0ded766f985
 $_MODULE['<{shoppingfeed}prestashop>shippedbymarketplace_b6410f922b6d10bace29d01ec5424daf'] = 'Après l\'import d\'une commande en statut expédié ou expédiée par la marketplace, changer le statut de commande pour';
 $_MODULE['<{shoppingfeed}prestashop>shippedbymarketplace_3e1cdfc6da1fd127747e056cbb0c2d8b'] = 'Par défaut : Livré';
 $_MODULE['<{shoppingfeed}prestashop>shippedbymarketplace_7292fe2a20cbb7fdf7206ac1abf70f98'] = 'Règle déclenchée. L\'import a été sauté.';
+$_MODULE['<{shoppingfeed}prestashop>shippedbymarketplace_39d20d93fb9010b51fe1cb79c7aafce2'] = 'Préfixer le moyen de paiement par `fulfillment - ` suivi du nom de la marketplace';
+$_MODULE['<{shoppingfeed}prestashop>shippedbymarketplace_71bc9e2944f8806033d039d37cfef0c5'] = 'Par défaut : le nom de la marketplace';
 $_MODULE['<{shoppingfeed}prestashop>socolissimo_0cc1e925b5703e8da52b7c3e91829499'] = '[Commande %s]';
 $_MODULE['<{shoppingfeed}prestashop>socolissimo_43b6ade8fd758b0597ad2f31c9cd1b41'] = 'Règle déclenchée.';
 $_MODULE['<{shoppingfeed}prestashop>socolissimo_e2fac82fe38a82dbf371b301c40238a2'] = 'Données insérées dans le module Soliberte.';
