@@ -215,8 +215,7 @@ $_MODULE['<{shoppingfeed}prestashop>testingorder_0cc1e925b5703e8da52b7c3e9182949
 $_MODULE['<{shoppingfeed}prestashop>testingorder_4ad367ed9d85670d0aee2e5d8feb1148'] = 'Status de commande non valide. ID: %d';
 $_MODULE['<{shoppingfeed}prestashop>testingorder_eba2574749f45707a84aa0c6264d7207'] = 'Règle déclenchée. Configuration du statut de commande sur ANNULÉ.';
 $_MODULE['<{shoppingfeed}prestashop>testingorder_7523b11cd5b28c4360a2dd5b108245ae'] = 'Si la commande est un test';
-$_MODULE['<{shoppingfeed}prestashop>testingorder_7c5a72dfd28d60e1195279cf5c443d31'] = 'Régler la commande à ANNULEE après l\'import.';
-$_MODULE['<{shoppingfeed}prestashop>testingorder_ab48a2c29aa6f9bdd94c52ba6a4371e8'] = "Après l'import d'une commande de test, passer la commande au statut 'Annulé'";
+$_MODULE['<{shoppingfeed}prestashop>testingorder_ab48a2c29aa6f9bdd94c52ba6a4371e8'] = 'Après l\'import d\'une commande de test, passer la commande au statut \'Annulé\'';
 $_MODULE['<{shoppingfeed}prestashop>galerieslafayettecolissimo_0cc1e925b5703e8da52b7c3e91829499'] = '[Commande %s]';
 $_MODULE['<{shoppingfeed}prestashop>galerieslafayettecolissimo_43b6ade8fd758b0597ad2f31c9cd1b41'] = 'Règle déclenchée.';
 $_MODULE['<{shoppingfeed}prestashop>galerieslafayettecolissimo_44ec55560c396c0155f033420a501498'] = 'Si la commande provient de Galeries Lafayette et n\'a pas le champs \"other\" ou \"relayID\" vide.';
@@ -258,6 +257,8 @@ $_MODULE['<{shoppingfeed}prestashop>shippedbymarketplace_b54bf972c4560b820f51e3e
 $_MODULE['<{shoppingfeed}prestashop>shippedbymarketplace_07172e18fb8d0ded766f9851a25aab96'] = 'Ne décrémente pas de stock pour cette commande. Affecte le statut LIVRÉ après le processus d\'import ou le statut configuré ci-dessus.';
 $_MODULE['<{shoppingfeed}prestashop>shippedbymarketplace_b6410f922b6d10bace29d01ec5424daf'] = 'Après l\'import d\'une commande en statut expédié ou expédiée par la marketplace, changer le statut de commande pour';
 $_MODULE['<{shoppingfeed}prestashop>shippedbymarketplace_3e1cdfc6da1fd127747e056cbb0c2d8b'] = 'Par défaut : Livré';
+$_MODULE['<{shoppingfeed}prestashop>shippedbymarketplace_39d20d93fb9010b51fe1cb79c7aafce2'] = 'Préfixer le moyen de paiement par `fulfillment - ` suivi du nom de la marketplace';
+$_MODULE['<{shoppingfeed}prestashop>shippedbymarketplace_71bc9e2944f8806033d039d37cfef0c5'] = 'Par défaut : le nom de la marketplace';
 $_MODULE['<{shoppingfeed}prestashop>shippedbymarketplace_7292fe2a20cbb7fdf7206ac1abf70f98'] = 'Règle déclenchée. L\'import a été sauté.';
 $_MODULE['<{shoppingfeed}prestashop>supplierfilter_ec136b444eede3bc85639fac0dd06229'] = 'Fournisseur';
 $_MODULE['<{shoppingfeed}prestashop>featurefilter_21021ea0e52be8e9c599f4dff41e5be0'] = 'Caractéristique';
