@@ -476,10 +476,6 @@ class AdminShoppingfeedAccountSettingsController extends ShoppingfeedAdminContro
         }
 
         $fieldsList = [
-            'token' => [
-                'title' => $this->module->l('Tokens', 'AdminShoppingfeedAccountSettings'),
-                'search' => false,
-            ],
             'shop_name' => [
                 'title' => $this->module->l('Shop', 'AdminShoppingfeedAccountSettings'),
                 'search' => false,
@@ -498,10 +494,6 @@ class AdminShoppingfeedAccountSettingsController extends ShoppingfeedAdminContro
             ],
             'shoppingfeed_store_id' => [
                 'title' => $this->module->l('Store ID', 'AdminShoppingfeedAccountSettings'),
-                'search' => false,
-            ],
-            'feed_key' => [
-                'title' => $this->module->l('Feed key', 'AdminShoppingfeedAccountSettings'),
                 'search' => false,
             ],
             'link' => [
