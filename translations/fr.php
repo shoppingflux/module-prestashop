@@ -474,9 +474,9 @@ $_MODULE['<{shoppingfeed}prestashop>shippedbymarketplace_b54bf972c4560b820f51e3e
 $_MODULE['<{shoppingfeed}prestashop>shippedbymarketplace_07172e18fb8d0ded766f9851a25aab96'] = 'Ne décrémente pas de stock pour cette commande. Affecte le statut LIVRÉ après le processus d\'import ou le statut configuré ci-dessus.';
 $_MODULE['<{shoppingfeed}prestashop>shippedbymarketplace_b6410f922b6d10bace29d01ec5424daf'] = 'Après l\'import d\'une commande en statut expédié ou expédiée par la marketplace, changer le statut de commande pour';
 $_MODULE['<{shoppingfeed}prestashop>shippedbymarketplace_3e1cdfc6da1fd127747e056cbb0c2d8b'] = 'Par défaut : Livré';
-$_MODULE['<{shoppingfeed}prestashop>shippedbymarketplace_7292fe2a20cbb7fdf7206ac1abf70f98'] = 'Règle déclenchée. L\'import a été sauté.';
 $_MODULE['<{shoppingfeed}prestashop>shippedbymarketplace_39d20d93fb9010b51fe1cb79c7aafce2'] = 'Lors de l\'import d\'une commande expédiée par la marketplace, préfixer le moyen de paiement par `fulfillment - ` suivi du nom de la marketplace';
 $_MODULE['<{shoppingfeed}prestashop>shippedbymarketplace_71bc9e2944f8806033d039d37cfef0c5'] = 'Par défaut : le nom de la marketplace';
+$_MODULE['<{shoppingfeed}prestashop>shippedbymarketplace_7292fe2a20cbb7fdf7206ac1abf70f98'] = 'Règle déclenchée. L\'import a été sauté.';
 $_MODULE['<{shoppingfeed}prestashop>socolissimo_0cc1e925b5703e8da52b7c3e91829499'] = '[Commande %s]';
 $_MODULE['<{shoppingfeed}prestashop>socolissimo_43b6ade8fd758b0597ad2f31c9cd1b41'] = 'Règle déclenchée.';
 $_MODULE['<{shoppingfeed}prestashop>socolissimo_e2fac82fe38a82dbf371b301c40238a2'] = 'Données insérées dans le module Soliberte.';
@@ -625,11 +625,12 @@ $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedaccountsettings_c5795aef612
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedaccountsettings_4706e727d9f747da0cccc4fa4337ff0d'] = 'Votre Token a été sauvegardé avec succès.';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedaccountsettings_c795621ab03e8d09544fbab37a591ca7'] = 'Ces identifiants ne sont pas reconnu  par Shopping Feed.';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedaccountsettings_8206cd915d13f963c3eb63d3775b92ab'] = 'Votre compte a été correctement configuré.';
-$_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedaccountsettings_f6861770bdf2fb702a665f1b34e4f9ed'] = 'Tokens';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedaccountsettings_df4d92b521abb80c1e9b0a40f1c30930'] = 'Langue';
+$_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedaccountsettings_896890bfb700eac98300d639ca970f2b'] = 'Marchand';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedaccountsettings_1feafb67c1da8183793afe1f61bce2f4'] = 'Store ID';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedaccountsettings_11e707ce9327a614622f52dfe732b78b'] = 'URL du flux produit';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedaccountsettings_4d3d769b812b6faa6b76e1a8abaece2d'] = 'Actif';
+$_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedaccountsettings_f6861770bdf2fb702a665f1b34e4f9ed'] = 'Tokens';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedaccountsettings_f86f7b91afe27e79305a6b07bdb0d3c0'] = 'Echec lors de la mise à jour du statut';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedaccountsettings_de360c8b5dd9a9fdd592b1c08b3b4a62'] = 'Le statut a été mis à jour avec succès';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimport_b9d1b8558d2d7145794f697158b6f253'] = 'Shoppingfeed Prestashop Plugin (Flux et Commandes)';
