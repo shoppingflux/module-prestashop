@@ -2099,7 +2099,6 @@ class ComposerStaticInit3fe85f86ff701f6bd7fd7d7a118b5533
         'ShoppingfeedAddon\\OrderImport\\Rules\\AmazonManomanoTva' => __DIR__ . '/../..' . '/src/OrderImport/Rules/AmazonManomanoTva.php',
         'ShoppingfeedAddon\\OrderImport\\Rules\\AmazonPrime' => __DIR__ . '/../..' . '/src/OrderImport/Rules/AmazonPrime.php',
         'ShoppingfeedAddon\\OrderImport\\Rules\\Cdiscount' => __DIR__ . '/../..' . '/src/OrderImport/Rules/Cdiscount.php',
-        'ShoppingfeedAddon\\OrderImport\\Rules\\CdiscountColissimo' => __DIR__ . '/../..' . '/src/OrderImport/Rules/CdiscountColissimo.php',
         'ShoppingfeedAddon\\OrderImport\\Rules\\ChangeStateOrder' => __DIR__ . '/../..' . '/src/OrderImport/Rules/ChangeStateOrder.php',
         'ShoppingfeedAddon\\OrderImport\\Rules\\ColissimoRule' => __DIR__ . '/../..' . '/src/OrderImport/Rules/ColissimoRule.php',
         'ShoppingfeedAddon\\OrderImport\\Rules\\GlsRule' => __DIR__ . '/../..' . '/src/OrderImport/Rules/GlsRule.php',

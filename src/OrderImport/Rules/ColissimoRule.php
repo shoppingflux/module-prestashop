@@ -76,6 +76,45 @@ class ColissimoRule extends RuleAbstract implements RuleInterface
         if (preg_match('#^zalando#', Tools::strtolower($apiOrder->getChannel()->getName()))) {
             $this->setAddressCompany($params);
         }
+        if (preg_match('#^cdiscount$#', Tools::strtolower($apiOrder->getChannel()->getName()))) {
+            $this->updateCdiscountAddress($params);
+        }
+    }
+
+    protected function updateCdiscountAddress($params)
+    {
+        $apiOrder = $params['apiOrder'];
+        $address = $params['orderData']->shippingAddress;
+        // Workaround for CDiscount usage of last name as pickup-point name
+        $relayPointName = $address['lastName'];
+        // Check if the company is already filled
+        if (false === empty($address['company'])) {
+            // When the company is known, we are appending it to the second line of the adresse
+            $address['street2'] .= ' ' . $address['company'];
+        }
+
+        $address['company'] = $relayPointName;
+        // And now we decompose the fullname (in the FirstName field) by last name + first name
+        // We consider that what's after the last space is the first name
+        $fullname = trim($address['firstName']);
+        $explodedFullname = explode(' ', $fullname);
+        if (isset($explodedFullname[0])) {
+            $address['firstName'] = array_pop($explodedFullname);
+            $address['lastName'] = implode(' ', $explodedFullname);
+        }
+
+        $params['orderData']->shippingAddress = $address;
+
+        $logPrefix = sprintf(
+            $this->l('[Order: %s]', 'Colissimo'),
+            $apiOrder->getId()
+        );
+        $logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
+        ProcessLoggerHandler::logInfo(
+            $logPrefix .
+            $this->l('Rule triggered. Cdiscount shipping address is updated.', 'Colissimo'),
+            'Order'
+        );
     }
 
     protected function setAddressCompany($params)
@@ -99,7 +138,7 @@ class ColissimoRule extends RuleAbstract implements RuleInterface
         $logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
         ProcessLoggerHandler::logInfo(
             $logPrefix .
-            $this->l('Rule triggered. Shipping address updated to set company and address2.', 'Colissimo'),
+            $this->l('Rule triggered. Shipping address is updated to set company and address2.', 'Colissimo'),
             'Order'
         );
     }
@@ -134,7 +173,7 @@ class ColissimoRule extends RuleAbstract implements RuleInterface
         $logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
         ProcessLoggerHandler::logInfo(
             $logPrefix .
-            $this->l('Rule triggered. Shipping address updated to set firstname, lastname and company.', 'Colissimo'),
+            $this->l('Rule triggered. Shipping address is updated to set firstname, lastname and company.', 'Colissimo'),
             'Order'
         );
     }

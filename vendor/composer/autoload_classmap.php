@@ -1823,7 +1823,6 @@ return array(
     'ShoppingfeedAddon\\OrderImport\\Rules\\AmazonManomanoTva' => $baseDir . '/src/OrderImport/Rules/AmazonManomanoTva.php',
     'ShoppingfeedAddon\\OrderImport\\Rules\\AmazonPrime' => $baseDir . '/src/OrderImport/Rules/AmazonPrime.php',
     'ShoppingfeedAddon\\OrderImport\\Rules\\Cdiscount' => $baseDir . '/src/OrderImport/Rules/Cdiscount.php',
-    'ShoppingfeedAddon\\OrderImport\\Rules\\CdiscountColissimo' => $baseDir . '/src/OrderImport/Rules/CdiscountColissimo.php',
     'ShoppingfeedAddon\\OrderImport\\Rules\\ChangeStateOrder' => $baseDir . '/src/OrderImport/Rules/ChangeStateOrder.php',
     'ShoppingfeedAddon\\OrderImport\\Rules\\ColissimoRule' => $baseDir . '/src/OrderImport/Rules/ColissimoRule.php',
     'ShoppingfeedAddon\\OrderImport\\Rules\\GlsRule' => $baseDir . '/src/OrderImport/Rules/GlsRule.php',
