@@ -36,7 +36,7 @@ class ShoppingfeedProductModuleFrontController extends \ModuleFrontController
 
         $this->sfToken = (new ShoppingfeedToken())->findByToken(Tools::getValue('token', ''));
 
-        if (false === Validate::isLoadedObject($this->sfToken)) {
+        if (empty($this->sfToken)) {
             $this->sfToken = (new ShoppingfeedToken())->findByFeedKey(Tools::getValue('feed_key', ''));
         }
 
