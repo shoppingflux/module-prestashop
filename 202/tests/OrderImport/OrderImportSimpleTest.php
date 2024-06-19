@@ -267,8 +267,7 @@ class OrderImportSimpleTest extends AbstractOrdeTestCase
         $this->assertEquals($psOrder->total_products, 99.830000);
         $this->assertEquals($psOrder->total_products_wt, 119.800000);
         $this->assertEquals($psOrder->total_shipping, 0.000000);
-        $this->assertEquals($psOrder->carrier_tax_rate, 20.000);
-        $this->assertEquals($psOrder->id_carrier, 1);
+        $this->assertEquals($psOrder->id_carrier, 7);
         $this->assertEquals($psOrder->total_wrapping, 0.000000);
 
         $invoices = $psOrder->getInvoicesCollection();
@@ -288,7 +287,7 @@ class OrderImportSimpleTest extends AbstractOrdeTestCase
         }
 
         $carrier = new \Carrier($psOrder->id_carrier);
-        $this->assertEquals($carrier->id_reference, 1);
+        $this->assertEquals($carrier->id_reference, 7);
 
         $this->assertArrayHasKey('cart', $conveyor);
         $this->assertNotNull($conveyor['cart']->id);

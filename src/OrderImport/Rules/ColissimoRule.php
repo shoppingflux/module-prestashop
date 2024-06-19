@@ -53,7 +53,7 @@ class ColissimoRule extends RuleAbstract implements RuleInterface
 
     public function isApplicable(OrderResource $apiOrder)
     {
-        return $this->isModuleColissimoEnabled();
+        return $this->isModuleColissimoEnabled() && false === empty($this->getRelayId($apiOrder));
     }
 
     protected function isModuleColissimoEnabled()
@@ -70,15 +70,48 @@ class ColissimoRule extends RuleAbstract implements RuleInterface
         $this->setOther($params);
         $apiOrder = $params['apiOrder'];
 
-        if ('monechelle' === Tools::strtolower($apiOrder->getChannel()->getName())) {
+        if ($this->isMonechelle($apiOrder)) {
             $this->parseCompoundFirstname($params);
         }
-        if (preg_match('#^zalando#', Tools::strtolower($apiOrder->getChannel()->getName()))) {
+        if ($this->isZalando($apiOrder)) {
             $this->setAddressCompany($params);
         }
-        if (preg_match('#^cdiscount$#', Tools::strtolower($apiOrder->getChannel()->getName()))) {
+        if ($this->isCdiscount($apiOrder)) {
             $this->updateCdiscountAddress($params);
         }
+    }
+
+    protected function isMonechelle(OrderResource $apiOrder)
+    {
+        return 'monechelle' === Tools::strtolower($apiOrder->getChannel()->getName());
+    }
+
+    protected function isCdiscount(OrderResource $apiOrder)
+    {
+        $apiOrderShipment = $apiOrder->getShipment();
+
+        if (preg_match('#^cdiscount$#', Tools::strtolower($apiOrder->getChannel()->getName()))) {
+            if (in_array($apiOrderShipment['carrier'], ['SO1', 'REL', 'RCO'])) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    protected function isZalando(OrderResource $apiOrder)
+    {
+        $apiOrderData = $apiOrder->toArray();
+
+        if (preg_match('#^zalando#', Tools::strtolower($apiOrder->getChannel()->getName()))) {
+            if (false === empty($apiOrderData['additionalFields']['service_point_id'])) {
+                if (false === empty($apiOrderData['additionalFields']['service_point_name'])) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     protected function updateCdiscountAddress($params)
@@ -318,10 +351,10 @@ class ColissimoRule extends RuleAbstract implements RuleInterface
         if (false === empty($apiOrderData['shippingAddress']['relayId'])) {
             return $apiOrderData['shippingAddress']['relayId'];
         }
-        if (false == empty($apiOrderData['shippingAddress']['other'])) {
+        if (false === empty($apiOrderData['shippingAddress']['other'])) {
             return $apiOrderData['shippingAddress']['other'];
         }
-        if (false == empty($apiOrderData['shippingAddress']['relayID'])) {
+        if (false === empty($apiOrderData['shippingAddress']['relayID'])) {
             return $apiOrderData['shippingAddress']['relayID'];
         }
         if (false === empty($apiOrderData['additionalFields']['pickup_point_id'])) {
