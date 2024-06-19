@@ -300,7 +300,7 @@ class OrderImportSimpleTest extends AbstractOrdeTestCase
         $this->assertEquals($pickupPoint->city, 'MARSEILLE');
         $sfCarrier = ShoppingfeedCarrier::getByMarketplaceAndName(
                         'zalandomyunittest',
-                        'pickup'
+                        'Colissimo'
                     );
         $this->assertNotEquals($sfCarrier, false);
         $orderPayments = $psOrder->getOrderPaymentCollection();
