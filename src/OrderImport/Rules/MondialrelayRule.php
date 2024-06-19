@@ -379,6 +379,9 @@ class MondialrelayRule extends RuleAbstract implements RuleInterface
         if (false === empty($apiOrderData['additionalFields']['shipping_pudo_id'])) {
             return $apiOrderData['additionalFields']['shipping_pudo_id'];
         }
+        if (false === empty($apiOrderData['additionalFields']['shippingRelayId'])) {
+            return $apiOrderData['additionalFields']['shippingRelayId'];
+        }
 
         return '';
     }
