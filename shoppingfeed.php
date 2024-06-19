@@ -1306,7 +1306,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             ShoppingfeedAddon\OrderImport\Rules\AmazonPrime::class,
             ShoppingfeedAddon\OrderImport\Rules\Cdiscount::class,
             ShoppingfeedAddon\OrderImport\Rules\CdiscountColissimo::class,
-            ShoppingfeedAddon\OrderImport\Rules\Mondialrelay::class,
+            ShoppingfeedAddon\OrderImport\Rules\MondialrelayRule::class,
             ShoppingfeedAddon\OrderImport\Rules\RueducommerceMondialrelay::class,
             ShoppingfeedAddon\OrderImport\Rules\Socolissimo::class,
             ShoppingfeedAddon\OrderImport\Rules\ChangeStateOrder::class,
