@@ -11,7 +11,7 @@
   "status": "waiting_shipment",
   "anonymized": false,
   "shipment": {
-    "carrier": "Retrait en Point Relais Colissimo",
+    "carrier": "Colissimo",
     "trackingNumber": "",
     "trackingLink": ""
   },

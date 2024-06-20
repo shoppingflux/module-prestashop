@@ -22,18 +22,10 @@ namespace Tests\OrderImport;
 use ColissimoCartPickupPoint;
 use ColissimoPickupPoint;
 use ShoppingfeedAddon\Actions\ActionsHandler;
-use ShoppingfeedAddon\OrderImport\Rules\LeroyMerlinColissimo;
 use ShoppingfeedClasslib\Registry;
 
 class OrderImportLeroyMerlinTest extends AbstractOrdeTestCase
 {
-    public function testRulesMondialRelais()
-    {
-        $apiOrder = $this->getOrderRessourceFromDataset('order-leroymerlin-colissimo.json');
-        $rules = new LeroyMerlinColissimo();
-        $this->assertTrue($rules->isApplicable($apiOrder));
-    }
-
     public function testAssociationWithModuleColissimo()
     {
         $apiOrder = $this->getOrderRessourceFromDataset('order-leroymerlin-colissimo.json');

@@ -19,7 +19,7 @@
        "taxMode":"undefined" 
     },
     "shipment":{
-       "carrier":"Delivery in pick-up points - Standard",
+       "carrier":"Colissimo",
        "trackingNumber":"",
        "trackingLink":"",
        "returnInfo":{
