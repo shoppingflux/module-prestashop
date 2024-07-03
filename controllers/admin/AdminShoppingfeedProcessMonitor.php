@@ -106,7 +106,7 @@ class AdminShoppingfeedProcessMonitorController extends AdminProcessMonitorContr
                     $this->module->name,
                     $controller,
                     [
-                        'token' => empty($token['content']) ? '' : $token['content'],
+                        'feed_key' => empty($token['feed_key']) ? '' : $token['feed_key'],
                     ]
                 );
             } else {
