@@ -275,7 +275,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         'actionObjectSpecificPriceAddAfter',
         'actionObjectSpecificPriceUpdateAfter',
         'actionObjectSpecificPriceDeleteAfter',
-        'deleteProductAttribute',
+        'actionDeleteProductAttribute',
         'actionAdminSpecificPriceRuleControllerDeleteBefore',
         'displayPDFInvoice',
     ];
@@ -1353,7 +1353,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         $this->updateShoppingFeedPreloading([$params['object']->id_product], ShoppingfeedPreloading::ACTION_SYNC_PRICE);
     }
 
-    public function hookDeleteProductAttribute($params)
+    public function hookActionDeleteProductAttribute($params)
     {
         $this->updateShoppingFeedPreloading([$params['id_product']], ShoppingfeedPreloading::ACTION_SYNC_ALL);
     }
