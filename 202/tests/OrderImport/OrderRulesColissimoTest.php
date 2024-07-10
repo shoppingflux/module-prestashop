@@ -4,10 +4,7 @@ namespace Tests\OrderImport;
 
 use Address;
 use ShoppingfeedAddon\Actions\ActionsHandler;
-use ShoppingfeedAddon\OrderImport\Rules\BhvColissimo;
-use ShoppingfeedAddon\OrderImport\Rules\ManomanoColissimo;
-use ShoppingfeedAddon\OrderImport\Rules\ShowroompriveColissimo;
-use ShoppingfeedAddon\OrderImport\Rules\VeepeegroupColissimo;
+use ShoppingfeedAddon\OrderImport\Rules\ColissimoRule;
 use ShoppingfeedClasslib\Registry;
 
 class OrderRulesColissimoTest extends AbstractOrdeTestCase
@@ -15,7 +12,7 @@ class OrderRulesColissimoTest extends AbstractOrdeTestCase
     public function testColissimo(): void
     {
         $apiOrder = $this->getOrderRessourceFromDataset('order-manomano-colissimo.json');
-        $rule = new ManomanoColissimo();
+        $rule = new ColissimoRule();
         $this->assertTrue($rule->isApplicable($apiOrder));
 
         $handler = new ActionsHandler();
@@ -48,7 +45,7 @@ class OrderRulesColissimoTest extends AbstractOrdeTestCase
     public function testShowroompriveColissimo()
     {
         $apiOrder = $this->getOrderRessourceFromDataset('order-showroomprive-colissimo.json');
-        $rule = new ShowroompriveColissimo();
+        $rule = new ColissimoRule();
         $this->assertTrue($rule->isApplicable($apiOrder));
 
         $handler = new ActionsHandler();
@@ -81,7 +78,7 @@ class OrderRulesColissimoTest extends AbstractOrdeTestCase
     public function testVeepeegroupColissimo()
     {
         $apiOrder = $this->getOrderRessourceFromDataset('order-veepeegroup-colissimo.json');
-        $rule = new VeepeegroupColissimo();
+        $rule = new ColissimoRule();
         $this->assertTrue($rule->isApplicable($apiOrder));
 
         $handler = new ActionsHandler();
@@ -114,7 +111,7 @@ class OrderRulesColissimoTest extends AbstractOrdeTestCase
     public function testBhvColissimo()
     {
         $apiOrder = $this->getOrderRessourceFromDataset('order-bhv-colissimo.json');
-        $rule = new BhvColissimo();
+        $rule = new ColissimoRule();
         $this->assertTrue($rule->isApplicable($apiOrder));
 
         $handler = new ActionsHandler();
