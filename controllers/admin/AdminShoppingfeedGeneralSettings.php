@@ -108,7 +108,7 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
             $this->context->link->getModuleLink(
                 'shoppingfeed',
                 'product',
-                ['token' => empty($token['content']) ? '' : $token['content']],
+                ['feed_key' => empty($token['feed_key']) ? '' : $token['feed_key']],
                 true
             )
         );
@@ -491,7 +491,7 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
                     'name' => Shoppingfeed::STOCK_SYNC_MAX_PRODUCTS,
                     'required' => true,
                     'class' => 'for_real',
-                    'disabled' => (Tools::getValue('with_factory') !== false) ? $syncByDateUpdate : true,
+                    'disabled' => (Tools::isSubmit('with_factory') === false),
                 ],
                 [
                     'type' => 'switch',
@@ -508,7 +508,7 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
                     ],
                     'label' => $this->module->l('Compress products feed', 'AdminShoppingfeedGeneralSettings'),
                     'name' => Shoppingfeed::COMPRESS_PRODUCTS_FEED,
-                    'disabled' => (Tools::getValue('with_factory') !== false) ? $syncByDateUpdate : true,
+                    'disabled' => (Tools::isSubmit('with_factory') === false),
                 ],
             ],
         ];

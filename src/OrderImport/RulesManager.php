@@ -129,6 +129,7 @@ class RulesManager
             'onPostProcess',
             'beforeRecalculateOrderPrices',
             'afterRecalculateOrderPrices',
+            'onValidateOrder',
         ];
         if (in_array($eventName, $availableEvents) === false) {
             return;

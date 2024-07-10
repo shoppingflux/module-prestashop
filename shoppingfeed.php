@@ -466,11 +466,24 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             if ($tokenTable !== false) {
                 continue;
             }
+
+            try {
+                $api = ShoppingfeedApi::getInstanceByToken(null, $tokenConfig);
+            } catch (\SfGuzzle\GuzzleHttp\Exception\ClientException $e) {
+                continue;
+            }
+
+            if (empty($api->getMainStore())) {
+                continue;
+            }
+
             $sfToken->addToken(
                 $shop['id_shop'],
                 Configuration::get('PS_LANG_DEFAULT', null, null, $shop['id_shop']),
                 Configuration::get('PS_CURRENCY_DEFAULT', null, null, $shop['id_shop']),
-                $tokenConfig
+                $tokenConfig,
+                $api->getMainStore()->getId(),
+                $api->getMainStore()->getName()
             );
         }
     }
@@ -1489,8 +1502,11 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
 
             try {
                 $api = ShoppingfeedApi::getInstanceByToken($sft->id);
-                $sft->shoppingfeed_store_id = $api->getMainStore()->getId();
-                $result &= $sft->save();
+
+                if (false === $api->isExistedStore($sft->shoppingfeed_store_id)) {
+                    $sft->shoppingfeed_store_id = $api->getMainStore()->getId();
+                    $result &= $sft->save();
+                }
             } catch (Exception $e) {
             } catch (Throwable $e) {
             }
