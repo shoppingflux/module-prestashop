@@ -322,9 +322,9 @@ class MondialrelayRule extends RuleAbstract implements RuleInterface
             // Web service did not return expected data
             ProcessLoggerHandler::logInfo(
                 sprintf(
-                    $logPrefix .
-                        $this->l('Error getting relay %s data : code %s', 'Mondialrelay'),
-                    $result->WSI2_AdressePointRelaisResult->STAT
+                    $logPrefix . $this->l('Error getting relay %s data : code %s', 'Mondialrelay'),
+                    (string) $relayId,
+                    (string) $result->WSI2_AdressePointRelaisResult->STAT
                 ),
                 'Order'
             );
