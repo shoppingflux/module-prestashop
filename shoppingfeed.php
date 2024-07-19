@@ -275,7 +275,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         'actionObjectSpecificPriceAddAfter',
         'actionObjectSpecificPriceUpdateAfter',
         'actionObjectSpecificPriceDeleteAfter',
-        'deleteProductAttribute',
+        'actionDeleteProductAttribute',
         'actionAdminSpecificPriceRuleControllerDeleteBefore',
         'displayPDFInvoice',
     ];
@@ -1300,37 +1300,28 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     public function hookActionShoppingfeedOrderImportRegisterSpecificRules($params)
     {
         $defaultRulesClassNames = [
-            ShoppingfeedAddon\OrderImport\Rules\LeroyMerlinColissimo::class,
             ShoppingfeedAddon\OrderImport\Rules\AmazonB2B::class,
             ShoppingfeedAddon\OrderImport\Rules\AmazonEbay::class,
             ShoppingfeedAddon\OrderImport\Rules\AmazonPrime::class,
             ShoppingfeedAddon\OrderImport\Rules\Cdiscount::class,
-            ShoppingfeedAddon\OrderImport\Rules\CdiscountColissimo::class,
-            ShoppingfeedAddon\OrderImport\Rules\Mondialrelay::class,
+            ShoppingfeedAddon\OrderImport\Rules\MondialrelayRule::class,
             ShoppingfeedAddon\OrderImport\Rules\RueducommerceMondialrelay::class,
             ShoppingfeedAddon\OrderImport\Rules\Socolissimo::class,
             ShoppingfeedAddon\OrderImport\Rules\ChangeStateOrder::class,
             ShoppingfeedAddon\OrderImport\Rules\ShippedByMarketplace::class,
             ShoppingfeedAddon\OrderImport\Rules\RelaisColisRule::class,
             ShoppingfeedAddon\OrderImport\Rules\TestingOrder::class,
-            ShoppingfeedAddon\OrderImport\Rules\ManomanoColissimo::class,
-            ShoppingfeedAddon\OrderImport\Rules\MonechelleColissimo::class,
-            ShoppingfeedAddon\OrderImport\Rules\ShowroompriveColissimo::class,
             ShoppingfeedAddon\OrderImport\Rules\ManomanoDpdRelais::class,
-            ShoppingfeedAddon\OrderImport\Rules\ZalandoColissimo::class,
             ShoppingfeedAddon\OrderImport\Rules\MissingCarrier::class, //should be performed before ZalandoCarrier
             ShoppingfeedAddon\OrderImport\Rules\ZalandoCarrier::class,
-            ShoppingfeedAddon\OrderImport\Rules\ColizeyColissimo::class,
             ShoppingfeedAddon\OrderImport\Rules\AmazonManomanoTva::class,
-            ShoppingfeedAddon\OrderImport\Rules\GaleriesLafayetteColissimo::class,
             ShoppingfeedAddon\OrderImport\Rules\SymbolConformity::class,
             ShoppingfeedAddon\OrderImport\Rules\Zalando::class,
             ShoppingfeedAddon\OrderImport\Rules\SetDniToAddress::class,
             ShoppingfeedAddon\OrderImport\Rules\TaxExclMarketplace::class,
             ShoppingfeedAddon\OrderImport\Rules\SkipTax::class,
             ShoppingfeedAddon\OrderImport\Rules\GlsRule::class,
-            ShoppingfeedAddon\OrderImport\Rules\VeepeegroupColissimo::class,
-            ShoppingfeedAddon\OrderImport\Rules\BhvColissimo::class,
+            ShoppingfeedAddon\OrderImport\Rules\ColissimoRule::class,
         ];
 
         foreach ($defaultRulesClassNames as $ruleClassName) {
@@ -1353,7 +1344,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         $this->updateShoppingFeedPreloading([$params['object']->id_product], ShoppingfeedPreloading::ACTION_SYNC_PRICE);
     }
 
-    public function hookDeleteProductAttribute($params)
+    public function hookActionDeleteProductAttribute($params)
     {
         $this->updateShoppingFeedPreloading([$params['id_product']], ShoppingfeedPreloading::ACTION_SYNC_ALL);
     }

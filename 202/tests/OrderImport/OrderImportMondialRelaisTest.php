@@ -20,7 +20,7 @@
 namespace Tests\OrderImport;
 
 use ShoppingfeedAddon\Actions\ActionsHandler;
-use ShoppingfeedAddon\OrderImport\Rules\Mondialrelay;
+use ShoppingfeedAddon\OrderImport\Rules\MondialrelayRule;
 use ShoppingfeedClasslib\Registry;
 use Validate;
 
@@ -60,7 +60,7 @@ class OrderImportMondialRelaisTest extends AbstractOrdeTestCase
     public function testRulesMondialRelais()
     {
         $apiOrder = $this->getOrderRessourceFromDataset('order-colizey-mondialrelais.json');
-        $rules = new Mondialrelay();
+        $rules = new MondialrelayRule();
         $this->assertTrue($rules->isApplicable($apiOrder));
     }
 
