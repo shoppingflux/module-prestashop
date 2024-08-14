@@ -251,7 +251,7 @@ class ShippedByMarketplace extends RuleAbstract implements RuleInterface
         $states[] = [
             'type' => 'select',
             'label' => $this->l('After a shipped order or an order shipped by the marketplace import, turn this order status into', 'ShippedByMarketplace'),
-            'desc' => $this->l('By default: Delivered &', 'ShippedByMarketplace'),
+            'desc' => $this->l('By default: Delivered', 'ShippedByMarketplace'),
             'name' => 'end_order_state_shipped',
             'options' => [
                 'query' => $statuses,
