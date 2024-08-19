@@ -74,7 +74,7 @@ class ManomanoDpdRelais extends RuleAbstract implements RuleInterface
      */
     public function getDescription()
     {
-        return $this->l('Retrieves the relay ID and fill in the table ”dpdfrance_shipping” as expected by ”DPD France” Addons.', 'ManomanoDpdRelais');
+        return $this->l('Retrieves the relay ID and fill in the table \'dpdfrance_shipping\' as expected by \'DPD France\' Addons.', 'ManomanoDpdRelais');
     }
 
     /**
@@ -82,7 +82,7 @@ class ManomanoDpdRelais extends RuleAbstract implements RuleInterface
      */
     public function getConditions()
     {
-        return $this->l('If the order is from ManoMano with ”DPD Relay”', 'ManomanoDpdRelais');
+        return $this->l('If the order is from ManoMano with \'DPD Relay\'', 'ManomanoDpdRelais');
     }
 
     /**
