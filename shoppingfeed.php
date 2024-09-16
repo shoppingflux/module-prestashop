@@ -1549,4 +1549,28 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
 
         return $result;
     }
+
+    public function actionEmailSendBefore($params)
+    {
+        if ($params['$template'] !== 'order_conf') {
+            return true;
+        }
+        if (empty($params['templateVars']['{order_name}'])) {
+            return true;
+        }
+
+        $orders = Order::getByReference($params['templateVars']['{order_name}']);
+
+        if ($orders->count() === 0) {
+            return true;
+        }
+        /** @var Order $order */
+        $order = $orders->getFirst();
+
+        if (false === $this->isShoppingfeedOrder($order)) {
+            return true;
+        }
+
+        return (bool) Configuration::get(self::SEND_NOTIFICATION);
+    }
 }
