@@ -85,6 +85,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     const NEED_UPDATE_HOOK = 'SHOPPINGFEED_IS_NEED_UPDATE_HOOK';
     const ORDER_TRACKING = 'SHOPPINGFEED_ORDER_TRACKING';
     const COMPRESS_PRODUCTS_FEED = 'SHOPPINGFEED_COMPRESS_PRODUCTS_FEED';
+    const SEND_NOTIFICATION = 'SHOPPINGFEED_SEND_NOTIFICATION';
 
     public $extensions = [
         \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerExtension::class,
@@ -278,6 +279,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         'actionDeleteProductAttribute',
         'actionAdminSpecificPriceRuleControllerDeleteBefore',
         'displayPDFInvoice',
+        'actionEmailSendBefore',
     ];
 
     /**
@@ -442,6 +444,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         $this->setConfigurationDefault(self::PRODUCT_FEED_CARRIER_REFERENCE, Configuration::getGlobalValue('PS_CARRIER_DEFAULT'));
         $this->setConfigurationDefault(self::ORDER_DEFAULT_CARRIER_REFERENCE, Configuration::getGlobalValue('PS_CARRIER_DEFAULT'));
         $this->setConfigurationDefault(self::COMPRESS_PRODUCTS_FEED, 1);
+        $this->setConfigurationDefault(self::SEND_NOTIFICATION, 1);
 
         if (method_exists(ImageType::class, 'getFormatedName')) {
             $this->setConfigurationDefault(self::PRODUCT_FEED_IMAGE_FORMAT, ImageType::getFormatedName('large'));
