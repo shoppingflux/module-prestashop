@@ -23,17 +23,31 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
+use Module;
 use ShoppingFeed\Sdk\Api\Order\OrderItem;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use ShoppingfeedAddon\OrderImport\OrderItemData;
 use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
 use ShoppingfeedAddon\Services\CdiscountFeeProduct;
+use ShoppingfeedProduct;
 use Tools;
 use Validate;
 
 class Cdiscount extends RuleAbstract implements RuleInterface
 {
+    /**
+     * @var \Shoppingfeed
+     */
+    protected $module;
+
+    public function __construct($configuration = [], $id_shop = null)
+    {
+        parent::__construct($configuration, $id_shop);
+
+        $this->module = Module::getInstanceByName('shoppingfeed');
+    }
+
     public function isApplicable(OrderResource $apiOrder)
     {
         return preg_match('#^cdiscount$#', Tools::strtolower($apiOrder->getChannel()->getName()))
@@ -50,10 +64,13 @@ class Cdiscount extends RuleAbstract implements RuleInterface
             return;
         }
         $cdiscountFeeProduct->id_product_attribute = null;
-        $params['prestashopProducts'][$cdiscountFeeProduct->reference] = $cdiscountFeeProduct;
+        $sfp = new ShoppingfeedProduct();
+        $sfp->id_product = $cdiscountFeeProduct->id;
+        $reference = $this->module->mapReference($sfp);
+        $params['prestashopProducts'][$reference] = $cdiscountFeeProduct;
         $orderData = $params['orderData'];
         $item = new OrderItem(
-            $cdiscountFeeProduct->reference,
+            $reference,
             1,
             $this->getFees($params['apiOrder']),
             0
