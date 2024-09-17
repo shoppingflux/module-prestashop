@@ -26,6 +26,7 @@ function upgrade_module_2_0_0($module)
      */
     $installer = new ModuleInstaller($module);
     $installer->registerHooks();
+    $module->setConfigurationDefault(Shoppingfeed::SEND_NOTIFICATION, 1);
 
     return true;
 }
