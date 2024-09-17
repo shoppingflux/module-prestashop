@@ -699,13 +699,6 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             }
         }
 
-        // Validate order with payment module
-        // Change the customer mail before this, otherwise he'll get a confirmation mail
-        Registry::set('customerEmail', $this->conveyor['customer']->email);
-
-        $this->conveyor['customer']->email = 'do-not-send@alerts-shopping-flux.com';
-        $this->conveyor['customer']->update();
-
         $amount_paid = (float) Tools::ps_round((float) $cart->getOrderTotal(true, Cart::BOTH), 2);
         if ($cart->nbProducts() === 0) {
             $this->conveyor['error'] = sprintf(
@@ -780,16 +773,8 @@ class ShoppingfeedOrderImportActions extends DefaultActions
 
             $this->conveyor['order_reference'] = $paymentModule->currentOrderReference;
         } else {
-            // Reset customer mail
-            $this->conveyor['customer']->email = Registry::get('customerEmail');
-            $this->conveyor['customer']->update();
-
             return true;
         }
-
-        // Reset customer mail
-        $this->conveyor['customer']->email = Registry::get('customerEmail');
-        $this->conveyor['customer']->update();
 
         ProcessLoggerHandler::logSuccess(
             $this->logPrefix .
