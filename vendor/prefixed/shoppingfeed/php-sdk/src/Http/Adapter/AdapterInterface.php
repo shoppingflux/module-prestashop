@@ -1,7 +1,7 @@
 <?php
 namespace ShoppingFeed\Sdk\Http\Adapter;
 
-use SfPsr\Psr\Http\Message;
+use Psr\Http\Message;
 use ShoppingFeed\Sdk\Client\ClientOptions;
 
 /**

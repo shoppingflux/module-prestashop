@@ -1,7 +1,7 @@
 <?php
 namespace ShoppingFeed\Sdk\Client;
 
-use SfPsr\Psr\Log\LoggerInterface;
+use Psr\Log\LoggerInterface;
 use ShoppingFeed\Sdk\Http\Adapter\AdapterInterface;
 
 class ClientOptions
