@@ -897,7 +897,8 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 $apiOrder->getChannel()->getName(),
                 isset($this->conveyor['id_order']) ? $this->conveyor['id_order'] : null,
                 $isSucess,
-                empty($this->conveyor['error']) ? null : $this->conveyor['error']
+                empty($this->conveyor['error']) ? null : $this->conveyor['error'],
+                $this->conveyor['shoppingfeed_store_id']
             );
         } catch (Exception $e) {
             ProcessLoggerHandler::logError(
