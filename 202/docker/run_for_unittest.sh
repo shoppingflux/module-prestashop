@@ -63,8 +63,13 @@ REPLACE INTO ps_shoppingfeed_carrier (id_shoppingfeed_carrier, name_marketplace,
 (2,	'NatureEtDecouvertes',	'Point Relais (Chrono Relais)',	2,	0,	'2022-02-17 00:00:00',	'2022-02-17 00:00:00'),
 (3,	'Colizey', 'Colissimo Relais',	7,	0,	'2022-02-17 00:00:00',	'2022-02-17 00:00:00'),
 (4,	'CDiscount', 'SO1',	7,	0,	'2022-02-17 00:00:00',	'2022-02-17 00:00:00'),
-(5,	'Mamomano', 'Colissimo',	7,	0,	'2022-02-17 00:00:00',	'2022-02-17 00:00:00'),
-(6,	'showroomprive', 'Colissimo',	7,	0,	'2022-02-17 00:00:00',	'2022-02-17 00:00:00');
+(5,	'Manomano', 'Colissimo',	7,	0,	'2022-02-17 00:00:00',	'2022-02-17 00:00:00'),
+(6,	'showroomprive', 'Colissimo',	7,	0,	'2022-02-17 00:00:00',	'2022-02-17 00:00:00'),
+(7,	'Veepeegroup', 'Colissimo',	7,	0,	'2022-02-17 00:00:00',	'2022-02-17 00:00:00'),
+(8,	'bhv', 'Colissimo',	7,	0,	'2022-02-17 00:00:00',	'2022-02-17 00:00:00'),
+(9,	'GaleriesLafayette', 'Colissimo',	7,	0,	'2022-02-17 00:00:00',	'2022-02-17 00:00:00'),
+(10,	'leroymerlin', 'Colissimo',	7,	0,	'2022-02-17 00:00:00',	'2022-02-17 00:00:00'),
+(11,	'zalandomyunittest', 'Colissimo',	7,	0,	'2022-02-17 00:00:00',	'2022-02-17 00:00:00');
 
 UPDATE ps_product_lang SET available_now = 'disponible', available_later = 'non disponible' WHERE id_product = 1;
 UPDATE ps_product_lang SET available_now = 'disponible', available_later = 'non disponible' WHERE id_product = 3;

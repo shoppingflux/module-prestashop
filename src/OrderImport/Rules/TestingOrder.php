@@ -118,7 +118,7 @@ class TestingOrder extends RuleAbstract implements RuleInterface
      */
     public function getDescription()
     {
-        return $this->l('After a successfull test import, turn this order into "Canceled" status', 'TestingOrder');
+        return $this->l('After a successfull test import, turn this order into \'Canceled\' status', 'TestingOrder');
     }
 
     public function getConfigurationSubform()
@@ -127,7 +127,7 @@ class TestingOrder extends RuleAbstract implements RuleInterface
 
         $states[] = [
             'type' => 'switch',
-            'label' => $this->l('After a successfull test import, turn this order into "Canceled" status', 'TestingOrder'),
+            'label' => $this->l('After a successfull test import, turn this order into \'Canceled\' status', 'TestingOrder'),
             'name' => 'order_status_after_test_order',
             'required' => false,
             'is_bool' => true,

@@ -103,6 +103,10 @@ class AmazonEbay extends RuleAbstract implements RuleInterface
         $address['firstName'] = trim($address['firstName']);
         $address['lastName'] = trim($address['lastName']);
 
+        if (!empty($address['lastName']) && !empty($address['firstName'])) {
+            return;
+        }
+
         if (empty($address['firstName'])) {
             $fullname = $address['lastName'];
         } else {

@@ -51,6 +51,7 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
         $this->addJS($this->module->getPathUri() . 'views/js/form_config.js');
         $this->content = $this->welcomeForm();
         $id_shop = $this->context->shop->id;
+        $this->identifier = 'className';
 
         $sft = new ShoppingfeedToken();
         $tokens = $sft->findAllActive();
@@ -274,7 +275,7 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
                         ],
                         [
                             'type' => 'shoppingfeed_switch_with_date',
-                            'label' => $this->module->l('Import orders already in "shipped" status on Shopping Feed, except orders shipped by market places', 'AdminShoppingfeedOrderImportRules'),
+                            'label' => $this->module->l('Import orders already in \'shipped\' status on Shopping Feed, except orders shipped by market places', 'AdminShoppingfeedOrderImportRules'),
                             'name' => Shoppingfeed::ORDER_IMPORT_SHIPPED,
                             'id' => 'shoppingfeed_order-import-switch',
                             'desc' => $this->module->l('Let\'s import order with status ”shipped” order on Shopping feed. Your stock won\'t decrease for these orders.', 'AdminShoppingfeedOrderImportRules'),
@@ -558,7 +559,12 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
         ];
 
         $helper->base_folder = $this->getTemplatePath() . $this->override_folder;
-        $helper->base_tpl = 'order_status_syncro.tpl';
+
+        if (version_compare(_PS_VERSION_, '1.7.8', '>=')) {
+            $helper->base_tpl = 'order_status_syncro_178.tpl';
+        } else {
+            $helper->base_tpl = 'order_status_syncro.tpl';
+        }
 
         return $helper->generateForm($fields_form);
     }

@@ -40,7 +40,7 @@ use SoapClient;
 use Tools;
 use Validate;
 
-abstract class AbstractMondialrelay extends RuleAbstract implements RuleInterface
+class MondialrelayRule extends RuleAbstract implements RuleInterface
 {
     protected $module_mondialRelay;
 
@@ -48,8 +48,10 @@ abstract class AbstractMondialrelay extends RuleAbstract implements RuleInterfac
     {
         $this->module_mondialRelay = Module::getInstanceByName('mondialrelay');
 
-        if (Validate::isLoadedObject($this->module_mondialRelay)) {
-            return true;
+        if (Validate::isLoadedObject($this->module_mondialRelay) && $this->module_mondialRelay->active) {
+            if (false === empty($this->getRelayId($apiOrder))) {
+                return true;
+            }
         }
 
         return false;
@@ -58,20 +60,27 @@ abstract class AbstractMondialrelay extends RuleAbstract implements RuleInterfac
     public function onPostProcess($params)
     {
         if (empty($params['sfOrder'])) {
-            return false;
+            return;
         }
 
         if (empty($params['apiOrder'])) {
-            return false;
+            return;
         }
 
         if (empty($params['orderData'])) {
-            return false;
+            return;
         }
 
         $apiOrder = $params['apiOrder'];
         $order = new Order($params['sfOrder']->id_order);
-        $relayId = $this->getRelayId($params['orderData']);
+        $carrier = new Carrier((int) $order->id_carrier);
+        $address = new Address($order->id_address_delivery);
+        $countryIso = Country::getIsoById($address->id_country);
+        $relayId = $this->getRelayId($apiOrder);
+
+        if ($carrier->external_module_name != $this->module_mondialRelay->name) {
+            return;
+        }
 
         $logPrefix = sprintf(
             $this->l('[Order: %s]', 'Mondialrelay'),
@@ -85,22 +94,6 @@ abstract class AbstractMondialrelay extends RuleAbstract implements RuleInterfac
             'Order',
             $order->id
         );
-
-        if (empty($relayId)) {
-            ProcessLoggerHandler::logInfo(
-                $logPrefix .
-                    $this->l('Rule triggered. No relay ID found', 'Mondialrelay'),
-                'Order',
-                $order->id
-            );
-
-            return false;
-        }
-
-        $carrier = new Carrier((int) $order->id_carrier);
-        $address = new Address($order->id_address_delivery);
-        $countryIso = Country::getIsoById($address->id_country);
-
         ProcessLoggerHandler::logInfo(
             sprintf(
                 $logPrefix .
@@ -123,7 +116,7 @@ abstract class AbstractMondialrelay extends RuleAbstract implements RuleInterfac
                 $order->id
             );
 
-            return false;
+            return;
         }
 
         ProcessLoggerHandler::logInfo(
@@ -288,7 +281,6 @@ abstract class AbstractMondialrelay extends RuleAbstract implements RuleInterfac
      */
     public function getRelayData(OrderResource $apiOrder, $relayId, $countryIso)
     {
-        $urlWebService = 'http://www.mondialrelay.fr/webservice/Web_Services.asmx?WSDL';
         $logPrefix = sprintf(
             $this->l('[Order: %s]', 'Mondialrelay'),
             $apiOrder->getId()
@@ -301,15 +293,11 @@ abstract class AbstractMondialrelay extends RuleAbstract implements RuleInterfac
             return false;
         }
 
-        $client = new SoapClient($urlWebService);
+        $client = $this->initSoapClient();
         if (!is_object($client)) {
             // Error connecting to webservice
             ProcessLoggerHandler::logInfo(
-                sprintf(
-                    $logPrefix .
-                        $this->l('Could not create SOAP client for URL %s', 'Mondialrelay'),
-                    $urlWebService
-                ),
+                $logPrefix . $this->l('Could not create SOAP client for URL', 'Mondialrelay'),
                 'Order'
             );
 
@@ -334,9 +322,9 @@ abstract class AbstractMondialrelay extends RuleAbstract implements RuleInterfac
             // Web service did not return expected data
             ProcessLoggerHandler::logInfo(
                 sprintf(
-                    $logPrefix .
-                        $this->l('Error getting relay %s data : code %s', 'Mondialrelay'),
-                    $result->WSI2_AdressePointRelaisResult->STAT
+                    $logPrefix . $this->l('Error getting relay %s data : code %s', 'Mondialrelay'),
+                    (string) $relayId,
+                    (string) $result->WSI2_AdressePointRelaisResult->STAT
                 ),
                 'Order'
             );
@@ -378,12 +366,54 @@ abstract class AbstractMondialrelay extends RuleAbstract implements RuleInterfac
         ];
     }
 
-    public function getRelayId($orderData)
+    public function getRelayId(OrderResource $apiOrder)
     {
-        if (false === empty($orderData->shippingAddress['relayId'])) {
-            return $orderData->shippingAddress['relayId'];
+        $apiOrderData = $apiOrder->toArray();
+
+        if (false === empty($apiOrderData['shippingAddress']['relayId'])) {
+            return $apiOrderData['shippingAddress']['relayId'];
+        }
+        if (false === empty($apiOrderData['shippingAddress']['other'])) {
+            return $apiOrderData['shippingAddress']['other'];
+        }
+        if (false === empty($apiOrderData['additionalFields']['shipping_pudo_id'])) {
+            return $apiOrderData['additionalFields']['shipping_pudo_id'];
+        }
+        if (false === empty($apiOrderData['additionalFields']['shippingRelayId'])) {
+            return $apiOrderData['additionalFields']['shippingRelayId'];
         }
 
         return '';
+    }
+
+    protected function initSoapClient()
+    {
+        $client = null;
+        $configs = [
+            'https://api.mondialrelay.com/Web_Services.asmx?WSDL',
+            'https://www.mondialrelay.fr/webservice/Web_Services.asmx?WSDL',
+        ];
+
+        foreach ($configs as $config) {
+            try {
+                $client = new SoapClient($config);
+            } catch (\SoapFault $e) {
+                continue;
+            }
+
+            return $client;
+        }
+
+        return $client;
+    }
+
+    public function getDescription()
+    {
+        return $this->l('Adds the order in the Mondial Relay module\'s table.', 'Mondialrelay');
+    }
+
+    public function getConditions()
+    {
+        return $this->l('If the order is delivered by mondialrelay carrier', 'Mondialrelay');
     }
 }

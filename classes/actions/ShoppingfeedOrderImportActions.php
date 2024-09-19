@@ -717,38 +717,58 @@ class ShoppingfeedOrderImportActions extends DefaultActions
 
             return false;
         }
+
+        $transactionId = $apiOrder->getReference();
+        $paymentMethod = Tools::strtolower($apiOrder->getChannel()->getName());
+
+        $this->specificRulesManager->applyRules(
+            'onValidateOrder',
+            [
+                'apiOrder' => $apiOrder,
+                'orderData' => &$this->conveyor['orderData'],
+                'cart' => &$cart,
+               'paymentMethod' => &$paymentMethod,
+               'transactionId' => &$transactionId,
+            ]
+        );
+
         try {
             $paymentModule->validateOrder(
                 (int) $cart->id,
                 $this->initSfOrderState()->get()->id,
                 $amount_paid,
-                Tools::strtolower($apiOrder->getChannel()->getName()),
+                $paymentMethod,
                 null,
-                ['transaction_id' => $apiOrder->getReference()],
+                ['transaction_id' => $transactionId],
                 $cart->id_currency,
                 false,
                 $cart->secure_key,
                 new Shop($this->getIdShop())
             );
         } catch (Exception $e) {
-            if (false === is_int($paymentModule->currentOrder) || $paymentModule->currentOrder === 0) {
-                $order = $this->getOrderByCartId((int) $cart->id);
+        } catch (Throwable $e) {// for php 7.x and higher
+        } finally {
+            if (isset($e)) {
+                if (false === is_int($paymentModule->currentOrder) || $paymentModule->currentOrder === 0) {
+                    $order = $this->getOrderByCartId((int) $cart->id);
 
-                if (Validate::isLoadedObject($order)) {
-                    $paymentModule->currentOrder = $order->id;
-                    $paymentModule->currentOrderReference = $order->reference;
+                    if (Validate::isLoadedObject($order)) {
+                        $paymentModule->currentOrder = $order->id;
+                        $paymentModule->currentOrderReference = $order->reference;
+                    }
                 }
-            }
 
-            $log = [
-                'Message: ' . $e->getMessage(),
-                'File: ' . $e->getFile(),
-                'Line: ' . $e->getLine(),
-                'Error type: ' . get_class($e),
-            ];
-            $message = implode(';', $log);
-            $this->conveyor['error'] = $this->l('Order not valid on PrestaShop.', 'ShoppingfeedOrderImportActions') . ' ' . $message;
-            ProcessLoggerHandler::logInfo($this->logPrefix . $this->conveyor['error'], 'Order');
+                $log = [
+                    'Message: ' . $e->getMessage(),
+                    'File: ' . $e->getFile(),
+                    'Line: ' . $e->getLine(),
+                    'Error type: ' . get_class($e),
+                ];
+                $message = implode(';', $log);
+                $this->conveyor['error'] = $this->l('Order not valid on PrestaShop.', 'ShoppingfeedOrderImportActions') . ' ' . $message;
+                ProcessLoggerHandler::logInfo($this->logPrefix . $this->conveyor['error'], 'Order');
+                unset($e);
+            }
         }
 
         if ($paymentModule->currentOrder && $paymentModule->currentOrderReference) {
@@ -1149,6 +1169,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 'shipping_cost_tax_incl' => Tools::ps_round($orderPrices['total_shipping'], 2),
                 'shipping_cost_tax_excl' => Tools::ps_round($orderPrices['total_shipping_tax_excl'], 4),
                 'id_carrier' => $carrier->id,
+                'id_order' => (int) $id_order,
             ];
 
             foreach ($updateOrder as $key => $value) {
@@ -1156,9 +1177,21 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             }
 
             $psOrder->save(true);
+            $id_order_carrier = (int) Db::getInstance()->getValue(
+                (new DbQuery())
+                    ->from('order_carrier')
+                    ->where('id_order = ' . (int) $id_order)
+                    ->select('id_order_carrier')
+            );
 
             Db::getInstance()->update('order_invoice', $updateOrderInvoice, '`id_order` = ' . (int) $id_order);
-            Db::getInstance()->update('order_carrier', $updateOrderTracking, '`id_order` = ' . (int) $id_order);
+
+            if ($id_order_carrier) {
+                Db::getInstance()->update('order_carrier', $updateOrderTracking, '`id_order_carrier` = ' . (int) $id_order_carrier);
+            } else {
+                $updateOrderTracking['date_add'] = date('Y-m-d H:i:s');
+                Db::getInstance()->insert('order_carrier', $updateOrderTracking);
+            }
         }
 
         $query = (new DbQuery())
