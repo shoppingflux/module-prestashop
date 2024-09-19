@@ -1,7 +1,7 @@
 <?php
 namespace ShoppingFeed\Sdk\Http\Adapter;
 
-use SfGuzzle\GuzzleHttp;
+use \SfGuzzle\GuzzleHttp;
 use SfPsr\Psr\Http\Message\RequestInterface;
 use ShoppingFeed\Sdk\Client;
 use ShoppingFeed\Sdk\Client\ClientOptions;
@@ -11,7 +11,7 @@ use ShoppingFeed\Sdk\Http;
 /**
  * Http Client Adapter for \SfGuzzle\GuzzleHttp v6
  */
-class Guzzle6Adapter implements Http\Adapter\AdapterInterface
+class GuzzleHTTPAdapter implements Http\Adapter\AdapterInterface
 {
     /**
      * @var \SfGuzzle\GuzzleHttp\HandlerStack
@@ -91,6 +91,11 @@ class Guzzle6Adapter implements Http\Adapter\AdapterInterface
      */
     public function createRequest($method, $uri, array $headers = [], $body = null)
     {
+        if (isset($headers['Content-Type']) && 'multipart/form-data' === $headers['Content-Type']) {
+            unset($headers['Content-Type']);
+            $body = new \SfGuzzle\GuzzleHttp\Psr7\MultipartStream($body);
+        }
+
         return new \SfGuzzle\GuzzleHttp\Psr7\Request($method, $uri, $headers, $body);
     }
 
@@ -117,12 +122,12 @@ class Guzzle6Adapter implements Http\Adapter\AdapterInterface
      */
     private function createExceptionCallback(callable $callback = null)
     {
-        return function (\SfGuzzle\GuzzleHttp\Exception\RequestException $exception) use ($callback) {
-            if ($exception->hasResponse() && $callback) {
+        return function (\SfGuzzle\GuzzleHttp\Exception\TransferException $exception) use ($callback) {
+            if ($callback && $exception instanceof \SfGuzzle\GuzzleHttp\Exception\RequestException && $exception->hasResponse()) {
                 $halClient = new HalClient($this->options->getBaseUri(), $this);
                 $resource  = $halClient->createResource($exception->getResponse());
 
-                call_user_func($callback, $resource);
+                $callback($resource);
             }
         };
     }
@@ -135,8 +140,8 @@ class Guzzle6Adapter implements Http\Adapter\AdapterInterface
     private function checkDependency()
     {
         if (! interface_exists(\SfGuzzle\GuzzleHttp\ClientInterface::class)
-            || version_compare(\SfGuzzle\GuzzleHttp\ClientInterface::VERSION, '6', '<')
-            || version_compare(\SfGuzzle\GuzzleHttp\ClientInterface::VERSION, '7', '>=')
+            || (defined('\SfGuzzle\GuzzleHttp\ClientInterface::VERSION')
+            && version_compare(\SfGuzzle\GuzzleHttp\ClientInterface::VERSION, '7', '>='))
         ) {
             throw new Http\Exception\MissingDependencyException(
                 'No GuzzleHttp client v6 found, please install the dependency or add your own http adapter'

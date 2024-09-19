@@ -60,6 +60,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     const SHIPPED_ORDERS = 'SHOPPINGFEED_SHIPPED_ORDERS';
     const CANCELLED_ORDERS = 'SHOPPINGFEED_CANCELLED_ORDERS';
     const REFUNDED_ORDERS = 'SHOPPINGFEED_REFUNDED_ORDERS';
+    const DELIVERED_ORDERS = 'SHOPPINGFEED_DELIVERED_ORDERS';
     const ORDER_IMPORT_ENABLED = 'SHOPPINGFEED_ORDER_IMPORT_ENABLED';
     const ORDER_IMPORT_TEST = 'SHOPPINGFEED_ORDER_IMPORT_TEST';
     const ORDER_IMPORT_SHIPPED = 'SHOPPINGFEED_ORDER_IMPORT_SHIPPED';
@@ -85,6 +86,24 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     const NEED_UPDATE_HOOK = 'SHOPPINGFEED_IS_NEED_UPDATE_HOOK';
     const ORDER_TRACKING = 'SHOPPINGFEED_ORDER_TRACKING';
     const COMPRESS_PRODUCTS_FEED = 'SHOPPINGFEED_COMPRESS_PRODUCTS_FEED';
+
+    const ORDER_OPERATION_ACCEPT = 'accept';
+
+    const ORDER_OPERATION_CANCEL = 'cancel';
+
+    const ORDER_OPERATION_REFUSE = 'refuse';
+
+    const ORDER_OPERATION_SHIP = 'ship';
+
+    const ORDER_OPERATION_REFUND = 'refund';
+
+    const ORDER_OPERATION_ACKNOWLEDGE = 'acknowledge';
+
+    const ORDER_OPERATION_UNACKNOWLEDGE = 'unacknowledge';
+
+    const ORDER_OPERATION_UPLOAD_DOCUMENTS = 'upload-documents';
+
+    const ORDER_OPERATION_DELIVER = 'deliver';
 
     public $extensions = [
         \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerExtension::class,
@@ -435,6 +454,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         $this->setConfigurationDefault(self::SHIPPED_ORDERS, json_encode([]));
         $this->setConfigurationDefault(self::CANCELLED_ORDERS, json_encode([]));
         $this->setConfigurationDefault(self::REFUNDED_ORDERS, json_encode([]));
+        $this->setConfigurationDefault(self::DELIVERED_ORDERS, json_encode([]));
         $this->setConfigurationDefault(self::ORDER_IMPORT_ENABLED, true);
         $this->setConfigurationDefault(self::ORDER_IMPORT_SHIPPED, false);
         $this->setConfigurationDefault(self::ORDER_IMPORT_SPECIFIC_RULES_CONFIGURATION, json_encode([]));
@@ -1249,9 +1269,11 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         $shipped_status = json_decode(Configuration::get(Shoppingfeed::SHIPPED_ORDERS, null, null, $order->id_shop));
         $cancelled_status = json_decode(Configuration::get(Shoppingfeed::CANCELLED_ORDERS, null, null, $order->id_shop));
         $refunded_status = json_decode(Configuration::get(Shoppingfeed::REFUNDED_ORDERS, null, null, $order->id_shop));
+        $delivered_status = json_decode(Configuration::get(Shoppingfeed::DELIVERED_ORDERS, null, null, $order->id_shop));
         if (!in_array($newOrderStatus->id, $shipped_status)
             && !in_array($newOrderStatus->id, $cancelled_status)
             && !in_array($newOrderStatus->id, $refunded_status)
+            && !in_array($newOrderStatus->id, $delivered_status)
         ) {
             return;
         }

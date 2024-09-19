@@ -595,6 +595,8 @@ $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimport_579c774c9e8c7f1
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimport_4fbde26b16b0e968e4c17a1b20ee01bb'] = 'Commande %s non importée : commande non présent';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimport_36d50da08ad712b3556a30b3f7f1781b'] = 'Commande %s non importée : %s';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimport_ff75f5ba57ad6a43a637e6552f708bd7'] = 'Token %s : %d commandes à importer : %d succès, %d erreurs';
+$_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_541d50ff4f79ad3c125b154568146103'] = 'Synchronisation des commandes reçues + Status mapping';
+$_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_0147ea0808683b0b0b2a66d987b3db2d'] = 'Lorsque la commande a bien été livrée chez le client, pour les plateformes gérant ce statut';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedprocessmonitor_b6543e6dabc6a1cbf66f92026508ec24'] = 'Impossible de troiuver la déclaration des tâches cron dans le module.';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedprocessmonitor_965834fed9e23894a358742da10f6343'] = 'Nom technique';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedprocessmonitor_b78a3223503896721cca1303f776159b'] = 'Titre';
