@@ -87,6 +87,24 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     const ORDER_TRACKING = 'SHOPPINGFEED_ORDER_TRACKING';
     const COMPRESS_PRODUCTS_FEED = 'SHOPPINGFEED_COMPRESS_PRODUCTS_FEED';
 
+    const ORDER_OPERATION_ACCEPT = 'accept';
+
+    const ORDER_OPERATION_CANCEL = 'cancel';
+
+    const ORDER_OPERATION_REFUSE = 'refuse';
+
+    const ORDER_OPERATION_SHIP = 'ship';
+
+    const ORDER_OPERATION_REFUND = 'refund';
+
+    const ORDER_OPERATION_ACKNOWLEDGE = 'acknowledge';
+
+    const ORDER_OPERATION_UNACKNOWLEDGE = 'unacknowledge';
+
+    const ORDER_OPERATION_UPLOAD_DOCUMENTS = 'upload-documents';
+
+    const ORDER_OPERATION_DELIVER = 'deliver';
+
     public $extensions = [
         \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerExtension::class,
         \ShoppingfeedClasslib\Extensions\ProcessMonitor\ProcessMonitorExtension::class,

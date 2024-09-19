@@ -22,7 +22,8 @@ if (!defined('_PS_VERSION_')) {
 
 use ShoppingFeed\Sdk\Api\Catalog\InventoryUpdate;
 use ShoppingFeed\Sdk\Api\Catalog\PricingUpdate;
-use ShoppingFeed\Sdk\Api\Order\OrderOperation;
+use ShoppingFeed\Sdk\Api\Order\Identifier\Id;
+use ShoppingFeed\Sdk\Api\Order\Operation;
 use ShoppingFeed\Sdk\Client\Client;
 use ShoppingFeed\Sdk\Client\ClientOptions;
 use ShoppingFeed\Sdk\Credential\Password;
@@ -286,51 +287,31 @@ class ShoppingfeedApi
                 throw new Exception('Invalid store ID');
             }
 
-            $operation = new \ShoppingFeed\Sdk\Api\Order\OrderOperation();
+            $operation = new \ShoppingFeed\Sdk\Api\Order\Operation();
 
             foreach ($taskOrders as $taskOrder) {
                 switch ($taskOrder['operation']) {
-                    case OrderOperation::TYPE_SHIP:
-                        $operation->addOperation(
-                            (string) $taskOrder['reference_marketplace'],
-                            (string) $taskOrder['marketplace'],
-                            $taskOrder['operation'],
-                            [
-                                'id' => (string) $taskOrder['id_internal_shoppingfeed'],
-                                'carrier' => (string) $taskOrder['payload']['carrier_name'],
-                                'trackingNumber' => (string) $taskOrder['payload']['tracking_number'],
-                                'trackingLink' => (string) $taskOrder['payload']['tracking_url'],
-                            ]
+                    case Shoppingfeed::ORDER_OPERATION_SHIP:
+                        $operation->ship(
+                            new Id((int) $taskOrder['id_internal_shoppingfeed']),
+                            (string) $taskOrder['payload']['carrier_name'],
+                            (string) $taskOrder['payload']['tracking_number'],
+                            (string) $taskOrder['payload']['tracking_url']
                         );
                         continue 2;
-                    case OrderOperation::TYPE_CANCEL:
-                        $operation->addOperation(
-                            (string) $taskOrder['reference_marketplace'],
-                            (string) $taskOrder['marketplace'],
-                            $taskOrder['operation'],
-                            [
-                                'id' => (string) $taskOrder['id_internal_shoppingfeed'],
-                            ]
+                    case Shoppingfeed::ORDER_OPERATION_CANCEL:
+                        $operation->cancel(
+                            new Id((int) $taskOrder['id_internal_shoppingfeed'])
                         );
                         continue 2;
-                    case OrderOperation::TYPE_REFUND:
-                        $operation->addOperation(
-                            (string) $taskOrder['reference_marketplace'],
-                            (string) $taskOrder['marketplace'],
-                            $taskOrder['operation'],
-                            [
-                                'id' => (string) $taskOrder['id_internal_shoppingfeed'],
-                            ]
+                    case Shoppingfeed::ORDER_OPERATION_REFUND:
+                        $operation->refund(
+                            new Id((int) $taskOrder['id_internal_shoppingfeed'])
                         );
                         continue 2;
-                    case OrderOperation::TYPE_DELIVER:
-                        $operation->addOperation(
-                            (string) $taskOrder['reference_marketplace'],
-                            (string) $taskOrder['marketplace'],
-                            $taskOrder['operation'],
-                            [
-                                'id' => (string) $taskOrder['id_internal_shoppingfeed'],
-                            ]
+                    case Shoppingfeed::ORDER_OPERATION_DELIVER:
+                        $operation->deliver(
+                            new Id((int) $taskOrder['id_internal_shoppingfeed'])
                         );
                         continue 2;
                 }
@@ -496,26 +477,18 @@ class ShoppingfeedApi
 
     public function acknowledgeOrder(
         $id_order_marketplace,
-        $ref_order_marketplace,
-        $name_marketplace,
         $id_order_prestashop,
         $is_success = true,
         $message = ''
     ) {
         try {
             $orderApi = $this->session->getMainStore()->getOrderApi();
-            $operation = new OrderOperation();
-            $operation->addOperation(
-                (string) $ref_order_marketplace,
-                (string) $name_marketplace,
-                OrderOperation::TYPE_ACKNOWLEDGE,
-                [
-                    'id' => (string) $id_order_marketplace,
-                    'status' => ($is_success === true) ? 'success' : 'error',
-                    'storeReference' => (string) $id_order_prestashop,
-                    'message' => (string) $message,
-                    'acknowledgedAt' => date_create()->format('c'),
-                ]
+            $operation = new Operation();
+            $operation->acknowledge(
+                new Id((int) $id_order_marketplace),
+                (string) $id_order_prestashop,
+                ($is_success === true ? 'success' : 'error'),
+                (string) $message
             );
 
             return $orderApi->execute($operation);
