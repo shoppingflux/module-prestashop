@@ -531,13 +531,28 @@ class ShoppingfeedApi
         return new SinceDate();
     }
 
-    public function getTicketsByBatchId($batchId, $filters = [])
+    public function getTicketsByBatchId($batchId, $filters = [], $shoppingfeed_store_id = null)
     {
         $tickets = [];
         $result = null;
+        $ticketApi = null;
 
         try {
-            $result = $this->session->getMainStore()->getTicketApi()->getByBatch($batchId, $filters);
+            if ($shoppingfeed_store_id) {
+                foreach ($this->getStores() as $store) {
+                    if ($store->getId() == $shoppingfeed_store_id) {
+                        $ticketApi = $store->getTicketApi();
+                    }
+                }
+            } else {
+                $ticketApi = $this->session->getMainStore()->getTicketApi();
+            }
+
+            if (!$ticketApi) {
+                throw new Exception('Invalid store ID');
+            }
+
+            $result = $ticketApi->getByBatch($batchId, $filters);
         } catch (Exception $e) {
         } catch (Throwable $e) {
         } finally {
