@@ -1,20 +1,20 @@
 <?php
 namespace ShoppingFeed\Sdk\Http\Adapter;
 
-use GuzzleHttp;
-use Psr\Http\Message\RequestInterface;
+use \SfGuzzle\GuzzleHttp;
+use SfPsr\Psr\Http\Message\RequestInterface;
 use ShoppingFeed\Sdk\Client;
 use ShoppingFeed\Sdk\Client\ClientOptions;
 use ShoppingFeed\Sdk\Hal\HalClient;
 use ShoppingFeed\Sdk\Http;
 
 /**
- * Http Client Adapter for GuzzleHttp v6
+ * Http Client Adapter for \SfGuzzle\GuzzleHttp v6
  */
 class GuzzleHTTPAdapter implements Http\Adapter\AdapterInterface
 {
     /**
-     * @var GuzzleHttp\HandlerStack
+     * @var \SfGuzzle\GuzzleHttp\HandlerStack
      */
     private $stack;
 
@@ -24,18 +24,18 @@ class GuzzleHTTPAdapter implements Http\Adapter\AdapterInterface
     private $options;
 
     /**
-     * @var GuzzleHttp\Client
+     * @var \SfGuzzle\GuzzleHttp\Client
      */
     private $client;
 
     /**
-     * @var GuzzleHttp\Pool
+     * @var \SfGuzzle\GuzzleHttp\Pool
      */
     private $pool;
 
     public function __construct(
         Client\ClientOptions $options = null,
-        GuzzleHttp\HandlerStack $stack = null
+        \SfGuzzle\GuzzleHttp\HandlerStack $stack = null
     )
     {
         $this->checkDependency();
@@ -82,7 +82,7 @@ class GuzzleHTTPAdapter implements Http\Adapter\AdapterInterface
     {
         $options['rejected'] = $this->createExceptionCallback();
 
-        $this->pool = new GuzzleHttp\Pool($this->client, $requests, $options);
+        $this->pool = new \SfGuzzle\GuzzleHttp\Pool($this->client, $requests, $options);
         $this->pool->promise()->wait(true);
     }
 
@@ -93,10 +93,10 @@ class GuzzleHTTPAdapter implements Http\Adapter\AdapterInterface
     {
         if (isset($headers['Content-Type']) && 'multipart/form-data' === $headers['Content-Type']) {
             unset($headers['Content-Type']);
-            $body = new GuzzleHttp\Psr7\MultipartStream($body);
+            $body = new \SfGuzzle\GuzzleHttp\Psr7\MultipartStream($body);
         }
 
-        return new GuzzleHttp\Psr7\Request($method, $uri, $headers, $body);
+        return new \SfGuzzle\GuzzleHttp\Psr7\Request($method, $uri, $headers, $body);
     }
 
     /**
@@ -106,7 +106,7 @@ class GuzzleHTTPAdapter implements Http\Adapter\AdapterInterface
     {
         $stack = clone $this->stack;
         $stack->push(
-            GuzzleHttp\Middleware::mapRequest(function (RequestInterface $request) use ($token) {
+            \SfGuzzle\GuzzleHttp\Middleware::mapRequest(function (RequestInterface $request) use ($token) {
                 return $request->withHeader('Authorization', 'Bearer ' . trim($token));
             }),
             'token_auth'
@@ -122,8 +122,8 @@ class GuzzleHTTPAdapter implements Http\Adapter\AdapterInterface
      */
     private function createExceptionCallback(callable $callback = null)
     {
-        return function (GuzzleHttp\Exception\TransferException $exception) use ($callback) {
-            if ($callback && $exception instanceof GuzzleHttp\Exception\RequestException && $exception->hasResponse()) {
+        return function (\SfGuzzle\GuzzleHttp\Exception\TransferException $exception) use ($callback) {
+            if ($callback && $exception instanceof \SfGuzzle\GuzzleHttp\Exception\RequestException && $exception->hasResponse()) {
                 $halClient = new HalClient($this->options->getBaseUri(), $this);
                 $resource  = $halClient->createResource($exception->getResponse());
 
@@ -139,9 +139,9 @@ class GuzzleHTTPAdapter implements Http\Adapter\AdapterInterface
      */
     private function checkDependency()
     {
-        if (! interface_exists(GuzzleHttp\ClientInterface::class)
-            || (defined('\GuzzleHttp\ClientInterface::VERSION')
-            && version_compare(GuzzleHttp\ClientInterface::VERSION, '7', '>='))
+        if (! interface_exists(\SfGuzzle\GuzzleHttp\ClientInterface::class)
+            || (defined('\SfGuzzle\GuzzleHttp\ClientInterface::VERSION')
+            && version_compare(\SfGuzzle\GuzzleHttp\ClientInterface::VERSION, '7', '>='))
         ) {
             throw new Http\Exception\MissingDependencyException(
                 'No GuzzleHttp client v6 found, please install the dependency or add your own http adapter'
@@ -154,7 +154,7 @@ class GuzzleHTTPAdapter implements Http\Adapter\AdapterInterface
      */
     private function initClient()
     {
-        $this->client = new GuzzleHttp\Client([
+        $this->client = new \SfGuzzle\GuzzleHttp\Client([
             'handler'  => $this->stack,
             'base_uri' => $this->options->getBaseUri(),
             'headers'  => $this->options->getHeaders(),
@@ -165,7 +165,7 @@ class GuzzleHTTPAdapter implements Http\Adapter\AdapterInterface
      * Create new adapter with given stack
      *
      * @param string                  $baseUri
-     * @param GuzzleHttp\HandlerStack $stack
+     * @param \SfGuzzle\GuzzleHttp\HandlerStack $stack
      *
      * @return Http\Adapter\AdapterInterface
      *
@@ -182,26 +182,26 @@ class GuzzleHTTPAdapter implements Http\Adapter\AdapterInterface
     /**
      * Create handler stack
      *
-     * @return GuzzleHttp\HandlerStack
+     * @return \SfGuzzle\GuzzleHttp\HandlerStack
      */
     private function createHandlerStack()
     {
-        $this->stack = GuzzleHttp\HandlerStack::create();
+        $this->stack = \SfGuzzle\GuzzleHttp\HandlerStack::create();
         $logger      = $this->options->getLogger();
 
         if ($this->options->handleRateLimit()) {
             $handler = new Http\Middleware\RateLimitHandler(3, $logger);
-            $this->stack->push(GuzzleHttp\Middleware::retry([$handler, 'decide'], [$handler, 'delay']), 'rate_limit');
+            $this->stack->push(\SfGuzzle\GuzzleHttp\Middleware::retry([$handler, 'decide'], [$handler, 'delay']), 'rate_limit');
         }
 
         $retryCount = $this->options->getRetryOnServerError();
         if ($retryCount) {
             $handler = new Http\Middleware\ServerErrorHandler($retryCount);
-            $this->stack->push(GuzzleHttp\Middleware::retry([$handler, 'decide']), 'retry_count');
+            $this->stack->push(\SfGuzzle\GuzzleHttp\Middleware::retry([$handler, 'decide']), 'retry_count');
         }
 
         if ($logger) {
-            $this->stack->push(GuzzleHttp\Middleware::log($logger, new GuzzleHttp\MessageFormatter()), 'logger');
+            $this->stack->push(\SfGuzzle\GuzzleHttp\Middleware::log($logger, new \SfGuzzle\GuzzleHttp\MessageFormatter()), 'logger');
         }
 
         return $this->stack;

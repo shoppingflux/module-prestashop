@@ -1,9 +1,9 @@
 <?php
 namespace ShoppingFeed\Sdk\Http\Middleware;
 
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Log\LoggerInterface;
+use SfPsr\Psr\Http\Message\RequestInterface;
+use SfPsr\Psr\Http\Message\ResponseInterface;
+use SfPsr\Psr\Log\LoggerInterface;
 
 /**
  * This handler manage API rate limits by mae the client entering to sleep,
