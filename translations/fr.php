@@ -467,10 +467,6 @@ $_MODULE['<{shoppingfeed}prestashop>symbolconformity_6efbd4474b0556a3e01989218a4
 $_MODULE['<{shoppingfeed}prestashop>symbolconformity_a081c9610c122ca2d1fe29935930f908'] = 'Toutes les commandes';
 $_MODULE['<{shoppingfeed}prestashop>symbolconformity_9ee5add80ac1471878a0d5580e15056f'] = 'En activant cette option, les caractères spéciaux interdit par PrestaShop seront supprimés des données de la commandes. Attention, cela peut corrompre les adresses de livraison ou de facturation.';
 $_MODULE['<{shoppingfeed}prestashop>symbolconformity_5fe50b90ae3daff68f330c167bed6d72'] = 'Conformité des caractères.';
-$_MODULE['<{shoppingfeed}prestashop>taxexclmarketplace_0cc1e925b5703e8da52b7c3e91829499'] = '[Commande: %s]';
-$_MODULE['<{shoppingfeed}prestashop>taxexclmarketplace_0864f57e7158777184d00e221aa09824'] = 'TaxExclMarketplace - Règle déclenchée.';
-$_MODULE['<{shoppingfeed}prestashop>taxexclmarketplace_b335b19ef2a3c630c546f3d166c278ef'] = 'Importe la commande à partie des prix et montants fournis hors taxe.';
-$_MODULE['<{shoppingfeed}prestashop>taxexclmarketplace_7aed48c9909a116f48a53e3395359090'] = 'Si la commande vient de RETIF.';
 $_MODULE['<{shoppingfeed}prestashop>setdnitoaddress_b22d9f270f467fb7d976b28b61678413'] = 'Ajouter le DNI à l\'adresse';
 $_MODULE['<{shoppingfeed}prestashop>setdnitoaddress_0dc21bd8d6f546e6242c75981cd6f138'] = 'Si le champs order.additionalFields.buyer_identification_number n\'est pas vide';
 $_MODULE['<{shoppingfeed}prestashop>setdnitoaddress_989574d0af2153bef7aafbb81894313d'] = 'Méthode de validation du DNI manquante';
