@@ -19,16 +19,13 @@
 
 namespace ShoppingfeedAddon\OrderImport\Rules;
 
-use Db;
-use DbQuery;
-use Group;
 use Customer;
+use Db;
+use Group;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use ShoppingfeedAddon\OrderImport\OrderData;
 use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
-use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
-use Tools;
 
 class GroupCustomer extends RuleAbstract implements RuleInterface
 {
@@ -68,7 +65,6 @@ class GroupCustomer extends RuleAbstract implements RuleInterface
         $customer->cleanGroups();
         $groups[] = $this->configuration['group_customer'];
         $customer->addGroups($groups);
-
         $customer->id_default_group = $this->configuration['group_customer'];
 
         $data['id_default_group'] = $this->configuration['group_customer'];
@@ -81,7 +77,7 @@ class GroupCustomer extends RuleAbstract implements RuleInterface
         if (\Validate::isLoadedObject($context->employee)) {
             $id_lang = $context->employee->id_lang;
         } else {
-            $id_lang = (int)\Configuration::get('PS_LANG_DEFAULT');
+            $id_lang = (int) \Configuration::get('PS_LANG_DEFAULT');
         }
         $groups = [
             [
