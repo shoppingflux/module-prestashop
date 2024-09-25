@@ -89,6 +89,9 @@ REPLACE INTO ps_cart_rule_lang (id_cart_rule,id_lang,name)
     VALUES (1,1,'gift');
 
 TRUNCATE ps_colissimo_pickup_point;
+
+INSERT IGNORE INTO ps_feature_product (id_feature, id_product, id_feature_value)
+VALUES ('2', '18', '3');
 "
 
 cd /var/www/html/modules/shoppingfeed/
