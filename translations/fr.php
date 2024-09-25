@@ -652,3 +652,7 @@ $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_1110c4e6654
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_ec5714076eb1196bd416508b54da3a01'] = 'Nombre de produits max par requête de mise à jour produit';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_54f327717fd70f49b83705ecfac102d2'] = 'Compression Gzip du flux';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_618ff511e37a426d996068934ca4bed6'] = 'Vous devez spécifier le \'Nombre maximum de produit à mettre à jour par requête\' (nombre ente 1 et 2 000 inclus)';
+$_MODULE['<{shoppingfeed}prestashop>groupcustomer_c38266740494aa4980d05c606fccac10'] = 'Customer group';
+$_MODULE['<{shoppingfeed}prestashop>groupcustomer_d67e6326203b27ada212982f25aea950'] = 'By selecting a group, all customers imported from marketplaces will be mapped to this group.';
+$_MODULE['<{shoppingfeed}prestashop>groupcustomer_11298acaa992d09ad84d3f69bc11d104'] = 'Turn the customer into the selected group.';
+$_MODULE['<{shoppingfeed}prestashop>groupcustomer_4d6542644f688d5300e70ca4fd9bf6aa'] = 'For all orders.';
