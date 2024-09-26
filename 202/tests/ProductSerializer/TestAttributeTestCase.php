@@ -212,5 +212,7 @@ class TestAttributeTestCase extends TestCase
         $this->assertIsArray($productContent['attributes']);
         $this->assertArrayHasKey('Property', $productContent['attributes']);
         $this->assertArrayHasKey('Property_2', $productContent['attributes']);
+        $this->assertArrayHasKey('LogicielPC', $productContent['attributes']);
+        $this->assertArrayHasKey('LogicielPC_2', $productContent['attributes']);
     }
 }

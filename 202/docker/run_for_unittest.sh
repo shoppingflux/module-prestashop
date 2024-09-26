@@ -90,8 +90,18 @@ REPLACE INTO ps_cart_rule_lang (id_cart_rule,id_lang,name)
 
 TRUNCATE ps_colissimo_pickup_point;
 
+INSERT IGNORE INTO ps_feature (id_feature,  position)
+VALUES (3, 2);
+INSERT IGNORE INTO ps_feature_shop (id_feature,  id_shop)
+VALUES (3, 1);
+INSERT IGNORE INTO ps_feature_lang (id_feature, id_lang, name)
+VALUES (3, 1, 'Logiciel PC'), (3, 2, 'Logiciel PC');
 INSERT IGNORE INTO ps_feature_product (id_feature, id_product, id_feature_value)
-VALUES ('2', '18', '3');
+VALUES
+(2, 18, 3),
+(2, 18, 1),
+(3, 18, 3),
+(3, 18, 1);
 "
 
 cd /var/www/html/modules/shoppingfeed/
