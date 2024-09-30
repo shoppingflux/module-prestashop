@@ -370,9 +370,15 @@ class ProductSerializer
         }
         foreach ($this->product->getFrontFeatures($this->id_lang) as $feature) {
             $feature['name'] = $this->_clean($feature['name']);
-            if (empty($feature['name']) === false) {
-                $attributes[$feature['name']] = $feature['value'];
+            if (empty($feature['name'])) {
+                continue;
             }
+            $featureName = $feature['name'];
+            $suffixCount = 1;
+            while (array_key_exists($featureName, $attributes)) {
+                $featureName = $feature['name'] . '_' . ++$suffixCount;
+            }
+            $attributes[$featureName] = $feature['value'];
         }
         $fileNumber = 0;
         foreach ($this->product->getAttachments($this->id_lang) as $attachment) {
