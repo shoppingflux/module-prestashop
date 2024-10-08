@@ -104,7 +104,7 @@ class AmazonApplyMPVAT extends RuleAbstract implements RuleInterface
      */
     public function getConditions()
     {
-        return $this->l('If the order is a business order.', 'TestingOrder');
+        return $this->l('If the order comes from Amazon and is a B2B order.', 'AmazonApplyMPVAT');
     }
 
     /**
@@ -112,6 +112,6 @@ class AmazonApplyMPVAT extends RuleAbstract implements RuleInterface
      */
     public function getDescription()
     {
-        return $this->l('Set VAT to O if skip tax is enabled and is_business_order.', 'TestingOrder');
+        return $this->l('Apply VAT from Amazon order to PrestaShop order.', 'AmazonApplyMPVAT');
     }
 }
