@@ -28,7 +28,7 @@ use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 
-class SkipTax extends RuleAbstract implements RuleInterface
+class AmazonApplyMPVAT extends RuleAbstract implements RuleInterface
 {
     protected $logPrefix = '';
 
@@ -38,31 +38,31 @@ class SkipTax extends RuleAbstract implements RuleInterface
         $apiOrderAdditionalFields = $apiOrderData['additionalFields'];
 
         $this->logPrefix = sprintf(
-            $this->l('[Order: %s]', 'SkipTax'),
+            $this->l('[Order: %s]', 'AmazonApplyMPVAT'),
             $apiOrder->getId()
         );
         $this->logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
 
-        if (
-            ((empty($apiOrderAdditionalFields['is_business_order']) === false ||
-                 preg_match('#^retif#i', $apiOrder->getChannel()->getName()) === 1)
-            && $this->configuration['enabled']) === false
-        ) {
-            return false;
+        if ($this->configuration['enabled']) {
+            if (isset($apiOrderAdditionalFields['is_business_order']) && $apiOrderAdditionalFields['is_business_order'] == 1) {
+                if (preg_match('#^amazon#i', $apiOrder->getChannel()->getName())) {
+                    ProcessLoggerHandler::logInfo(
+                        $this->logPrefix .
+                        $this->l('AmazonApplyMPVAT - Rule triggered.', 'AmazonApplyMPVAT'),
+                        'Order'
+                    );
+
+                    return true;
+                }
+            }
         }
 
-        ProcessLoggerHandler::logInfo(
-            $this->logPrefix .
-            $this->l('SkipTax - Rule triggered.', 'SkipTax'),
-            'Order'
-        );
-
-        return true;
+        return false;
     }
 
     public function beforeRecalculateOrderPrices($params)
     {
-        $params['skipTax'] = true;
+        $params['isUseSfTax'] = true;
     }
 
     /**
@@ -73,8 +73,8 @@ class SkipTax extends RuleAbstract implements RuleInterface
         return [
             [
                 'type' => 'switch',
-                'label' => $this->l('Set VAT to 0 for business order', 'SkipTax'),
-                'desc' => $this->l('By activating this option, VAT of imported order is set to 0%.', 'SkipTax'),
+                'label' => $this->l('Apply the Amazon VAT amount to the PrestaShop order in the case of B2B orders', 'AmazonApplyMPVAT'),
+                'desc' => $this->l('By activating this option, in the case of B2B orders, the value of the tax sent by Amazon will be recorded in the PrestaShop order. The order will therefore not be affected by VAT according to the PrestaShop configuration', 'AmazonApplyMPVAT'),
                 'name' => 'enabled',
                 'is_bool' => true,
                 'values' => [

@@ -2111,7 +2111,7 @@ class ComposerStaticInit3fe85f86ff701f6bd7fd7d7a118b5533
         'ShoppingfeedAddon\\OrderImport\\Rules\\RueducommerceMondialrelay' => __DIR__ . '/../..' . '/src/OrderImport/Rules/RueducommerceMondialrelay.php',
         'ShoppingfeedAddon\\OrderImport\\Rules\\SetDniToAddress' => __DIR__ . '/../..' . '/src/OrderImport/Rules/SetDniToAddress.php',
         'ShoppingfeedAddon\\OrderImport\\Rules\\ShippedByMarketplace' => __DIR__ . '/../..' . '/src/OrderImport/Rules/ShippedByMarketplace.php',
-        'ShoppingfeedAddon\\OrderImport\\Rules\\SkipTax' => __DIR__ . '/../..' . '/src/OrderImport/Rules/SkipTax.php',
+        'ShoppingfeedAddon\\OrderImport\\Rules\\SkipTax' => __DIR__ . '/../..' . '/src/OrderImport/Rules/AmazonApplyMPVAT.php',
         'ShoppingfeedAddon\\OrderImport\\Rules\\Socolissimo' => __DIR__ . '/../..' . '/src/OrderImport/Rules/Socolissimo.php',
         'ShoppingfeedAddon\\OrderImport\\Rules\\SymbolConformity' => __DIR__ . '/../..' . '/src/OrderImport/Rules/SymbolConformity.php',
         'ShoppingfeedAddon\\OrderImport\\Rules\\TaxExclMarketplace' => __DIR__ . '/../..' . '/src/OrderImport/Rules/TaxExclMarketplace.php',
