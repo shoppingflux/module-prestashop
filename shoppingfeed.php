@@ -1321,6 +1321,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             ShoppingfeedAddon\OrderImport\Rules\AmazonApplyMPVAT::class,
             ShoppingfeedAddon\OrderImport\Rules\GlsRule::class,
             ShoppingfeedAddon\OrderImport\Rules\ColissimoRule::class,
+            ShoppingfeedAddon\OrderImport\Rules\GroupCustomer::class,
         ];
 
         foreach ($defaultRulesClassNames as $ruleClassName) {
