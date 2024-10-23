@@ -26,12 +26,15 @@ use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use ShoppingfeedAddon\OrderImport\OrderData;
 use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
+use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 
 class GroupCustomer extends RuleAbstract implements RuleInterface
 {
     protected $logPrefix = '';
 
     protected $db;
+
+    const DEFAULT_GROUP_CUSTOMER = 3;
 
     public function __construct($configuration = [])
     {
@@ -42,7 +45,12 @@ class GroupCustomer extends RuleAbstract implements RuleInterface
 
     public function isApplicable(OrderResource $apiOrder)
     {
-        $orderRawData = $apiOrder->toArray();
+        $this->logPrefix = sprintf(
+            $this->l('[Order: %s]', 'GroupCustomer'),
+            $apiOrder->getId()
+        );
+        $this->logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
+
         if (!empty($this->configuration['group_customer'])) {
             return true;
         }
@@ -53,6 +61,10 @@ class GroupCustomer extends RuleAbstract implements RuleInterface
     public function onCustomerCreation($params)
     {
         $params['customer']->id_default_group = $this->configuration['group_customer'];
+        ProcessLoggerHandler::logInfo(
+            $this->logPrefix .
+            $this->l('Default customer group is: ', 'GroupCustomer') . $this->configuration['group_customer']
+        );
     }
 
     public function beforeBillingAddressCreation($params)
@@ -69,6 +81,11 @@ class GroupCustomer extends RuleAbstract implements RuleInterface
 
         $data['id_default_group'] = $this->configuration['group_customer'];
         Db::getInstance()->update('customer', $data, '`id_customer` = ' . (int) $customer->id);
+
+        ProcessLoggerHandler::logInfo(
+            $this->logPrefix .
+            $this->l('Customer is added to the group ', 'GroupCustomer') . $this->configuration['group_customer']
+        );
     }
 
     public function getConfigurationSubform()
@@ -113,5 +130,12 @@ class GroupCustomer extends RuleAbstract implements RuleInterface
     protected function l($msg, $domain)
     {
         return \Translate::getModuleTranslation('shoppingfeed', $msg, $domain);
+    }
+
+    protected function getDefaultConfiguration()
+    {
+        return [
+            'group_customer' => self::DEFAULT_GROUP_CUSTOMER,
+        ];
     }
 }
