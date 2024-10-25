@@ -32,7 +32,7 @@ class OrderImportGroupCustomerTest extends AbstractOrdeTestCase
     public function testWithoutConfigImportGroupCustomer()
     {
         $apiOrder = $this->getOrderRessourceFromDataset('order-amazon.json');
-        $rules = new GroupCustomer();
+        $rules = new GroupCustomer(['group_customer' => 0]);
         $this->assertFalse($rules->isApplicable($apiOrder));
     }
 
