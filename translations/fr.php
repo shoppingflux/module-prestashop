@@ -414,6 +414,8 @@ $_MODULE['<{shoppingfeed}prestashop>rueducommercemondialrelay_6d07be6f2beaa75903
 $_MODULE['<{shoppingfeed}prestashop>rueducommercemondialrelay_caa2bffa194f3192acc2140d837d7727'] = 'Suppression de l\'ID relais présent dans le nom du transporteur. Ajout de l\'ID relais dans le champs prévu pour être traitée par la règle Mondial Relay.';
 $_MODULE['<{shoppingfeed}prestashop>cdiscount_944ef8a365522b31999e069600eb122a'] = 'Si la commande provient de CDiscount ET que le champs additionnel \'INTERETBCA\' est rempli';
 $_MODULE['<{shoppingfeed}prestashop>cdiscount_0222978137c9d5458d0074e456e6ebf8'] = 'Ajouter un produit \'Frais CDiscount\' à la commande dont le montant sera visible sur la commande.';
+$_MODULE['<{shoppingfeed}prestashop>cdiscount_155976df55086f76c84d958eace1bc54'] = 'Ajouter un produit \'Frais CDiscount\' correspondant aux frais de gestion et dont le montant sera visible sur la commande.';
+$_MODULE['<{shoppingfeed}prestashop>cdiscount_2aa71b4d197d111cf02a7fa88398ff30'] = 'Attention, désactiver cette option pourrait fausser votre comptabilité et vos factures.';
 $_MODULE['<{shoppingfeed}prestashop>amazonb2b_0cc1e925b5703e8da52b7c3e91829499'] = '[Commande %s]';
 $_MODULE['<{shoppingfeed}prestashop>amazonb2b_2af52014c0796d620c35b656d11d545e'] = 'Règle déclenchée. Méthode de paiement changée pour \'amazon b2b\'';
 $_MODULE['<{shoppingfeed}prestashop>amazonb2b_127e6425040a88b2d26f83cbd00f1e1f'] = 'Si la commande provient d\'Amazon ET que le champs additionnel \'is_business_order\' est VRAI';
@@ -462,6 +464,10 @@ $_MODULE['<{shoppingfeed}prestashop>skiptax_315561e46d5db4fd6b94f36bdaa9ae04'] =
 $_MODULE['<{shoppingfeed}prestashop>skiptax_a3b67acbb90c113c303c9f3fe39a51ff'] = 'En activant cette option, la TVA pour la commande importée sera portée à 0%.';
 $_MODULE['<{shoppingfeed}prestashop>skiptax_9c036563bd96ad0361096ee08d8b3268'] = 'Si la commande est `is_business_order`';
 $_MODULE['<{shoppingfeed}prestashop>skiptax_9c2a8e88249278963a885253cb2ec79d'] = 'Force la TAV à 0% si l\'option est activée et que la commande contient le paramètre `is_business_order`';
+$_MODULE['<{shoppingfeed}prestashop>groupcustomer_c38266740494aa4980d05c606fccac10'] = 'Groupe client';
+$_MODULE['<{shoppingfeed}prestashop>groupcustomer_d67e6326203b27ada212982f25aea950'] = 'Tous les clients importés depuis les marketplaces seront associés au groupe sélectionné.';
+$_MODULE['<{shoppingfeed}prestashop>groupcustomer_11298acaa992d09ad84d3f69bc11d104'] = 'Met à jour le groupe du client par celui sélectionné.';
+$_MODULE['<{shoppingfeed}prestashop>groupcustomer_4d6542644f688d5300e70ca4fd9bf6aa'] = 'Pour toutes les commandes.';
 $_MODULE['<{shoppingfeed}prestashop>symbolconformity_0cc1e925b5703e8da52b7c3e91829499'] = '[Commande %s]';
 $_MODULE['<{shoppingfeed}prestashop>symbolconformity_6efbd4474b0556a3e01989218a4c4745'] = 'Règle déclenchée. ';
 $_MODULE['<{shoppingfeed}prestashop>symbolconformity_a081c9610c122ca2d1fe29935930f908'] = 'Toutes les commandes';
@@ -652,7 +658,3 @@ $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_1110c4e6654
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_ec5714076eb1196bd416508b54da3a01'] = 'Nombre de produits max par requête de mise à jour produit';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_54f327717fd70f49b83705ecfac102d2'] = 'Compression Gzip du flux';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_618ff511e37a426d996068934ca4bed6'] = 'Vous devez spécifier le \'Nombre maximum de produit à mettre à jour par requête\' (nombre ente 1 et 2 000 inclus)';
-$_MODULE['<{shoppingfeed}prestashop>groupcustomer_c38266740494aa4980d05c606fccac10'] = 'Groupe client';
-$_MODULE['<{shoppingfeed}prestashop>groupcustomer_d67e6326203b27ada212982f25aea950'] = 'Tous les clients importés depuis les marketplaces seront associés au groupe sélectionné.';
-$_MODULE['<{shoppingfeed}prestashop>groupcustomer_11298acaa992d09ad84d3f69bc11d104'] = 'Met à jour le groupe du client par celui sélectionné.';
-$_MODULE['<{shoppingfeed}prestashop>groupcustomer_4d6542644f688d5300e70ca4fd9bf6aa'] = 'Pour toutes les commandes.';

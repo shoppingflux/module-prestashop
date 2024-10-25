@@ -50,8 +50,15 @@ class Cdiscount extends RuleAbstract implements RuleInterface
 
     public function isApplicable(OrderResource $apiOrder)
     {
-        return preg_match('#^cdiscount$#', Tools::strtolower($apiOrder->getChannel()->getName()))
-            && $this->getFees($apiOrder) > 0;
+        if ($this->configuration['enabled']) {
+            if (preg_match('#^cdiscount$#', strtolower($apiOrder->getChannel()->getName()))) {
+                if ($this->getFees($apiOrder) > 0) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     public function onVerifyOrder($params)
@@ -108,5 +115,36 @@ class Cdiscount extends RuleAbstract implements RuleInterface
     protected function initCdiscountFeeProduct()
     {
         return new CdiscountFeeProduct();
+    }
+
+    public function getConfigurationSubform()
+    {
+        return [
+            [
+                'type' => 'switch',
+                'label' => $this->l('Add a \'CDiscount fees\' product corresponding to management fees, the amount of which will be visible on the order.', 'Cdiscount'),
+                'desc' => $this->l('Caution: deactivating this option could distort your accounting and invoicing.', 'Cdiscount'),
+                'name' => 'enabled',
+                'is_bool' => true,
+                'disabled' => Tools::isSubmit('with_factory') === false,
+                'values' => [
+                    [
+                        'id' => 'ok',
+                        'value' => 1,
+                    ],
+                    [
+                        'id' => 'ko',
+                        'value' => 0,
+                    ],
+                ],
+            ],
+        ];
+    }
+
+    protected function getDefaultConfiguration()
+    {
+        return [
+            'enabled' => true,
+        ];
     }
 }

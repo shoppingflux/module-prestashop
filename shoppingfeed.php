@@ -1303,7 +1303,6 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             ShoppingfeedAddon\OrderImport\Rules\AmazonB2B::class,
             ShoppingfeedAddon\OrderImport\Rules\AmazonEbay::class,
             ShoppingfeedAddon\OrderImport\Rules\AmazonPrime::class,
-            ShoppingfeedAddon\OrderImport\Rules\Cdiscount::class,
             ShoppingfeedAddon\OrderImport\Rules\MondialrelayRule::class,
             ShoppingfeedAddon\OrderImport\Rules\RueducommerceMondialrelay::class,
             ShoppingfeedAddon\OrderImport\Rules\Socolissimo::class,
@@ -1323,6 +1322,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             ShoppingfeedAddon\OrderImport\Rules\GlsRule::class,
             ShoppingfeedAddon\OrderImport\Rules\ColissimoRule::class,
             ShoppingfeedAddon\OrderImport\Rules\GroupCustomer::class,
+            ShoppingfeedAddon\OrderImport\Rules\Cdiscount::class,
         ];
 
         foreach ($defaultRulesClassNames as $ruleClassName) {
