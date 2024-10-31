@@ -472,10 +472,25 @@ class ShoppingfeedApi
         return $filteredOrders;
     }
 
-    public function acknowledgeOrder($id_order_marketplace, $name_marketplace, $id_order_prestashop, $is_success = true, $message = '')
+    public function acknowledgeOrder($id_order_marketplace, $name_marketplace, $id_order_prestashop, $is_success = true, $message = '', $shoppingfeed_store_id = null)
     {
         try {
-            $orderApi = $this->session->getMainStore()->getOrderApi();
+            $orderApi = null;
+
+            if ($shoppingfeed_store_id) {
+                foreach ($this->getStores() as $store) {
+                    if ($store->getId() == $shoppingfeed_store_id) {
+                        $orderApi = $store->getOrderApi();
+                    }
+                }
+            } else {
+                $orderApi = $this->session->getMainStore()->getOrderApi();
+            }
+
+            if (!$orderApi) {
+                throw new Exception('Invalid store ID');
+            }
+
             $operation = new \ShoppingFeed\Sdk\Api\Order\OrderOperation();
             $operation
                 ->acknowledge(

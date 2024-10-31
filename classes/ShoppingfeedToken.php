@@ -198,10 +198,10 @@ class ShoppingfeedToken extends ObjectModel
             ->innerJoin(\Language::$definition['table'], 'l', 'l.id_lang = sft.id_lang')
             ->innerJoin(\Currency::$definition['table'], 'c', 'c.id_currency = sft.id_currency');
         $sql->select('sft.merchant');
+        $sql->select('sft.shoppingfeed_store_id');
 
         if (version_compare(_PS_VERSION_, '1.7.6.0', '>=')) {
             $sql->select('sft.id_shop, sft.id_shoppingfeed_token, sft.content as token, sft.active, sft.feed_key, s.name as shop_name, l.name as lang_name, cl.name as currency_name')
-                ->select('sft.shoppingfeed_store_id')
                 ->innerJoin(\Currency::$definition['table'] . '_lang', 'cl', 'cl.id_currency = sft.id_currency and cl.id_lang = ' . Context::getContext()->language->id);
         } else {
             $sql->select('sft.id_shop, sft.id_shoppingfeed_token, sft.content as token, sft.active, sft.feed_key, s.name as shop_name, l.name as lang_name, c.name as currency_name');

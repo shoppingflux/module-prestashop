@@ -182,6 +182,7 @@ class ShoppingfeedPreloading extends ObjectModel
         $result = [];
         $sql = $this->getQueryPreloading($id_token)
                     ->select('content')
+                    ->orderBy('id_shoppingfeed_preloading ASC')
                     ->limit($limit, $from);
 
         foreach (Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql) as $row) {
@@ -276,7 +277,7 @@ class ShoppingfeedPreloading extends ObjectModel
 
             return $this->save();
         }
-        $actions = json_decode($this->actions, true);
+        $actions = json_decode((string) $this->actions, true);
         if (is_array($actions) === false) {
             $this->actions = json_encode([$action]);
 

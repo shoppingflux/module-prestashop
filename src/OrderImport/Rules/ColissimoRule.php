@@ -99,6 +99,11 @@ class ColissimoRule extends RuleAbstract implements RuleInterface
         return false;
     }
 
+    protected function isEbay(OrderResource $apiOrder)
+    {
+        return (bool) preg_match('#^ebay#i', $apiOrder->getChannel()->getName());
+    }
+
     protected function isZalando(OrderResource $apiOrder)
     {
         $apiOrderData = $apiOrder->toArray();
@@ -352,7 +357,9 @@ class ColissimoRule extends RuleAbstract implements RuleInterface
             return $apiOrderData['shippingAddress']['relayId'];
         }
         if (false === empty($apiOrderData['shippingAddress']['other'])) {
-            return $apiOrderData['shippingAddress']['other'];
+            if (false === $this->isEbay($apiOrder)) {
+                return $apiOrderData['shippingAddress']['other'];
+            }
         }
         if (false === empty($apiOrderData['shippingAddress']['relayID'])) {
             return $apiOrderData['shippingAddress']['relayID'];
