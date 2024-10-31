@@ -946,6 +946,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
 
         $isAmountTaxIncl = true;
         $skipTax = false;
+        $isUseSfTax = false;
         // Specific rules
         $this->specificRulesManager->applyRules(
             'beforeRecalculateOrderPrices',
@@ -959,6 +960,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 'prestashopProducts' => $this->conveyor['prestashopProducts'],
                 'isAmountTaxIncl' => &$isAmountTaxIncl,
                 'skipTax' => &$skipTax,
+                'isUseSfTax' => &$isUseSfTax,
             ]
         );
 
@@ -1000,6 +1002,9 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             // The tax may not be defined for the country (linked to the invoice address)
             // Eg: Switzerland invoice address received in french shop (will depends of PS configuration)
             $tax_rate = $productOrderDetail['tax_rate'] === null ? 0 : $productOrderDetail['tax_rate'];
+            if ($isUseSfTax) {
+                $tax_rate = $apiProduct->taxAmount / ($apiProduct->getTotalPrice() - $apiProduct->taxAmount) * 100;
+            }
             if ($skipTax === true) {
                 $tax_rate = 0;
             }
