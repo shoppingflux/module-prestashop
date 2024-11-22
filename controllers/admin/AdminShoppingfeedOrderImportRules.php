@@ -194,9 +194,11 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
         $orderShippedState['selected'] = [];
         $orderCancelledState['selected'] = [];
         $orderRefundedState['selected'] = [];
+        $orderDeliveredState['selected'] = [];
         $orderShippedState['unselected'] = [];
         $orderCancelledState['unselected'] = [];
         $orderRefundedState['unselected'] = [];
+        $orderDeliveredState['unselected'] = [];
 
         foreach ($allState as $state) {
             $orderShippedState[in_array($state['id_order_state'], $ids_shipped_status_selected) ? 'selected' : 'unselected'][] = [
@@ -528,6 +530,10 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
                             ],
                         ],
                         [
+                            'type' => 'shoppingfeed_marketplace_switch_list',
+                            'marketplaces' => \ShoppingfeedAddon\OrderInvoiceSync\Hub::getInstance()->getMarketplaces(),
+                        ],
+                        [
                             'type' => 'shoppingfeed_close-section',
                         ],
                     ],
@@ -644,6 +650,16 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
                 null,
                 $shop['id_shop']
             );
+        }
+
+        if (Tools::getValue('order_invoice_sync_marketplace')) {
+            foreach (Tools::getValue('order_invoice_sync_marketplace') as $id => $isEnabled) {
+                if ((int) $isEnabled) {
+                    \ShoppingfeedAddon\OrderInvoiceSync\Hub::getInstance()->enable($id);
+                } else {
+                    \ShoppingfeedAddon\OrderInvoiceSync\Hub::getInstance()->disable($id);
+                }
+            }
         }
 
         $orderStatusesShipped = Tools::getValue('status_shipped_order');

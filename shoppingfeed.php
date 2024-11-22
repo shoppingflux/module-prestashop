@@ -105,6 +105,8 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
 
     const ORDER_OPERATION_DELIVER = 'deliver';
 
+    const ORDER_INVOICE_SYNC_MARKETPLACES = 'SHOPPINGFEED_ORDER_INVOICE_SYNC_MARKETPLACES';
+
     public $extensions = [
         \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerExtension::class,
         \ShoppingfeedClasslib\Extensions\ProcessMonitor\ProcessMonitorExtension::class,

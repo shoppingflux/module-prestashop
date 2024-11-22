@@ -134,6 +134,48 @@
                 </table>
             </div>
         </div>
+    {elseif $input.type == 'shoppingfeed_marketplace_switch_list'}
+        <div class="form-group">
+            <label class="control-label col-lg-4">
+                <span class="label-tooltip">{l s='Send invoices to Shopping Feed' mod='shoppingfeed'}</span>
+            </label>
+            <div class="col-lg-8">
+                <div class="alert alert-info">
+                    {l s='This option allows you to send invoices to Shopping Feed for transmission to the marketplace.' mod='shoppingfeed'}
+                </div>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>
+                                {l s='Market place' mod='shoppingfeed'}
+                            </th>
+                            <th>
+                                {l s='Send invoices' mod='shoppingfeed'}
+                            </th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {foreach from=$input.marketplaces item=marketplace}
+                            <tr>
+                                <td>{$marketplace->getName()}</td>
+                                <td>
+                                    <span class="switch prestashop-switch fixed-width-lg">
+                                        <input type="radio" name="order_invoice_sync_marketplace[{$marketplace->getId()}]" id="marketplace_{$marketplace->getId()}_on" value="1" {if $marketplace->isEnabled()}checked{/if}/>
+										{strip}<label for="marketplace_{$marketplace->getId()}_on">{l s='Yes' mod='shoppingfeed'}</label>{/strip}
+
+                                        <input type="radio" name="order_invoice_sync_marketplace[{$marketplace->getId()}]" id="marketplace_{$marketplace->getId()}_off" value="0" {if !$marketplace->isEnabled()}checked{/if}/>
+										{strip}<label for="marketplace_{$marketplace->getId()}_off">{l s='No' mod='shoppingfeed'}</label>{/strip}
+
+										<a class="slide-button btn"></a>
+									</span>
+                                </td>
+                            </tr>
+                        {/foreach}
+                    </tbody>
+                </table>
+            </div>
+        </div>
     {else}
         {$smarty.block.parent}
     {/if}
