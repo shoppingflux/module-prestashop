@@ -22,6 +22,7 @@ if (!defined('_PS_VERSION_')) {
 
 use ShoppingFeed\Sdk\Api\Catalog\InventoryUpdate;
 use ShoppingFeed\Sdk\Api\Catalog\PricingUpdate;
+use ShoppingFeed\Sdk\Api\Order\Document\Invoice;
 use ShoppingFeed\Sdk\Api\Order\Identifier\Id;
 use ShoppingFeed\Sdk\Api\Order\Operation;
 use ShoppingFeed\Sdk\Client\Client;
@@ -312,6 +313,12 @@ class ShoppingfeedApi
                     case Shoppingfeed::ORDER_OPERATION_DELIVER:
                         $operation->deliver(
                             new Id((int) $taskOrder['id_internal_shoppingfeed'])
+                        );
+                        continue 2;
+                    case Shoppingfeed::ORDER_OPERATION_UPLOAD_DOCUMENTS:
+                        $operation->uploadDocument(
+                            new Id((int) $taskOrder['id_internal_shoppingfeed']),
+                            new Invoice($taskOrder['payload']['uri'])
                         );
                         continue 2;
                 }
