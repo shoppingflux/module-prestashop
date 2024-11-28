@@ -823,10 +823,11 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
     protected function getTicketsForBatchIds($batchIds, $idShoppingfeedToken)
     {
         $shoppingfeedApi = ShoppingfeedApi::getInstanceByToken($idShoppingfeedToken);
+        $sfToken = new ShoppingfeedToken($idShoppingfeedToken);
         $tickets = [];
 
         foreach ($batchIds as $batchId) {
-            $tickets = array_merge($tickets, $shoppingfeedApi->getTicketsByBatchId($batchId));
+            $tickets = array_merge($tickets, $shoppingfeedApi->getTicketsByBatchId($batchId, [], $sfToken->shoppingfeed_store_id));
         }
 
         return $tickets;
