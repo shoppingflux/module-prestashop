@@ -200,6 +200,65 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
                     $this->processMonitor->getProcessObjectModelId()
                 );
             }
+            // Start upload invoices
+            ProcessLoggerHandler::logInfo(
+                $logPrefix . ' ' . $this->module->l('Process start : Order invoice sync', 'syncOrder'),
+                $this->processMonitor->getProcessObjectModelName(),
+                $this->processMonitor->getProcessObjectModelId()
+            );
+
+            $failedSyncStatusTaskOrders = [];
+            $successfulSyncTaskOrders = [];
+            try {
+                Registry::set('syncStatusErrors', 0);
+
+                /** @var ShoppingfeedHandler $orderStatusHandler */
+                $orderStatusHandler = new ActionsHandler();
+                $orderStatusHandler->setConveyor([
+                    'id_shop' => $token['id_shop'],
+                    'id_token' => $token['id_shoppingfeed_token'],
+                    'order_action' => ShoppingfeedTaskOrder::ACTION_UPLOAD_INVOICE,
+                    'shoppingfeed_store_id' => $token['shoppingfeed_store_id'],
+                ]);
+                $orderStatusHandler->addActions(
+                    'getTaskOrders',
+                    'prepareTaskOrdersSyncInvoice',
+                    'sendTaskOrdersSyncInvoice'
+                );
+
+                if ($orderStatusHandler->process('ShoppingfeedOrderSync')) {
+                    $processData = $orderStatusHandler->getConveyor();
+                    $failedSyncStatusTaskOrders = isset($processData['failedTaskOrders']) ? $processData['failedTaskOrders'] : [];
+                    $successfulSyncTaskOrders = isset($processData['successfulTaskOrders']) ? $processData['successfulTaskOrders'] : [];
+
+                    ProcessLoggerHandler::logSuccess(
+                        sprintf(
+                            $logPrefix . ' ' . $this->module->l('%d tickets created; %d tickets not created; %d errors', 'syncOrder'),
+                            count($successfulSyncTaskOrders),
+                            count($failedSyncStatusTaskOrders),
+                            Registry::get('syncStatusErrors')
+                        ),
+                        $this->processMonitor->getProcessObjectModelName(),
+                        $this->processMonitor->getProcessObjectModelId()
+                    );
+                }
+
+                ProcessLoggerHandler::logInfo(
+                    $logPrefix . ' ' . $this->module->l('Process finished : Order invoice sync', 'syncOrder'),
+                    $this->processMonitor->getProcessObjectModelName(),
+                    $this->processMonitor->getProcessObjectModelId()
+                );
+            } catch (Throwable $e) {
+                ProcessLoggerHandler::logError(
+                    sprintf(
+                        $logPrefix . ' ' . $this->module->l('Error : %s', 'syncOrder'),
+                        $e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine()
+                    ),
+                    $this->processMonitor->getProcessObjectModelName(),
+                    $this->processMonitor->getProcessObjectModelId()
+                );
+            }
+            // End upload invoices
 
             // Send mail
             try {
