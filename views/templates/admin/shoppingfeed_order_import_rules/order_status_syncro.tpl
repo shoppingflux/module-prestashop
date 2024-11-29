@@ -158,14 +158,14 @@
                     <tbody>
                     {foreach from=$input.marketplaces item=marketplace}
                         <tr>
-                            <td>{$marketplace->getName()}</td>
+                            <td>{$marketplace->getName()|escape:'htmlall':'UTF-8'}</td>
                             <td>
                                     <span class="switch prestashop-switch fixed-width-lg">
-                                        <input type="radio" name="order_invoice_sync_marketplace[{$marketplace->getId()}]" id="marketplace_{$marketplace->getId()}_on" value="1" {if $marketplace->isEnabled()}checked{/if}/>
-										{strip}<label for="marketplace_{$marketplace->getId()}_on">{l s='Yes' mod='shoppingfeed'}</label>{/strip}
+                                        <input type="radio" name="order_invoice_sync_marketplace[{$marketplace->getId()|escape:'htmlall':'UTF-8'}]" id="marketplace_{$marketplace->getId()|escape:'htmlall':'UTF-8'}_on" value="1" {if $marketplace->isEnabled()}checked{/if}/>
+										{strip}<label for="marketplace_{$marketplace->getId()|escape:'htmlall':'UTF-8'}_on">{l s='Yes' mod='shoppingfeed'}</label>{/strip}
 
-                                        <input type="radio" name="order_invoice_sync_marketplace[{$marketplace->getId()}]" id="marketplace_{$marketplace->getId()}_off" value="0" {if !$marketplace->isEnabled()}checked{/if}/>
-										{strip}<label for="marketplace_{$marketplace->getId()}_off">{l s='No' mod='shoppingfeed'}</label>{/strip}
+                                        <input type="radio" name="order_invoice_sync_marketplace[{$marketplace->getId()|escape:'htmlall':'UTF-8'}]" id="marketplace_{$marketplace->getId()|escape:'htmlall':'UTF-8'}_off" value="0" {if !$marketplace->isEnabled()}checked{/if}/>
+										{strip}<label for="marketplace_{$marketplace->getId()|escape:'htmlall':'UTF-8'}_off">{l s='No' mod='shoppingfeed'}</label>{/strip}
 
 										<a class="slide-button btn"></a>
 									</span>
