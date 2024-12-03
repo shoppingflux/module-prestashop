@@ -79,10 +79,6 @@ class XmlProductFeedWriter implements Feed\ProductFeedWriterInterface
             $this->writeElement('vat', $vat);
         }
 
-        if ($weight = $product->getWeight()) {
-            $this->writeElement('weight', $weight);
-        }
-
         if ($product->hasDescription()) {
             $description = $product->getDescription();
             $writer->startElement('description');
@@ -141,6 +137,12 @@ class XmlProductFeedWriter implements Feed\ProductFeedWriterInterface
             foreach ($product->getDiscounts() as $discount) {
                 $writer->startElement('discount');
                 $writer->writeAttribute('type', $discount->getType());
+                if ($discount->getStartDateTime()) {
+                    $writer->writeAttribute('start-datetime', $discount->getStartDateTime());
+                }
+                if ($discount->getEndDateTime()) {
+                    $writer->writeAttribute('end-datetime', $discount->getEndDateTime());
+                }
                 $writer->writeRaw($discount->getValue());
                 $writer->endElement();
             }
@@ -164,6 +166,9 @@ class XmlProductFeedWriter implements Feed\ProductFeedWriterInterface
             $writer->startElement('attributes');
             foreach ($product->getAttributes() as $attribute) {
                 $writer->startElement('attribute');
+                if ($attribute->getType()) {
+                    $writer->writeAttribute('type', $attribute->getType());
+                }
                 $this->writeElement('name', $attribute->getName());
                 $this->writeCdataElement('value', $attribute->getValue());
                 $writer->endElement();
@@ -183,6 +188,10 @@ class XmlProductFeedWriter implements Feed\ProductFeedWriterInterface
                 $this->writeCdataElement('image', $image);
             }
             $writer->endElement();
+        }
+
+        if ($weight = $product->getWeight()) {
+            $this->writeElement('weight', $weight);
         }
     }
 
@@ -230,6 +239,6 @@ class XmlProductFeedWriter implements Feed\ProductFeedWriterInterface
             $content = Feed\xml_utf8_clean($content);
         }
 
-        return $this->writer->writeElement(trim($name), trim($content));
+        return $this->writer->writeElement(trim($name), trim((string) $content));
     }
 }

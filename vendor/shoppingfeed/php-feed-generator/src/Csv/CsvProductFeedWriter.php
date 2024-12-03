@@ -8,6 +8,14 @@ use ShoppingFeed\Feed\ProductFeedMetadata;
 class CsvProductFeedWriter implements Feed\ProductFeedWriterInterface
 {
     /**
+     * The attributes are prefixed by default by attribute_
+     * Allow Alphanumeric characters
+     *
+     * @var string
+     */
+    private static $attributesPrefix = 'attribute_';
+
+    /**
      * The maximum amount of memory (in bytes, default is 2 MB) for the temporary file to use.
      * If the temporary file exceeds this size, it will be moved to a file in the system's temp directory.
      *
@@ -23,7 +31,7 @@ class CsvProductFeedWriter implements Feed\ProductFeedWriterInterface
     private $dataFile;
 
     /**
-     * This file is used to temporary store serialized data for each line.
+     * This file is used to temporary store json data for each line.
      *
      * @var \SplTempFileObject
      */
@@ -42,6 +50,14 @@ class CsvProductFeedWriter implements Feed\ProductFeedWriterInterface
     public static function setDefaultMaxMemoryUsage($bytes)
     {
         self::$maxMemoryUsage = (int) $bytes;
+    }
+
+    /**
+     * @param string $prefix Set the attributes prefix
+     */
+    public static function setAttributesPrefix($prefix)
+    {
+        self::$attributesPrefix = (string) preg_replace('/[\W]/', '', $prefix);
     }
 
     /**
@@ -75,7 +91,7 @@ class CsvProductFeedWriter implements Feed\ProductFeedWriterInterface
         $this->dataFile->fputcsv($this->headers);
 
         foreach ($this->tempFile as $current) {
-            if (! $current = unserialize($current)) {
+            if (! $current = json_decode($current, true)) {
                 continue;
             }
 
@@ -97,7 +113,10 @@ class CsvProductFeedWriter implements Feed\ProductFeedWriterInterface
     public function writeProduct(Product $product)
     {
         $data         = $this->extractProduct($product);
-        $data['name'] = $product->getName();
+
+        if ($name = $product->getName()) {
+            $data['name'] = $name;
+        }
 
         if ($category = $product->getCategory()) {
             $data['category_name'] = $category->getName();
@@ -132,12 +151,23 @@ class CsvProductFeedWriter implements Feed\ProductFeedWriterInterface
      */
     private function extractProduct(Feed\Product\AbstractProduct $product)
     {
-        $data = [
-            'reference' => $product->getReference(),
-            'quantity'  => $product->getQuantity(),
-            'link'      => $product->getLink(),
-            'gtin'      => $product->getGtin(),
-        ];
+        $data = [];
+
+        if ($reference = $product->getReference()){
+            $data['reference'] = $reference;
+        }
+
+        if ($quantity = $product->getQuantity()){
+            $data['quantity'] = $quantity;
+        }
+
+        if ($link = $product->getLink()){
+            $data['link'] = $link;
+        }
+
+        if ($gtin = $product->getGtin()){
+            $data['gtin'] = $gtin;
+        }
 
         foreach ($product->getDiscounts() as $discount) {
             $data['discount_type']  = $discount->getType();
@@ -161,7 +191,7 @@ class CsvProductFeedWriter implements Feed\ProductFeedWriterInterface
         }
 
         foreach ($product->getAttributes() as $attribute) {
-            $data['attribute_' . $attribute->getName()] = $attribute->getValue();
+            $data[self::$attributesPrefix . $attribute->getName()] = $attribute->getValue();
         }
 
         return $data;
@@ -170,7 +200,7 @@ class CsvProductFeedWriter implements Feed\ProductFeedWriterInterface
     /**
      * This storage supports csv with headers. We do not know in advance headers, because they are dynamically
      * created based on product list. so we add new header item if meet, and keep them sorted based on alphabetical
-     * order. The serialized product is also sorted by key, in order to match row completion based on header line.
+     * order. The json encoded product is also sorted by key, in order to match row completion based on header line.
      *
      * We don't store data into memory, because very large collection processing can require more than memory
      * allowed by the PHP process.
@@ -190,6 +220,6 @@ class CsvProductFeedWriter implements Feed\ProductFeedWriterInterface
             sort($this->headers, SORT_NATURAL);
         }
 
-        $this->tempFile->fwrite(serialize($elements) . PHP_EOL);
+        $this->tempFile->fwrite(json_encode($elements) . PHP_EOL);
     }
 }

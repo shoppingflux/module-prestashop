@@ -21,6 +21,7 @@ if (!defined('_PS_VERSION_')) {
 }
 
 use ShoppingFeed\Feed\Product\Product;
+use ShoppingfeedAddon\Model\Discount;
 use ShoppingfeedAddon\Services\SfProductGenerator;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 
@@ -180,8 +181,8 @@ class ShoppingfeedProductModuleFrontController extends \ModuleFrontController
         if (false === empty($item['specificPrices'])) {
             $discount = $this->calculDiscount($item['specificPrices']);
 
-            if ($discount > 0) {
-                $product->addDiscount($discount);
+            if ($discount->getAmount() > 0) {
+                $product->addDiscount($discount->getAmount(), $discount->getFrom(), $discount->getTo());
             }
         }
 
@@ -216,8 +217,8 @@ class ShoppingfeedProductModuleFrontController extends \ModuleFrontController
             if (isset($variation['specificPrices']) && false === empty($variation['specificPrices'])) {
                 $discount = $this->calculDiscount($variation['specificPrices']);
 
-                if ($discount > 0) {
-                    $variationProduct->addDiscount($discount);
+                if ($discount->getAmount() > 0) {
+                    $variationProduct->addDiscount($discount->getAmount(), $discount->getFrom(), $discount->getTo());
                 }
             }
         }
@@ -262,19 +263,21 @@ class ShoppingfeedProductModuleFrontController extends \ModuleFrontController
     /**
      * @param array $specificPrices
      *
-     * @return float
+     * @return Discount
      */
     protected function calculDiscount($specificPrices)
     {
         if (false === is_array($specificPrices)) {
-            return 0;
+            return new Discount();
         }
 
         if (is_null($this->sfToken)) {
-            return 0;
+            return new Discount();
         }
 
         foreach ($specificPrices as $specificPrice) {
+            $discount = new Discount();
+
             if (false === isset($specificPrice['from'])) {
                 continue;
             }
@@ -313,18 +316,22 @@ class ShoppingfeedProductModuleFrontController extends \ModuleFrontController
                 if ($to->diff($now)->invert === 0) {
                     continue;
                 }
+                $discount->setTo($to->format('Y-m-d'));
             }
             if ($specificPrice['from'] !== '0000-00-00 00:00:00') {
                 $from = DateTime::createFromFormat('Y-m-d H:i:s', $specificPrice['from']);
                 if ($from->diff($now)->invert === 1) {
                     continue;
                 }
+                $discount->setFrom($from->format('Y-m-d'));
             }
 
-            return (float) $specificPrice['discount'];
+            $discount->setAmount($specificPrice['discount']);
+
+            return $discount;
         }
 
-        return 0;
+        return new Discount();
     }
 
     protected function isEcotaxEnabled()

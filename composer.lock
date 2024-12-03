@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8beb4dcc7c761bbc2ae00438de945048",
+    "content-hash": "f4cba4b0a83a807a5b17750c50b9abb7",
     "packages": [
         {
             "name": "psr/http-message",
@@ -61,26 +61,27 @@
         },
         {
             "name": "shoppingfeed/php-feed-generator",
-            "version": "1.2.3",
+            "version": "1.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shoppingflux/php-feed-generator.git",
-                "reference": "f2ecd308d06e1ac73f4db5c80a460bca7ec09be4"
+                "reference": "dc218280381f52a68487b9219cf319f512c6050d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shoppingflux/php-feed-generator/zipball/f2ecd308d06e1ac73f4db5c80a460bca7ec09be4",
-                "reference": "f2ecd308d06e1ac73f4db5c80a460bca7ec09be4",
+                "url": "https://api.github.com/repos/shoppingflux/php-feed-generator/zipball/dc218280381f52a68487b9219cf319f512c6050d",
+                "reference": "dc218280381f52a68487b9219cf319f512c6050d",
                 "shasum": ""
             },
             "require": {
+                "ext-json": "*",
                 "ext-xml": "*",
                 "php": ">=5.5"
             },
             "require-dev": {
                 "fzaninotto/faker": "^1.7",
                 "psr/log": "^1.0",
-                "shoppingfeed/feed-xml": "1.*"
+                "shoppingfeed/feed-xml": "^1.0"
             },
             "type": "library",
             "autoload": {
@@ -98,9 +99,9 @@
             "description": "ShoppingFeed Feed manager",
             "support": {
                 "issues": "https://github.com/shoppingflux/php-feed-generator/issues",
-                "source": "https://github.com/shoppingflux/php-feed-generator/tree/1.2.3"
+                "source": "https://github.com/shoppingflux/php-feed-generator/tree/1.4.0"
             },
-            "time": "2022-09-09T12:12:28+00:00"
+            "time": "2024-10-23T09:40:21+00:00"
         }
     ],
     "packages-dev": [
@@ -4201,5 +4202,5 @@
     "platform-overrides": {
         "php": "7.4"
     },
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.2.0"
 }
