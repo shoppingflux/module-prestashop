@@ -1,0 +1,109 @@
+{
+  "id": 19777592554,
+  "storeId": 26898,
+  "channelId": 66,
+  "reference": "408-7273836-0105146",
+  "storeReference": "231338",
+  "isTest": false,
+  "acknowledgedAt": "2024-08-26T14:55:04+02:00",
+  "createdAt": "2024-08-26T14:19:19+02:00",
+  "updatedAt": "2024-08-26T14:47:35+02:00",
+  "status": "waiting_shipment",
+  "anonymized": false,
+  "payment": {
+    "shippingAmount": 0,
+    "productAmount": 107.4,
+    "totalAmount": 107.4,
+    "currency": "EUR",
+    "method": "MFN",
+    "taxMode": "undefined"
+  },
+  "shipment": {
+    "type": null,
+    "carrier": "Std FR Dom_1",
+    "trackingNumber": "",
+    "trackingLink": "",
+    "returnInfo": {
+      "carrier": null,
+      "trackingNumber": null
+    }
+  },
+  "additionalFields": {
+    "is_ispu": "",
+    "is_prime": "",
+    "shipping_tax": "0",
+    "is_business_order": "1",
+    "purchase_order_number": ""
+  },
+  "latestShipDate": "2024-08-29 21:59:59",
+  "errors": [],
+  "itemsReferencesAliases": null,
+  "fulfilledBy": "store",
+  "items": [
+    {
+      "reference": "8",
+      "status": "",
+      "quantity": 2,
+      "price": 53.7,
+      "commission": null,
+      "taxAmount": 0,
+      "ecotaxAmount": 0,
+      "channelReference": "41281286961602",
+      "additionalFields": null,
+      "name": "Macaron - 6 verres à pied 60 cl",
+      "image": "https://www.tabledemarque.com/2381-zoom_default/product.jpg"
+    }
+  ],
+  "commission": null,
+  "shippingAddress": {
+    "firstName":"",
+    "lastName":"Bernard Martin",
+    "company":"202 ecommerce",
+    "street":"10 rue Vivienne",
+    "street2":"",
+    "other":"",
+    "postalCode":"75002",
+    "city":"Paris",
+    "country":"FR",
+    "phone":"0123456789",
+    "mobilePhone":"0623456789",
+    "email":"unique.id@test.net"
+  },
+  "billingAddress": {
+    "firstName":"",
+    "lastName":"Bernard Martin",
+    "company":"202 ecommerce",
+    "street":"10 rue Vivienne",
+    "street2":"",
+    "other":"",
+    "postalCode":"75002",
+    "city":"Paris",
+    "country":"FR",
+    "phone":"0123456789",
+    "mobilePhone":"0623456789",
+    "email":"unique.id@test.net"
+  },
+  "_links": {
+    "self": {
+      "href": "/v1/store/26898/order/19777592554"
+    },
+    "store": {
+      "href": "/v1/store/26898"
+    }
+  },
+  "_embedded": {
+    "channel": {
+      "id": 66,
+      "name": "Amazon",
+      "_links": {
+        "self": {
+          "href": "/v1/channel/66"
+        },
+        "image": {
+          "href": "https://assets.shopping-feed.com/channel/logo/Amazon.png"
+        }
+      }
+    },
+    "tag": []
+  }
+}
