@@ -530,10 +530,6 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
                             ],
                         ],
                         [
-                            'type' => 'shoppingfeed_marketplace_switch_list',
-                            'marketplaces' => \ShoppingfeedAddon\OrderInvoiceSync\Hub::getInstance()->getMarketplaces(),
-                        ],
-                        [
                             'type' => 'shoppingfeed_close-section',
                         ],
                     ],
@@ -546,6 +542,13 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
                 ],
             ],
         ];
+
+        if ($this->module->isUploadOrderDocumentReady()) {
+            $fields_form['form']['form']['input'][] = [
+                'type' => 'shoppingfeed_marketplace_switch_list',
+                'marketplaces' => \ShoppingfeedAddon\OrderInvoiceSync\Hub::getInstance()->getMarketplaces(),
+            ];
+        }
 
         $helper = new HelperForm();
         $helper->fields_value = [

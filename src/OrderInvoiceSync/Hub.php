@@ -56,6 +56,9 @@ class Hub
         return $this->marketplaces;
     }
 
+    /**
+     * @return Marketplace|null
+     */
     public function find($id)
     {
         return isset($this->marketplaces[$id]) ? $this->marketplaces[$id] : null;

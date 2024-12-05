@@ -16,6 +16,9 @@
  * @copyright Since 2019 Shopping Feed
  * @license   https://opensource.org/licenses/AFL-3.0  Academic Free License (AFL 3.0)
  */
+
+use ShoppingfeedAddon\OrderInvoiceSync\Hub;
+
 if (!defined('_PS_VERSION_')) {
     exit;
 }
@@ -1315,8 +1318,13 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             $this->addOrderTask($shoppingFeedOrder->id_order, ShoppingfeedTaskOrder::ACTION_SYNC_STATUS);
         }
 
-        if ($newOrderStatus->invoice) {
-            $this->addOrderTask($shoppingFeedOrder->id_order, ShoppingfeedTaskOrder::ACTION_UPLOAD_INVOICE);
+        if ($this->isUploadOrderDocumentReady()) {
+            if ($newOrderStatus->invoice) {
+                $marketplace = Hub::getInstance()->findByName($shoppingFeedOrder->name_marketplace);
+                if ($marketplace && $marketplace->isEnabled()) {
+                    $this->addOrderTask($shoppingFeedOrder->id_order, ShoppingfeedTaskOrder::ACTION_UPLOAD_INVOICE);
+                }
+            }
         }
     }
 
@@ -1575,5 +1583,10 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         }
 
         return $result;
+    }
+
+    public function isUploadOrderDocumentReady()
+    {
+        return false;
     }
 }
