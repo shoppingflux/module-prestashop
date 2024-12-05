@@ -1342,6 +1342,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             ShoppingfeedAddon\OrderImport\Rules\SetDniToAddress::class,
             ShoppingfeedAddon\OrderImport\Rules\GlsRule::class,
             ShoppingfeedAddon\OrderImport\Rules\ColissimoRule::class,
+            \ShoppingfeedAddon\OrderImport\Rules\TaxForBusiness::class,
         ];
 
         foreach ($defaultRulesClassNames as $ruleClassName) {

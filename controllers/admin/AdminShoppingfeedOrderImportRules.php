@@ -174,10 +174,10 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
 
         $allState = OrderState::getOrderStates($this->context->language->id);
 
-        $orderShippedState = [];
-        $orderDeliveredState = [];
-        $orderCancelledState = [];
-        $orderRefundedState = [];
+        $orderShippedState = ['selected' => [], 'unselected' => []];
+        $orderDeliveredState = ['selected' => [], 'unselected' => []];
+        $orderCancelledState = ['selected' => [], 'unselected' => []];
+        $orderRefundedState = ['selected' => [], 'unselected' => []];
 
         $ids_shipped_status_selected = json_decode(Configuration::get(Shoppingfeed::SHIPPED_ORDERS));
         $ids_cancelled_status_selected = json_decode(Configuration::get(Shoppingfeed::CANCELLED_ORDERS));
@@ -190,13 +190,6 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
         if (!is_array($ids_delivered_status_selected)) {
             $ids_delivered_status_selected = [];
         }
-
-        $orderShippedState['selected'] = [];
-        $orderCancelledState['selected'] = [];
-        $orderRefundedState['selected'] = [];
-        $orderShippedState['unselected'] = [];
-        $orderCancelledState['unselected'] = [];
-        $orderRefundedState['unselected'] = [];
 
         foreach ($allState as $state) {
             $orderShippedState[in_array($state['id_order_state'], $ids_shipped_status_selected) ? 'selected' : 'unselected'][] = [
