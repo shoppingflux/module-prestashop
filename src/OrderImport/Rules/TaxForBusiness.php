@@ -28,11 +28,14 @@ use Context;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
+use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 
 class TaxForBusiness extends RuleAbstract implements RuleInterface
 {
     /** @var Context */
     protected $context;
+
+    protected $logPrefix = '';
 
     public function __construct($configuration = [], $id_shop = null)
     {
@@ -43,6 +46,48 @@ class TaxForBusiness extends RuleAbstract implements RuleInterface
 
     public function isApplicable(OrderResource $apiOrder)
     {
+        if (!$this->configuration['enabled']) {
+            return false;
+        }
+
+        $apiOrderData = $apiOrder->toArray();
+        $apiOrderAdditionalFields = $apiOrderData['additionalFields'];
+        $this->logPrefix = sprintf(
+            $this->l('[Order: %s][%s] %s | ', 'TaxForBusiness'),
+            $apiOrder->getId(),
+            $apiOrder->getReference(),
+            self::class
+        );
+
+        if (empty($apiOrderAdditionalFields['is_business_order'])) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public function beforeRecalculateOrderPrices($params)
+    {
+        /** @var OrderResource $apiOrder */
+        $apiOrder = $params['apiOrder'];
+
+        if (strtolower($apiOrder->getChannel()->getName()) === 'amazon') {
+            $params['skipTax'] = true;
+            ProcessLoggerHandler::logInfo(
+                $this->logPrefix .
+                $this->l('Rule triggered. Skip tax', 'TaxForBusiness'),
+                'Order',
+                $params['id_order']
+            );
+        } else {
+            $params['isUseSfTax'] = true;
+            ProcessLoggerHandler::logInfo(
+                $this->logPrefix .
+                $this->l('Rule triggered. Using Shoppingfeed tax', 'TaxForBusiness'),
+                'Order',
+                $params['id_order']
+            );
+        }
     }
 
     /**
