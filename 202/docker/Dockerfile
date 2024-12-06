@@ -1,4 +1,4 @@
-FROM 202ecommerce/prestashop:1.7.8.7
+FROM 202ecommerce/prestashop:8.1.5
 
 RUN rm -Rf var/www/html/modules/shoppingfeed/
 

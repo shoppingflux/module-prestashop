@@ -18,7 +18,7 @@ mysql -h localhost -u root prestashop -e "
 TRUNCATE ps_shoppingfeed_preloading;
 TRUNCATE ps_mondialrelay_carrier_method;
 INSERT INTO ps_mondialrelay_carrier_method (id_carrier, delivery_mode, insurance_level, is_deleted, id_reference, date_add, date_upd)
-VALUES ('1', '24R', '0', '0', '1', '2022-06-23 11:30:14', '2022-06-23 11:30:14');
+VALUES ('1', 'HOM', '0', '0', '1', '2022-06-23 11:30:14', '2022-06-23 11:30:14');
 
 DELETE FROM ps_configuration WHERE name LIKE 'MONDIALRELAY_%';
 INSERT INTO ps_configuration (id_shop_group, id_shop, name, value, date_add, date_upd) VALUES
