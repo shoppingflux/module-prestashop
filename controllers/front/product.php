@@ -30,6 +30,8 @@ class ShoppingfeedProductModuleFrontController extends \ModuleFrontController
 
     protected $isCompressFeed;
 
+    protected $productWithHierarchy;
+
     public function init()
     {
         parent::init();
@@ -41,6 +43,7 @@ class ShoppingfeedProductModuleFrontController extends \ModuleFrontController
         }
 
         $this->isCompressFeed = (int) Configuration::get(Shoppingfeed::COMPRESS_PRODUCTS_FEED);
+        $this->productWithHierarchy = (Configuration::get(Shoppingfeed::PRODUCT_FEED_EXPORT_HIERARCHY) === 'product_with_children');
     }
 
     public function checkAccess()
@@ -84,9 +87,12 @@ class ShoppingfeedProductModuleFrontController extends \ModuleFrontController
         } else {
             $productGenerator = new SfProductGenerator('php://output', 'xml');
         }
-
         $productGenerator->setPlatform('Prestashop', _PS_VERSION_)
-                         ->addMapper([$this, 'mapper']);
+                         ->addMapper(
+                            [
+                                $this, $this->productWithHierarchy ? 'mapperWitHierarchy' : 'mapperWithoutHierarchy',
+                            ]
+                        );
 
         if (is_callable([$productGenerator, 'getMetaData'])) {
             $productGenerator->getMetaData()->setPlatform(
@@ -102,7 +108,18 @@ class ShoppingfeedProductModuleFrontController extends \ModuleFrontController
 
         for ($i = 0; $i < $nb_iteration; ++$i) {
             $products = (new ShoppingfeedPreloading())->findAllByTokenId($this->sfToken['id_shoppingfeed_token'], $i * $limit, $limit);
-            $productGenerator->appendProduct($products);
+            if ($this->productWithHierarchy) {
+                $productGenerator->appendProduct($products);
+                continue;
+            }
+            $productsToAppend = [];
+            foreach ($products as $product) {
+                $productsToAppend[] = $product;
+                foreach ($product['variations'] as $variation) {
+                    $productsToAppend[] = array_merge($product, $variation);
+                }
+            }
+            $productGenerator->appendProduct($productsToAppend);
         }
 
         $productGenerator->close();
@@ -136,13 +153,14 @@ class ShoppingfeedProductModuleFrontController extends \ModuleFrontController
         return $base . $shop->getBaseURI();
     }
 
-    public function mapper(array $item, Product $product)
+    public function mapperWithoutHierarchy(array $item, Product $product)
     {
         $product
             ->setName($item['name'])
             ->setReference($item['reference'])
             ->setPrice($item['price'])
         ;
+
         if (isset($item['quantity']) === true) {
             $product->setQuantity($item['quantity']);
         }
@@ -189,7 +207,11 @@ class ShoppingfeedProductModuleFrontController extends \ModuleFrontController
             $product->setMainImage($item['images']['main']);
             $product->setAdditionalImages($item['images']['additional']);
         }
+    }
 
+    public function mapperWitHierarchy(array $item, Product $product)
+    {
+        $this->mapperWithoutHierarchy($item, $product);
         foreach ($item['variations'] as $variation) {
             $variationProduct = $product->createVariation();
             $variationProduct
