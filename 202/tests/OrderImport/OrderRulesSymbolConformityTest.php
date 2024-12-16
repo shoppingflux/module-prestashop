@@ -49,7 +49,7 @@ class OrderRulesSymbolConformityTest extends AbstractOrdeTestCase
         $customer->firstname = $customerData->getFirstName();
         $customer->lastname = $customerData->getLastName();
         $customer->email = $customerData->getEmail();
-        $customer->passwd = 'testPassword';
+        $customer->passwd = md5(pSQL(_COOKIE_KEY_ . rand()));
 
         $this->assertTrue($customer->validateFields(false));
 

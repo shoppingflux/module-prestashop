@@ -23,21 +23,42 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
+use Module;
 use ShoppingFeed\Sdk\Api\Order\OrderItem;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use ShoppingfeedAddon\OrderImport\OrderItemData;
 use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
 use ShoppingfeedAddon\Services\CdiscountFeeProduct;
+use ShoppingfeedProduct;
 use Tools;
 use Validate;
 
 class Cdiscount extends RuleAbstract implements RuleInterface
 {
+    /**
+     * @var \Shoppingfeed
+     */
+    protected $module;
+
+    public function __construct($configuration = [], $id_shop = null)
+    {
+        parent::__construct($configuration, $id_shop);
+
+        $this->module = Module::getInstanceByName('shoppingfeed');
+    }
+
     public function isApplicable(OrderResource $apiOrder)
     {
-        return preg_match('#^cdiscount$#', Tools::strtolower($apiOrder->getChannel()->getName()))
-            && $this->getFees($apiOrder) > 0;
+        if ($this->configuration['enabled']) {
+            if (preg_match('#^cdiscount$#', strtolower($apiOrder->getChannel()->getName()))) {
+                if ($this->getFees($apiOrder) > 0) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     public function onVerifyOrder($params)
@@ -50,10 +71,13 @@ class Cdiscount extends RuleAbstract implements RuleInterface
             return;
         }
         $cdiscountFeeProduct->id_product_attribute = null;
-        $params['prestashopProducts'][$cdiscountFeeProduct->reference] = $cdiscountFeeProduct;
+        $sfp = new ShoppingfeedProduct();
+        $sfp->id_product = $cdiscountFeeProduct->id;
+        $reference = $this->module->mapReference($sfp);
+        $params['prestashopProducts'][$reference] = $cdiscountFeeProduct;
         $orderData = $params['orderData'];
         $item = new OrderItem(
-            $cdiscountFeeProduct->reference,
+            $reference,
             1,
             $this->getFees($params['apiOrder']),
             0
@@ -91,5 +115,36 @@ class Cdiscount extends RuleAbstract implements RuleInterface
     protected function initCdiscountFeeProduct()
     {
         return new CdiscountFeeProduct();
+    }
+
+    public function getConfigurationSubform()
+    {
+        return [
+            [
+                'type' => 'switch',
+                'label' => $this->l('Add a \'CDiscount fees\' product corresponding to management fees, the amount of which will be visible on the order.', 'Cdiscount'),
+                'desc' => $this->l('Caution: deactivating this option could distort your accounting and invoicing.', 'Cdiscount'),
+                'name' => 'enabled',
+                'is_bool' => true,
+                'disabled' => Tools::isSubmit('with_factory') === false,
+                'values' => [
+                    [
+                        'id' => 'ok',
+                        'value' => 1,
+                    ],
+                    [
+                        'id' => 'ko',
+                        'value' => 0,
+                    ],
+                ],
+            ],
+        ];
+    }
+
+    protected function getDefaultConfiguration()
+    {
+        return [
+            'enabled' => true,
+        ];
     }
 }

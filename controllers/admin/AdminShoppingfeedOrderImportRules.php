@@ -174,10 +174,10 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
 
         $allState = OrderState::getOrderStates($this->context->language->id);
 
-        $orderShippedState = [];
-        $orderDeliveredState = [];
-        $orderCancelledState = [];
-        $orderRefundedState = [];
+        $orderShippedState = ['selected' => [], 'unselected' => []];
+        $orderDeliveredState = ['selected' => [], 'unselected' => []];
+        $orderCancelledState = ['selected' => [], 'unselected' => []];
+        $orderRefundedState = ['selected' => [], 'unselected' => []];
 
         $ids_shipped_status_selected = json_decode(Configuration::get(Shoppingfeed::SHIPPED_ORDERS));
         $ids_cancelled_status_selected = json_decode(Configuration::get(Shoppingfeed::CANCELLED_ORDERS));
