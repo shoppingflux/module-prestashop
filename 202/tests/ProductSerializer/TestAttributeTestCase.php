@@ -190,4 +190,29 @@ class TestAttributeTestCase extends TestCase
         $this->assertArrayHasKey('ecotax_child', $productContent['variations'][$id_product_attribute]['attributes']);
         $this->assertEquals((6 * 1.2), $productContent['variations'][$id_product_attribute]['attributes']['ecotax_child']);
     }
+
+    public function testAttributesMultiples()
+    {
+        $id_product = 18;
+        $id_token = 1;
+        $handler = new ActionsHandler();
+        $handler->addActions('saveProduct')
+                ->setConveyor(
+                    [
+                        'products_id' => [$id_product],
+                        'product_action' => ShoppingfeedPreloading::ACTION_SYNC_ALL,
+                    ]
+                )
+                ->process('ShoppingfeedProductSyncPreloading');
+        $product = (new ShoppingfeedPreloading())->findByTokenIdAndProductId($id_token, $id_product);
+        $this->assertArrayHasKey('content', $product);
+        $productContent = json_decode($product['content'], true);
+        $this->assertIsArray($productContent);
+        $this->assertArrayHasKey('attributes', $productContent);
+        $this->assertIsArray($productContent['attributes']);
+        $this->assertArrayHasKey('Property', $productContent['attributes']);
+        $this->assertArrayHasKey('Property_2', $productContent['attributes']);
+        $this->assertArrayHasKey('LogicielPC', $productContent['attributes']);
+        $this->assertArrayHasKey('LogicielPC_2', $productContent['attributes']);
+    }
 }
