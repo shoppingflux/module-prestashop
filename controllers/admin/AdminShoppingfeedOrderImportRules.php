@@ -191,6 +191,15 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
             $ids_delivered_status_selected = [];
         }
 
+        $orderShippedState['selected'] = [];
+        $orderCancelledState['selected'] = [];
+        $orderDeliveredState['selected'] = [];
+        $orderRefundedState['selected'] = [];
+        $orderShippedState['unselected'] = [];
+        $orderCancelledState['unselected'] = [];
+        $orderRefundedState['unselected'] = [];
+        $orderDeliveredState['unselected'] = [];
+
         foreach ($allState as $state) {
             $orderShippedState[in_array($state['id_order_state'], $ids_shipped_status_selected) ? 'selected' : 'unselected'][] = [
                 'value' => $state['id_order_state'],

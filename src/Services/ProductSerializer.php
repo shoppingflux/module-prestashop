@@ -739,7 +739,6 @@ class ProductSerializer
                     $skip = true;
                 }
             }
-
             // Apply a specific price of a default variation for a product
             if ((int) $id_product_attribute === 0 && $skip) {
                 if ($this->product->getDefaultIdProductAttribute() === (int) $specificPrice['id_product_attribute']) {
