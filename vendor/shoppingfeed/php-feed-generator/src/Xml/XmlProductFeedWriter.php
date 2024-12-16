@@ -79,10 +79,6 @@ class XmlProductFeedWriter implements Feed\ProductFeedWriterInterface
             $this->writeElement('vat', $vat);
         }
 
-        if ($weight = $product->getWeight()) {
-            $this->writeElement('weight', $weight);
-        }
-
         if ($product->hasDescription()) {
             $description = $product->getDescription();
             $writer->startElement('description');
@@ -141,6 +137,12 @@ class XmlProductFeedWriter implements Feed\ProductFeedWriterInterface
             foreach ($product->getDiscounts() as $discount) {
                 $writer->startElement('discount');
                 $writer->writeAttribute('type', $discount->getType());
+                if ($discount->getStartDateTime()) {
+                    $writer->writeAttribute('start-datetime', $discount->getStartDateTime());
+                }
+                if ($discount->getEndDateTime()) {
+                    $writer->writeAttribute('end-datetime', $discount->getEndDateTime());
+                }
                 $writer->writeRaw($discount->getValue());
                 $writer->endElement();
             }
@@ -183,6 +185,10 @@ class XmlProductFeedWriter implements Feed\ProductFeedWriterInterface
                 $this->writeCdataElement('image', $image);
             }
             $writer->endElement();
+        }
+
+        if ($weight = $product->getWeight()) {
+            $this->writeElement('weight', $weight);
         }
     }
 
