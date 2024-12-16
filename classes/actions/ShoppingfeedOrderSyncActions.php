@@ -386,6 +386,78 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
         return true;
     }
 
+    public function prepareTaskOrdersSyncInvoice()
+    {
+        if (empty($this->conveyor['id_shop'])) {
+            ProcessLoggerHandler::logError(
+                $this->l('No ID Shop found.', 'ShoppingfeedOrderSyncActions'),
+                'Order'
+            );
+
+            return false;
+        }
+        if (empty($this->conveyor['taskOrders'])) {
+            ProcessLoggerHandler::logInfo(
+                $this->l('No Task Orders to prepare.', 'ShoppingfeedOrderSyncActions'),
+                'Order'
+            );
+
+            return false;
+        }
+
+        $taskOrders = $this->conveyor['taskOrders'];
+        $this->conveyor['preparedTaskOrders'] = [];
+
+        foreach ($taskOrders as $taskOrder) {
+            /** @var $taskOrder ShoppingfeedTaskOrder */
+            $logPrefix = self::getLogPrefix($taskOrder->id_order);
+            $order = new Order($taskOrder->id_order);
+            $sfOrder = ShoppingfeedOrder::getByIdOrder($taskOrder->id_order);
+
+            if (!Validate::isLoadedObject($order)) {
+                ProcessLoggerHandler::logError(
+                    $logPrefix . ' ' .
+                    $this->l('Order could not be loaded.', 'ShoppingfeedOrderSyncActions'),
+                    'Order',
+                    $taskOrder->id_order
+                );
+                Registry::increment('syncStatusErrors');
+                continue;
+            }
+
+            if (empty($sfOrder->id_internal_shoppingfeed)) {
+                ProcessLoggerHandler::logError(
+                    $logPrefix . ' ' .
+                    $this->l('No SF Order id set.', 'ShoppingfeedOrderSyncActions'),
+                    'Order',
+                    $taskOrder->id_order
+                );
+                Registry::increment('syncStatusErrors');
+                continue;
+            }
+
+            foreach ($order->getInvoicesCollection() as $invoice) {
+                $pdf = new PDF($invoice, PDF::TEMPLATE_INVOICE, Context::getContext()->smarty);
+                $file = _PS_MODULE_DIR_ . 'shoppingfeed/views/tmp/' . $invoice->id . '.pdf';
+                $isInvoiceExist = file_put_contents($file, $pdf->render(false));
+
+                if ($isInvoiceExist) {
+                    $this->conveyor['preparedTaskOrders'][Shoppingfeed::ORDER_OPERATION_UPLOAD_DOCUMENTS][] = [
+                        'id_internal_shoppingfeed' => $sfOrder->id_internal_shoppingfeed,
+                        'taskOrder' => $taskOrder,
+                        'file' => $file,
+                        'operation' => Shoppingfeed::ORDER_OPERATION_UPLOAD_DOCUMENTS,
+                        'payload' => [
+                            'uri' => $file,
+                        ],
+                    ];
+                }
+            }
+        }
+
+        return true;
+    }
+
     protected function initCarrierFinder()
     {
         return new CarrierFinder();
@@ -451,6 +523,71 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
                 );
 
                 $this->conveyor['successfulTaskOrders'][] = $taskOrder;
+            }
+        }
+        if (empty($this->conveyor['successfulTaskOrders'])) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public function sendTaskOrdersSyncInvoice()
+    {
+        if (empty($this->conveyor['id_shop'])) {
+            ProcessLoggerHandler::logError(
+                $this->l('No ID Shop found.', 'ShoppingfeedOrderSyncActions'),
+                'Order'
+            );
+
+            return false;
+        }
+
+        if (empty($this->conveyor['preparedTaskOrders'])) {
+            ProcessLoggerHandler::logError(
+                $this->l('No prepared Task Orders found.', 'ShoppingfeedOrderSyncActions'),
+                'Order'
+            );
+
+            return false;
+        }
+
+        $shoppingfeedApi = ShoppingfeedApi::getInstanceByToken($this->conveyor['id_token']);
+        if ($shoppingfeedApi == false) {
+            ProcessLoggerHandler::logError(
+                $this->l('Could not retrieve Shopping Feed API.', 'ShoppingfeedOrderSyncActions'),
+                'Order'
+            );
+
+            return false;
+        }
+
+        foreach ($this->conveyor['preparedTaskOrders'] as $preparedTaskOrders) {
+            $result = $shoppingfeedApi->updateMainStoreOrdersStatus($preparedTaskOrders, $this->conveyor['shoppingfeed_store_id']);
+
+            if (!$result) {
+                continue;
+            }
+
+            $batchId = current($result->getBatchIds());
+            if (empty($batchId) === true) {
+                continue;
+            }
+
+            foreach ($preparedTaskOrders as $preparedTaskOrder) {
+                $taskOrder = $preparedTaskOrder['taskOrder'];
+                $taskOrder->batch_id = $batchId;
+                $taskOrder->action = ShoppingfeedTaskOrder::ACTION_CHECK_TICKET_SYNC_STATUS;
+                $taskOrder->save();
+
+                ProcessLoggerHandler::logSuccess(
+                    static::getLogPrefix($taskOrder->id_order) . ' ' . $this->l('Ticket created to upload an order invoice', 'ShoppingfeedOrderSyncActions'),
+                    'Order',
+                    $taskOrder->id_order
+                );
+
+                $this->conveyor['successfulTaskOrders'][] = $taskOrder;
+                unlink($preparedTaskOrder['file']);
             }
         }
         if (empty($this->conveyor['successfulTaskOrders'])) {

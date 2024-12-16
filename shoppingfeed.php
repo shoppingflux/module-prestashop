@@ -16,6 +16,9 @@
  * @copyright Since 2019 Shopping Feed
  * @license   https://opensource.org/licenses/AFL-3.0  Academic Free License (AFL 3.0)
  */
+
+use ShoppingfeedAddon\OrderInvoiceSync\Hub;
+
 if (!defined('_PS_VERSION_')) {
     exit;
 }
@@ -105,6 +108,8 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     const ORDER_OPERATION_UPLOAD_DOCUMENTS = 'upload-documents';
 
     const ORDER_OPERATION_DELIVER = 'deliver';
+
+    const ORDER_INVOICE_SYNC_MARKETPLACES = 'SHOPPINGFEED_ORDER_INVOICE_SYNC_MARKETPLACES';
 
     public $extensions = [
         \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerExtension::class,
@@ -1245,6 +1250,41 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::closeLogger();
     }
 
+    protected function addOrderTask($id_order, $action)
+    {
+        $logPrefix = ShoppingfeedOrderSyncActions::getLogPrefix($id_order);
+        try {
+            \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logInfo(
+                sprintf(
+                    $logPrefix . ' ' .
+                    $this->l('Process started Order %s ', 'ShoppingfeedOrderActions'),
+                    $id_order
+                ),
+                'Order',
+                $id_order
+            );
+            $handler = new \ShoppingfeedClasslib\Actions\ActionsHandler();
+            $handler
+                ->setConveyor([
+                    'id_order' => $id_order,
+                    'order_action' => $action,
+                ])
+                ->addActions('saveTaskOrder')
+                ->process('shoppingfeedOrderSync');
+        } catch (Exception $e) {
+            \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logInfo(
+                sprintf(
+                    $logPrefix . ' ' . $this->l('Order %s not registered for synchronization: %s', 'ShoppingfeedOrderActions'),
+                    $id_order,
+                    $e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine()
+                ),
+                'Order',
+                $id_order
+            );
+        }
+        \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::closeLogger();
+    }
+
     /**
      * Saves an order for status synchronization
      *
@@ -1264,53 +1304,29 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         }
 
         $order = new Order($params['id_order']);
-
-        // Check if the new status calls for an update with Shopping Feed
+        /** @var OrderState $newOrderStatus */
         $newOrderStatus = $params['newOrderStatus'];
         $shipped_status = json_decode(Configuration::get(Shoppingfeed::SHIPPED_ORDERS, null, null, $order->id_shop));
         $cancelled_status = json_decode(Configuration::get(Shoppingfeed::CANCELLED_ORDERS, null, null, $order->id_shop));
         $refunded_status = json_decode(Configuration::get(Shoppingfeed::REFUNDED_ORDERS, null, null, $order->id_shop));
         $delivered_status = json_decode(Configuration::get(Shoppingfeed::DELIVERED_ORDERS, null, null, $order->id_shop));
-        if (!in_array($newOrderStatus->id, $shipped_status)
-            && !in_array($newOrderStatus->id, $cancelled_status)
-            && !in_array($newOrderStatus->id, $refunded_status)
-            && !in_array($newOrderStatus->id, $delivered_status)
+
+        if (in_array($newOrderStatus->id, $shipped_status)
+            || in_array($newOrderStatus->id, $cancelled_status)
+            || in_array($newOrderStatus->id, $refunded_status)
+            || in_array($newOrderStatus->id, $delivered_status)
         ) {
-            return;
+            $this->addOrderTask($shoppingFeedOrder->id_order, ShoppingfeedTaskOrder::ACTION_SYNC_STATUS);
         }
 
-        $logPrefix = ShoppingfeedOrderSyncActions::getLogPrefix($shoppingFeedOrder->id_order);
-        try {
-            \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logInfo(
-                sprintf(
-                    $logPrefix . ' ' .
-                        $this->l('Process started Order %s ', 'ShoppingfeedOrderActions'),
-                    $shoppingFeedOrder->id_order
-                ),
-                'Order',
-                $shoppingFeedOrder->id_order
-            );
-            $handler = new \ShoppingfeedClasslib\Actions\ActionsHandler();
-            $handler
-                ->setConveyor([
-                    'id_order' => $params['id_order'],
-                    'order_action' => ShoppingfeedTaskOrder::ACTION_SYNC_STATUS,
-                ])
-                ->addActions('saveTaskOrder')
-                ->process('shoppingfeedOrderSync');
-        } catch (Exception $e) {
-            \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logInfo(
-                sprintf(
-                    $logPrefix . ' ' . $this->l('Order %s not registered for synchronization: %s', 'ShoppingfeedOrderActions'),
-                    $params['id_order'],
-                    $e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine()
-                ),
-                'Order',
-                $params['id_order']
-            );
+        if ($this->isUploadOrderDocumentReady()) {
+            if ($newOrderStatus->invoice) {
+                $marketplace = Hub::getInstance()->findByName($shoppingFeedOrder->name_marketplace);
+                if ($marketplace && $marketplace->isEnabled()) {
+                    $this->addOrderTask($shoppingFeedOrder->id_order, ShoppingfeedTaskOrder::ACTION_UPLOAD_INVOICE);
+                }
+            }
         }
-
-        \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::closeLogger();
     }
 
     /**
@@ -1568,5 +1584,10 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         }
 
         return $result;
+    }
+
+    public function isUploadOrderDocumentReady()
+    {
+        return false;
     }
 }
