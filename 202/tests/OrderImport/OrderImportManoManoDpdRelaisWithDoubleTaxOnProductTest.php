@@ -181,8 +181,10 @@ class OrderImportManoManoDpdRelaisWithDoubleTaxOnProductTest extends AbstractOrd
         $carrier = new \Carrier($psOrder->id_carrier);
         $this->assertEquals($carrier->id_reference, $contextData['carrierReference']);
 
-        $dpdShippingService = DPDTools::getService($psOrder, false);
-        $expectedValue = 'REL';
-        $this->assertEquals($expectedValue, $dpdShippingService);
+        if (class_exists('DPDTools')) {
+            $dpdShippingService = DPDTools::getService($psOrder, false);
+            $expectedValue = 'REL';
+            $this->assertEquals($expectedValue, $dpdShippingService);
+        }
     }
 }

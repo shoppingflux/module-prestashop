@@ -305,6 +305,21 @@ class ProductSerializer
         }
     }
 
+    public function getSupplierReference()
+    {
+        if (empty($this->product->id_supplier)) {
+            return '';
+        }
+
+        $query = new DbQuery();
+        $query->from('product_supplier', 'ps');
+        $query->where('ps.id_product = ' . (int) $this->product->id);
+        $query->where('ps.id_supplier = ' . (int) $this->product->id_supplier);
+        $query->select('ps.product_supplier_reference');
+
+        return (string) Db::getInstance()->getValue($query);
+    }
+
     protected function getAttributes()
     {
         $attributes = [
@@ -317,6 +332,8 @@ class ProductSerializer
             'min_quantity_for_sale' => $this->product->minimal_quantity,
             'hierararchy' => 'parent',
         ];
+        $supplierReference = $this->getSupplierReference();
+
         if (empty($this->product->meta_title) === false) {
             $attributes['meta_title'] = $this->product->meta_title;
         }
@@ -350,8 +367,9 @@ class ProductSerializer
         if (empty($this->product->wholesale_price) === false && $this->product->wholesale_price != 0) {
             $attributes['wholesale_price'] = $this->product->wholesale_price;
         }
-        if (empty($this->product->supplier_reference) === false) {
-            $attributes['supplier_reference'] = $this->product->supplier_reference;
+
+        if (empty($supplierReference) === false) {
+            $attributes['supplier_reference'] = $supplierReference;
         }
         $supplier = $this->product->supplier_name;
         $supplier_link = $this->link->getSupplierLink($this->product->id_supplier, null, $this->id_lang);
@@ -370,9 +388,15 @@ class ProductSerializer
         }
         foreach ($this->product->getFrontFeatures($this->id_lang) as $feature) {
             $feature['name'] = $this->_clean($feature['name']);
-            if (empty($feature['name']) === false) {
-                $attributes[$feature['name']] = $feature['value'];
+            if (empty($feature['name'])) {
+                continue;
             }
+            $featureName = $feature['name'];
+            $suffixCount = 1;
+            while (array_key_exists($featureName, $attributes)) {
+                $featureName = $feature['name'] . '_' . ++$suffixCount;
+            }
+            $attributes[$featureName] = $feature['value'];
         }
         $fileNumber = 0;
         foreach ($this->product->getAttachments($this->id_lang) as $attachment) {
@@ -715,7 +739,6 @@ class ProductSerializer
                     $skip = true;
                 }
             }
-
             // Apply a specific price of a default variation for a product
             if ((int) $id_product_attribute === 0 && $skip) {
                 if ($this->product->getDefaultIdProductAttribute() === (int) $specificPrice['id_product_attribute']) {

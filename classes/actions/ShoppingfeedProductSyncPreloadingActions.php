@@ -41,6 +41,10 @@ class ShoppingfeedProductSyncPreloadingActions extends DefaultActions
             return false;
         }
         $currency = new Currency($token->id_currency);
+        $shop = new Shop($token->id_shop);
+        $country = new Country(
+            Configuration::get('PS_COUNTRY_DEFAULT', null, $shop->id_shop_group, $shop->id)
+        );
 
         if (Validate::isLoadedObject($currency) === false) {
             ProcessLoggerHandler::logInfo(
@@ -53,6 +57,9 @@ class ShoppingfeedProductSyncPreloadingActions extends DefaultActions
             return false;
         }
         Context::getContext()->currency = $currency;
+        Context::getContext()->shop = $shop;
+        Context::getContext()->country = $country;
+        Shop::setContext(Shop::CONTEXT_SHOP, $shop->id);
 
         $sfModule = Module::getInstanceByName('shoppingfeed');
         $limit = Configuration::getGlobalValue(Shoppingfeed::STOCK_SYNC_MAX_PRODUCTS);

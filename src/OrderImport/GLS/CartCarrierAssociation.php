@@ -58,7 +58,7 @@ class CartCarrierAssociation
         );
 
         $this->db->delete('gls_cart_carrier', 'id_cart = "' . pSQL($cart->id) . '"');
-        $sql = 'INSERT IGNORE INTO ' . $this->db->getPrefix() . "gls_cart_carrier VALUES (
+        $sql = 'INSERT IGNORE INTO ' . _DB_PREFIX_ . "gls_cart_carrier VALUES (
                 '" . (int) $cart->id . "',
                 '" . (int) $cart->id_customer . "',
                 '" . (int) Configuration::get('GLS_GLSRELAIS_ID', (int) $cart->id_carrier, $cart->id_shop_group, $cart->id_shop) . "',

@@ -21,6 +21,7 @@ if (!defined('_PS_VERSION_')) {
 }
 
 use ShoppingFeed\Feed\Product\Product;
+use ShoppingfeedAddon\Model\Discount;
 use ShoppingfeedAddon\Services\SfProductGenerator;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 
@@ -29,6 +30,8 @@ class ShoppingfeedProductModuleFrontController extends \ModuleFrontController
     protected $sfToken = null;
 
     protected $isCompressFeed;
+
+    protected $productWithHierarchy;
 
     public function init()
     {
@@ -41,6 +44,7 @@ class ShoppingfeedProductModuleFrontController extends \ModuleFrontController
         }
 
         $this->isCompressFeed = (int) Configuration::get(Shoppingfeed::COMPRESS_PRODUCTS_FEED);
+        $this->productWithHierarchy = (Configuration::get(Shoppingfeed::PRODUCT_FEED_EXPORT_HIERARCHY) === 'product_with_children');
     }
 
     public function checkAccess()
@@ -84,9 +88,12 @@ class ShoppingfeedProductModuleFrontController extends \ModuleFrontController
         } else {
             $productGenerator = new SfProductGenerator('php://output', 'xml');
         }
-
         $productGenerator->setPlatform('Prestashop', _PS_VERSION_)
-                         ->addMapper([$this, 'mapper']);
+                         ->addMapper(
+                            [
+                                $this, $this->productWithHierarchy ? 'mapperWitHierarchy' : 'mapperWithoutHierarchy',
+                            ]
+                        );
 
         if (is_callable([$productGenerator, 'getMetaData'])) {
             $productGenerator->getMetaData()->setPlatform(
@@ -102,7 +109,18 @@ class ShoppingfeedProductModuleFrontController extends \ModuleFrontController
 
         for ($i = 0; $i < $nb_iteration; ++$i) {
             $products = (new ShoppingfeedPreloading())->findAllByTokenId($this->sfToken['id_shoppingfeed_token'], $i * $limit, $limit);
-            $productGenerator->appendProduct($products);
+            if ($this->productWithHierarchy) {
+                $productGenerator->appendProduct($products);
+                continue;
+            }
+            $productsToAppend = [];
+            foreach ($products as $product) {
+                $productsToAppend[] = $product;
+                foreach ($product['variations'] as $variation) {
+                    $productsToAppend[] = array_merge($product, $variation);
+                }
+            }
+            $productGenerator->appendProduct($productsToAppend);
         }
 
         $productGenerator->close();
@@ -136,13 +154,14 @@ class ShoppingfeedProductModuleFrontController extends \ModuleFrontController
         return $base . $shop->getBaseURI();
     }
 
-    public function mapper(array $item, Product $product)
+    public function mapperWithoutHierarchy(array $item, Product $product)
     {
         $product
             ->setName($item['name'])
             ->setReference($item['reference'])
             ->setPrice($item['price'])
         ;
+
         if (isset($item['quantity']) === true) {
             $product->setQuantity($item['quantity']);
         }
@@ -180,8 +199,8 @@ class ShoppingfeedProductModuleFrontController extends \ModuleFrontController
         if (false === empty($item['specificPrices'])) {
             $discount = $this->calculDiscount($item['specificPrices']);
 
-            if ($discount > 0) {
-                $product->addDiscount($discount);
+            if ($discount->getAmount() > 0) {
+                $product->addDiscount($discount->getAmount(), $discount->getFrom(), $discount->getTo());
             }
         }
 
@@ -189,7 +208,11 @@ class ShoppingfeedProductModuleFrontController extends \ModuleFrontController
             $product->setMainImage($item['images']['main']);
             $product->setAdditionalImages($item['images']['additional']);
         }
+    }
 
+    public function mapperWitHierarchy(array $item, Product $product)
+    {
+        $this->mapperWithoutHierarchy($item, $product);
         foreach ($item['variations'] as $variation) {
             $variationProduct = $product->createVariation();
             $variationProduct
@@ -216,8 +239,8 @@ class ShoppingfeedProductModuleFrontController extends \ModuleFrontController
             if (isset($variation['specificPrices']) && false === empty($variation['specificPrices'])) {
                 $discount = $this->calculDiscount($variation['specificPrices']);
 
-                if ($discount > 0) {
-                    $variationProduct->addDiscount($discount);
+                if ($discount->getAmount() > 0) {
+                    $variationProduct->addDiscount($discount->getAmount(), $discount->getFrom(), $discount->getTo());
                 }
             }
         }
@@ -262,19 +285,21 @@ class ShoppingfeedProductModuleFrontController extends \ModuleFrontController
     /**
      * @param array $specificPrices
      *
-     * @return float
+     * @return Discount
      */
     protected function calculDiscount($specificPrices)
     {
         if (false === is_array($specificPrices)) {
-            return 0;
+            return new Discount();
         }
 
         if (is_null($this->sfToken)) {
-            return 0;
+            return new Discount();
         }
 
         foreach ($specificPrices as $specificPrice) {
+            $discount = new Discount();
+
             if (false === isset($specificPrice['from'])) {
                 continue;
             }
@@ -313,18 +338,22 @@ class ShoppingfeedProductModuleFrontController extends \ModuleFrontController
                 if ($to->diff($now)->invert === 0) {
                     continue;
                 }
+                $discount->setTo($to->format('Y-m-d'));
             }
             if ($specificPrice['from'] !== '0000-00-00 00:00:00') {
                 $from = DateTime::createFromFormat('Y-m-d H:i:s', $specificPrice['from']);
                 if ($from->diff($now)->invert === 1) {
                     continue;
                 }
+                $discount->setFrom($from->format('Y-m-d'));
             }
 
-            return (float) $specificPrice['discount'];
+            $discount->setAmount($specificPrice['discount']);
+
+            return $discount;
         }
 
-        return 0;
+        return new Discount();
     }
 
     protected function isEcotaxEnabled()

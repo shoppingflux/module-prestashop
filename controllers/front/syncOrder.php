@@ -400,6 +400,7 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
                         'apiOrder' => $apiOrder,
                         'sfOrder' => null,
                         'isSkipImport' => false,
+                        'shoppingfeed_store_id' => $token['shoppingfeed_store_id'],
                     ]);
 
                     Registry::set('shoppingfeedOrderImportHandler', $handler);
