@@ -5,11 +5,11 @@ set -x
 
 /etc/init.d/mariadb start
 
-php /var/www/html/bin/console prestashop:module install shoppingfeed -e prod
-php /var/www/html/bin/console prestashop:module install dpdfrance -e prod
-php /var/www/html/bin/console prestashop:module install colissimo -e prod
-php /var/www/html/bin/console prestashop:module install mondialrelay -e prod
-php /var/www/html/bin/console prestashop:module install nkmgls -e prod
+php /var/www/html/bin/console prestashop:module install shoppingfeed
+php /var/www/html/bin/console prestashop:module install dpdfrance
+php /var/www/html/bin/console prestashop:module install colissimo 
+php /var/www/html/bin/console prestashop:module install mondialrelay 
+php /var/www/html/bin/console prestashop:module install nkmgls 
 
 echo "Add data fixtures for Unit Tests"
 
@@ -18,7 +18,7 @@ mysql -h localhost -u root prestashop -e "
 TRUNCATE ps_shoppingfeed_preloading;
 TRUNCATE ps_mondialrelay_carrier_method;
 INSERT INTO ps_mondialrelay_carrier_method (id_carrier, delivery_mode, insurance_level, is_deleted, id_reference, date_add, date_upd)
-VALUES ('1', '24R', '0', '0', '1', '2022-06-23 11:30:14', '2022-06-23 11:30:14');
+VALUES ('1', 'HOM', '0', '0', '1', '2022-06-23 11:30:14', '2022-06-23 11:30:14');
 
 DELETE FROM ps_configuration WHERE name LIKE 'MONDIALRELAY_%';
 INSERT INTO ps_configuration (id_shop_group, id_shop, name, value, date_add, date_upd) VALUES
@@ -37,7 +37,7 @@ TRUNCATE ps_shoppingfeed_task_order;
 UPDATE ps_configuration SET value = '[\"5\",\"4\"]' WHERE name = 'SHOPPINGFEED_SHIPPED_ORDERS';
 UPDATE ps_configuration SET value = '[\"6\"]' WHERE name = 'SHOPPINGFEED_CANCELLED_ORDERS';
 UPDATE ps_configuration SET value = '[\"7\"]' WHERE name = 'SHOPPINGFEED_REFUNDED_ORDERS';
-UPDATE ps_configuration SET value = '{\"ShoppingfeedAddon\\\\\\\\OrderImport\\\\\\\\Rules\\\\\\\\SkipTax\":{\"enabled\":\"1\"},\"ShoppingfeedAddon\\OrderImport\\Rules\\AmazonEbay\":{\"enabled\":\"1\"},\"ShoppingfeedAddon\\OrderImport\\Rules\\ChangeStateOrder\":{\"end_order_state\":\"\"},\"ShoppingfeedAddon\\OrderImport\\Rules\\ShippedByMarketplace\":{\"end_order_state_shipped\":\"5\"},\"ShoppingfeedAddon\\OrderImport\\Rules\\SymbolConformity\":{\"enabled\":\"1\"}}' WHERE name = 'SHOPPINGFEED_ORDER_IMPORT_SPECIFIC_RULES_CONFIGURATION';
+UPDATE ps_configuration SET value = '{\"ShoppingfeedAddon\\\\\\\\OrderImport\\\\\\\\Rules\\\\\\\\TaxForBusiness\":{\"enabled\":\"1\"},\"ShoppingfeedAddon\\\\\\\\OrderImport\\\\\\\\Rules\\\\\\\\AmazonEbay\":{\"enabled\":\"1\"},\"ShoppingfeedAddon\\\\\\\\OrderImport\\\\\\\\Rules\\\\\\\\ChangeStateOrder\":{\"end_order_state\":\"\"},\"ShoppingfeedAddon\\\\\\\\OrderImport\\\\\\\\Rules\\\\\\\\ShippedByMarketplace\":{\"end_order_state_shipped\":\"5\"},\"ShoppingfeedAddon\\\\\\\\OrderImport\\\\\\\\Rules\\\\\\\\SymbolConformity\":{\"enabled\":\"1\"}}' WHERE name = 'SHOPPINGFEED_ORDER_IMPORT_SPECIFIC_RULES_CONFIGURATION';
 UPDATE ps_configuration SET value = '1' WHERE name = 'PS_CART_RULE_FEATURE_ACTIVE';
 UPDATE ps_configuration SET value = '1' WHERE name = 'SHOPPINGFEED_ORDER_IMPORT_SHIPPED_MARKETPLACE';
 UPDATE ps_configuration SET value = '0' WHERE name = 'SHOPPINGFEED_ORDER_STATUS_TIME_SHIFT';
