@@ -88,7 +88,6 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     const SEND_NOTIFICATION = 'SHOPPINGFEED_SEND_NOTIFICATION';
     const PRODUCT_FEED_EXPORT_HIERARCHY = 'SHOPPINGFEED_PRODUCT_FEED_EXPORT_HIERARCHY';
 
-
     public $extensions = [
         \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerExtension::class,
         \ShoppingfeedClasslib\Extensions\ProcessMonitor\ProcessMonitorExtension::class,
