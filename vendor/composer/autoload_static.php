@@ -28,21 +28,6 @@ class ComposerStaticInitfa23dbc36d09c26fab8d3ef5eed71644
         ),
         'S' => 
         array (
-            'Symfony\\Polyfill\\Php80\\' => 23,
-            'Symfony\\Polyfill\\Php73\\' => 23,
-            'Symfony\\Polyfill\\Php72\\' => 23,
-            'Symfony\\Polyfill\\Mbstring\\' => 26,
-            'Symfony\\Polyfill\\Ctype\\' => 23,
-            'Symfony\\Contracts\\Service\\' => 26,
-            'Symfony\\Contracts\\EventDispatcher\\' => 34,
-            'Symfony\\Component\\Stopwatch\\' => 28,
-            'Symfony\\Component\\Process\\' => 26,
-            'Symfony\\Component\\OptionsResolver\\' => 34,
-            'Symfony\\Component\\Finder\\' => 25,
-            'Symfony\\Component\\Filesystem\\' => 29,
-            'Symfony\\Component\\EventDispatcher\\' => 34,
-            'Symfony\\Component\\Debug\\' => 24,
-            'Symfony\\Component\\Console\\' => 26,
             'ShoppingfeedClasslib\\' => 21,
             'ShoppingfeedAddon\\' => 18,
             'ShoppingFeed\\Sdk\\' => 17,
@@ -56,7 +41,6 @@ class ComposerStaticInitfa23dbc36d09c26fab8d3ef5eed71644
         ),
         'P' => 
         array (
-            'Psr\\Log\\' => 8,
             'Psr\\Http\\Message\\' => 17,
             'Psr\\EventDispatcher\\' => 20,
             'Psr\\Container\\' => 14,
@@ -187,10 +171,6 @@ class ComposerStaticInitfa23dbc36d09c26fab8d3ef5eed71644
         'SfGuzzle\\GuzzleHttp\\' => 
         array (
             0 => __DIR__ . '/..' . '/prefixed/guzzlehttp/guzzle/src',
-        ),
-        'Psr\\Log\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/psr/log/Psr/Log',
         ),
         'Psr\\Http\\Message\\' => 
         array (
@@ -1894,16 +1874,14 @@ class ComposerStaticInitfa23dbc36d09c26fab8d3ef5eed71644
         'ShoppingfeedAddon\\OrderImport\\Rules\\AmazonEbay' => __DIR__ . '/../..' . '/src/OrderImport/Rules/AmazonEbay.php',
         'ShoppingfeedAddon\\OrderImport\\Rules\\AmazonManomanoTva' => __DIR__ . '/../..' . '/src/OrderImport/Rules/AmazonManomanoTva.php',
         'ShoppingfeedAddon\\OrderImport\\Rules\\AmazonPrime' => __DIR__ . '/../..' . '/src/OrderImport/Rules/AmazonPrime.php',
-        'ShoppingfeedAddon\\OrderImport\\Rules\\BhvColissimo' => __DIR__ . '/../..' . '/src/OrderImport/Rules/BhvColissimo.php',
         'ShoppingfeedAddon\\OrderImport\\Rules\\Cdiscount' => __DIR__ . '/../..' . '/src/OrderImport/Rules/Cdiscount.php',
         'ShoppingfeedAddon\\OrderImport\\Rules\\ChangeStateOrder' => __DIR__ . '/../..' . '/src/OrderImport/Rules/ChangeStateOrder.php',
         'ShoppingfeedAddon\\OrderImport\\Rules\\ColissimoRule' => __DIR__ . '/../..' . '/src/OrderImport/Rules/ColissimoRule.php',
         'ShoppingfeedAddon\\OrderImport\\Rules\\GlsRule' => __DIR__ . '/../..' . '/src/OrderImport/Rules/GlsRule.php',
-        'ShoppingfeedAddon\\OrderImport\\Rules\\ManomanoDpdRelais' => __DIR__ . '/../..' . '/src/OrderImport/Rules/ManomanoDpdRelais.php',
-        'ShoppingfeedAddon\\OrderImport\\Rules\\MondialrelayRule' => __DIR__ . '/../..' . '/src/OrderImport/Rules/MondialrelayRule.php',
-        'ShoppingfeedAddon\\OrderImport\\Rules\\MonechelleColissimo' => __DIR__ . '/../..' . '/src/OrderImport/Rules/MonechelleColissimo.php',
+        'ShoppingfeedAddon\\OrderImport\\Rules\\GroupCustomer' => __DIR__ . '/../..' . '/src/OrderImport/Rules/GroupCustomer.php',
         'ShoppingfeedAddon\\OrderImport\\Rules\\ManomanoDpdRelais' => __DIR__ . '/../..' . '/src/OrderImport/Rules/ManomanoDpdRelais.php',
         'ShoppingfeedAddon\\OrderImport\\Rules\\MissingCarrier' => __DIR__ . '/../..' . '/src/OrderImport/Rules/MissingCarrier.php',
+        'ShoppingfeedAddon\\OrderImport\\Rules\\MondialrelayRule' => __DIR__ . '/../..' . '/src/OrderImport/Rules/MondialrelayRule.php',
         'ShoppingfeedAddon\\OrderImport\\Rules\\RelaisColisRule' => __DIR__ . '/../..' . '/src/OrderImport/Rules/RelaisColisRule.php',
         'ShoppingfeedAddon\\OrderImport\\Rules\\RueducommerceMondialrelay' => __DIR__ . '/../..' . '/src/OrderImport/Rules/RueducommerceMondialrelay.php',
         'ShoppingfeedAddon\\OrderImport\\Rules\\SetDniToAddress' => __DIR__ . '/../..' . '/src/OrderImport/Rules/SetDniToAddress.php',
@@ -1913,7 +1891,6 @@ class ComposerStaticInitfa23dbc36d09c26fab8d3ef5eed71644
         'ShoppingfeedAddon\\OrderImport\\Rules\\SymbolConformity' => __DIR__ . '/../..' . '/src/OrderImport/Rules/SymbolConformity.php',
         'ShoppingfeedAddon\\OrderImport\\Rules\\TaxExclMarketplace' => __DIR__ . '/../..' . '/src/OrderImport/Rules/TaxExclMarketplace.php',
         'ShoppingfeedAddon\\OrderImport\\Rules\\TestingOrder' => __DIR__ . '/../..' . '/src/OrderImport/Rules/TestingOrder.php',
-        'ShoppingfeedAddon\\OrderImport\\Rules\\VeepeegroupColissimo' => __DIR__ . '/../..' . '/src/OrderImport/Rules/VeepeegroupColissimo.php',
         'ShoppingfeedAddon\\OrderImport\\Rules\\Zalando' => __DIR__ . '/../..' . '/src/OrderImport/Rules/Zalando.php',
         'ShoppingfeedAddon\\OrderImport\\Rules\\ZalandoCarrier' => __DIR__ . '/../..' . '/src/OrderImport/Rules/ZalandoCarrier.php',
         'ShoppingfeedAddon\\OrderImport\\SFOrderState' => __DIR__ . '/../..' . '/src/OrderImport/SFOrderState.php',

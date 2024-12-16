@@ -290,6 +290,25 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
                     'label' => $this->module->l('Category display', 'AdminShoppingfeedGeneralSettings'),
                     'name' => Shoppingfeed::PRODUCT_FEED_CATEGORY_DISPLAY,
                 ],
+                [
+                    'type' => 'select',
+                    'options' => [
+                        'query' => [
+                            [
+                                'id' => 'product_with_children',
+                                'name' => $this->module->l('Child products of their parent product', 'AdminShoppingfeedGeneralSettings'),
+                            ],
+                            [
+                                'id' => 'product_separate_children_with_parent',
+                                'name' => $this->module->l('Separately (one node for each parent and child product)', 'AdminShoppingfeedGeneralSettings'),
+                            ],
+                        ],
+                        'id' => 'id',
+                        'name' => 'name',
+                    ],
+                    'label' => $this->module->l('Layout of variations', 'AdminShoppingfeedGeneralSettings'),
+                    'name' => Shoppingfeed::PRODUCT_FEED_EXPORT_HIERARCHY,
+                ],
             ],
             'submit' => [
                 'title' => $this->module->l('Save', 'AdminShoppingfeedGeneralSettings'),
@@ -302,6 +321,7 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
             Shoppingfeed::PRODUCT_FEED_SYNC_PACK => Configuration::get(Shoppingfeed::PRODUCT_FEED_SYNC_PACK),
             Shoppingfeed::PRODUCT_FEED_IMAGE_FORMAT => Configuration::get(Shoppingfeed::PRODUCT_FEED_IMAGE_FORMAT),
             Shoppingfeed::PRODUCT_FEED_CATEGORY_DISPLAY => Configuration::get(Shoppingfeed::PRODUCT_FEED_CATEGORY_DISPLAY),
+            Shoppingfeed::PRODUCT_FEED_EXPORT_HIERARCHY => Configuration::get(Shoppingfeed::PRODUCT_FEED_EXPORT_HIERARCHY),
         ];
 
         $customFields = $this->getOverrideFields();
@@ -701,12 +721,14 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
         $imageFormat = Tools::getValue(Shoppingfeed::PRODUCT_FEED_IMAGE_FORMAT);
         $categoryDisplay = Tools::getValue(Shoppingfeed::PRODUCT_FEED_CATEGORY_DISPLAY);
         $customFields = Tools::getValue(Shoppingfeed::PRODUCT_FEED_CUSTOM_FIELDS);
+        $exportWithHierarchy = Tools::getValue(Shoppingfeed::PRODUCT_FEED_EXPORT_HIERARCHY);
 
         Configuration::updateGlobalValue(Shoppingfeed::PRODUCT_FEED_SYNC_PACK, ($sync_pack ? true : false));
         Configuration::updateGlobalValue(Shoppingfeed::PRODUCT_FEED_CARRIER_REFERENCE, $carrierReference);
         Configuration::updateGlobalValue(Shoppingfeed::PRODUCT_FEED_IMAGE_FORMAT, $imageFormat);
         Configuration::updateGlobalValue(Shoppingfeed::PRODUCT_FEED_CATEGORY_DISPLAY, $categoryDisplay);
         Configuration::updateGlobalValue(Shoppingfeed::PRODUCT_FEED_CUSTOM_FIELDS, json_encode($customFields));
+        Configuration::updateGlobalValue(Shoppingfeed::PRODUCT_FEED_EXPORT_HIERARCHY, $exportWithHierarchy);
 
         return true;
     }

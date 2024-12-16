@@ -7,10 +7,12 @@
         'type' => 'prestashop-module',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'dev' => true,
+        'reference' => null,
+        'name' => 'shoppingfeed/module-prestashop',
+        'dev' => false,
     ),
     'versions' => array(
-        'composer/pcre' => array(
+        'psr/http-message' => array(
             'pretty_version' => '1.0.1',
             'version' => '1.0.1.0',
             'reference' => '67a32d7d6f9f560b726ab25a061b38ff3a80c560',

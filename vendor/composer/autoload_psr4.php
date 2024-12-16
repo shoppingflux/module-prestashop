@@ -32,7 +32,6 @@ return array(
     'SfGuzzle\\GuzzleHttp\\Psr7\\' => array($vendorDir . '/prefixed/guzzlehttp/psr7/src'),
     'SfGuzzle\\GuzzleHttp\\Promise\\' => array($vendorDir . '/prefixed/guzzlehttp/promises/src'),
     'SfGuzzle\\GuzzleHttp\\' => array($vendorDir . '/prefixed/guzzlehttp/guzzle/src'),
-    'Psr\\Log\\' => array($vendorDir . '/psr/log/Psr/Log'),
     'Psr\\Http\\Message\\' => array($vendorDir . '/psr/http-message/src'),
     'Psr\\EventDispatcher\\' => array($vendorDir . '/psr/event-dispatcher/src'),
     'Psr\\Container\\' => array($vendorDir . '/psr/container/src'),
