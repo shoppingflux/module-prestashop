@@ -24,7 +24,6 @@ use ShoppingFeed\Sdk\Api\Catalog\InventoryUpdate;
 use ShoppingFeed\Sdk\Api\Catalog\PricingUpdate;
 use ShoppingFeed\Sdk\Api\Order\Document\Invoice;
 use ShoppingFeed\Sdk\Api\Order\Identifier\Id;
-use ShoppingFeed\Sdk\Api\Order\Operation;
 use ShoppingFeed\Sdk\Client\Client;
 use ShoppingFeed\Sdk\Client\ClientOptions;
 use ShoppingFeed\Sdk\Credential\Password;
