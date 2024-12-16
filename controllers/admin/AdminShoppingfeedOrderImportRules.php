@@ -335,6 +335,23 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
                             ],
                         ],
                         [
+                            'type' => 'switch',
+                            'label' => $this->module->l('Send emails notification', 'AdminShoppingfeedOrderImportRules'),
+                            'name' => Shoppingfeed::SEND_NOTIFICATION,
+                            'id' => 'shoppingfeed_order-import-switch',
+                            'is_bool' => true,
+                            'values' => [
+                                [
+                                    'id' => Shoppingfeed::ORDER_TRACKING . '-1',
+                                    'value' => 1,
+                                ],
+                                [
+                                    'id' => Shoppingfeed::ORDER_TRACKING . '-0',
+                                    'value' => 0,
+                                ],
+                            ],
+                        ],
+                        [
                             'type' => 'shoppingfeed_open-section',
                             'id' => 'shoppingfeed_carriers-matching',
                             'title' => $this->module->l('Carriers matching', 'AdminShoppingfeedOrderImportRules'),
@@ -565,6 +582,7 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
             Shoppingfeed::ORDER_TRACKING => (int) Configuration::get(Shoppingfeed::ORDER_TRACKING),
             Shoppingfeed::ORDER_SHIPPED_IMPORT_PERMANENT_SINCE_DATE => $this->getSinceDateService()->getForShipped(),
             Shoppingfeed::ORDER_SHIPPED_BY_MARKETPLACE_IMPORT_PERMANENT_SINCE_DATE => $this->getSinceDateService()->getForShippedByMarketplace(),
+            Shoppingfeed::SEND_NOTIFICATION => (int) Configuration::get(Shoppingfeed::SEND_NOTIFICATION),
         ];
 
         $helper->base_folder = $this->getTemplatePath() . $this->override_folder;
@@ -649,6 +667,13 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
             Configuration::updateValue(
                 Shoppingfeed::ORDER_TRACKING,
                 ($order_tracking ? true : false),
+                false,
+                null,
+                $shop['id_shop']
+            );
+            Configuration::updateValue(
+                Shoppingfeed::SEND_NOTIFICATION,
+                Tools::getValue(Shoppingfeed::SEND_NOTIFICATION, 0),
                 false,
                 null,
                 $shop['id_shop']
