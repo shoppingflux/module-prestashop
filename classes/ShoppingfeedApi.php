@@ -22,7 +22,8 @@ if (!defined('_PS_VERSION_')) {
 
 use ShoppingFeed\Sdk\Api\Catalog\InventoryUpdate;
 use ShoppingFeed\Sdk\Api\Catalog\PricingUpdate;
-use ShoppingFeed\Sdk\Api\Order\OrderOperation;
+use ShoppingFeed\Sdk\Api\Order\Identifier\Id;
+use ShoppingFeed\Sdk\Api\Order\Operation;
 use ShoppingFeed\Sdk\Client\Client;
 use ShoppingFeed\Sdk\Client\ClientOptions;
 use ShoppingFeed\Sdk\Credential\Password;
@@ -169,10 +170,25 @@ class ShoppingfeedApi
      *
      * @return ShoppingFeed\Sdk\Api\Catalog\InventoryCollection
      */
-    public function updateMainStoreInventory($products)
+    public function updateMainStoreInventory($products, $shoppingfeed_store_id = null)
     {
         try {
-            $inventoryApi = $this->session->getMainStore()->getInventoryApi();
+            $inventoryApi = null;
+
+            if ($shoppingfeed_store_id) {
+                foreach ($this->getStores() as $store) {
+                    if ($store->getId() == $shoppingfeed_store_id) {
+                        $inventoryApi = $store->getInventoryApi();
+                    }
+                }
+            } else {
+                $inventoryApi = $this->session->getMainStore()->getInventoryApi();
+            }
+
+            if (!$inventoryApi) {
+                throw new Exception('Invalid store ID');
+            }
+
             $inventoryUpdate = new InventoryUpdate();
             foreach ($products as $product) {
                 $inventoryUpdate->add($product['reference'], $product['quantity']);
@@ -210,10 +226,25 @@ class ShoppingfeedApi
      *
      * @return ShoppingFeed\Sdk\Api\Catalog\InventoryCollection
      */
-    public function updateMainStorePrices($products)
+    public function updateMainStorePrices($products, $shoppingfeed_store_id = null)
     {
         try {
-            $pricingApi = $this->session->getMainStore()->getPricingApi();
+            $pricingApi = null;
+
+            if ($shoppingfeed_store_id) {
+                foreach ($this->getStores() as $store) {
+                    if ($store->getId() == $shoppingfeed_store_id) {
+                        $pricingApi = $store->getPricingApi();
+                    }
+                }
+            } else {
+                $pricingApi = $this->session->getMainStore()->getPricingApi();
+            }
+
+            if (!$pricingApi) {
+                throw new Exception('Invalid store ID');
+            }
+
             $pricingUpdate = new PricingUpdate();
             foreach ($products as $product) {
                 $pricingUpdate->add($product['reference'], $product['price']);
@@ -237,33 +268,50 @@ class ShoppingfeedApi
      *
      * @param array $taskOrders
      */
-    public function updateMainStoreOrdersStatus($taskOrders)
+    public function updateMainStoreOrdersStatus($taskOrders, $shoppingfeed_store_id = null)
     {
         try {
-            $orderApi = $this->session->getMainStore()->getOrderApi();
-            $operation = new \ShoppingFeed\Sdk\Api\Order\OrderOperation();
+            $orderApi = null;
+
+            if ($shoppingfeed_store_id) {
+                foreach ($this->getStores() as $store) {
+                    if ($store->getId() == $shoppingfeed_store_id) {
+                        $orderApi = $store->getOrderApi();
+                    }
+                }
+            } else {
+                $orderApi = $this->session->getMainStore()->getOrderApi();
+            }
+
+            if (!$orderApi) {
+                throw new Exception('Invalid store ID');
+            }
+
+            $operation = new \ShoppingFeed\Sdk\Api\Order\Operation();
 
             foreach ($taskOrders as $taskOrder) {
                 switch ($taskOrder['operation']) {
-                    case OrderOperation::TYPE_SHIP:
+                    case Shoppingfeed::ORDER_OPERATION_SHIP:
                         $operation->ship(
-                            $taskOrder['reference_marketplace'],
-                            $taskOrder['marketplace'],
-                            $taskOrder['payload']['carrier_name'],
-                            $taskOrder['payload']['tracking_number'],
-                            $taskOrder['payload']['tracking_url']
+                            new Id((int) $taskOrder['id_internal_shoppingfeed']),
+                            (string) $taskOrder['payload']['carrier_name'],
+                            (string) $taskOrder['payload']['tracking_number'],
+                            (string) $taskOrder['payload']['tracking_url']
                         );
                         continue 2;
-                    case OrderOperation::TYPE_CANCEL:
+                    case Shoppingfeed::ORDER_OPERATION_CANCEL:
                         $operation->cancel(
-                            $taskOrder['reference_marketplace'],
-                            $taskOrder['marketplace']
+                            new Id((int) $taskOrder['id_internal_shoppingfeed'])
                         );
                         continue 2;
-                    case OrderOperation::TYPE_REFUND:
+                    case Shoppingfeed::ORDER_OPERATION_REFUND:
                         $operation->refund(
-                            $taskOrder['reference_marketplace'],
-                            $taskOrder['marketplace']
+                            new Id((int) $taskOrder['id_internal_shoppingfeed'])
+                        );
+                        continue 2;
+                    case Shoppingfeed::ORDER_OPERATION_DELIVER:
+                        $operation->deliver(
+                            new Id((int) $taskOrder['id_internal_shoppingfeed'])
                         );
                         continue 2;
                 }
@@ -350,7 +398,7 @@ class ShoppingfeedApi
         return $tickets;
     }
 
-    public function getUnacknowledgedOrders($iShipped = false)
+    public function getUnacknowledgedOrders($iShipped = false, $shoppingfeed_store_id = null)
     {
         $status = 'waiting_shipment';
         if ($iShipped === true) {
@@ -381,9 +429,23 @@ class ShoppingfeedApi
         );
 
         $orders = false;
+        $orderApi = null;
         try {
             // Retrieve orders
-            $orderApi = $this->session->getMainStore()->getOrderApi();
+            if ($shoppingfeed_store_id) {
+                foreach ($this->getStores() as $store) {
+                    if ($shoppingfeed_store_id == $store->getId()) {
+                        $orderApi = $store->getOrderApi();
+                    }
+                }
+            } else {
+                $orderApi = $this->session->getMainStore()->getOrderApi();
+            }
+
+            if (!$orderApi) {
+                throw new Exception('Invalid store ID');
+            }
+
             $orders = $orderApi->getAll($criteria['filters']);
         } catch (Exception $ex) {
             ProcessLoggerHandler::logError(
@@ -393,7 +455,7 @@ class ShoppingfeedApi
                 )
             );
 
-            return false;
+            return [];
         }
 
         // If importing test orders is allowed
@@ -413,19 +475,21 @@ class ShoppingfeedApi
         return $filteredOrders;
     }
 
-    public function acknowledgeOrder($id_order_marketplace, $name_marketplace, $id_order_prestashop, $is_success = true, $message = '')
-    {
+    public function acknowledgeOrder(
+        $id_order_marketplace,
+        $id_order_prestashop,
+        $is_success = true,
+        $message = ''
+    ) {
         try {
             $orderApi = $this->session->getMainStore()->getOrderApi();
-            $operation = new \ShoppingFeed\Sdk\Api\Order\OrderOperation();
-            $operation
-                ->acknowledge(
-                    (string) $id_order_marketplace,
-                    (string) $name_marketplace,
-                    (string) $id_order_prestashop,
-                    ($is_success === true) ? 'success' : 'error',
-                    $message
-                );
+            $operation = new Operation();
+            $operation->acknowledge(
+                new Id((int) $id_order_marketplace),
+                (string) $id_order_prestashop,
+                ($is_success === true ? 'success' : 'error'),
+                (string) $message
+            );
 
             return $orderApi->execute($operation);
         } catch (Exception $e) {
@@ -467,13 +531,28 @@ class ShoppingfeedApi
         return new SinceDate();
     }
 
-    public function getTicketsByBatchId($batchId, $filters = [])
+    public function getTicketsByBatchId($batchId, $filters = [], $shoppingfeed_store_id = null)
     {
         $tickets = [];
         $result = null;
+        $ticketApi = null;
 
         try {
-            $result = $this->session->getMainStore()->getTicketApi()->getByBatch($batchId, $filters);
+            if ($shoppingfeed_store_id) {
+                foreach ($this->getStores() as $store) {
+                    if ($store->getId() == $shoppingfeed_store_id) {
+                        $ticketApi = $store->getTicketApi();
+                    }
+                }
+            } else {
+                $ticketApi = $this->session->getMainStore()->getTicketApi();
+            }
+
+            if (!$ticketApi) {
+                throw new Exception('Invalid store ID');
+            }
+
+            $result = $ticketApi->getByBatch($batchId, $filters);
         } catch (Exception $e) {
         } catch (Throwable $e) {
         } finally {
@@ -494,5 +573,16 @@ class ShoppingfeedApi
         }
 
         return $tickets;
+    }
+
+    public function isExistedStore($store_id)
+    {
+        foreach ($this->getStores() as $store) {
+            if ($store->getId() == $store_id) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

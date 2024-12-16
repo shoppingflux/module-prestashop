@@ -63,9 +63,15 @@ class ShoppingfeedSyncAllModuleFrontController extends ShoppingfeedCronControlle
         if (Tools::getValue('secure_key') == $this->module->secure_key) {
             return true;
         }
-
-        if (false == empty((new ShoppingfeedToken())->findByToken(Tools::getValue('token', '')))) {
-            return true;
+        if (Tools::getValue('token')) {
+            if (false === empty((new ShoppingfeedToken())->findByToken(Tools::getValue('token', '')))) {
+                return true;
+            }
+        }
+        if (Tools::getValue('feed_key')) {
+            if (false === empty((new ShoppingfeedToken())->findByFeedKey(Tools::getValue('feed_key', '')))) {
+                return true;
+            }
         }
 
         $return = ['success' => false, 'error' => 'Authentication failed'];

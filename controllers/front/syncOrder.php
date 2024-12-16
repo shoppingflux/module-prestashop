@@ -100,6 +100,7 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
                     'id_shop' => $token['id_shop'],
                     'id_token' => $token['id_shoppingfeed_token'],
                     'order_action' => ShoppingfeedTaskOrder::ACTION_CHECK_TICKET_SYNC_STATUS,
+                    'shoppingfeed_store_id' => $token['shoppingfeed_store_id'],
                 ]);
                 $ticketsHandler->addActions(
                     'getTaskOrders',
@@ -159,6 +160,7 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
                     'id_shop' => $token['id_shop'],
                     'id_token' => $token['id_shoppingfeed_token'],
                     'order_action' => ShoppingfeedTaskOrder::ACTION_SYNC_STATUS,
+                    'shoppingfeed_store_id' => $token['shoppingfeed_store_id'],
                 ]);
                 $orderStatusHandler->addActions(
                     'getTaskOrders',
@@ -234,27 +236,17 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
                 );
             }
 
-            // Delete all processed task orders
-            $processedTaskOrders = array_merge(
-                $successfulTicketsStatusTaskOrders,
-                $failedTicketsStatusTaskOrders
-            );
-            foreach ($processedTaskOrders as $taskOrder) {
+            // Delete successfully processed task orders
+            foreach ($successfulTicketsStatusTaskOrders as $taskOrder) {
                 $taskOrder->delete();
             }
-
             //Resend failed tickets.
-            $handler = new ActionsHandler();
-
             foreach ($failedTicketsStatusTaskOrders as $failedTicket) {
                 /* @var ShoppingfeedTaskOrder $failedTicket*/
-                $handler
-                    ->setConveyor([
-                        'id_order' => $failedTicket->id_order,
-                        'order_action' => ShoppingfeedTaskOrder::ACTION_SYNC_STATUS,
-                    ])
-                    ->addActions('saveTaskOrder');
-                $handler->process('shoppingfeedOrderSync');
+                $failedTicket->action = ShoppingfeedTaskOrder::ACTION_SYNC_STATUS;
+                $failedTicket->ticket_number = '';
+                $failedTicket->batch_id = '';
+                $failedTicket->save();
             }
         }
     }
@@ -291,13 +283,13 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
                         $this->processMonitor->getProcessObjectModelId()
                     );
 
-                    return false;
+                    continue;
                 }
 
-                $result = $shoppingfeedApi->getUnacknowledgedOrders();
+                $result = $shoppingfeedApi->getUnacknowledgedOrders(false, $token['shoppingfeed_store_id']);
                 if (Configuration::get(\Shoppingfeed::ORDER_IMPORT_SHIPPED) == true
                     || Configuration::get(\Shoppingfeed::ORDER_IMPORT_SHIPPED_MARKETPLACE) == true) {
-                    $result = array_merge($result, $shoppingfeedApi->getUnacknowledgedOrders(true));
+                    $result = array_merge($result, $shoppingfeedApi->getUnacknowledgedOrders(true, $token['shoppingfeed_store_id']));
                 }
             } catch (Throwable $e) {
                 ProcessLoggerHandler::logError(
@@ -309,7 +301,7 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
                     $this->processMonitor->getProcessObjectModelId()
                 );
 
-                return false;
+                continue;
             }
             if (empty($result) === true) {
                 ProcessLoggerHandler::logInfo(
@@ -322,6 +314,8 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
 
             Registry::set('errors', 0);
             Registry::set('importedOrders', 0);
+            Shop::setContext(Shop::CONTEXT_SHOP, $id_shop);
+            $this->context->shop = new Shop($id_shop);
             foreach ($result as $apiOrder) {
                 $logPrefix = sprintf(
                     $this->module->l('[Order: %s]', 'syncOrder'),

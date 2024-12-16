@@ -9,7 +9,7 @@ use ShoppingFeed\Sdk\Hal\HalClient;
 use ShoppingFeed\Sdk\Http;
 
 /**
- * Http Client Adapter for GuzzleHttp v6
+ * Http Client Adapter for \SfGuzzle\GuzzleHttp v6
  */
 class GuzzleHTTPAdapter implements Http\Adapter\AdapterInterface
 {

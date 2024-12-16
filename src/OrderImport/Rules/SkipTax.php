@@ -73,7 +73,7 @@ class SkipTax extends RuleAbstract implements RuleInterface
         return [
             [
                 'type' => 'switch',
-                'label' => $this->l('Set VAT to O for business order', 'SkipTax'),
+                'label' => $this->l('Set VAT to 0 for business order', 'SkipTax'),
                 'desc' => $this->l('By activating this option, VAT of imported order is set to 0%.', 'SkipTax'),
                 'name' => 'enabled',
                 'is_bool' => true,

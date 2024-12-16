@@ -60,6 +60,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     const SHIPPED_ORDERS = 'SHOPPINGFEED_SHIPPED_ORDERS';
     const CANCELLED_ORDERS = 'SHOPPINGFEED_CANCELLED_ORDERS';
     const REFUNDED_ORDERS = 'SHOPPINGFEED_REFUNDED_ORDERS';
+    const DELIVERED_ORDERS = 'SHOPPINGFEED_DELIVERED_ORDERS';
     const ORDER_IMPORT_ENABLED = 'SHOPPINGFEED_ORDER_IMPORT_ENABLED';
     const ORDER_IMPORT_TEST = 'SHOPPINGFEED_ORDER_IMPORT_TEST';
     const ORDER_IMPORT_SHIPPED = 'SHOPPINGFEED_ORDER_IMPORT_SHIPPED';
@@ -85,6 +86,24 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     const NEED_UPDATE_HOOK = 'SHOPPINGFEED_IS_NEED_UPDATE_HOOK';
     const ORDER_TRACKING = 'SHOPPINGFEED_ORDER_TRACKING';
     const COMPRESS_PRODUCTS_FEED = 'SHOPPINGFEED_COMPRESS_PRODUCTS_FEED';
+
+    const ORDER_OPERATION_ACCEPT = 'accept';
+
+    const ORDER_OPERATION_CANCEL = 'cancel';
+
+    const ORDER_OPERATION_REFUSE = 'refuse';
+
+    const ORDER_OPERATION_SHIP = 'ship';
+
+    const ORDER_OPERATION_REFUND = 'refund';
+
+    const ORDER_OPERATION_ACKNOWLEDGE = 'acknowledge';
+
+    const ORDER_OPERATION_UNACKNOWLEDGE = 'unacknowledge';
+
+    const ORDER_OPERATION_UPLOAD_DOCUMENTS = 'upload-documents';
+
+    const ORDER_OPERATION_DELIVER = 'deliver';
 
     public $extensions = [
         \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerExtension::class,
@@ -275,7 +294,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         'actionObjectSpecificPriceAddAfter',
         'actionObjectSpecificPriceUpdateAfter',
         'actionObjectSpecificPriceDeleteAfter',
-        'deleteProductAttribute',
+        'actionDeleteProductAttribute',
         'actionAdminSpecificPriceRuleControllerDeleteBefore',
         'displayPDFInvoice',
     ];
@@ -435,6 +454,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         $this->setConfigurationDefault(self::SHIPPED_ORDERS, json_encode([]));
         $this->setConfigurationDefault(self::CANCELLED_ORDERS, json_encode([]));
         $this->setConfigurationDefault(self::REFUNDED_ORDERS, json_encode([]));
+        $this->setConfigurationDefault(self::DELIVERED_ORDERS, json_encode([]));
         $this->setConfigurationDefault(self::ORDER_IMPORT_ENABLED, true);
         $this->setConfigurationDefault(self::ORDER_IMPORT_SHIPPED, false);
         $this->setConfigurationDefault(self::ORDER_IMPORT_SPECIFIC_RULES_CONFIGURATION, json_encode([]));
@@ -466,11 +486,24 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             if ($tokenTable !== false) {
                 continue;
             }
+
+            try {
+                $api = ShoppingfeedApi::getInstanceByToken(null, $tokenConfig);
+            } catch (\SfGuzzle\GuzzleHttp\Exception\ClientException $e) {
+                continue;
+            }
+
+            if (empty($api->getMainStore())) {
+                continue;
+            }
+
             $sfToken->addToken(
                 $shop['id_shop'],
                 Configuration::get('PS_LANG_DEFAULT', null, null, $shop['id_shop']),
                 Configuration::get('PS_CURRENCY_DEFAULT', null, null, $shop['id_shop']),
-                $tokenConfig
+                $tokenConfig,
+                $api->getMainStore()->getId(),
+                $api->getMainStore()->getName()
             );
         }
     }
@@ -543,17 +576,17 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
      */
     public static function isOrderSyncAvailable($id_shop = null)
     {
+        $shoppingfluxexport = Module::getInstanceByName('shoppingfluxexport');
         // Is the old module installed ?
-        if (Module::isInstalled('shoppingfluxexport')
-            && Module::isEnabled('shoppingfluxexport')
-            && (
-                // Is order "shipped" status sync disabled in the old module ?
-                Configuration::get('SHOPPING_FLUX_STATUS_SHIPPED', null, null, $id_shop) != ''
-                // Is order "canceled" status sync disabled in the old module ?
-                || Configuration::get('SHOPPING_FLUX_STATUS_CANCELED', null, null, $id_shop) != ''
-        )
-        ) {
-            return false;
+        if (Validate::isLoadedObject($shoppingfluxexport) && $shoppingfluxexport->active) {
+            // Is order "shipped" status sync disabled in the old module ?
+            if (false === empty(Configuration::get('SHOPPING_FLUX_STATUS_SHIPPED', null, null, $id_shop))) {
+                return false;
+            }
+            // Is order "canceled" status sync disabled in the old module ?
+            if (false === empty(Configuration::get('SHOPPING_FLUX_STATUS_CANCELED', null, null, $id_shop))) {
+                return false;
+            }
         }
 
         return true;
@@ -566,15 +599,12 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
      */
     public static function isOrderImportAvailable($id_shop = null)
     {
+        $shoppingfluxexport = Module::getInstanceByName('shoppingfluxexport');
         // Is the old module installed ?
-        if (Module::isInstalled('shoppingfluxexport')
-            && Module::isEnabled('shoppingfluxexport')
-            && (
-                // Is order import disabled in the old module ?
-                Configuration::get('SHOPPING_FLUX_ORDERS', null, null, $id_shop) != ''
-               )
-        ) {
-            return false;
+        if (Validate::isLoadedObject($shoppingfluxexport) && $shoppingfluxexport->active) {
+            if (Configuration::get('SHOPPING_FLUX_ORDERS', null, null, $id_shop) != '') {
+                return false;
+            }
         }
 
         return true;
@@ -1239,9 +1269,11 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         $shipped_status = json_decode(Configuration::get(Shoppingfeed::SHIPPED_ORDERS, null, null, $order->id_shop));
         $cancelled_status = json_decode(Configuration::get(Shoppingfeed::CANCELLED_ORDERS, null, null, $order->id_shop));
         $refunded_status = json_decode(Configuration::get(Shoppingfeed::REFUNDED_ORDERS, null, null, $order->id_shop));
+        $delivered_status = json_decode(Configuration::get(Shoppingfeed::DELIVERED_ORDERS, null, null, $order->id_shop));
         if (!in_array($newOrderStatus->id, $shipped_status)
             && !in_array($newOrderStatus->id, $cancelled_status)
             && !in_array($newOrderStatus->id, $refunded_status)
+            && !in_array($newOrderStatus->id, $delivered_status)
         ) {
             return;
         }
@@ -1290,35 +1322,28 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     public function hookActionShoppingfeedOrderImportRegisterSpecificRules($params)
     {
         $defaultRulesClassNames = [
-            ShoppingfeedAddon\OrderImport\Rules\LeroyMerlinColissimo::class,
             ShoppingfeedAddon\OrderImport\Rules\AmazonB2B::class,
             ShoppingfeedAddon\OrderImport\Rules\AmazonEbay::class,
             ShoppingfeedAddon\OrderImport\Rules\AmazonPrime::class,
             ShoppingfeedAddon\OrderImport\Rules\Cdiscount::class,
-            ShoppingfeedAddon\OrderImport\Rules\CdiscountColissimo::class,
-            ShoppingfeedAddon\OrderImport\Rules\Mondialrelay::class,
+            ShoppingfeedAddon\OrderImport\Rules\MondialrelayRule::class,
             ShoppingfeedAddon\OrderImport\Rules\RueducommerceMondialrelay::class,
             ShoppingfeedAddon\OrderImport\Rules\Socolissimo::class,
             ShoppingfeedAddon\OrderImport\Rules\ChangeStateOrder::class,
             ShoppingfeedAddon\OrderImport\Rules\ShippedByMarketplace::class,
             ShoppingfeedAddon\OrderImport\Rules\RelaisColisRule::class,
             ShoppingfeedAddon\OrderImport\Rules\TestingOrder::class,
-            ShoppingfeedAddon\OrderImport\Rules\ManomanoColissimo::class,
-            ShoppingfeedAddon\OrderImport\Rules\MonechelleColissimo::class,
-            ShoppingfeedAddon\OrderImport\Rules\ShowroompriveColissimo::class,
             ShoppingfeedAddon\OrderImport\Rules\ManomanoDpdRelais::class,
-            ShoppingfeedAddon\OrderImport\Rules\ZalandoColissimo::class,
             ShoppingfeedAddon\OrderImport\Rules\MissingCarrier::class, //should be performed before ZalandoCarrier
             ShoppingfeedAddon\OrderImport\Rules\ZalandoCarrier::class,
-            ShoppingfeedAddon\OrderImport\Rules\ColizeyColissimo::class,
             ShoppingfeedAddon\OrderImport\Rules\AmazonManomanoTva::class,
-            ShoppingfeedAddon\OrderImport\Rules\GaleriesLafayetteColissimo::class,
             ShoppingfeedAddon\OrderImport\Rules\SymbolConformity::class,
             ShoppingfeedAddon\OrderImport\Rules\Zalando::class,
             ShoppingfeedAddon\OrderImport\Rules\SetDniToAddress::class,
             ShoppingfeedAddon\OrderImport\Rules\TaxExclMarketplace::class,
             ShoppingfeedAddon\OrderImport\Rules\SkipTax::class,
             ShoppingfeedAddon\OrderImport\Rules\GlsRule::class,
+            ShoppingfeedAddon\OrderImport\Rules\ColissimoRule::class,
         ];
 
         foreach ($defaultRulesClassNames as $ruleClassName) {
@@ -1341,7 +1366,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         $this->updateShoppingFeedPreloading([$params['object']->id_product], ShoppingfeedPreloading::ACTION_SYNC_PRICE);
     }
 
-    public function hookDeleteProductAttribute($params)
+    public function hookActionDeleteProductAttribute($params)
     {
         $this->updateShoppingFeedPreloading([$params['id_product']], ShoppingfeedPreloading::ACTION_SYNC_ALL);
     }
@@ -1490,8 +1515,11 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
 
             try {
                 $api = ShoppingfeedApi::getInstanceByToken($sft->id);
-                $sft->shoppingfeed_store_id = $api->getMainStore()->getId();
-                $result &= $sft->save();
+
+                if (false === $api->isExistedStore($sft->shoppingfeed_store_id)) {
+                    $sft->shoppingfeed_store_id = $api->getMainStore()->getId();
+                    $result &= $sft->save();
+                }
             } catch (Exception $e) {
             } catch (Throwable $e) {
             }

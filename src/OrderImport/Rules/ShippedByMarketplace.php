@@ -205,6 +205,22 @@ class ShippedByMarketplace extends RuleAbstract implements RuleInterface
         $history->addWithemail();
     }
 
+    public function onValidateOrder($params)
+    {
+        if ($this->configuration['payment_method_name_fulfillment'] == 0) {
+            return;
+        }
+
+        $apiOrder = $params['apiOrder'];
+        $apiOrderArray = $apiOrder->toArray();
+
+        if (array_key_exists('fulfilledBy', $apiOrderArray) === false
+            || strcasecmp($apiOrderArray['fulfilledBy'], 'channel') !== 0) {
+            return;
+        }
+        $params['paymentMethod'] = 'fulfillment - ' . $apiOrder->getChannel()->getName();
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -235,7 +251,7 @@ class ShippedByMarketplace extends RuleAbstract implements RuleInterface
         $states[] = [
             'type' => 'select',
             'label' => $this->l('After a shipped order or an order shipped by the marketplace import, turn this order status into', 'ShippedByMarketplace'),
-            'desc' => $this->l('By default: Delivered &', 'ShippedByMarketplace'),
+            'desc' => $this->l('By default: Delivered', 'ShippedByMarketplace'),
             'name' => 'end_order_state_shipped',
             'options' => [
                 'query' => $statuses,
@@ -243,6 +259,25 @@ class ShippedByMarketplace extends RuleAbstract implements RuleInterface
                 'name' => 'name',
             ],
             'required' => false,
+        ];
+
+        $states[] = [
+            'type' => 'switch',
+            'label' => $this->l('Prefix the payment method of orders shipped by the marketplace with `fulfillment - `', 'ShippedByMarketplace'),
+            'desc' => $this->l('By default: the marketplace name', 'ShippedByMarketplace'),
+            'name' => 'payment_method_name_fulfillment',
+            'required' => false,
+            'is_bool' => true,
+            'values' => [
+                [
+                    'id' => 'ok',
+                    'value' => 1,
+                ],
+                [
+                    'id' => 'ko',
+                    'value' => 0,
+                ],
+            ],
         ];
 
         return $states;
@@ -345,6 +380,7 @@ class ShippedByMarketplace extends RuleAbstract implements RuleInterface
             \Shoppingfeed::ORDER_IMPORT_SHIPPED_MARKETPLACE => Configuration::get(\Shoppingfeed::ORDER_IMPORT_SHIPPED_MARKETPLACE),
             \Shoppingfeed::ORDER_IMPORT_SHIPPED => Configuration::get(\Shoppingfeed::ORDER_IMPORT_SHIPPED),
             'PS_OS_DELIVERED' => Configuration::get('PS_OS_DELIVERED'),
+            'payment_method_name_fulfillment' => 0,
         ];
     }
 

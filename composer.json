@@ -58,7 +58,7 @@
       }
   },
   "scripts": {
-    "pre-autoload-dump": ""
+    "pre-autoload-dump": "#if [ ${TOTPSCLASSLIB_DEV_PATH} ]; then php ${TOTPSCLASSLIB_DEV_PATH}/classlib/refresh.php .; fi"
   },
   "type": "prestashop-module"
 }

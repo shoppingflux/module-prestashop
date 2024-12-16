@@ -276,7 +276,7 @@ class ShoppingfeedPreloading extends ObjectModel
 
             return $this->save();
         }
-        $actions = json_decode($this->actions, true);
+        $actions = json_decode((string) $this->actions, true);
         if (is_array($actions) === false) {
             $this->actions = json_encode([$action]);
 

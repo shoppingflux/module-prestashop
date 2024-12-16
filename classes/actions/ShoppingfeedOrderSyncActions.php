@@ -17,7 +17,6 @@
  * @license   https://opensource.org/licenses/AFL-3.0  Academic Free License (AFL 3.0)
  */
 
-use ShoppingFeed\Sdk\Api\Order\OrderOperation;
 use ShoppingfeedAddon\Services\CarrierFinder;
 use ShoppingfeedAddon\Services\TaskOrderCleaner;
 use ShoppingfeedClasslib\Actions\DefaultActions;
@@ -256,9 +255,10 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
         }
         $taskOrders = $this->conveyor['taskOrders'];
 
-        $shipped_status = json_decode(Configuration::get(Shoppingfeed::SHIPPED_ORDERS, null, null, $id_shop));
-        $cancelled_status = json_decode(Configuration::get(Shoppingfeed::CANCELLED_ORDERS, null, null, $id_shop));
-        $refunded_status = json_decode(Configuration::get(Shoppingfeed::REFUNDED_ORDERS, null, null, $id_shop));
+        $shipped_status = json_decode(Configuration::get(Shoppingfeed::SHIPPED_ORDERS, null, null, $id_shop), true);
+        $cancelled_status = json_decode(Configuration::get(Shoppingfeed::CANCELLED_ORDERS, null, null, $id_shop), true);
+        $refunded_status = json_decode(Configuration::get(Shoppingfeed::REFUNDED_ORDERS, null, null, $id_shop), true);
+        $delivered_status = json_decode(Configuration::get(Shoppingfeed::DELIVERED_ORDERS, null, null, $id_shop), true);
 
         $this->conveyor['preparedTaskOrders'] = [];
         foreach ($taskOrders as $taskOrder) {
@@ -307,7 +307,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
             foreach ($orderHistory as $state) {
                 $idOrderState = (int) $state['id_order_state'];
                 if (in_array($idOrderState, $shipped_status)) {
-                    $taskOrderOperation = OrderOperation::TYPE_SHIP;
+                    $taskOrderOperation = Shoppingfeed::ORDER_OPERATION_SHIP;
 
                     // Default values...
                     $taskOrderPayload = [
@@ -347,14 +347,16 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
                     Hook::exec('actionShoppingfeedTracking', ['order' => $order, 'taskOrderPayload' => &$taskOrderPayload]);
                     continue;
                 } elseif (in_array($idOrderState, $cancelled_status)) {
-                    $taskOrderOperation = OrderOperation::TYPE_CANCEL;
+                    $taskOrderOperation = Shoppingfeed::ORDER_OPERATION_CANCEL;
                     continue;
                 // The "reason" field is not supported (at least for now)
                 } elseif (in_array($idOrderState, $refunded_status)) {
-                    $taskOrderOperation = OrderOperation::TYPE_REFUND;
+                    $taskOrderOperation = Shoppingfeed::ORDER_OPERATION_REFUND;
                     continue;
-                    // No partial refund (at least for now), so no optional
+                // No partial refund (at least for now), so no optional
                     // parameters to set.
+                } elseif (in_array($idOrderState, $delivered_status)) {
+                    $taskOrderOperation = Shoppingfeed::ORDER_OPERATION_DELIVER;
                 }
             }
 
@@ -372,6 +374,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
             }
 
             $this->conveyor['preparedTaskOrders'][$taskOrderOperation][] = [
+                'id_internal_shoppingfeed' => $sfOrder->id_internal_shoppingfeed,
                 'reference_marketplace' => $sfOrder->id_order_marketplace,
                 'marketplace' => $sfOrder->name_marketplace,
                 'taskOrder' => $taskOrder,
@@ -419,7 +422,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
         }
 
         foreach ($this->conveyor['preparedTaskOrders'] as $preparedTaskOrders) {
-            $result = $shoppingfeedApi->updateMainStoreOrdersStatus($preparedTaskOrders);
+            $result = $shoppingfeedApi->updateMainStoreOrdersStatus($preparedTaskOrders, $this->conveyor['shoppingfeed_store_id']);
 
             if (!$result) {
                 continue;
@@ -823,10 +826,11 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
     protected function getTicketsForBatchIds($batchIds, $idShoppingfeedToken)
     {
         $shoppingfeedApi = ShoppingfeedApi::getInstanceByToken($idShoppingfeedToken);
+        $sfToken = new ShoppingfeedToken($idShoppingfeedToken);
         $tickets = [];
 
         foreach ($batchIds as $batchId) {
-            $tickets = array_merge($tickets, $shoppingfeedApi->getTicketsByBatchId($batchId));
+            $tickets = array_merge($tickets, $shoppingfeedApi->getTicketsByBatchId($batchId, [], $sfToken->shoppingfeed_store_id));
         }
 
         return $tickets;
