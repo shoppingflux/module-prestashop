@@ -632,6 +632,9 @@ $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_d0efb46cfd8
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_5dea57215a8ecd6d8c567941c7e7cbfb'] = 'Envoyer l\'image selon un format spécifique';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_f06033a25cf82f5da599bbb11787383b'] = 'Format fil d\'ariane contenant les catégories parentes';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_8fb0c54e427e68571bb7f4c4290bf081'] = 'Uniquement la catégorie par défaut';
+$_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_76818394289500d866e9e29ccca6d00e'] = 'Disposition des déclinaisons';
+$_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_9aa153a3e3320c46fc8096d48ea5fd68'] = 'Produits enfants de leur produit parent';
+$_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_b33c3ff19ea8b64c069d838b70e88b77'] = 'Séparément (un nœud par produit parent et par produit enfant)';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_47c2020568697db35e537dda74ffdbee'] = 'Afficher la catégorie';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_7b9324fd1b6cc33da6065e0338fd1828'] = 'Champs spécifiques';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_19ee59b152aff70de97b4a8432f85cb9'] = 'Sélectionner les champs produits à inclure sur le flux.';
