@@ -19,8 +19,8 @@ Please contact ShoppingFeed customer service to get
 
 | PrestaShop version | Module version |  Repo               | Doc                |  PHP Version |
 |--------------------|----------------|---------------------|--------------------|--------------|
-| 1.6.x              | 1.x            |  [master]           | [techincal documentation][module-doc] |   5.6 or greater    |
-| 1.7.x              | 1.x            |  [master]           | [techincal documentation][module-doc] |   7.1 or greater    |
+| 1.6              | 1.x            |  [release/1.x](https://github.com/shoppingflux/module-prestashop/tree/release/1.x)          | [techincal documentation][module-doc] |   5.6 or greater    |
+| 1.7.6+              | 2.x            |  [master](https://github.com/shoppingflux/module-prestashop/tree/master)           | [techincal documentation][module-doc] |   7.1 or greater    |
 
 
 ## Requirements
