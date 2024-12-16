@@ -16,18 +16,16 @@
       "optimize-autoloader": true,
       "prepend-autoloader": false,
       "platform": {
-          "php": "7.4"
+        "php": "7.4"
       }
   },
   "require": {
-    "php": ">=5.6.0",
     "shoppingfeed/php-feed-generator": "~1.2.1",
     "psr/http-message": "~1.0"
   },
   "require-dev": {
-      "prestashop/php-dev-tools": "^3.4",
-      "php": "^7.3",
-      "phpunit/phpunit": "^8.0"
+    "prestashop/php-dev-tools": "^3.4",
+    "phpunit/phpunit": "^8.5"
   },
   "autoload": {
     "exclude-from-classmap": ["classes/Compatibility", "vendor/symfony/polyfill-php80/Resources/stubs/Attribute.php"],
