@@ -420,7 +420,7 @@ class ShoppingfeedApi
         Hook::exec(
             'ShoppingfeedOrderImportCriteria', // hook_name
             [
-                'shoppingfeed_store_id' => $shoppingfeed_store_id,
+                'storeId' => $shoppingfeed_store_id,
                 'criteria' => &$criteria,
                 'iShipped' => &$iShipped,
             ] // hook_args
