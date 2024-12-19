@@ -203,11 +203,17 @@ class ShoppingfeedProductModuleFrontController extends \ModuleFrontController
             }
         }
         if (false === empty($item['images'])) {
-            if (empty($item['images']['main']) !== true) {
-                $product->setMainImage($item['images']['main']);
-            }
-            if (empty($item['images']['additional']) !== true) {
-                $product->setAdditionalImages($item['images']['additional']);
+            if (array_key_exists('variations', $item)) {
+                if (empty($item['images']['main']) !== true) {
+                    $product->setMainImage($item['images']['main']);
+                }
+                if (empty($item['images']['additional']) !== true) {
+                    $product->setAdditionalImages($item['images']['additional']);
+                }
+            } else {
+                if (empty($item['images']) !== true) {
+                    $product->setAdditionalImages($item['images']);
+                }
             }
         }
     }
@@ -234,13 +240,8 @@ class ShoppingfeedProductModuleFrontController extends \ModuleFrontController
             if (empty($variation['attributes']) !== true) {
                 $variationProduct->setAttributes($variation['attributes']);
             }
-            if (false === empty($variation['images'])) {
-                if (empty($item['images']['main']) !== true) {
-                    $variationProduct->setAdditionalImages([$variation['images']['main']]);
-                }
-                if (empty($item['images']['additional']) !== true) {
-                    $variationProduct->setAdditionalImages($variation['images']['additional']);
-                }
+            if (empty($variation['images']) !== true) {
+                $variationProduct->setAdditionalImages($variation['images']);
             }
             if (isset($variation['specificPrices']) && false === empty($variation['specificPrices'])) {
                 $discount = $this->calculDiscount($variation['specificPrices']);
