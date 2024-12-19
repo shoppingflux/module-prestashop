@@ -116,6 +116,7 @@ class ShoppingfeedProductModuleFrontController extends \ModuleFrontController
             foreach ($products as $product) {
                 $productsToAppend[] = $product;
                 foreach ($product['variations'] as $variation) {
+                    unset($product['variations']);
                     $productsToAppend[] = array_merge($product, $variation);
                 }
             }
