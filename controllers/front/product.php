@@ -234,12 +234,12 @@ class ShoppingfeedProductModuleFrontController extends \ModuleFrontController
             if (empty($variation['attributes']) !== true) {
                 $variationProduct->setAttributes($variation['attributes']);
             }
-            if (false === empty($item['images'])) {
+            if (false === empty($variation['images'])) {
                 if (empty($item['images']['main']) !== true) {
-                    $variationProduct->setAdditionalImages([$item['images']['main']] );
+                    $variationProduct->setAdditionalImages([$variation['images']['main']]);
                 }
                 if (empty($item['images']['additional']) !== true) {
-                    $variationProduct->setAdditionalImages($item['images']['additional']);
+                    $variationProduct->setAdditionalImages($variation['images']['additional']);
                 }
             }
             if (isset($variation['specificPrices']) && false === empty($variation['specificPrices'])) {
