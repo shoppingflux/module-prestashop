@@ -16,6 +16,9 @@
  * @copyright Since 2019 Shopping Feed
  * @license   https://opensource.org/licenses/AFL-3.0  Academic Free License (AFL 3.0)
  */
+
+use ShoppingfeedAddon\OrderInvoiceSync\Hub;
+
 if (!defined('_PS_VERSION_')) {
     exit;
 }
@@ -60,6 +63,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     const SHIPPED_ORDERS = 'SHOPPINGFEED_SHIPPED_ORDERS';
     const CANCELLED_ORDERS = 'SHOPPINGFEED_CANCELLED_ORDERS';
     const REFUNDED_ORDERS = 'SHOPPINGFEED_REFUNDED_ORDERS';
+    const DELIVERED_ORDERS = 'SHOPPINGFEED_DELIVERED_ORDERS';
     const ORDER_IMPORT_ENABLED = 'SHOPPINGFEED_ORDER_IMPORT_ENABLED';
     const ORDER_IMPORT_TEST = 'SHOPPINGFEED_ORDER_IMPORT_TEST';
     const ORDER_IMPORT_SHIPPED = 'SHOPPINGFEED_ORDER_IMPORT_SHIPPED';
@@ -87,6 +91,26 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     const COMPRESS_PRODUCTS_FEED = 'SHOPPINGFEED_COMPRESS_PRODUCTS_FEED';
     const SEND_NOTIFICATION = 'SHOPPINGFEED_SEND_NOTIFICATION';
     const PRODUCT_FEED_EXPORT_HIERARCHY = 'SHOPPINGFEED_PRODUCT_FEED_EXPORT_HIERARCHY';
+
+    const ORDER_OPERATION_ACCEPT = 'accept';
+
+    const ORDER_OPERATION_CANCEL = 'cancel';
+
+    const ORDER_OPERATION_REFUSE = 'refuse';
+
+    const ORDER_OPERATION_SHIP = 'ship';
+
+    const ORDER_OPERATION_REFUND = 'refund';
+
+    const ORDER_OPERATION_ACKNOWLEDGE = 'acknowledge';
+
+    const ORDER_OPERATION_UNACKNOWLEDGE = 'unacknowledge';
+
+    const ORDER_OPERATION_UPLOAD_DOCUMENTS = 'upload-documents';
+
+    const ORDER_OPERATION_DELIVER = 'deliver';
+
+    const ORDER_INVOICE_SYNC_MARKETPLACES = 'SHOPPINGFEED_ORDER_INVOICE_SYNC_MARKETPLACES';
 
     public $extensions = [
         \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerExtension::class,
@@ -438,6 +462,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         $this->setConfigurationDefault(self::SHIPPED_ORDERS, json_encode([]));
         $this->setConfigurationDefault(self::CANCELLED_ORDERS, json_encode([]));
         $this->setConfigurationDefault(self::REFUNDED_ORDERS, json_encode([]));
+        $this->setConfigurationDefault(self::DELIVERED_ORDERS, json_encode([]));
         $this->setConfigurationDefault(self::ORDER_IMPORT_ENABLED, true);
         $this->setConfigurationDefault(self::ORDER_IMPORT_SHIPPED, false);
         $this->setConfigurationDefault(self::ORDER_IMPORT_SPECIFIC_RULES_CONFIGURATION, json_encode([]));
@@ -1228,6 +1253,41 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::closeLogger();
     }
 
+    protected function addOrderTask($id_order, $action)
+    {
+        $logPrefix = ShoppingfeedOrderSyncActions::getLogPrefix($id_order);
+        try {
+            \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logInfo(
+                sprintf(
+                    $logPrefix . ' ' .
+                    $this->l('Process started Order %s ', 'ShoppingfeedOrderActions'),
+                    $id_order
+                ),
+                'Order',
+                $id_order
+            );
+            $handler = new \ShoppingfeedClasslib\Actions\ActionsHandler();
+            $handler
+                ->setConveyor([
+                    'id_order' => $id_order,
+                    'order_action' => $action,
+                ])
+                ->addActions('saveTaskOrder')
+                ->process('shoppingfeedOrderSync');
+        } catch (Exception $e) {
+            \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logInfo(
+                sprintf(
+                    $logPrefix . ' ' . $this->l('Order %s not registered for synchronization: %s', 'ShoppingfeedOrderActions'),
+                    $id_order,
+                    $e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine()
+                ),
+                'Order',
+                $id_order
+            );
+        }
+        \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::closeLogger();
+    }
+
     /**
      * Saves an order for status synchronization
      *
@@ -1247,51 +1307,29 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         }
 
         $order = new Order($params['id_order']);
-
-        // Check if the new status calls for an update with Shopping Feed
+        /** @var OrderState $newOrderStatus */
         $newOrderStatus = $params['newOrderStatus'];
         $shipped_status = json_decode(Configuration::get(Shoppingfeed::SHIPPED_ORDERS, null, null, $order->id_shop));
         $cancelled_status = json_decode(Configuration::get(Shoppingfeed::CANCELLED_ORDERS, null, null, $order->id_shop));
         $refunded_status = json_decode(Configuration::get(Shoppingfeed::REFUNDED_ORDERS, null, null, $order->id_shop));
-        if (!in_array($newOrderStatus->id, $shipped_status)
-            && !in_array($newOrderStatus->id, $cancelled_status)
-            && !in_array($newOrderStatus->id, $refunded_status)
+        $delivered_status = json_decode(Configuration::get(Shoppingfeed::DELIVERED_ORDERS, null, null, $order->id_shop));
+
+        if (in_array($newOrderStatus->id, $shipped_status)
+            || in_array($newOrderStatus->id, $cancelled_status)
+            || in_array($newOrderStatus->id, $refunded_status)
+            || in_array($newOrderStatus->id, $delivered_status)
         ) {
-            return;
+            $this->addOrderTask($shoppingFeedOrder->id_order, ShoppingfeedTaskOrder::ACTION_SYNC_STATUS);
         }
 
-        $logPrefix = ShoppingfeedOrderSyncActions::getLogPrefix($shoppingFeedOrder->id_order);
-        try {
-            \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logInfo(
-                sprintf(
-                    $logPrefix . ' ' .
-                        $this->l('Process started Order %s ', 'ShoppingfeedOrderActions'),
-                    $shoppingFeedOrder->id_order
-                ),
-                'Order',
-                $shoppingFeedOrder->id_order
-            );
-            $handler = new \ShoppingfeedClasslib\Actions\ActionsHandler();
-            $handler
-                ->setConveyor([
-                    'id_order' => $params['id_order'],
-                    'order_action' => ShoppingfeedTaskOrder::ACTION_SYNC_STATUS,
-                ])
-                ->addActions('saveTaskOrder')
-                ->process('shoppingfeedOrderSync');
-        } catch (Exception $e) {
-            \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logInfo(
-                sprintf(
-                    $logPrefix . ' ' . $this->l('Order %s not registered for synchronization: %s', 'ShoppingfeedOrderActions'),
-                    $params['id_order'],
-                    $e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine()
-                ),
-                'Order',
-                $params['id_order']
-            );
+        if ($this->isUploadOrderDocumentReady()) {
+            if ($newOrderStatus->invoice) {
+                $marketplace = Hub::getInstance()->findByName($shoppingFeedOrder->name_marketplace);
+                if ($marketplace && $marketplace->isEnabled()) {
+                    $this->addOrderTask($shoppingFeedOrder->id_order, ShoppingfeedTaskOrder::ACTION_UPLOAD_INVOICE);
+                }
+            }
         }
-
-        \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::closeLogger();
     }
 
     /**
@@ -1321,10 +1359,9 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             ShoppingfeedAddon\OrderImport\Rules\SymbolConformity::class,
             ShoppingfeedAddon\OrderImport\Rules\Zalando::class,
             ShoppingfeedAddon\OrderImport\Rules\SetDniToAddress::class,
-            ShoppingfeedAddon\OrderImport\Rules\TaxExclMarketplace::class,
-            ShoppingfeedAddon\OrderImport\Rules\SkipTax::class,
             ShoppingfeedAddon\OrderImport\Rules\GlsRule::class,
             ShoppingfeedAddon\OrderImport\Rules\ColissimoRule::class,
+            ShoppingfeedAddon\OrderImport\Rules\TaxForBusiness::class,
             ShoppingfeedAddon\OrderImport\Rules\GroupCustomer::class,
             ShoppingfeedAddon\OrderImport\Rules\Cdiscount::class,
         ];
@@ -1550,6 +1587,11 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         }
 
         return $result;
+    }
+
+    public function isUploadOrderDocumentReady()
+    {
+        return false;
     }
 
     public function actionEmailSendBefore($params)

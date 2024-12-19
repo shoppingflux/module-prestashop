@@ -25,6 +25,7 @@ function upgrade_module_2_0_0($module)
      * @var Shoppingfeed $module
      */
     $installer = new ModuleInstaller($module);
+    $installer->installObjectModel(ShoppingfeedToken::class);
     $installer->registerHooks();
     $module->setConfigurationDefault(Shoppingfeed::SEND_NOTIFICATION, 1);
 

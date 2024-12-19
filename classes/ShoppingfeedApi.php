@@ -22,12 +22,13 @@ if (!defined('_PS_VERSION_')) {
 
 use ShoppingFeed\Sdk\Api\Catalog\InventoryUpdate;
 use ShoppingFeed\Sdk\Api\Catalog\PricingUpdate;
-use ShoppingFeed\Sdk\Api\Order\OrderOperation;
+use ShoppingFeed\Sdk\Api\Order\Document\Invoice;
+use ShoppingFeed\Sdk\Api\Order\Identifier\Id;
 use ShoppingFeed\Sdk\Client\Client;
 use ShoppingFeed\Sdk\Client\ClientOptions;
 use ShoppingFeed\Sdk\Credential\Password;
 use ShoppingFeed\Sdk\Credential\Token;
-use ShoppingFeed\Sdk\Http\Adapter\Guzzle6Adapter;
+use ShoppingFeed\Sdk\Http\Adapter\GuzzleHTTPAdapter;
 use ShoppingfeedAddon\OrderImport\SinceDate;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 
@@ -82,7 +83,7 @@ class ShoppingfeedApi
             $credential = new Token($token);
             // Add Guzzle as HTTP interface
             $clientOptions = new ClientOptions();
-            $clientOptions->setHttpAdapter(new Guzzle6Adapter());
+            $clientOptions->setHttpAdapter(new GuzzleHTTPAdapter());
             /** @var \ShoppingFeed\Sdk\Api\Session\SessionResource $session */
             $session = Client::createSession($credential, $clientOptions);
 
@@ -117,7 +118,7 @@ class ShoppingfeedApi
             $credential = new Password($username, $password);
             // Add Guzzle as HTTP interface
             $clientOptions = new ClientOptions();
-            $clientOptions->setHttpAdapter(new Guzzle6Adapter());
+            $clientOptions->setHttpAdapter(new GuzzleHTTPAdapter());
             /** @var \ShoppingFeed\Sdk\Api\Session\SessionResource $session */
             $session = Client::createSession($credential, $clientOptions);
             static::$instance = new ShoppingfeedApi($session);
@@ -286,29 +287,37 @@ class ShoppingfeedApi
                 throw new Exception('Invalid store ID');
             }
 
-            $operation = new \ShoppingFeed\Sdk\Api\Order\OrderOperation();
+            $operation = new \ShoppingFeed\Sdk\Api\Order\Operation();
 
             foreach ($taskOrders as $taskOrder) {
                 switch ($taskOrder['operation']) {
-                    case OrderOperation::TYPE_SHIP:
+                    case Shoppingfeed::ORDER_OPERATION_SHIP:
                         $operation->ship(
-                            $taskOrder['reference_marketplace'],
-                            $taskOrder['marketplace'],
-                            $taskOrder['payload']['carrier_name'],
-                            $taskOrder['payload']['tracking_number'],
-                            $taskOrder['payload']['tracking_url']
+                            new Id((int) $taskOrder['id_internal_shoppingfeed']),
+                            (string) $taskOrder['payload']['carrier_name'],
+                            (string) $taskOrder['payload']['tracking_number'],
+                            (string) $taskOrder['payload']['tracking_url']
                         );
                         continue 2;
-                    case OrderOperation::TYPE_CANCEL:
+                    case Shoppingfeed::ORDER_OPERATION_CANCEL:
                         $operation->cancel(
-                            $taskOrder['reference_marketplace'],
-                            $taskOrder['marketplace']
+                            new Id((int) $taskOrder['id_internal_shoppingfeed'])
                         );
                         continue 2;
-                    case OrderOperation::TYPE_REFUND:
+                    case Shoppingfeed::ORDER_OPERATION_REFUND:
                         $operation->refund(
-                            $taskOrder['reference_marketplace'],
-                            $taskOrder['marketplace']
+                            new Id((int) $taskOrder['id_internal_shoppingfeed'])
+                        );
+                        continue 2;
+                    case Shoppingfeed::ORDER_OPERATION_DELIVER:
+                        $operation->deliver(
+                            new Id((int) $taskOrder['id_internal_shoppingfeed'])
+                        );
+                        continue 2;
+                    case Shoppingfeed::ORDER_OPERATION_UPLOAD_DOCUMENTS:
+                        $operation->uploadDocument(
+                            new Id((int) $taskOrder['id_internal_shoppingfeed']),
+                            new Invoice($taskOrder['payload']['uri'])
                         );
                         continue 2;
                 }
@@ -530,7 +539,7 @@ class ShoppingfeedApi
         }
 
         $clientOptions = new ClientOptions();
-        $clientOptions->setHttpAdapter(new Guzzle6Adapter());
+        $clientOptions->setHttpAdapter(new GuzzleHTTPAdapter());
         $client = new Client($clientOptions);
 
         return $client->ping();
