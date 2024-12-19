@@ -460,19 +460,32 @@ class ProductSerializer
             }
 
             $variation['attributes']['link-variation'] = Context::getContext()->link->getProductLink($this->product, null, null, null, $this->id_lang, $this->id_shop, (int) $id, false, false, true);
-
+            $images = [];
             foreach ($this->_getAttributeImageAssociations($id) as $image) {
                 if (empty($image)) {
                     $image_child = false;
                     continue;
                 }
 
-                $variation['images'][] = Tools::getCurrentUrlProtocolPrefix() . $this->link->getImageLink($this->product->link_rewrite, $this->product->id . '-' . $image, $this->configurations[Shoppingfeed::PRODUCT_FEED_IMAGE_FORMAT]);
+                $images[] = Tools::getCurrentUrlProtocolPrefix() . $this->link->getImageLink($this->product->link_rewrite, $this->product->id . '-' . $image, $this->configurations[Shoppingfeed::PRODUCT_FEED_IMAGE_FORMAT]);
             }
             if ($image_child === false) {
                 foreach ($this->product->getImages($this->id_lang) as $images) {
                     $ids = $this->product->id . '-' . $images['id_image'];
-                    $variation['images'][] = Tools::getCurrentUrlProtocolPrefix() . $this->link->getImageLink($this->product->link_rewrite, $ids, $this->configurations[Shoppingfeed::PRODUCT_FEED_IMAGE_FORMAT]);
+                    $images[] = Tools::getCurrentUrlProtocolPrefix() . $this->link->getImageLink($this->product->link_rewrite, $ids, $this->configurations[Shoppingfeed::PRODUCT_FEED_IMAGE_FORMAT]);
+                }
+            }
+            $variation['images'] = [
+                'main' => null,
+                'additional' => [],
+            ];
+            $first = true;
+            foreach ($images as $img_url) {
+                if ($first) {
+                    $variation['images']['main'] = $img_url;
+                    $first = false;
+                } else {
+                    $variation['images']['additional'][] = $img_url;
                 }
             }
             foreach ($combination['attributes'] as $attributeName => $attributeValue) {

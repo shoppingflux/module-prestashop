@@ -116,10 +116,6 @@ class ShoppingfeedProductModuleFrontController extends \ModuleFrontController
             foreach ($products as $product) {
                 $productsToAppend[] = $product;
                 foreach ($product['variations'] as $variation) {
-                    $variation['images'] = [
-                        'main' => (empty($product['images']) !== true && empty($product['images']['main']) !== true) ? $product['images']['main'] : [],
-                        'additional' => $variation['images'],
-                    ];
                     $productsToAppend[] = array_merge($product, $variation);
                 }
             }
@@ -238,10 +234,14 @@ class ShoppingfeedProductModuleFrontController extends \ModuleFrontController
             if (empty($variation['attributes']) !== true) {
                 $variationProduct->setAttributes($variation['attributes']);
             }
-            if (empty($variation['images']) !== true) {
-                $variationProduct->setAdditionalImages($variation['images']);
+            if (false === empty($item['images'])) {
+                if (empty($item['images']['main']) !== true) {
+                    $variationProduct->setAdditionalImages([$item['images']['main']] );
+                }
+                if (empty($item['images']['additional']) !== true) {
+                    $variationProduct->setAdditionalImages($item['images']['additional']);
+                }
             }
-
             if (isset($variation['specificPrices']) && false === empty($variation['specificPrices'])) {
                 $discount = $this->calculDiscount($variation['specificPrices']);
 
