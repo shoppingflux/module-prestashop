@@ -212,9 +212,7 @@ class ShoppingfeedProductModuleFrontController extends \ModuleFrontController
                     $product->setAdditionalImages($item['images']['additional']);
                 }
             } else {
-                if (empty($item['images']) !== true) {
-                    $product->setAdditionalImages($item['images']);
-                }
+                $product->setAdditionalImages($item['images']);
             }
         }
     }
