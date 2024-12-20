@@ -9,6 +9,7 @@ sleep 3
 mysql -h localhost -u root prestashop -e "
 SET session wait_timeout=300;
 SET session interactive_timeout=300;
+SET GLOBAL max_allowed_packet=1073741824;
 "
 
 php /var/www/html/bin/console prestashop:module install shoppingfeed
