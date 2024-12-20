@@ -6,6 +6,10 @@ set -x
 /etc/init.d/mariadb start
 
 sleep 3
+mysql -h localhost -u root prestashop -e "
+SET session wait_timeout=300;
+SET session interactive_timeout=300;
+"
 
 php /var/www/html/bin/console prestashop:module install shoppingfeed
 php /var/www/html/bin/console prestashop:module install dpdfrance
@@ -16,9 +20,6 @@ php /var/www/html/bin/console prestashop:module install nkmgls
 echo "Add data fixtures for Unit Tests"
 
 mysql -h localhost -u root prestashop -e "
-SET session wait_timeout=300;
-SET session interactive_timeout=300;
-
 TRUNCATE ps_shoppingfeed_preloading;
 TRUNCATE ps_mondialrelay_carrier_method;
 INSERT INTO ps_mondialrelay_carrier_method (id_carrier, delivery_mode, insurance_level, is_deleted, id_reference, date_add, date_upd)
