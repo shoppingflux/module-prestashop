@@ -7,8 +7,8 @@ set -x
 
 sleep 3
 mysql -h localhost -u root prestashop -e "
-SET session wait_timeout=300;
-SET session interactive_timeout=300;
+SET GLOBAL wait_timeout=6000;
+SET GLOBAL interactive_timeout=6000;
 SET GLOBAL max_allowed_packet=1073741824;
 "
 
