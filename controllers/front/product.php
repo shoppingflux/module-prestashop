@@ -117,6 +117,7 @@ class ShoppingfeedProductModuleFrontController extends \ModuleFrontController
             foreach ($products as $product) {
                 $productsToAppend[] = $product;
                 foreach ($product['variations'] as $variation) {
+                    unset($product['variations']);
                     $productsToAppend[] = array_merge($product, $variation);
                 }
             }
@@ -203,10 +204,17 @@ class ShoppingfeedProductModuleFrontController extends \ModuleFrontController
                 $product->addDiscount($discount->getAmount(), $discount->getFrom(), $discount->getTo());
             }
         }
-
-        if (empty($item['images']) !== true && empty($item['images']['main']) !== true) {
-            $product->setMainImage($item['images']['main']);
-            $product->setAdditionalImages($item['images']['additional']);
+        if (false === empty($item['images'])) {
+            if (array_key_exists('variations', $item)) {
+                if (empty($item['images']['main']) !== true) {
+                    $product->setMainImage($item['images']['main']);
+                }
+                if (empty($item['images']['additional']) !== true) {
+                    $product->setAdditionalImages($item['images']['additional']);
+                }
+            } else {
+                $product->setAdditionalImages($item['images']);
+            }
         }
     }
 
@@ -235,7 +243,6 @@ class ShoppingfeedProductModuleFrontController extends \ModuleFrontController
             if (empty($variation['images']) !== true) {
                 $variationProduct->setAdditionalImages($variation['images']);
             }
-
             if (isset($variation['specificPrices']) && false === empty($variation['specificPrices'])) {
                 $discount = $this->calculDiscount($variation['specificPrices']);
 
