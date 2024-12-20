@@ -12,11 +12,11 @@ SET GLOBAL interactive_timeout=6000;
 SET GLOBAL max_allowed_packet=1073741824;
 "
 
-php /var/www/html/bin/console prestashop:module install shoppingfeed
-php /var/www/html/bin/console prestashop:module install dpdfrance
-php /var/www/html/bin/console prestashop:module install colissimo 
-php /var/www/html/bin/console prestashop:module install mondialrelay 
-php /var/www/html/bin/console prestashop:module install nkmgls 
+php /var/www/html/bin/console prestashop:module install shoppingfeed -e prod
+php /var/www/html/bin/console prestashop:module install dpdfrance -e prod
+php /var/www/html/bin/console prestashop:module install colissimo -e prod
+php /var/www/html/bin/console prestashop:module install mondialrelay -e prod
+php /var/www/html/bin/console prestashop:module install nkmgls -e prod
 
 echo "Add data fixtures for Unit Tests"
 
