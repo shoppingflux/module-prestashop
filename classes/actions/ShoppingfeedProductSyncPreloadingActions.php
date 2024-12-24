@@ -163,23 +163,49 @@ class ShoppingfeedProductSyncPreloadingActions extends DefaultActions
         $tokens = (new ShoppingfeedToken())->findAllActive();
         $sfModule = Module::getInstanceByName('shoppingfeed');
         $db = Db::getInstance(_PS_USE_SQL_SLAVE_);
+        $limit = 500;
 
         foreach ($tokens as $token) {
-            $sql = $sfModule->sqlProductsOnFeed($token['id_shop'])
-                             ->select('ps.id_product');
-            $result = $db->executeS($sql, true, false);
-            if ($result === []) {
-                continue;
+            $nb_total_product = $sfModule->countProductsOnFeed($token['id_shop']);
+            $loopSize = range(0, floor($nb_total_product / $limit));
+
+            for ($i = 0; $i <= $loopSize; ++$i) {
+                /** @var DbQuery $sql */
+                $sql = $sfModule->sqlProductsOnFeed($token['id_shop']);
+                $sql->select('ps.id_product');
+                $sql->limit($limit, $limit * $i);
+                $result = $db->executeS($sql, true, false);
+
+                if (empty($result)) {
+                    continue;
+                }
+
+                $db->update(
+                    ShoppingfeedPreloading::$definition['table'],
+                    [
+                        'actions' => ShoppingfeedPreloading::ACTION_VALID,
+                    ],
+                    sprintf(
+                        '(actions <> "%s" OR actions IS NULL) AND id_token = %d AND id_product IN (%s)',
+                        ShoppingfeedPreloading::ACTION_VALID,
+                        (int) $token['id_shoppingfeed_token'],
+                        implode(',', array_map('intval', array_column($result, 'id_product')))
+                    )
+                );
             }
-            $db->delete(
-                ShoppingfeedPreloading::$definition['table'],
-                sprintf(
-                    'id_token = %s AND id_product NOT IN (%s)',
-                    $token['id_shoppingfeed_token'],
-                    implode(',', array_column($result, 'id_product'))
-                )
-            );
         }
+
+        $db->delete(
+            ShoppingfeedPreloading::$definition['table'],
+            sprintf('actions <> "%s"', ShoppingfeedPreloading::ACTION_VALID)
+        );
+        $db->update(
+            ShoppingfeedPreloading::$definition['table'],
+            [
+                'actions' => '',
+            ],
+            '1'
+        );
     }
 
     public function deleteProduct()

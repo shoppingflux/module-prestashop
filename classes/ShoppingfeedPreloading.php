@@ -29,6 +29,7 @@ class ShoppingfeedPreloading extends ObjectModel
     const ACTION_SYNC_ALL = 'SYNC_ALL';
     const ACTION_SYNC_PRELODING = 'SYNC_PRELODING';
     const ACTION_SYNC_CATEGORY = 'ACTION_SYNC_CATEGORY';
+    const ACTION_VALID = 'MARK_AS_VALID';
 
     public $id_shoppingfeed_preloading;
 
