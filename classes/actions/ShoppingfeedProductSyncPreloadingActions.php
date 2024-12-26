@@ -167,7 +167,7 @@ class ShoppingfeedProductSyncPreloadingActions extends DefaultActions
 
         foreach ($tokens as $token) {
             $nb_total_product = $sfModule->countProductsOnFeed($token['id_shop']);
-            $loopSize = range(0, floor($nb_total_product / $limit));
+            $loopSize = floor($nb_total_product / $limit);
 
             for ($i = 0; $i <= $loopSize; ++$i) {
                 /** @var DbQuery $sql */
