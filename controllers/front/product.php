@@ -117,7 +117,23 @@ class ShoppingfeedProductModuleFrontController extends \ModuleFrontController
                 $productsToAppend[] = $product;
                 foreach ($product['variations'] as $variation) {
                     unset($product['variations']);
-                    $productsToAppend[] = array_merge($product, $variation);
+                    $productVariation = array_merge($product, $variation);
+                    $productVariation['attributes'] = array_merge($product['attributes'], $variation['attributes']);
+
+                    if (!empty($variation['attributes']['link-variation'])) {
+                        $productVariation['link'] = $variation['attributes']['link-variation'];
+                        unset($productVariation['attributes']['link-variation']);
+                    }
+                    if (!empty($variation['attributes']['ecotax_child'])) {
+                        $productVariation['ecotax'] = $variation['attributes']['ecotax_child'];
+                        unset($productVariation['attributes']['ecotax_child']);
+                    }
+                    if (!empty($variation['attributes']['weight'])) {
+                        $productVariation['weight'] = $variation['attributes']['weight'];
+                        unset($productVariation['attributes']['weight']);
+                    }
+
+                    $productsToAppend[] = $productVariation;
                 }
             }
             $productGenerator->appendProduct($productsToAppend);
