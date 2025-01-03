@@ -21,7 +21,6 @@ if (!defined('_PS_VERSION_')) {
 }
 
 use ShoppingFeed\Feed\Product\Product;
-use ShoppingfeedAddon\Model\Discount;
 use ShoppingfeedAddon\Services\SfProductGenerator;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 
@@ -118,7 +117,23 @@ class ShoppingfeedProductModuleFrontController extends \ModuleFrontController
                 $productsToAppend[] = $product;
                 foreach ($product['variations'] as $variation) {
                     unset($product['variations']);
-                    $productsToAppend[] = array_merge($product, $variation);
+                    $productVariation = array_merge($product, $variation);
+                    $productVariation['attributes'] = array_merge($product['attributes'], $variation['attributes']);
+
+                    if (!empty($variation['attributes']['link-variation'])) {
+                        $productVariation['link'] = $variation['attributes']['link-variation'];
+                        unset($productVariation['attributes']['link-variation']);
+                    }
+                    if (!empty($variation['attributes']['ecotax_child'])) {
+                        $productVariation['ecotax'] = $variation['attributes']['ecotax_child'];
+                        unset($productVariation['attributes']['ecotax_child']);
+                    }
+                    if (!empty($variation['attributes']['weight'])) {
+                        $productVariation['weight'] = $variation['attributes']['weight'];
+                        unset($productVariation['attributes']['weight']);
+                    }
+
+                    $productsToAppend[] = $productVariation;
                 }
             }
             $productGenerator->appendProduct($productsToAppend);
@@ -200,8 +215,8 @@ class ShoppingfeedProductModuleFrontController extends \ModuleFrontController
         if (false === empty($item['specificPrices'])) {
             $discount = $this->calculDiscount($item['specificPrices']);
 
-            if ($discount->getAmount() > 0) {
-                $product->addDiscount($discount->getAmount(), $discount->getFrom(), $discount->getTo());
+            if ($discount > 0) {
+                $product->addDiscount($discount);
             }
         }
         if (false === empty($item['images'])) {
@@ -246,8 +261,8 @@ class ShoppingfeedProductModuleFrontController extends \ModuleFrontController
             if (isset($variation['specificPrices']) && false === empty($variation['specificPrices'])) {
                 $discount = $this->calculDiscount($variation['specificPrices']);
 
-                if ($discount->getAmount() > 0) {
-                    $variationProduct->addDiscount($discount->getAmount(), $discount->getFrom(), $discount->getTo());
+                if ($discount > 0) {
+                    $variationProduct->addDiscount($discount);
                 }
             }
         }
@@ -292,21 +307,19 @@ class ShoppingfeedProductModuleFrontController extends \ModuleFrontController
     /**
      * @param array $specificPrices
      *
-     * @return Discount
+     * @return float
      */
     protected function calculDiscount($specificPrices)
     {
         if (false === is_array($specificPrices)) {
-            return new Discount();
+            return 0;
         }
 
         if (is_null($this->sfToken)) {
-            return new Discount();
+            return 0;
         }
 
         foreach ($specificPrices as $specificPrice) {
-            $discount = new Discount();
-
             if (false === isset($specificPrice['from'])) {
                 continue;
             }
@@ -345,22 +358,18 @@ class ShoppingfeedProductModuleFrontController extends \ModuleFrontController
                 if ($to->diff($now)->invert === 0) {
                     continue;
                 }
-                $discount->setTo($to->format('Y-m-d'));
             }
             if ($specificPrice['from'] !== '0000-00-00 00:00:00') {
                 $from = DateTime::createFromFormat('Y-m-d H:i:s', $specificPrice['from']);
                 if ($from->diff($now)->invert === 1) {
                     continue;
                 }
-                $discount->setFrom($from->format('Y-m-d'));
             }
 
-            $discount->setAmount($specificPrice['discount']);
-
-            return $discount;
+            return (float) $specificPrice['discount'];
         }
 
-        return new Discount();
+        return 0;
     }
 
     protected function isEcotaxEnabled()
