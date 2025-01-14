@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -22,7 +23,6 @@ namespace Tests\OrderImport;
 use ShoppingfeedAddon\Actions\ActionsHandler;
 use ShoppingfeedAddon\OrderImport\Rules\MondialrelayRule;
 use ShoppingfeedClasslib\Registry;
-use Validate;
 
 /**
  * Order Rules MondialRelais Test
@@ -69,10 +69,10 @@ class OrderImportMondialRelaisTest extends AbstractOrdeTestCase
      */
     public function testIsOrderValid($onveyor)
     {
-        //dump(array_keys($onveyor));
+        // dump(array_keys($onveyor));
         $psOrder = new \Order((int) $onveyor['id_order']);
 
-        $this->assertTrue(Validate::isLoadedObject($psOrder));
+        $this->assertTrue(\Validate::isLoadedObject($psOrder));
 
         return $psOrder;
     }
@@ -84,7 +84,7 @@ class OrderImportMondialRelaisTest extends AbstractOrdeTestCase
     {
         $cart = new \cart($psOrder->id_cart);
 
-        $this->assertTrue(Validate::isLoadedObject($cart));
+        $this->assertTrue(\Validate::isLoadedObject($cart));
 
         return $cart;
     }
@@ -96,7 +96,7 @@ class OrderImportMondialRelaisTest extends AbstractOrdeTestCase
     {
         $customer = new \Customer((int) $onveyor['customer']->id);
 
-        $this->assertTrue(Validate::isLoadedObject($customer));
+        $this->assertTrue(\Validate::isLoadedObject($customer));
 
         return $customer;
     }
@@ -108,7 +108,7 @@ class OrderImportMondialRelaisTest extends AbstractOrdeTestCase
     {
         $carrier = new \Carrier((int) $onveyor['carrier']->id);
 
-        $this->assertTrue(Validate::isLoadedObject($carrier));
+        $this->assertTrue(\Validate::isLoadedObject($carrier));
 
         return $carrier;
     }
@@ -120,7 +120,7 @@ class OrderImportMondialRelaisTest extends AbstractOrdeTestCase
     {
         $sfOrder = new \ShoppingfeedOrder((int) $onveyor['sfOrder']->id);
 
-        $this->assertTrue(Validate::isLoadedObject($sfOrder));
+        $this->assertTrue(\Validate::isLoadedObject($sfOrder));
 
         return $sfOrder;
     }
@@ -192,7 +192,7 @@ class OrderImportMondialRelaisTest extends AbstractOrdeTestCase
     {
         $mrsr = \MondialrelaySelectedRelay::getFromIdCart($cart->id);
 
-        $this->assertTrue(Validate::isLoadedObject($mrsr));
+        $this->assertTrue(\Validate::isLoadedObject($mrsr));
         $this->assertEquals($mrsr->id_mondialrelay_carrier_method, 1);
         $this->assertEquals($mrsr->selected_relay_num, '012082');
         $this->assertEquals($mrsr->selected_relay_adr1, 'CARREFOUR EXPRESS');

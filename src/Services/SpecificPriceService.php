@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -19,11 +20,6 @@
 
 namespace ShoppingfeedAddon\Services;
 
-use Db;
-use DbQuery;
-use SpecificPrice;
-use SpecificPriceRule;
-
 class SpecificPriceService
 {
     /**
@@ -33,13 +29,13 @@ class SpecificPriceService
      */
     public function getProductIdsByRule($idRule)
     {
-        $query = (new DbQuery())
+        $query = (new \DbQuery())
             ->select('id_product')
-            ->from(SpecificPrice::$definition['table'], 'sp')
-            ->leftJoin(SpecificPriceRule::$definition['table'], 'spr', 'sp.id_specific_price_rule = spr.id_specific_price_rule')
+            ->from(\SpecificPrice::$definition['table'], 'sp')
+            ->leftJoin(\SpecificPriceRule::$definition['table'], 'spr', 'sp.id_specific_price_rule = spr.id_specific_price_rule')
             ->where('spr.id_specific_price_rule = ' . (int) $idRule);
 
-        $res = Db::getInstance()->executeS($query);
+        $res = \Db::getInstance()->executeS($query);
 
         if (empty($res)) {
             return [];

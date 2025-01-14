@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -19,16 +20,13 @@
 
 namespace ShoppingfeedAddon\Services;
 
-use Db;
-use ShoppingfeedTaskOrder;
-
 class TaskOrderCleaner
 {
     protected $db;
 
     public function __construct()
     {
-        $this->db = Db::getInstance();
+        $this->db = \Db::getInstance();
     }
 
     public function clean($period = 7)
@@ -38,6 +36,6 @@ class TaskOrderCleaner
             (int) $period
         );
 
-        return $this->db->delete(ShoppingfeedTaskOrder::$definition['table'], $where);
+        return $this->db->delete(\ShoppingfeedTaskOrder::$definition['table'], $where);
     }
 }

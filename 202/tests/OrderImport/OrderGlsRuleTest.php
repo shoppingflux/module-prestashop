@@ -2,12 +2,6 @@
 
 namespace Tests\OrderImport;
 
-use Address;
-use Cart;
-use Currency;
-use Db;
-use DbQuery;
-use Shop;
 use ShoppingfeedAddon\OrderImport\GLS\Adapter;
 use ShoppingfeedAddon\OrderImport\Rules\GlsRule;
 
@@ -17,7 +11,7 @@ class OrderGlsRuleTest extends AbstractOrdeTestCase
     {
         $apiOrder = $this->getOrderRessourceFromDataset('order-gls.json');
 
-        $cart = new Cart();
+        $cart = new \Cart();
         $cart->id_address_delivery = $this->getDefaultAddress()->id;
         $cart->id_customer = $this->getDefaultAddress()->id_customer;
         $cart->id_shop = $this->getDefaultShop()->id;
@@ -37,9 +31,9 @@ class OrderGlsRuleTest extends AbstractOrdeTestCase
             'cart' => $cart,
         ]);
 
-        $result = Db::getInstance()
+        $result = \Db::getInstance()
             ->getRow(
-                (new DbQuery())
+                (new \DbQuery())
                     ->from('gls_cart_carrier')
                     ->where('id_cart = ' . (int) $cart->id)
             );
@@ -50,12 +44,12 @@ class OrderGlsRuleTest extends AbstractOrdeTestCase
 
     protected function getDefaultAddress()
     {
-        return new Address(1);
+        return new \Address(1);
     }
 
     protected function getDefaultShop()
     {
-        return new Shop(1);
+        return new \Shop(1);
     }
 
     protected function getGlsAdapter()
@@ -93,9 +87,9 @@ class OrderGlsRuleTest extends AbstractOrdeTestCase
 
     protected function getDefaultIdCarrier()
     {
-        return Db::getInstance()
+        return \Db::getInstance()
             ->getValue(
-                (new DbQuery())
+                (new \DbQuery())
                     ->select('id_carrier')
                     ->from('carrier')
                     ->where('external_module_name = "nkmgls"')
@@ -105,6 +99,6 @@ class OrderGlsRuleTest extends AbstractOrdeTestCase
 
     protected function getDefaultIdCurrency()
     {
-        return new Currency(1);
+        return new \Currency(1);
     }
 }

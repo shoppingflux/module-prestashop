@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -23,12 +24,9 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-use Db;
-use DbQuery;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
-use Tools;
 
 class Zalando extends RuleAbstract implements RuleInterface
 {
@@ -39,7 +37,7 @@ class Zalando extends RuleAbstract implements RuleInterface
         if (key_exists('channelId', $data) === false) {
             return false;
         }
-        if (preg_match('#^zalando#', Tools::strtolower($apiOrder->getChannel()->getName()))) {
+        if (preg_match('#^zalando#', \Tools::strtolower($apiOrder->getChannel()->getName()))) {
             return true;
         }
 
@@ -55,7 +53,7 @@ class Zalando extends RuleAbstract implements RuleInterface
                 continue;
             }
             $psProduct = $params['prestashopProducts'][$apiProduct['reference']];
-            $query = new DbQuery();
+            $query = new \DbQuery();
             $query->select('od.id_order_detail, od.product_name')
                 ->from('order_detail', 'od')
                 ->where('od.id_order = ' . (int) $params['id_order'])
@@ -64,7 +62,7 @@ class Zalando extends RuleAbstract implements RuleInterface
             if ($psProduct->id_product_attribute) {
                 $query->where('product_attribute_id = ' . (int) $psProduct->id_product_attribute);
             }
-            $productOrderDetail = Db::getInstance()->getRow($query);
+            $productOrderDetail = \Db::getInstance()->getRow($query);
             $product_name = sprintf(
                 '%s : %s - %s',
                 substr($productOrderDetail['product_name'], 0, 188), // fix size name product to 250 maximum
@@ -72,7 +70,7 @@ class Zalando extends RuleAbstract implements RuleInterface
                 $apiProduct['additionalFields']['article_id']
             );
 
-            Db::getInstance()->update(
+            \Db::getInstance()->update(
                 'order_detail',
                 ['product_name' => pSQL($product_name)],
                 '`id_order_detail` = ' . (int) $productOrderDetail['id_order_detail']

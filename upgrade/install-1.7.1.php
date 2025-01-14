@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -18,7 +19,7 @@
  */
 function upgrade_module_1_7_1($module)
 {
-    $installer = new \ShoppingfeedClasslib\Install\ModuleInstaller($module);
+    $installer = new ShoppingfeedClasslib\Install\ModuleInstaller($module);
     $installer->registerHooks();
 
     return true;

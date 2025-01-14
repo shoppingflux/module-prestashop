@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright since 2019 Shopping Feed
  *
@@ -41,7 +42,7 @@ abstract class AbstractOrdeTestCase extends TestCase
         $halResource = $this
             ->getMockBuilder(HalResource::class)
             ->setConstructorArgs([$client, $this->props, $this->props['_links'], $this->props['_embedded']])
-            ->setMethods(['getFirstResources'])
+            ->addMethods(['getFirstResources'])
             ->getMock();
 
         return new OrderResource($halResource);

@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -64,7 +65,7 @@ class OrderRuleTaxForBusinessTest extends AbstractOrdeTestCase
         Registry::set('shoppingfeedOrderImportHandler', $handler);
 
         $processResult = $handler->process('shoppingfeedOrderImport');
-        $order = new Order($handler->getConveyor()['id_order']);
+        $order = new \Order($handler->getConveyor()['id_order']);
         $tax = $order->total_paid_tax_incl - $order->total_paid_tax_excl;
 
         $this->assertTrue($processResult);
@@ -94,7 +95,7 @@ class OrderRuleTaxForBusinessTest extends AbstractOrdeTestCase
         Registry::set('shoppingfeedOrderImportHandler', $handler);
 
         $processResult = $handler->process('shoppingfeedOrderImport');
-        $order = new Order($handler->getConveyor()['id_order']);
+        $order = new \Order($handler->getConveyor()['id_order']);
         $tax = round($order->total_paid_tax_incl - $order->total_paid_tax_excl, 2);
 
         $this->assertTrue($processResult);

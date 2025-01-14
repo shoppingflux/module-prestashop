@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright since 2019 Shopping Feed
  *
@@ -19,9 +20,6 @@
 
 namespace ShoppingfeedAddon\OrderImport\Rules;
 
-use Customer;
-use Db;
-use Group;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use ShoppingfeedAddon\OrderImport\OrderData;
 use ShoppingfeedAddon\OrderImport\RuleAbstract;
@@ -40,7 +38,7 @@ class GroupCustomer extends RuleAbstract implements RuleInterface
     {
         parent::__construct($configuration);
 
-        $this->db = Db::getInstance();
+        $this->db = \Db::getInstance();
     }
 
     public function isApplicable(OrderResource $apiOrder)
@@ -72,7 +70,7 @@ class GroupCustomer extends RuleAbstract implements RuleInterface
         $orderData = new OrderData($params['apiOrder']);
         /** @var \ShoppingfeedAddon\OrderImport\OrderCustomerData $orderCustomerData */
         $orderCustomerData = $orderData->getCustomer();
-        $customer = new Customer();
+        $customer = new \Customer();
         $customer->getByEmail($orderCustomerData->getEmail());
         $customer->cleanGroups();
         $groups[] = $this->configuration['group_customer'];
@@ -80,7 +78,7 @@ class GroupCustomer extends RuleAbstract implements RuleInterface
         $customer->id_default_group = $this->configuration['group_customer'];
 
         $data['id_default_group'] = $this->configuration['group_customer'];
-        Db::getInstance()->update('customer', $data, '`id_customer` = ' . (int) $customer->id);
+        \Db::getInstance()->update('customer', $data, '`id_customer` = ' . (int) $customer->id);
 
         ProcessLoggerHandler::logInfo(
             $this->logPrefix .
@@ -104,7 +102,7 @@ class GroupCustomer extends RuleAbstract implements RuleInterface
                 'name' => 'group_customer',
                 'required' => false,
                 'options' => [
-                    'query' => Group::getGroups($id_lang),
+                    'query' => \Group::getGroups($id_lang),
                     'id' => 'id_group',
                     'name' => 'name',
                 ],

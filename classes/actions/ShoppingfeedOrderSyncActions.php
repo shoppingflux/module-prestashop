@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright since 2019 Shopping Feed
  *
@@ -187,7 +188,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
             return false;
         }
         $id_shop = (int) $this->conveyor['id_shop'];
-        //Remove old tasks
+        // Remove old tasks
         $this->initTaskCleaner()->clean();
 
         if (empty($this->conveyor['order_action'])) {
@@ -354,7 +355,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
                     $taskOrderOperation = Shoppingfeed::ORDER_OPERATION_REFUND;
                     continue;
                 // No partial refund (at least for now), so no optional
-                    // parameters to set.
+                // parameters to set.
                 } elseif (in_array($idOrderState, $delivered_status)) {
                     $taskOrderOperation = Shoppingfeed::ORDER_OPERATION_DELIVER;
                 }
@@ -679,7 +680,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
         $this->conveyor['failedTaskOrders'] = [];
         foreach ($tickets as $ticket) {
             $ticketOrderReference = $ticket->getPayloadProperty('reference');
-            //When the module gets the tickets by batch-id, the list might contain the ticket missed in $preparedTaskOrders
+            // When the module gets the tickets by batch-id, the list might contain the ticket missed in $preparedTaskOrders
             if (empty($preparedTaskOrders[$ticketOrderReference])) {
                 continue;
             }

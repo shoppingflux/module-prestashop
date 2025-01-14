@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -19,9 +20,6 @@
 
 namespace ShoppingfeedAddon\OrderImport\GLS;
 
-use Module;
-use Validate;
-
 class Adapter implements AdapterInterface
 {
     /** @var \NkmGls */
@@ -32,9 +30,9 @@ class Adapter implements AdapterInterface
 
     public function __construct()
     {
-        $glsModule = Module::getInstanceByName('nkmgls');
+        $glsModule = \Module::getInstanceByName('nkmgls');
 
-        if (false == Validate::isLoadedObject($glsModule)) {
+        if (false == \Validate::isLoadedObject($glsModule)) {
             return;
         }
         if (version_compare($glsModule->version, '3.0.0') < 0) {

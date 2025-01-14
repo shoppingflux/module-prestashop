@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -470,10 +471,10 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
                     'name' => 'real_synch',
                     'html_content' => '<div id="real_synch_notice" class="alert alert-info">
                     ' . sprintf(
-                            $this->module->l('You should select the type of synchronization (in real time or via a %s Cron job %s) for updating your product stocks and / or prices.', 'AdminShoppingfeedGeneralSettings'),
-                            '<a href="' . $this->context->link->getAdminLink('AdminShoppingfeedProcessMonitor') . '">',
-                            '</a>'
-                        ) . '</div>',
+                        $this->module->l('You should select the type of synchronization (in real time or via a %s Cron job %s) for updating your product stocks and / or prices.', 'AdminShoppingfeedGeneralSettings'),
+                        '<a href="' . $this->context->link->getAdminLink('AdminShoppingfeedProcessMonitor') . '">',
+                        '</a>'
+                    ) . '</div>',
                 ],
                 [
                     'type' => 'html',
@@ -485,14 +486,14 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
                     'type' => 'switch',
                     'is_bool' => true,
                     'values' => [
-                        [
-                            'id' => 'ok',
-                            'value' => 1,
-                        ],
-                        [
-                            'id' => 'ko',
-                            'value' => 0,
-                        ],
+                    [
+                        'id' => 'ok',
+                        'value' => 1,
+                    ],
+                    [
+                        'id' => 'ko',
+                        'value' => 0,
+                    ],
                     ],
                     'label' => $this->module->l('Real-time synchronization', 'AdminShoppingfeedGeneralSettings'),
                     'hint' => $this->module->l('If checked, no CRON will be needed. Synchronization will occur as soon as the changes are made. This may impact user performance.', 'AdminShoppingfeedGeneralSettings'),
@@ -517,14 +518,14 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
                     'type' => 'switch',
                     'is_bool' => true,
                     'values' => [
-                        [
-                            'id' => 'ok',
-                            'value' => 1,
-                        ],
-                        [
-                            'id' => 'ko',
-                            'value' => 0,
-                        ],
+                    [
+                        'id' => 'ok',
+                        'value' => 1,
+                    ],
+                    [
+                        'id' => 'ko',
+                        'value' => 0,
+                    ],
                     ],
                     'label' => $this->module->l('Compress products feed', 'AdminShoppingfeedGeneralSettings'),
                     'name' => Shoppingfeed::COMPRESS_PRODUCTS_FEED,
@@ -631,8 +632,8 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
         $stock_sync_enabled = Tools::getValue(Shoppingfeed::STOCK_SYNC_ENABLED);
         $price_sync_enabled = Tools::getValue(Shoppingfeed::PRICE_SYNC_ENABLED);
 
-        Configuration::updateGlobalValue(Shoppingfeed::STOCK_SYNC_ENABLED, ($stock_sync_enabled ? true : false));
-        Configuration::updateGlobalValue(Shoppingfeed::PRICE_SYNC_ENABLED, ($price_sync_enabled ? true : false));
+        Configuration::updateGlobalValue(Shoppingfeed::STOCK_SYNC_ENABLED, $stock_sync_enabled ? true : false);
+        Configuration::updateGlobalValue(Shoppingfeed::PRICE_SYNC_ENABLED, $price_sync_enabled ? true : false);
 
         return true;
     }
@@ -697,7 +698,7 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
         Configuration::updateGlobalValue(Shoppingfeed::PRODUCT_SYNC_BY_DATE_UPD, $sync_by_date);
         Configuration::updateGlobalValue(Shoppingfeed::PRODUCT_FEED_TIME_FULL_UPDATE, $time_full_update);
         Configuration::updateGlobalValue(Shoppingfeed::PRODUCT_FEED_INTERVAL_CRON, $interval_cron);
-        Configuration::updateGlobalValue(Shoppingfeed::REAL_TIME_SYNCHRONIZATION, ($realtime_sync ? true : false));
+        Configuration::updateGlobalValue(Shoppingfeed::REAL_TIME_SYNCHRONIZATION, $realtime_sync ? true : false);
         Configuration::updateGlobalValue(Shoppingfeed::COMPRESS_PRODUCTS_FEED, $compressProductsFeed);
 
         if (!is_numeric($stock_sync_max_products) || $stock_sync_max_products > 2000 || $stock_sync_max_products <= 0) {
@@ -723,7 +724,7 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
         $customFields = Tools::getValue(Shoppingfeed::PRODUCT_FEED_CUSTOM_FIELDS);
         $exportWithHierarchy = Tools::getValue(Shoppingfeed::PRODUCT_FEED_EXPORT_HIERARCHY);
 
-        Configuration::updateGlobalValue(Shoppingfeed::PRODUCT_FEED_SYNC_PACK, ($sync_pack ? true : false));
+        Configuration::updateGlobalValue(Shoppingfeed::PRODUCT_FEED_SYNC_PACK, $sync_pack ? true : false);
         Configuration::updateGlobalValue(Shoppingfeed::PRODUCT_FEED_CARRIER_REFERENCE, $carrierReference);
         Configuration::updateGlobalValue(Shoppingfeed::PRODUCT_FEED_IMAGE_FORMAT, $imageFormat);
         Configuration::updateGlobalValue(Shoppingfeed::PRODUCT_FEED_CATEGORY_DISPLAY, $categoryDisplay);
@@ -855,7 +856,7 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
     {
         parent::setMedia($isNewTheme);
 
-        if ((Tools::getValue('with_factory') !== false)) {
+        if (Tools::getValue('with_factory') !== false) {
             $this->addJS(_PS_MODULE_DIR_ . 'shoppingfeed/views/js/general_settings/general_settings.js');
         }
 

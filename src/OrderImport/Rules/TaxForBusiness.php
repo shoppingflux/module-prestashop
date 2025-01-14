@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -23,8 +24,6 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-use Configuration;
-use Context;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
@@ -32,7 +31,7 @@ use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 
 class TaxForBusiness extends RuleAbstract implements RuleInterface
 {
-    /** @var Context */
+    /** @var \Context */
     protected $context;
 
     protected $logPrefix = '';
@@ -41,7 +40,7 @@ class TaxForBusiness extends RuleAbstract implements RuleInterface
     {
         parent::__construct($configuration, $id_shop);
 
-        $this->context = Context::getContext();
+        $this->context = \Context::getContext();
     }
 
     public function isApplicable(OrderResource $apiOrder)
@@ -132,7 +131,7 @@ class TaxForBusiness extends RuleAbstract implements RuleInterface
     public function getDefaultConfiguration()
     {
         $rulesConfiguration = json_decode(
-            Configuration::get(
+            \Configuration::get(
                 \Shoppingfeed::ORDER_IMPORT_SPECIFIC_RULES_CONFIGURATION,
                 null,
                 null,

@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -19,8 +20,6 @@
 
 namespace Tests\OrderImport;
 
-use ColissimoCartPickupPoint;
-use ColissimoPickupPoint;
 use ShoppingfeedAddon\Actions\ActionsHandler;
 use ShoppingfeedClasslib\Registry;
 
@@ -56,8 +55,8 @@ class OrderImportLeroyMerlinTest extends AbstractOrdeTestCase
 
         $this->assertArrayHasKey('cart', $conveyor);
         $this->assertNotNull($conveyor['cart']->id);
-        $idColissimoPickupPoint = ColissimoCartPickupPoint::getByCartId($conveyor['cart']->id);
-        $pickupPoint = new ColissimoPickupPoint((int) $idColissimoPickupPoint);
+        $idColissimoPickupPoint = \ColissimoCartPickupPoint::getByCartId($conveyor['cart']->id);
+        $pickupPoint = new \ColissimoPickupPoint((int) $idColissimoPickupPoint);
 
         $this->assertEquals($pickupPoint->colissimo_id, '908645');
         $this->assertEquals($pickupPoint->product_code, 'A2P');

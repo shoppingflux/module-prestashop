@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -563,7 +564,7 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
         if ($this->module->isUploadOrderDocumentReady()) {
             $fields_form['form']['form']['input'][] = [
                 'type' => 'shoppingfeed_marketplace_switch_list',
-                'marketplaces' => \ShoppingfeedAddon\OrderInvoiceSync\Hub::getInstance()->getMarketplaces(),
+                'marketplaces' => ShoppingfeedAddon\OrderInvoiceSync\Hub::getInstance()->getMarketplaces(),
             ];
         }
 
@@ -653,20 +654,20 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
 
         $shops = Shop::getShops();
         foreach ($shops as $shop) {
-            Configuration::updateValue(Shoppingfeed::ORDER_IMPORT_ENABLED, ($order_import_enabled ? true : false), false, null, $shop['id_shop']);
-            Configuration::updateValue(Shoppingfeed::ORDER_IMPORT_TEST, ($order_sync_test ? true : false), false, null, $shop['id_shop']);
-            Configuration::updateValue(Shoppingfeed::ORDER_SYNC_ENABLED, ($order_sync_enabled ? true : false), false, null, $shop['id_shop']);
-            Configuration::updateValue(Shoppingfeed::ORDER_IMPORT_SHIPPED, ($order_sync_shipped ? true : false), false, null, $shop['id_shop']);
+            Configuration::updateValue(Shoppingfeed::ORDER_IMPORT_ENABLED, $order_import_enabled ? true : false, false, null, $shop['id_shop']);
+            Configuration::updateValue(Shoppingfeed::ORDER_IMPORT_TEST, $order_sync_test ? true : false, false, null, $shop['id_shop']);
+            Configuration::updateValue(Shoppingfeed::ORDER_SYNC_ENABLED, $order_sync_enabled ? true : false, false, null, $shop['id_shop']);
+            Configuration::updateValue(Shoppingfeed::ORDER_IMPORT_SHIPPED, $order_sync_shipped ? true : false, false, null, $shop['id_shop']);
             Configuration::updateValue(
                 Shoppingfeed::ORDER_IMPORT_SHIPPED_MARKETPLACE,
-                ($order_sync_shipped_marketplace ? true : false),
+                $order_sync_shipped_marketplace ? true : false,
                 false,
                 null,
                 $shop['id_shop']
             );
             Configuration::updateValue(
                 Shoppingfeed::ORDER_TRACKING,
-                ($order_tracking ? true : false),
+                $order_tracking ? true : false,
                 false,
                 null,
                 $shop['id_shop']
@@ -683,9 +684,9 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
         if (Tools::getValue('order_invoice_sync_marketplace')) {
             foreach (Tools::getValue('order_invoice_sync_marketplace') as $id => $isEnabled) {
                 if ((int) $isEnabled) {
-                    \ShoppingfeedAddon\OrderInvoiceSync\Hub::getInstance()->enable($id);
+                    ShoppingfeedAddon\OrderInvoiceSync\Hub::getInstance()->enable($id);
                 } else {
-                    \ShoppingfeedAddon\OrderInvoiceSync\Hub::getInstance()->disable($id);
+                    ShoppingfeedAddon\OrderInvoiceSync\Hub::getInstance()->disable($id);
                 }
             }
         }

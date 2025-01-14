@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -19,17 +20,12 @@
 
 namespace ShoppingfeedAddon\OrderImport\Rules;
 
-use Carrier;
-use Cart;
-use Module;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use ShoppingfeedAddon\OrderImport\DpdAssociation;
 use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
 use ShoppingfeedAddon\Services\CarrierFinder;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
-use Tools;
-use Validate;
 
 if (!defined('_PS_VERSION_')) {
     exit;
@@ -37,7 +33,7 @@ if (!defined('_PS_VERSION_')) {
 
 class ManomanoDpdRelais extends RuleAbstract implements RuleInterface
 {
-    /** @var Module */
+    /** @var \Module */
     protected $dpdfrance;
 
     const MODULE_NAME = 'dpdfrance';
@@ -47,14 +43,14 @@ class ManomanoDpdRelais extends RuleAbstract implements RuleInterface
      */
     public function isApplicable(OrderResource $apiOrder)
     {
-        $this->dpdfrance = Module::getInstanceByName(self::MODULE_NAME);
+        $this->dpdfrance = \Module::getInstanceByName(self::MODULE_NAME);
 
-        if (false == Validate::isLoadedObject($this->dpdfrance) || false == $this->dpdfrance->active) {
+        if (false == \Validate::isLoadedObject($this->dpdfrance) || false == $this->dpdfrance->active) {
             return false;
         }
 
-        if ('monechelle' !== Tools::strtolower($apiOrder->getChannel()->getName())
-            && 'manomanopro' !== Tools::strtolower($apiOrder->getChannel()->getName())) {
+        if ('monechelle' !== \Tools::strtolower($apiOrder->getChannel()->getName())
+            && 'manomanopro' !== \Tools::strtolower($apiOrder->getChannel()->getName())) {
             return false;
         }
 
@@ -116,14 +112,14 @@ class ManomanoDpdRelais extends RuleAbstract implements RuleInterface
             return false;
         }
 
-        /** @var Cart $cart */
+        /** @var \Cart $cart */
         $cart = $params['cart'];
 
-        if (false == $cart instanceof Cart) {
+        if (false == $cart instanceof \Cart) {
             return false;
         }
 
-        $carrier = new Carrier($cart->id_carrier);
+        $carrier = new \Carrier($cart->id_carrier);
 
         if ($carrier->external_module_name != self::MODULE_NAME) {
             return false;
@@ -167,7 +163,7 @@ class ManomanoDpdRelais extends RuleAbstract implements RuleInterface
         return true;
     }
 
-    protected function associateWithDpd(Cart $cart, $relayID)
+    protected function associateWithDpd(\Cart $cart, $relayID)
     {
         return $this->getDpdAssociation()->create($cart, $relayID);
     }
@@ -202,7 +198,7 @@ class ManomanoDpdRelais extends RuleAbstract implements RuleInterface
         $apiCarrierName = empty($apiOrder->getShipment()['carrier']) ? '' : $apiOrder->getShipment()['carrier'];
         $carrier = $this->initCarrierFinder()->getCarrierForOrderImport($channelName, $apiCarrierName);
 
-        if (false == Validate::isLoadedObject($carrier)) {
+        if (false == \Validate::isLoadedObject($carrier)) {
             return false;
         }
 

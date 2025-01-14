@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -19,10 +20,7 @@
 
 namespace ShoppingfeedAddon\OrderImport;
 
-use Context;
-use OrderState;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
-use Validate;
 
 if (!defined('_PS_VERSION_')) {
     exit;
@@ -48,7 +46,7 @@ abstract class RuleAbstract implements RuleInterface
         if ($id_shop) {
             $this->id_shop = $id_shop;
         } else {
-            $this->id_shop = Context::getContext()->shop->id;
+            $this->id_shop = \Context::getContext()->shop->id;
         }
     }
 
@@ -99,12 +97,12 @@ abstract class RuleAbstract implements RuleInterface
     protected function isOrderStateValid($idOrderState)
     {
         try {
-            $orderState = new OrderState($idOrderState);
+            $orderState = new \OrderState($idOrderState);
         } catch (\Throwable $e) {
             return false;
         }
 
-        return Validate::isLoadedObject($orderState);
+        return \Validate::isLoadedObject($orderState);
     }
 
     /**
