@@ -50,7 +50,7 @@ $(document).ready(function() {
         product_rule_line.attr('data-type', $( "#product_rule_type option:selected").val());
         product_rule_line.find(".product_input input:eq(0)")
                          .attr('name', 'product_rule_select[' + $("#product_rule_type option:selected").val() + '][]');
-        product_rule_line.find('.type').html($( "#product_rule_type option:selected" ).text());
+        product_rule_line.find('.type').text($( "#product_rule_type option:selected" ).text());
         $('#product_rule_table tbody').append(product_rule_line);
     });
 
