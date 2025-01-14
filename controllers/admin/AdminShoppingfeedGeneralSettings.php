@@ -486,14 +486,14 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
                     'type' => 'switch',
                     'is_bool' => true,
                     'values' => [
-                    [
-                        'id' => 'ok',
-                        'value' => 1,
-                    ],
-                    [
-                        'id' => 'ko',
-                        'value' => 0,
-                    ],
+                        [
+                            'id' => 'ok',
+                            'value' => 1,
+                        ],
+                        [
+                            'id' => 'ko',
+                            'value' => 0,
+                        ],
                     ],
                     'label' => $this->module->l('Real-time synchronization', 'AdminShoppingfeedGeneralSettings'),
                     'hint' => $this->module->l('If checked, no CRON will be needed. Synchronization will occur as soon as the changes are made. This may impact user performance.', 'AdminShoppingfeedGeneralSettings'),
@@ -518,14 +518,14 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
                     'type' => 'switch',
                     'is_bool' => true,
                     'values' => [
-                    [
-                        'id' => 'ok',
-                        'value' => 1,
-                    ],
-                    [
-                        'id' => 'ko',
-                        'value' => 0,
-                    ],
+                        [
+                            'id' => 'ok',
+                            'value' => 1,
+                        ],
+                        [
+                            'id' => 'ko',
+                            'value' => 0,
+                        ],
                     ],
                     'label' => $this->module->l('Compress products feed', 'AdminShoppingfeedGeneralSettings'),
                     'name' => Shoppingfeed::COMPRESS_PRODUCTS_FEED,
