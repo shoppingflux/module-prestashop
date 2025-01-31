@@ -77,10 +77,21 @@ class Cdiscount extends RuleAbstract implements RuleInterface
         $params['prestashopProducts'][$reference] = $cdiscountFeeProduct;
         $orderData = $params['orderData'];
         $item = new OrderItem(
+            uniqid(),
             $reference,
+            '',
             1,
             $this->getFees($params['apiOrder']),
-            0
+            null,
+            0,
+            0,
+            '',
+            [],
+            'Cdiscount fee',
+            \Context::getContext()->link->getImageLink(
+                '',
+                $cdiscountFeeProduct->getCoverWs()
+            )
         );
         $orderData->items[] = new OrderItemData($item);
     }
