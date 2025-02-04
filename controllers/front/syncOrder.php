@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -299,9 +300,9 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
             foreach ($successfulTicketsStatusTaskOrders as $taskOrder) {
                 $taskOrder->delete();
             }
-            //Resend failed tickets.
+            // Resend failed tickets.
             foreach ($failedTicketsStatusTaskOrders as $failedTicket) {
-                /* @var ShoppingfeedTaskOrder $failedTicket*/
+                /* @var ShoppingfeedTaskOrder $failedTicket */
                 $failedTicket->action = ShoppingfeedTaskOrder::ACTION_SYNC_STATUS;
                 $failedTicket->ticket_number = '';
                 $failedTicket->batch_id = '';
@@ -346,8 +347,8 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
                 }
 
                 $result = $shoppingfeedApi->getUnacknowledgedOrders(false, $token['shoppingfeed_store_id']);
-                if (Configuration::get(\Shoppingfeed::ORDER_IMPORT_SHIPPED) == true
-                    || Configuration::get(\Shoppingfeed::ORDER_IMPORT_SHIPPED_MARKETPLACE) == true) {
+                if (Configuration::get(Shoppingfeed::ORDER_IMPORT_SHIPPED) == true
+                    || Configuration::get(Shoppingfeed::ORDER_IMPORT_SHIPPED_MARKETPLACE) == true) {
                     $result = array_merge($result, $shoppingfeedApi->getUnacknowledgedOrders(true, $token['shoppingfeed_store_id']));
                 }
             } catch (Throwable $e) {

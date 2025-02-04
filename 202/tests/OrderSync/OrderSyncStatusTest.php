@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright since 2019 Shopping Feed
  *
@@ -22,7 +23,6 @@ namespace Tests\OrderSync;
 use PHPUnit\Framework\TestCase;
 use ShoppingfeedAddon\Actions\ActionsHandler;
 use ShoppingfeedClasslib\Registry;
-use ShoppingfeedTaskOrder;
 
 class OrderSyncStatusTest extends TestCase
 {
@@ -37,7 +37,7 @@ class OrderSyncStatusTest extends TestCase
             [
                 'id_shop' => 1,
                 'id_token' => 1,
-                'order_action' => ShoppingfeedTaskOrder::ACTION_SYNC_STATUS,
+                'order_action' => \ShoppingfeedTaskOrder::ACTION_SYNC_STATUS,
             ]
         );
         $orderStatusHandler->addActions(
@@ -53,7 +53,7 @@ class OrderSyncStatusTest extends TestCase
         // we update state like after a successful API call in `sendTaskOrdersSyncStatus`
         foreach ($processData['preparedTaskOrders'] as $operation => $preparedTaskOrders) {
             foreach ($preparedTaskOrders as $preparedTaskOrder) {
-                $preparedTaskOrder['taskOrder']->action = ShoppingfeedTaskOrder::ACTION_CHECK_TICKET_SYNC_STATUS;
+                $preparedTaskOrder['taskOrder']->action = \ShoppingfeedTaskOrder::ACTION_CHECK_TICKET_SYNC_STATUS;
                 $preparedTaskOrder['taskOrder']->batch_id = $operation;
                 $preparedTaskOrder['taskOrder']->save();
             }
@@ -62,6 +62,7 @@ class OrderSyncStatusTest extends TestCase
 
     /**
      * @desc getTicketsStatus
+     *
      * @depends testGetTaskOrders
      */
     public function testGetTicketsStatus()
@@ -72,7 +73,7 @@ class OrderSyncStatusTest extends TestCase
             [
                 'id_shop' => 1,
                 'id_token' => 1,
-                'order_action' => ShoppingfeedTaskOrder::ACTION_CHECK_TICKET_SYNC_STATUS,
+                'order_action' => \ShoppingfeedTaskOrder::ACTION_CHECK_TICKET_SYNC_STATUS,
             ]
         );
         $ticketsHandler->addActions(

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright since 2019 Shopping Feed
  *
@@ -19,16 +20,14 @@
 
 namespace ShoppingfeedAddon\Services;
 
-use Tools;
-
 class SfTools
 {
     public function hash($string)
     {
         if (version_compare(_PS_VERSION_, '1.7', '<')) {
-            return Tools::encrypt($string);
+            return \Tools::encrypt($string);
         } else {
-            return Tools::hash($string);
+            return \Tools::hash($string);
         }
     }
 }

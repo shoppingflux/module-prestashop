@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -19,11 +20,6 @@
 
 namespace ShoppingfeedAddon\OrderImport;
 
-use Configuration;
-use OrderState;
-use Shoppingfeed;
-use Validate;
-
 class SFOrderState
 {
     protected $idShop;
@@ -35,9 +31,9 @@ class SFOrderState
 
     public function get()
     {
-        $sfOrderState = new OrderState(Configuration::get(Shoppingfeed::IMPORT_ORDER_STATE, null, null, $this->idShop));
+        $sfOrderState = new \OrderState(\Configuration::get(\Shoppingfeed::IMPORT_ORDER_STATE, null, null, $this->idShop));
 
-        if (Validate::isLoadedObject($sfOrderState)) {
+        if (\Validate::isLoadedObject($sfOrderState)) {
             return $sfOrderState;
         }
 
@@ -46,13 +42,13 @@ class SFOrderState
 
     public function set($idOrderState)
     {
-        Configuration::updateValue(Shoppingfeed::IMPORT_ORDER_STATE, $idOrderState, false, null, $this->idShop);
+        \Configuration::updateValue(\Shoppingfeed::IMPORT_ORDER_STATE, $idOrderState, false, null, $this->idShop);
 
         return $this;
     }
 
     protected function getDefault()
     {
-        return new OrderState(Configuration::get('PS_OS_PAYMENT'));
+        return new \OrderState(\Configuration::get('PS_OS_PAYMENT'));
     }
 }

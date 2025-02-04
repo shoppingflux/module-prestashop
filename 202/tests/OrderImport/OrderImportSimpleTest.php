@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright since 2019 Shopping Feed
  *
@@ -19,10 +20,8 @@
 
 namespace Tests\OrderImport;
 
-use ColissimoCartPickupPoint;
 use Order;
 use ShoppingfeedAddon\Actions\ActionsHandler;
-use ShoppingfeedCarrier;
 use ShoppingfeedClasslib\Registry;
 
 /**
@@ -75,7 +74,7 @@ class OrderImportSimpleTest extends AbstractOrdeTestCase
         $psAddress = new \Address($psOrder->id_address_delivery);
         $orderDetails = [];
         $importedItems = $conveyor['orderData']->items;
-        //PrestaShop may split the order
+        // PrestaShop may split the order
         $orders = \Db::getInstance()->executeS((new \DbQuery())->from('orders')->where('id_cart = ' . $psOrder->id_cart));
 
         foreach ($orders as $order) {
@@ -95,7 +94,7 @@ class OrderImportSimpleTest extends AbstractOrdeTestCase
         $this->assertEquals($psOrder->total_paid_tax_excl, 7.830000);
         $this->assertEquals($psOrder->total_products, 3.750000);
         $this->assertEquals($psOrder->total_shipping, 4.900000);
-        //Verification of dni
+        // Verification of dni
         $this->assertEquals('K12345678A', $psAddress->dni);
 
         $invoices = $psOrder->getInvoicesCollection();
@@ -195,7 +194,7 @@ class OrderImportSimpleTest extends AbstractOrdeTestCase
         $this->assertTrue($processResult);
 
         $conveyor = $handler->getConveyor();
-        //Order data can be changed in the order import rules after, psOrder in conveyor can be not actual
+        // Order data can be changed in the order import rules after, psOrder in conveyor can be not actual
         $psOrder = new \Order($conveyor['psOrder']->id);
         $this->assertEquals($psOrder->current_state, _PS_OS_PAYMENT_);
         $this->assertEquals($psOrder->payment, 'natureetdecouvertes');
@@ -291,17 +290,17 @@ class OrderImportSimpleTest extends AbstractOrdeTestCase
 
         $this->assertArrayHasKey('cart', $conveyor);
         $this->assertNotNull($conveyor['cart']->id);
-        $idColissimoPickupPoint = ColissimoCartPickupPoint::getByCartId($conveyor['cart']->id);
+        $idColissimoPickupPoint = \ColissimoCartPickupPoint::getByCartId($conveyor['cart']->id);
         $pickupPoint = new \ColissimoPickupPoint((int) $idColissimoPickupPoint);
 
         $this->assertEquals($pickupPoint->colissimo_id, '100562');
         $this->assertEquals($pickupPoint->company_name, 'PRIMAVERA');
         $this->assertEquals($pickupPoint->product_code, 'BPR');
         $this->assertEquals($pickupPoint->city, 'MARSEILLE');
-        $sfCarrier = ShoppingfeedCarrier::getByMarketplaceAndName(
-                        'zalandomyunittest',
-                        'Colissimo'
-                    );
+        $sfCarrier = \ShoppingfeedCarrier::getByMarketplaceAndName(
+            'zalandomyunittest',
+            'Colissimo'
+        );
         $this->assertNotEquals($sfCarrier, false);
         $orderPayments = $psOrder->getOrderPaymentCollection();
         $this->assertEquals(count($orderPayments), 1);
@@ -385,9 +384,9 @@ class OrderImportSimpleTest extends AbstractOrdeTestCase
 
         $this->assertArrayHasKey('cart', $conveyor);
         $this->assertNotNull($conveyor['cart']->id);
-        $this->assertNotEquals(ColissimoCartPickupPoint::getByCartId($conveyor['cart']->id), 0);
+        $this->assertNotEquals(\ColissimoCartPickupPoint::getByCartId($conveyor['cart']->id), 0);
 
-        $idColissimoPickupPoint = ColissimoCartPickupPoint::getByCartId($conveyor['cart']->id);
+        $idColissimoPickupPoint = \ColissimoCartPickupPoint::getByCartId($conveyor['cart']->id);
         $pickupPoint = new \ColissimoPickupPoint((int) $idColissimoPickupPoint);
         $this->assertEquals($pickupPoint->colissimo_id, '060559');
         $this->assertEquals($pickupPoint->company_name, 'BUREAU DE POSTE COLAYRAC LPRC RP');

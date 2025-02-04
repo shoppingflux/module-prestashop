@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -63,7 +64,7 @@ class OrderSplittingTest extends AbstractOrdeTestCase
         $totalAmount = 0;
         $totalShipping = 0;
         $totalProduct = 0;
-        /** @var Order $order */
+        /** @var \Order $order */
         foreach ($orders as $order) {
             $totalAmount += $order->total_paid_tax_incl;
             $totalShipping += $order->total_shipping;

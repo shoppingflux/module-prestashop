@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -19,45 +20,38 @@
 
 namespace ShoppingfeedAddon\Services;
 
-use Cache;
-use Combination;
-use Context;
-use Db;
-use DbQuery;
 use Product;
-use StockAvailable;
-use Validate;
 
 class ProductAttributeCombination
 {
     /**
      * The same as Product::getAttributeCombinations() but take in account $idShop
      *
-     * @param Product $product
+     * @param \Product $product
      * @param int|null $idLang
      * @param int|null $idShop
      *
      * @return []
      */
-    public function get(Product $product, $idLang = null, $idShop = null)
+    public function get(\Product $product, $idLang = null, $idShop = null)
     {
-        if (false == Validate::isLoadedObject($product)) {
+        if (false == \Validate::isLoadedObject($product)) {
             return [];
         }
 
-        if (!Combination::isFeatureActive()) {
+        if (!\Combination::isFeatureActive()) {
             return [];
         }
 
         if ($idShop == false) {
-            $idShop = Context::getContext()->shop->id;
+            $idShop = \Context::getContext()->shop->id;
         }
 
         if ($idLang == false) {
-            $idLang = Context::getContext()->language->id;
+            $idLang = \Context::getContext()->language->id;
         }
 
-        $sql = (new DbQuery())
+        $sql = (new \DbQuery())
             ->select('pa.*')
             ->select('pas.*')
             ->select('ag.`id_attribute_group`, ag.`is_color_group`')
@@ -80,7 +74,7 @@ class ProductAttributeCombination
         ;
 
         try {
-            $res = Db::getInstance()->executeS($sql);
+            $res = \Db::getInstance()->executeS($sql);
         } catch (\Throwable $e) {
             return [];
         }
@@ -95,10 +89,10 @@ class ProductAttributeCombination
             $idProductAttribute = $row['id_product_attribute'];
             if (empty($combinations[$row['id_product_attribute']])) {
                 $cache_key = $row['id_product'] . '_' . $row['id_product_attribute'] . '_quantity';
-                if (!Cache::isStored($cache_key)) {
-                    Cache::store(
+                if (!\Cache::isStored($cache_key)) {
+                    \Cache::store(
                         $cache_key,
-                        StockAvailable::getQuantityAvailableByProduct($row['id_product'], $row['id_product_attribute'])
+                        \StockAvailable::getQuantityAvailableByProduct($row['id_product'], $row['id_product_attribute'])
                     );
                 }
                 $combinations[$idProductAttribute]['id_product_attribute'] = $idProductAttribute;

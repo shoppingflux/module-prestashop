@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -27,7 +28,6 @@ use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
-use Tools;
 
 class AmazonEbay extends RuleAbstract implements RuleInterface
 {
@@ -47,7 +47,7 @@ class AmazonEbay extends RuleAbstract implements RuleInterface
         $billingAddressFirstName = $billingAddress['firstName'] === '.' ? '' : $billingAddress['firstName'];
         $billingAddressLastName = $billingAddress['lastName'] === '.' ? '' : $billingAddress['lastName'];
 
-        return preg_match('#^(amazon|ebay|laredoute|laredoutemirakl|alltricks|miravia)$#', Tools::strtolower($apiOrder->getChannel()->getName()))
+        return preg_match('#^(amazon|ebay|laredoute|laredoutemirakl|alltricks|miravia)$#', \Tools::strtolower($apiOrder->getChannel()->getName()))
             && (
                 empty($shippingAddressFirstName)
                 || empty($shippingAddressLastName)
@@ -114,7 +114,7 @@ class AmazonEbay extends RuleAbstract implements RuleInterface
         }
 
         $explodedFullname = explode(' ', $fullname);
-        if (empty($explodedFullname[0]) === false && preg_match('#^(ebay)$#', Tools::strtolower($channel))) {
+        if (empty($explodedFullname[0]) === false && preg_match('#^(ebay)$#', \Tools::strtolower($channel))) {
             $address['firstName'] = array_shift($explodedFullname);
             $address['lastName'] = implode(' ', $explodedFullname);
         } else {

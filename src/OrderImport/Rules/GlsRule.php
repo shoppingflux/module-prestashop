@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -19,10 +20,6 @@
 
 namespace ShoppingfeedAddon\OrderImport\Rules;
 
-use Carrier;
-use Cart;
-use Exception;
-use Module;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use ShoppingfeedAddon\OrderImport\GLS\Adapter;
 use ShoppingfeedAddon\OrderImport\GLS\AdapterInterface;
@@ -30,7 +27,6 @@ use ShoppingfeedAddon\OrderImport\GLS\CartCarrierAssociation;
 use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
-use Validate;
 
 class GlsRule extends RuleAbstract implements RuleInterface
 {
@@ -45,7 +41,7 @@ class GlsRule extends RuleAbstract implements RuleInterface
     {
         parent::__construct($configuration);
 
-        $this->gls = Module::getInstanceByName('nkmgls');
+        $this->gls = \Module::getInstanceByName('nkmgls');
         $this->glsAdapter = $this->getDefaultGlsAdapter();
     }
 
@@ -76,18 +72,18 @@ class GlsRule extends RuleAbstract implements RuleInterface
 
     protected function isModuleGlsInstalled()
     {
-        return Validate::isLoadedObject($this->gls) && $this->gls->active;
+        return \Validate::isLoadedObject($this->gls) && $this->gls->active;
     }
 
     public function afterCartCreation($params)
     {
-        /** @var Cart $cart */
+        /** @var \Cart $cart */
         $cart = $params['cart'];
 
         if (empty($cart->id_carrier)) {
             return;
         }
-        $carrier = new Carrier($cart->id_carrier);
+        $carrier = new \Carrier($cart->id_carrier);
         if ($carrier->external_module_name != $this->gls->name) {
             return;
         }
@@ -101,7 +97,7 @@ class GlsRule extends RuleAbstract implements RuleInterface
 
         try {
             $result = $cartCarrierAssociation->create($cart, $this->getRelayId($params['apiOrder']));
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             ProcessLoggerHandler::logError(
                 $this->logPrefix .
                 sprintf(

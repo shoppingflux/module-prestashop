@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -19,8 +20,6 @@
 
 namespace ShoppingfeedAddon\ProductFilter;
 
-use Context;
-use Manufacturer;
 use ShoppingfeedClasslib\Utils\Translate\TranslateTrait;
 
 class BrandFilter implements Filter
@@ -31,7 +30,7 @@ class BrandFilter implements Filter
 
     public function __construct($id)
     {
-        $this->manufacturer = new Manufacturer($id, Context::getContext()->language->id);
+        $this->manufacturer = new \Manufacturer($id, \Context::getContext()->language->id);
     }
 
     public function getSqlChunk()

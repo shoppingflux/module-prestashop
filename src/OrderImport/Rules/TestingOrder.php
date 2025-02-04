@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -24,10 +25,8 @@ if (!defined('_PS_VERSION_')) {
 }
 
 use Carrier;
-use Configuration;
 use Module;
 use Order;
-use OrderHistory;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
@@ -64,7 +63,7 @@ class TestingOrder extends RuleAbstract implements RuleInterface
         /** @var \ShoppingfeedAddon\OrderImport\OrderData $orderData */
         $orderData = $params['orderData'];
         $apiOrder = $params['apiOrder'];
-        $idOrderState = (int) Configuration::get('PS_OS_CANCELED');
+        $idOrderState = (int) \Configuration::get('PS_OS_CANCELED');
 
         $logPrefix = sprintf(
             $this->l('[Order: %s]', 'TestingOrder'),
@@ -95,9 +94,9 @@ class TestingOrder extends RuleAbstract implements RuleInterface
             'Order',
             $params['sfOrder']->id_order
         );
-        $psOrder = new Order($params['sfOrder']->id_order);
+        $psOrder = new \Order($params['sfOrder']->id_order);
         // Set order to CANCELED
-        $history = new OrderHistory();
+        $history = new \OrderHistory();
         $history->id_order = $params['sfOrder']->id_order;
         $use_existings_payment = true;
         $history->changeIdOrderState((int) $idOrderState, $psOrder, $use_existings_payment);

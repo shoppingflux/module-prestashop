@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -19,13 +20,6 @@
 
 namespace ShoppingfeedAddon\Services;
 
-use Configuration;
-use Language;
-use Product;
-use Shoppingfeed;
-use Tools;
-use Validate;
-
 class CdiscountFeeProduct
 {
     protected $symbolValidator;
@@ -37,9 +31,9 @@ class CdiscountFeeProduct
 
     public function getProduct()
     {
-        $product = new Product(Configuration::get(Shoppingfeed::CDISCOUNT_FEE_PRODUCT));
+        $product = new \Product(\Configuration::get(\Shoppingfeed::CDISCOUNT_FEE_PRODUCT));
 
-        if (Validate::isLoadedObject($product)) {
+        if (\Validate::isLoadedObject($product)) {
             return $product;
         }
 
@@ -48,48 +42,48 @@ class CdiscountFeeProduct
 
     protected function createProduct()
     {
-        $product = new Product();
+        $product = new \Product();
         $product->active = true;
         $product->name = [];
         $product->link_rewrite = [];
 
-        foreach (Language::getLanguages(false) as $lang) {
+        foreach (\Language::getLanguages(false) as $lang) {
             if ($lang['iso_code'] == 'fr') {
                 $product->name[$lang['id_lang']] = 'Frais CDiscount';
-                $product->link_rewrite[$lang['id_lang']] = Tools::link_rewrite('Frais CDiscount');
+                $product->link_rewrite[$lang['id_lang']] = \Tools::link_rewrite('Frais CDiscount');
             } else {
                 $product->name[$lang['id_lang']] = 'CDiscount Fees';
-                $product->link_rewrite[$lang['id_lang']] = Tools::link_rewrite('CDiscount Fees');
+                $product->link_rewrite[$lang['id_lang']] = \Tools::link_rewrite('CDiscount Fees');
             }
         }
 
         $product->visibility = 'none';
-        $product->depends_on_stock = 1; //do not depend on stock
+        $product->depends_on_stock = 1; // do not depend on stock
         $product->available_for_order = true;
         $product->reference = $this->getReference();
         $product->save();
 
-        Configuration::updateValue(Shoppingfeed::CDISCOUNT_FEE_PRODUCT, $product->id);
+        \Configuration::updateValue(\Shoppingfeed::CDISCOUNT_FEE_PRODUCT, $product->id);
 
         return $product;
     }
 
     public function removeProduct()
     {
-        $product = new Product(Configuration::get(Shoppingfeed::CDISCOUNT_FEE_PRODUCT));
+        $product = new \Product(\Configuration::get(\Shoppingfeed::CDISCOUNT_FEE_PRODUCT));
 
-        if (Validate::isLoadedObject($product)) {
+        if (\Validate::isLoadedObject($product)) {
             $product->delete();
         }
 
-        return Configuration::deleteByName(Shoppingfeed::CDISCOUNT_FEE_PRODUCT);
+        return \Configuration::deleteByName(\Shoppingfeed::CDISCOUNT_FEE_PRODUCT);
     }
 
     public function getIdProduct()
     {
-        $product = new Product(Configuration::get(Shoppingfeed::CDISCOUNT_FEE_PRODUCT));
+        $product = new \Product(\Configuration::get(\Shoppingfeed::CDISCOUNT_FEE_PRODUCT));
 
-        if (Validate::isLoadedObject($product)) {
+        if (\Validate::isLoadedObject($product)) {
             return $product->id;
         }
 
@@ -101,7 +95,7 @@ class CdiscountFeeProduct
         $reference = 'FDG-ShoppingFlux';
         $this->symbolValidator->validate(
             $reference,
-            ['Validate', Product::$definition['fields']['reference']['validate']],
+            ['Validate', \Product::$definition['fields']['reference']['validate']],
             ''
         );
 

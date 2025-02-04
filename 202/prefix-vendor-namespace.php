@@ -1,4 +1,5 @@
 <?php
+
 /**
  * NOTICE OF LICENSE
  *
@@ -191,9 +192,9 @@ foreach ($libs_to_update as $lib_to_update) {
                         . ')/';
             $file_namespacesReplace[] = '$1' . $namespaces_prefix . '\\$2';
         }
-        //$content = str_replace('<?php', "<?php/*\n".print_r($file_namespacesRegex, true).print_r($file_namespacesReplace, true)."\n*/" , $content);
+        // $content = str_replace('<?php', "<?php/*\n".print_r($file_namespacesRegex, true).print_r($file_namespacesReplace, true)."\n*/" , $content);
 
-        //$newContent = $content;
+        // $newContent = $content;
         $newContent = preg_replace($file_namespacesRegex, $file_namespacesReplace, $content);
 
         // Save the modified files in the dest folder

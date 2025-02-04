@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -19,9 +20,6 @@
 
 namespace ShoppingfeedAddon\ProductFilter;
 
-use Context;
-use Feature;
-use FeatureValue;
 use ShoppingfeedClasslib\Utils\Translate\TranslateTrait;
 
 class FeatureFilter implements Filter
@@ -34,8 +32,8 @@ class FeatureFilter implements Filter
 
     public function __construct($id)
     {
-        $this->featureValue = new FeatureValue($id, Context::getContext()->language->id);
-        $this->feature = new Feature($this->featureValue->id_feature, Context::getContext()->language->id);
+        $this->featureValue = new \FeatureValue($id, \Context::getContext()->language->id);
+        $this->feature = new \Feature($this->featureValue->id_feature, \Context::getContext()->language->id);
     }
 
     public function getSqlChunk()

@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -20,9 +21,7 @@
 namespace ShoppingfeedAddon\Actions;
 
 use Hook;
-use Module;
 use ShoppingfeedClasslib\Actions\ActionsHandler as DefaultActionHandler;
-use Tools;
 
 /**
  * Actions Handler extends from default to keep in memory classAction
@@ -64,15 +63,15 @@ class ActionsHandler extends DefaultActionHandler
     public function process($className)
     {
         if (!class_exists($className)) {
-            $className = Tools::ucfirst($className) . 'Actions';
+            $className = \Tools::ucfirst($className) . 'Actions';
             if (!preg_match('/^[a-zA-Z]+$/', $className)) {
                 throw new \Exception($className . '" class name not valid "');
             }
             include_once _PS_MODULE_DIR_ . 'shoppingfeed/classes/actions/' . $className . '.php';
         }
 
-        $moduleId = Module::getModuleIdByName('shoppingfeed');
-        $hookResult = Hook::exec(self::PROCESS_OVERRIDE_HOOK, ['className' => $className], $moduleId, true, false);
+        $moduleId = \Module::getModuleIdByName('shoppingfeed');
+        $hookResult = \Hook::exec(self::PROCESS_OVERRIDE_HOOK, ['className' => $className], $moduleId, true, false);
         if (!empty($hookResult) && !empty($hookResult['shoppingfeed'])) {
             $className = $hookResult['shoppingfeed'];
         }

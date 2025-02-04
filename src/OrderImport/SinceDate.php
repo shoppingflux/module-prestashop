@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -19,12 +20,6 @@
 
 namespace ShoppingfeedAddon\OrderImport;
 
-use Configuration;
-use DateInterval;
-use DateTime;
-use DateTimeInterface;
-use Shoppingfeed;
-
 class SinceDate implements SinceDateInterface
 {
     const DATE_FORMAT_PS = 'Y-m-d';
@@ -33,21 +28,21 @@ class SinceDate implements SinceDateInterface
 
     public function get($format = self::DATE_FORMAT_PS, $id_shop = null)
     {
-        $date = DateTime::createFromFormat(
+        $date = \DateTime::createFromFormat(
             self::DATE_FORMAT_PS,
-            Configuration::get(
-                Shoppingfeed::ORDER_IMPORT_PERMANENT_SINCE_DATE,
+            \Configuration::get(
+                \Shoppingfeed::ORDER_IMPORT_PERMANENT_SINCE_DATE,
                 null,
                 null,
                 $id_shop
             )
         );
 
-        if ($date instanceof DateTime) {
+        if ($date instanceof \DateTime) {
             return $date->format($format);
         }
 
-        $date = new DateTime();
+        $date = new \DateTime();
         $date->sub($this->getDefaultInterval());
 
         return $date->format($format);
@@ -55,21 +50,21 @@ class SinceDate implements SinceDateInterface
 
     public function getForShipped($format = self::DATE_FORMAT_PS, $id_shop = null)
     {
-        $date = DateTime::createFromFormat(
+        $date = \DateTime::createFromFormat(
             self::DATE_FORMAT_PS,
-            Configuration::get(
-                Shoppingfeed::ORDER_SHIPPED_IMPORT_PERMANENT_SINCE_DATE,
+            \Configuration::get(
+                \Shoppingfeed::ORDER_SHIPPED_IMPORT_PERMANENT_SINCE_DATE,
                 null,
                 null,
                 $id_shop
             )
         );
 
-        if ($date instanceof DateTime) {
+        if ($date instanceof \DateTime) {
             return $date->format($format);
         }
 
-        $date = new DateTime();
+        $date = new \DateTime();
         $date->sub($this->getDefaultInterval());
 
         return $date->format($format);
@@ -77,30 +72,30 @@ class SinceDate implements SinceDateInterface
 
     public function getForShippedByMarketplace($format = self::DATE_FORMAT_PS, $id_shop = null)
     {
-        $date = DateTime::createFromFormat(
+        $date = \DateTime::createFromFormat(
             self::DATE_FORMAT_PS,
-            Configuration::get(
-                Shoppingfeed::ORDER_SHIPPED_BY_MARKETPLACE_IMPORT_PERMANENT_SINCE_DATE,
+            \Configuration::get(
+                \Shoppingfeed::ORDER_SHIPPED_BY_MARKETPLACE_IMPORT_PERMANENT_SINCE_DATE,
                 null,
                 null,
                 $id_shop
             )
         );
 
-        if ($date instanceof DateTime) {
+        if ($date instanceof \DateTime) {
             return $date->format($format);
         }
 
-        $date = new DateTime();
+        $date = new \DateTime();
         $date->sub($this->getDefaultInterval());
 
         return $date->format($format);
     }
 
-    public function set(DateTimeInterface $date, $id_shop = null)
+    public function set(\DateTimeInterface $date, $id_shop = null)
     {
-        Configuration::updateValue(
-            Shoppingfeed::ORDER_IMPORT_PERMANENT_SINCE_DATE,
+        \Configuration::updateValue(
+            \Shoppingfeed::ORDER_IMPORT_PERMANENT_SINCE_DATE,
             $date->format(self::DATE_FORMAT_PS),
             false,
             null,
@@ -110,10 +105,10 @@ class SinceDate implements SinceDateInterface
         return $this;
     }
 
-    public function setForShipped(DateTimeInterface $date, $id_shop = null)
+    public function setForShipped(\DateTimeInterface $date, $id_shop = null)
     {
-        Configuration::updateValue(
-            Shoppingfeed::ORDER_SHIPPED_IMPORT_PERMANENT_SINCE_DATE,
+        \Configuration::updateValue(
+            \Shoppingfeed::ORDER_SHIPPED_IMPORT_PERMANENT_SINCE_DATE,
             $date->format(self::DATE_FORMAT_PS),
             false,
             null,
@@ -123,10 +118,10 @@ class SinceDate implements SinceDateInterface
         return $this;
     }
 
-    public function setForShippedByMarketplace(DateTimeInterface $date, $id_shop = null)
+    public function setForShippedByMarketplace(\DateTimeInterface $date, $id_shop = null)
     {
-        Configuration::updateValue(
-            Shoppingfeed::ORDER_SHIPPED_BY_MARKETPLACE_IMPORT_PERMANENT_SINCE_DATE,
+        \Configuration::updateValue(
+            \Shoppingfeed::ORDER_SHIPPED_BY_MARKETPLACE_IMPORT_PERMANENT_SINCE_DATE,
             $date->format(self::DATE_FORMAT_PS),
             false,
             null,
@@ -138,6 +133,6 @@ class SinceDate implements SinceDateInterface
 
     protected function getDefaultInterval()
     {
-        return new DateInterval('P7D');
+        return new \DateInterval('P7D');
     }
 }
