@@ -100,6 +100,7 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
                 $ticketsHandler->setConveyor([
                     'id_shop' => $token['id_shop'],
                     'id_token' => $token['id_shoppingfeed_token'],
+                    'shoppingfeed_store_id' => $token['shoppingfeed_store_id'],
                     'order_action' => ShoppingfeedTaskOrder::ACTION_CHECK_TICKET_SYNC_STATUS,
                     'shoppingfeed_store_id' => $token['shoppingfeed_store_id'],
                 ]);
@@ -160,6 +161,7 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
                 $orderStatusHandler->setConveyor([
                     'id_shop' => $token['id_shop'],
                     'id_token' => $token['id_shoppingfeed_token'],
+                    'shoppingfeed_store_id' => $token['shoppingfeed_store_id'],
                     'order_action' => ShoppingfeedTaskOrder::ACTION_SYNC_STATUS,
                     'shoppingfeed_store_id' => $token['shoppingfeed_store_id'],
                 ]);
