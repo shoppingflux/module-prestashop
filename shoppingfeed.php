@@ -1592,7 +1592,7 @@ class Shoppingfeed extends ShoppingfeedClasslib\Module
 
     public function isUploadOrderDocumentReady()
     {
-        return false;
+        return true;
     }
 
     public function actionEmailSendBefore($params)
