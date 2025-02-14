@@ -252,7 +252,7 @@ $_MODULE['<{shoppingfeed}prestashop>hoststubhandler_4993d8516d8737159bcd735ca807
 $_MODULE['<{shoppingfeed}prestashop>hoststubhandler_d7c9a06f90261a728be71382fc06202a'] = 'Régler la configuration PHP \'register_globals\' à \'Off\'.';
 $_MODULE['<{shoppingfeed}prestashop>hoststubhandler_4a344651fb10eb9e339838fab7bb97ae'] = 'Activer la compression GZIP sur votre serrveur.';
 $_MODULE['<{shoppingfeed}prestashop>hoststubhandler_0996c7cf8e7f49f54d15b68262a6b68d'] = 'Des fichiers PrestaShop sont manquants sur votre serveur.';
-$_MODULE['<{shoppingfeed}prestashop>hoststubhandler_95095fc4bbc8b42ec512cfb1cfa19d8a'] = 'Vous utilisez la version de PHP %. Nous recommandons de mettre à jour PHP vers 5.6 minimum.';
+$_MODULE['<{shoppingfeed}prestashop>hoststubhandler_95095fc4bbc8b42ec512cfb1cfa19d8a'] = 'Vous utilisez la version de PHP %s. Nous recommandons de mettre à jour PHP vers 5.6 minimum.';
 $_MODULE['<{shoppingfeed}prestashop>databasestubhandler_0168d58830eab3aed7a65afcd652c8ca'] = 'La table n\'exite pas';
 $_MODULE['<{shoppingfeed}prestashop>databasestubhandler_27964128da66a773e4ccd1b4a7cd7e61'] = 'Index unique non valide. Clef d\'index manquante :';
 $_MODULE['<{shoppingfeed}prestashop>databasestubhandler_cf1e4aeb4d1db12dad300d406eafa65c'] = 'Le champs ne doit pas être présent dans cette table';
