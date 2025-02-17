@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright since 2019 Shopping Feed
  *
@@ -19,13 +20,10 @@
 
 namespace Tests\OrderImport;
 
-use Hook;
 use Order;
 use ShoppingfeedAddon\Actions\ActionsHandler;
 use ShoppingfeedAddon\OrderImport\Rules\Zalando;
 use ShoppingfeedClasslib\Registry;
-use ShoppingfeedOrder;
-use Validate;
 
 /**
  * Order Rules Zalando Test
@@ -74,8 +72,8 @@ class OrderImportZalandoTest extends AbstractOrdeTestCase
      */
     public function testIsOrderValid($conveyor)
     {
-        $psOrder = new Order((int) $conveyor['id_order']);
-        $this->assertTrue(Validate::isLoadedObject($psOrder));
+        $psOrder = new \Order((int) $conveyor['id_order']);
+        $this->assertTrue(\Validate::isLoadedObject($psOrder));
 
         return $psOrder;
     }
@@ -85,8 +83,8 @@ class OrderImportZalandoTest extends AbstractOrdeTestCase
      */
     public function testIsSfOrderValid($conveyor)
     {
-        $sfOrder = ShoppingfeedOrder::getByIdOrder((int) $conveyor['id_order']);
-        $this->assertTrue(Validate::isLoadedObject($sfOrder));
+        $sfOrder = \ShoppingfeedOrder::getByIdOrder((int) $conveyor['id_order']);
+        $this->assertTrue(\Validate::isLoadedObject($sfOrder));
 
         return $sfOrder;
     }
@@ -128,8 +126,8 @@ class OrderImportZalandoTest extends AbstractOrdeTestCase
      */
     public function testHook($psOrder)
     {
-        foreach ($psOrder->getInvoicesCollection()  as $invoice) {
-            $display = Hook::exec('displayPDFInvoice', ['object' => $invoice]);
+        foreach ($psOrder->getInvoicesCollection() as $invoice) {
+            $display = \Hook::exec('displayPDFInvoice', ['object' => $invoice]);
             $this->assertNotEquals(strpos($display, '93000070344'), 0);
         }
     }

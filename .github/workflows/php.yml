@@ -3,14 +3,9 @@ on: [pull_request]
 jobs:
     # Check there is no syntax errors in the project
     php-linter:
-        name: PHP Syntax check 5.6|7.2|7.3|7.4|8.0|8.1
+        name: PHP Syntax check 7.2|7.3|7.4|8.1
         runs-on: ubuntu-latest
         steps:
-            - name: PHP syntax checker 5.6
-              uses: prestashop/github-action-php-lint/5.6@master
-              with:
-                folder-to-exclude: "! -path \"./202/*\" ! -path \"./vendor/*\""
-
             - name: PHP syntax checker 7.2
               uses: prestashop/github-action-php-lint/7.2@master
               with:
@@ -23,11 +18,6 @@ jobs:
 
             - name: PHP syntax checker 7.4
               uses: prestashop/github-action-php-lint/7.4@master
-              with:
-                folder-to-exclude: "! -path \"./202/*\" ! -path \"./vendor/*\""
-
-            - name: PHP syntax checker 8.0
-              uses: prestashop/github-action-php-lint/8.0@master
               with:
                 folder-to-exclude: "! -path \"./202/*\" ! -path \"./vendor/*\""
 
@@ -59,7 +49,7 @@ jobs:
               run: composer update
 
             - name: Run PHP-CS-Fixer
-              run: ./vendor/bin/php-cs-fixer fix --dry-run --diff --using-cache=no --diff-format udiff
+              run: ./vendor/bin/php-cs-fixer fix --dry-run --diff --using-cache=no
 
     # Run PHPStan against the module and a PrestaShop release
     phpstan:

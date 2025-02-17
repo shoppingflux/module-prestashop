@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright since 2019 Shopping Feed
  *
@@ -44,18 +45,18 @@ class OrderRulesAmazonEbayTest extends AbstractOrdeTestCase
         $rules->onPreProcess($params);
 
         $expedtedAddress = [
-                'firstName' => 'Martin',
-                'lastName' => 'Bernard',
-                'company' => '202 ecommerce',
-                'street' => '10 rue Vivienne',
-                'street2' => '',
-                'other' => '',
-                'postalCode' => '75002',
-                'city' => 'Paris',
-                'country' => 'FR',
-                'phone' => '0123456789',
-                'mobilePhone' => '0623456789',
-                'email' => 'unique.id@test.net',
+            'firstName' => 'Martin',
+            'lastName' => 'Bernard',
+            'company' => '202 ecommerce',
+            'street' => '10 rue Vivienne',
+            'street2' => '',
+            'other' => '',
+            'postalCode' => '75002',
+            'city' => 'Paris',
+            'country' => 'FR',
+            'phone' => '0123456789',
+            'mobilePhone' => '0623456789',
+            'email' => 'unique.id@test.net',
         ];
         $this->assertSame($expedtedAddress, $params['orderData']->billingAddress);
     }
@@ -90,18 +91,18 @@ class OrderRulesAmazonEbayTest extends AbstractOrdeTestCase
         $rules->onPreProcess($params);
 
         $expedtedAddress = [
-                'firstName' => 'CELINE',
-                'lastName' => 'CARRA',
-                'company' => '',
-                'street' => '25 RUE DES MARONNIERS',
-                'street2' => '',
-                'other' => '',
-                'postalCode' => '71250',
-                'city' => 'CLUNY',
-                'country' => 'FR',
-                'phone' => '',
-                'mobilePhone' => '',
-                'email' => 'mp+20220414342060+000010890@web.redoute.fr',
+            'firstName' => 'CELINE',
+            'lastName' => 'CARRA',
+            'company' => '',
+            'street' => '25 RUE DES MARONNIERS',
+            'street2' => '',
+            'other' => '',
+            'postalCode' => '71250',
+            'city' => 'CLUNY',
+            'country' => 'FR',
+            'phone' => '',
+            'mobilePhone' => '',
+            'email' => 'mp+20220414342060+000010890@web.redoute.fr',
         ];
         $this->assertSame($expedtedAddress, $params['orderData']->billingAddress);
     }
@@ -151,18 +152,18 @@ class OrderRulesAmazonEbayTest extends AbstractOrdeTestCase
         $rules->onPreProcess($params);
 
         $expedtedAddress = [
-                'firstName' => 'Jean-Pierre',
-                'lastName' => 'Le Rouge',
-                'company' => '',
-                'street' => '23 rue de la jetée',
-                'street2' => '',
-                'other' => 'leg1520',
-                'postalCode' => '06800',
-                'city' => 'Cagnes Sur Mer',
-                'country' => 'FR',
-                'phone' => '065544332211',
-                'mobilePhone' => '',
-                'email' => 'abcdefghijklmopq@members.ebay.com',
+            'firstName' => 'Jean-Pierre',
+            'lastName' => 'Le Rouge',
+            'company' => '',
+            'street' => '23 rue de la jetée',
+            'street2' => '',
+            'other' => 'leg1520',
+            'postalCode' => '06800',
+            'city' => 'Cagnes Sur Mer',
+            'country' => 'FR',
+            'phone' => '065544332211',
+            'mobilePhone' => '',
+            'email' => 'abcdefghijklmopq@members.ebay.com',
         ];
         $this->assertSame($expedtedAddress, $params['orderData']->billingAddress);
     }
@@ -183,18 +184,18 @@ class OrderRulesAmazonEbayTest extends AbstractOrdeTestCase
         $rules->onPreProcess($params);
 
         $expedtedAddress = [
-                'firstName' => 'Edgar',
-                'lastName' => 'Lameloise',
-                'company' => '',
-                'street' => '36 Place d\'Armes',
-                'street2' => '',
-                'other' => '',
-                'postalCode' => '71150',
-                'city' => 'CHAGNY',
-                'country' => 'FR',
-                'phone' => '0385112233',
-                'mobilePhone' => '',
-                'email' => 'gfwv9k7xvwfrg11@marketplace.amazon.fr',
+            'firstName' => 'Edgar',
+            'lastName' => 'Lameloise',
+            'company' => '',
+            'street' => '36 Place d\'Armes',
+            'street2' => '',
+            'other' => '',
+            'postalCode' => '71150',
+            'city' => 'CHAGNY',
+            'country' => 'FR',
+            'phone' => '0385112233',
+            'mobilePhone' => '',
+            'email' => 'gfwv9k7xvwfrg11@marketplace.amazon.fr',
         ];
         $this->assertSame($expedtedAddress, $params['orderData']->billingAddress);
     }

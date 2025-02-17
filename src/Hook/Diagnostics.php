@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -19,8 +20,6 @@
 
 namespace ShoppingfeedAddon\Hook;
 
-use Configuration;
-use Module;
 use ShoppingfeedClasslib\Hook\AbstractHook;
 
 class Diagnostics extends AbstractHook
@@ -31,7 +30,7 @@ class Diagnostics extends AbstractHook
 
     public function actionShoppingfeedGetConflicts($params)
     {
-        $recalculateShipping = (bool) Configuration::get('PS_ORDER_RECALCULATE_SHIPPING');
+        $recalculateShipping = (bool) \Configuration::get('PS_ORDER_RECALCULATE_SHIPPING');
         $conflics = [];
         if ($recalculateShipping === true) {
             $conflics[] = $this->module->l(
@@ -56,7 +55,7 @@ class Diagnostics extends AbstractHook
             );
         }
 
-        if (Module::isEnabled('hidefeatures') === true) {
+        if (\Module::isEnabled('hidefeatures') === true) {
             $conflics[] = $this->module->l(
                 'Module `hidefeatures` is enabled on your PrestaShop. Some features can be hidden on your feed.',
                 'Diagnostics'

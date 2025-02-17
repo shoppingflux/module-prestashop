@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -19,7 +20,6 @@
 
 namespace Tests\OrderImport;
 
-use Address;
 use ShoppingfeedAddon\Actions\ActionsHandler;
 use ShoppingfeedAddon\OrderImport\Rules\AmazonEbay;
 use ShoppingfeedAddon\OrderImport\Rules\AmazonManomanoTva;
@@ -54,8 +54,8 @@ class OrderRulesAmazonManomanoTvaTest extends AbstractOrdeTestCase
         Registry::set('shoppingfeedOrderImportHandler', $handler);
         $handler->process('shoppingfeedOrderImport');
         $conveyor = $handler->getConveyor();
-        $billingAddress = new Address($conveyor['id_billing_address']);
-        $shippingAddress = new Address($conveyor['id_shipping_address']);
+        $billingAddress = new \Address($conveyor['id_billing_address']);
+        $shippingAddress = new \Address($conveyor['id_shipping_address']);
 
         $this->assertNotEmpty($billingAddress->vat_number);
         $this->assertNotEmpty($shippingAddress->vat_number);
@@ -85,8 +85,8 @@ class OrderRulesAmazonManomanoTvaTest extends AbstractOrdeTestCase
         Registry::set('shoppingfeedOrderImportHandler', $handler);
         $handler->process('shoppingfeedOrderImport');
         $conveyor = $handler->getConveyor();
-        $billingAddress = new Address($conveyor['id_billing_address']);
-        $shippingAddress = new Address($conveyor['id_shipping_address']);
+        $billingAddress = new \Address($conveyor['id_billing_address']);
+        $shippingAddress = new \Address($conveyor['id_shipping_address']);
 
         $this->assertNotEmpty($billingAddress->vat_number);
         $this->assertNotEmpty($shippingAddress->vat_number);

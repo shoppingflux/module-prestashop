@@ -2,7 +2,6 @@
 
 namespace Tests\OrderImport;
 
-use Address;
 use ShoppingfeedAddon\Actions\ActionsHandler;
 use ShoppingfeedAddon\OrderImport\Rules\ColissimoRule;
 use ShoppingfeedClasslib\Registry;
@@ -33,7 +32,7 @@ class OrderRulesColissimoTest extends AbstractOrdeTestCase
         Registry::set('shoppingfeedOrderImportHandler', $handler);
         $handler->process('shoppingfeedOrderImport');
         $conveyor = $handler->getConveyor();
-        $address = new Address($conveyor['cart']->id_address_delivery);
+        $address = new \Address($conveyor['cart']->id_address_delivery);
         $pickupPoint = \ColissimoPickupPoint::getPickupPointByIdColissimo('p31175');
         $this->assertEquals($address->company, $pickupPoint->company_name);
         $this->assertEquals($address->address1, $pickupPoint->address1);
@@ -66,7 +65,7 @@ class OrderRulesColissimoTest extends AbstractOrdeTestCase
         Registry::set('shoppingfeedOrderImportHandler', $handler);
         $handler->process('shoppingfeedOrderImport');
         $conveyor = $handler->getConveyor();
-        $address = new Address($conveyor['cart']->id_address_delivery);
+        $address = new \Address($conveyor['cart']->id_address_delivery);
         $pickupPoint = \ColissimoPickupPoint::getPickupPointByIdColissimo('488411');
         $this->assertEquals($address->company, $pickupPoint->company_name);
         $this->assertEquals($address->address1, $pickupPoint->address1);
@@ -99,7 +98,7 @@ class OrderRulesColissimoTest extends AbstractOrdeTestCase
         Registry::set('shoppingfeedOrderImportHandler', $handler);
         $handler->process('shoppingfeedOrderImport');
         $conveyor = $handler->getConveyor();
-        $address = new Address($conveyor['cart']->id_address_delivery);
+        $address = new \Address($conveyor['cart']->id_address_delivery);
         $pickupPoint = \ColissimoPickupPoint::getPickupPointByIdColissimo('488411');
         $this->assertEquals($address->company, $pickupPoint->company_name);
         $this->assertEquals($address->address1, $pickupPoint->address1);
@@ -132,7 +131,7 @@ class OrderRulesColissimoTest extends AbstractOrdeTestCase
         Registry::set('shoppingfeedOrderImportHandler', $handler);
         $handler->process('shoppingfeedOrderImport');
         $conveyor = $handler->getConveyor();
-        $address = new Address($conveyor['cart']->id_address_delivery);
+        $address = new \Address($conveyor['cart']->id_address_delivery);
         $pickupPoint = \ColissimoPickupPoint::getPickupPointByIdColissimo('488411');
         $this->assertEquals($address->company, $pickupPoint->company_name);
         $this->assertEquals($address->address1, $pickupPoint->address1);

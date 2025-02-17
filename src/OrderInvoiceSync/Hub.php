@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright since 2019 Shopping Feed
  *
@@ -23,22 +24,17 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-use Configuration;
-use Db;
-use DbQuery;
-use Shoppingfeed;
-
 class Hub
 {
     protected $db;
 
     protected $marketplaces = [];
 
-    protected static $instance = null;
+    protected static $instance;
 
     protected function __construct()
     {
-        $this->db = Db::getInstance();
+        $this->db = \Db::getInstance();
         $this->initMarketplaces();
     }
 
@@ -112,13 +108,13 @@ class Hub
     protected function initMarketplaces()
     {
         $result = $this->db->executeS(
-            (new DbQuery())
+            (new \DbQuery())
                 ->from('shoppingfeed_carrier')
                 ->groupBy('name_marketplace')
                 ->select('name_marketplace')
         );
         $configurations = json_decode(
-            Configuration::getGlobalValue(Shoppingfeed::ORDER_INVOICE_SYNC_MARKETPLACES),
+            \Configuration::getGlobalValue(\Shoppingfeed::ORDER_INVOICE_SYNC_MARKETPLACES),
             true
         );
 
@@ -131,7 +127,7 @@ class Hub
             $this->marketplaces[$id] = new Marketplace(
                 $id,
                 $row['name_marketplace'],
-                (empty($configurations[$id]['isEnabled']) ? false : $configurations[$id]['isEnabled'])
+                empty($configurations[$id]['isEnabled']) ? false : $configurations[$id]['isEnabled']
             );
         }
     }
@@ -156,8 +152,8 @@ class Hub
             ];
         }
 
-        return Configuration::updateGlobalValue(
-            Shoppingfeed::ORDER_INVOICE_SYNC_MARKETPLACES,
+        return \Configuration::updateGlobalValue(
+            \Shoppingfeed::ORDER_INVOICE_SYNC_MARKETPLACES,
             json_encode($settings)
         );
     }

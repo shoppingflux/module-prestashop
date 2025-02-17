@@ -1,4 +1,5 @@
 <?php
+
 /**
  * NOTICE OF LICENSE
  *
@@ -161,10 +162,10 @@ class ShoppingfeedSyncProductModuleFrontController extends ShoppingfeedCronContr
 
     private function addFlagUpdatePreloadingTableByDateUpdate()
     {
-        Db::getInstance()->execute($this->getSqlUpdatePreloadingTable(\Product::$definition['table']));
+        Db::getInstance()->execute($this->getSqlUpdatePreloadingTable(Product::$definition['table']));
 
         if (Shop::isFeatureActive()) {
-            Db::getInstance()->execute($this->getSqlUpdatePreloadingTable(\Product::$definition['table'] . '_shop'));
+            Db::getInstance()->execute($this->getSqlUpdatePreloadingTable(Product::$definition['table'] . '_shop'));
         }
     }
 
@@ -190,7 +191,7 @@ class ShoppingfeedSyncProductModuleFrontController extends ShoppingfeedCronContr
     private function getSqlAddTaskSyncProduct($task)
     {
         return sprintf(
-        '
+            '
             INSERT IGNORE INTO %1$sshoppingfeed_product
             (action, id_product, id_product_attribute, id_token, update_at, date_add, date_upd)
             select "%2$s", sp.id_product, IFNULL(sa.id_product_attribute, 0), sp.id_token, now(), now(), now()

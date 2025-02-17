@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -27,7 +28,6 @@ use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
-use Tools;
 
 class AmazonB2B extends RuleAbstract implements RuleInterface
 {
@@ -37,7 +37,7 @@ class AmazonB2B extends RuleAbstract implements RuleInterface
         $apiOrderData = $apiOrder->toArray();
         $apiOrderAdditionalFields = $apiOrderData['additionalFields'];
 
-        return preg_match('#^amazon#', Tools::strtolower($apiOrder->getChannel()->getName()))
+        return preg_match('#^amazon#', \Tools::strtolower($apiOrder->getChannel()->getName()))
             && empty($apiOrderAdditionalFields['is_business_order']) === false;
     }
 

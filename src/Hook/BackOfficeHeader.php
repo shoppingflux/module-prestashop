@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -19,10 +20,8 @@
 
 namespace ShoppingfeedAddon\Hook;
 
-use Context;
 use ShoppingfeedAddon\Services\CarrierFinder;
 use ShoppingfeedClasslib\Hook\AbstractHook;
-use Validate;
 
 class BackOfficeHeader extends AbstractHook
 {
@@ -43,8 +42,8 @@ class BackOfficeHeader extends AbstractHook
     {
         $carrier = $this->carrierFinder->findProductFeedCarrier();
 
-        if (false == Validate::isLoadedObject($carrier)) {
-            Context::getContext()->controller->errors[] = $this->module->l('Be careful, the choice of carrier for the import of shipping costs in the source feed is not filled in (see the "Products feed" tab)', 'BackOfficeHeader');
+        if (false == \Validate::isLoadedObject($carrier)) {
+            \Context::getContext()->controller->errors[] = $this->module->l('Be careful, the choice of carrier for the import of shipping costs in the source feed is not filled in (see the "Products feed" tab)', 'BackOfficeHeader');
         }
     }
 }

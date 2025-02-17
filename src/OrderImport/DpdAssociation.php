@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -19,16 +20,11 @@
 
 namespace ShoppingfeedAddon\OrderImport;
 
-use Address;
-use Cart;
-use Db;
-use Validate;
-
 class DpdAssociation
 {
-    public function create(Cart $cart, $relayId)
+    public function create(\Cart $cart, $relayId)
     {
-        if (false == Validate::isLoadedObject($cart)) {
+        if (false == \Validate::isLoadedObject($cart)) {
             return false;
         }
 
@@ -36,9 +32,9 @@ class DpdAssociation
             return false;
         }
 
-        $address = new Address($cart->id_address_delivery);
+        $address = new \Address($cart->id_address_delivery);
 
-        if (false == Validate::isLoadedObject($address)) {
+        if (false == \Validate::isLoadedObject($address)) {
             return false;
         }
 
@@ -57,7 +53,7 @@ class DpdAssociation
         ];
 
         try {
-            $result = Db::getInstance()->insert('dpdfrance_shipping', $data, false, true, Db::INSERT_IGNORE);
+            $result = \Db::getInstance()->insert('dpdfrance_shipping', $data, false, true, \Db::INSERT_IGNORE);
         } catch (\Throwable $e) {
             return false;
         }

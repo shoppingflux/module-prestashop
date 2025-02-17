@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -25,9 +26,9 @@ use ShoppingfeedAddon\Model\Discount;
 use ShoppingfeedAddon\Services\SfProductGenerator;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 
-class ShoppingfeedProductModuleFrontController extends \ModuleFrontController
+class ShoppingfeedProductModuleFrontController extends ModuleFrontController
 {
-    protected $sfToken = null;
+    protected $sfToken;
 
     protected $isCompressFeed;
 
@@ -90,10 +91,10 @@ class ShoppingfeedProductModuleFrontController extends \ModuleFrontController
         }
         $productGenerator->setPlatform('Prestashop', _PS_VERSION_)
                          ->addMapper(
-                            [
-                                $this, $this->productWithHierarchy ? 'mapperWitHierarchy' : 'mapperWithoutHierarchy',
-                            ]
-                        );
+                             [
+                                 $this, $this->productWithHierarchy ? 'mapperWitHierarchy' : 'mapperWithoutHierarchy',
+                             ]
+                         );
 
         if (is_callable([$productGenerator, 'getMetaData'])) {
             $productGenerator->getMetaData()->setPlatform(
@@ -118,7 +119,23 @@ class ShoppingfeedProductModuleFrontController extends \ModuleFrontController
                 $productsToAppend[] = $product;
                 foreach ($product['variations'] as $variation) {
                     unset($product['variations']);
-                    $productsToAppend[] = array_merge($product, $variation);
+                    $productVariation = array_merge($product, $variation);
+                    $productVariation['attributes'] = array_merge($product['attributes'], $variation['attributes']);
+
+                    if (!empty($variation['attributes']['link-variation'])) {
+                        $productVariation['link'] = $variation['attributes']['link-variation'];
+                        unset($productVariation['attributes']['link-variation']);
+                    }
+                    if (!empty($variation['attributes']['ecotax_child'])) {
+                        $productVariation['ecotax'] = $variation['attributes']['ecotax_child'];
+                        unset($productVariation['attributes']['ecotax_child']);
+                    }
+                    if (!empty($variation['attributes']['weight'])) {
+                        $productVariation['weight'] = $variation['attributes']['weight'];
+                        unset($productVariation['attributes']['weight']);
+                    }
+
+                    $productsToAppend[] = $productVariation;
                 }
             }
             $productGenerator->appendProduct($productsToAppend);

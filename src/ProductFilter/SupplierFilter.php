@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -19,9 +20,7 @@
 
 namespace ShoppingfeedAddon\ProductFilter;
 
-use Context;
 use ShoppingfeedClasslib\Utils\Translate\TranslateTrait;
-use Supplier;
 
 class SupplierFilter implements Filter
 {
@@ -31,7 +30,7 @@ class SupplierFilter implements Filter
 
     public function __construct($id)
     {
-        $this->supplier = new Supplier($id, Context::getContext()->language->id);
+        $this->supplier = new \Supplier($id, \Context::getContext()->language->id);
     }
 
     public function getSqlChunk()

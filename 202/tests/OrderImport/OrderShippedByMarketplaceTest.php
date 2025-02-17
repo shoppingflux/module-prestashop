@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -19,12 +20,10 @@
 
 namespace Tests\OrderImport;
 
-use Order;
 use ShoppingfeedAddon\Actions\ActionsHandler;
 use ShoppingfeedAddon\OrderImport\Rules\ShippedByMarketplace;
 use ShoppingfeedAddon\OrderImport\SinceDate;
 use ShoppingfeedClasslib\Registry;
-use StockAvailable;
 
 class OrderShippedByMarketplaceTest extends AbstractOrdeTestCase
 {
@@ -48,7 +47,7 @@ class OrderShippedByMarketplaceTest extends AbstractOrdeTestCase
     public function testImportAfn()
     {
         $apiOrder = $this->getOrderRessourceFromDataset('order-shipped-afn.json');
-        $stockBeforeImport = StockAvailable::getQuantityAvailableByProduct(8);
+        $stockBeforeImport = \StockAvailable::getQuantityAvailableByProduct(8);
 
         $handler = new ActionsHandler();
         $handler->addActions(
@@ -71,11 +70,11 @@ class OrderShippedByMarketplaceTest extends AbstractOrdeTestCase
         $processResult = $handler->process('shoppingfeedOrderImport');
 
         $this->assertTrue($processResult);
-        $stockAfterImport = StockAvailable::getQuantityAvailableByProduct(8);
+        $stockAfterImport = \StockAvailable::getQuantityAvailableByProduct(8);
 
         $conveyor = $handler->getConveyor();
 
-        $psOrder = new Order((int) $conveyor['id_order']);
+        $psOrder = new \Order((int) $conveyor['id_order']);
 
         $this->assertEquals(5, $psOrder->current_state);
         $this->assertEquals($stockBeforeImport, $stockAfterImport);
@@ -84,7 +83,7 @@ class OrderShippedByMarketplaceTest extends AbstractOrdeTestCase
     public function testImportClogistique()
     {
         $apiOrder = $this->getOrderRessourceFromDataset('order-shipped-clogistique.json');
-        $stockBeforeImport = StockAvailable::getQuantityAvailableByProduct(8);
+        $stockBeforeImport = \StockAvailable::getQuantityAvailableByProduct(8);
 
         $handler = new ActionsHandler();
         $handler->addActions(
@@ -107,11 +106,11 @@ class OrderShippedByMarketplaceTest extends AbstractOrdeTestCase
         $processResult = $handler->process('shoppingfeedOrderImport');
 
         $this->assertTrue($processResult);
-        $stockAfterImport = StockAvailable::getQuantityAvailableByProduct(8);
+        $stockAfterImport = \StockAvailable::getQuantityAvailableByProduct(8);
 
         $conveyor = $handler->getConveyor();
 
-        $psOrder = new Order((int) $conveyor['id_order']);
+        $psOrder = new \Order((int) $conveyor['id_order']);
 
         $this->assertEquals(5, $psOrder->current_state);
         $this->assertEquals($stockBeforeImport, $stockAfterImport);
@@ -120,7 +119,7 @@ class OrderShippedByMarketplaceTest extends AbstractOrdeTestCase
     public function testImportEpmm()
     {
         $apiOrder = $this->getOrderRessourceFromDataset('order-shipped-epmm.json');
-        $stockBeforeImport = StockAvailable::getQuantityAvailableByProduct(8);
+        $stockBeforeImport = \StockAvailable::getQuantityAvailableByProduct(8);
 
         $handler = new ActionsHandler();
         $handler->addActions(
@@ -143,11 +142,11 @@ class OrderShippedByMarketplaceTest extends AbstractOrdeTestCase
         $processResult = $handler->process('shoppingfeedOrderImport');
 
         $this->assertTrue($processResult);
-        $stockAfterImport = StockAvailable::getQuantityAvailableByProduct(8);
+        $stockAfterImport = \StockAvailable::getQuantityAvailableByProduct(8);
 
         $conveyor = $handler->getConveyor();
 
-        $psOrder = new Order((int) $conveyor['id_order']);
+        $psOrder = new \Order((int) $conveyor['id_order']);
 
         $this->assertEquals(5, $psOrder->current_state);
         $this->assertEquals($stockBeforeImport, $stockAfterImport);
@@ -156,7 +155,7 @@ class OrderShippedByMarketplaceTest extends AbstractOrdeTestCase
     public function testImportFulfilledChannel()
     {
         $apiOrder = $this->getOrderRessourceFromDataset('order-shipped-fulfilledByChannel.json');
-        $stockBeforeImport = StockAvailable::getQuantityAvailableByProduct(8);
+        $stockBeforeImport = \StockAvailable::getQuantityAvailableByProduct(8);
 
         $handler = new ActionsHandler();
         $handler->addActions(
@@ -179,11 +178,11 @@ class OrderShippedByMarketplaceTest extends AbstractOrdeTestCase
         $processResult = $handler->process('shoppingfeedOrderImport');
 
         $this->assertTrue($processResult);
-        $stockAfterImport = StockAvailable::getQuantityAvailableByProduct(8);
+        $stockAfterImport = \StockAvailable::getQuantityAvailableByProduct(8);
 
         $conveyor = $handler->getConveyor();
 
-        $psOrder = new Order((int) $conveyor['id_order']);
+        $psOrder = new \Order((int) $conveyor['id_order']);
 
         $this->assertEquals(5, $psOrder->current_state);
         $this->assertEquals($stockBeforeImport, $stockAfterImport);

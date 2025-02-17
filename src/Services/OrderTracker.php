@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -19,14 +20,10 @@
 
 namespace ShoppingfeedAddon\Services;
 
-use Db;
-use DbQuery;
-use Order;
 use SfGuzzle\GuzzleHttp\Client;
 use ShoppingFeed\Sdk\Client\ClientOptions;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 use ShoppingfeedClasslib\Utils\Translate\TranslateTrait;
-use ShoppingfeedToken;
 
 class OrderTracker
 {
@@ -36,12 +33,12 @@ class OrderTracker
 
     public function __construct()
     {
-        $this->db = Db::getInstance();
+        $this->db = \Db::getInstance();
     }
 
-    public function track(Order $order)
+    public function track(\Order $order)
     {
-        $sft = new ShoppingfeedToken();
+        $sft = new \ShoppingfeedToken();
         $tokens = $sft->findAllActive();
         $clientOptions = new ClientOptions();
         $client = new Client([
@@ -69,10 +66,10 @@ class OrderTracker
         ProcessLoggerHandler::closeLogger();
     }
 
-    protected function getIP(Order $order)
+    protected function getIP(\Order $order)
     {
         // Search IP in the table connections
-        $query = (new DbQuery())
+        $query = (new \DbQuery())
             ->from('guest', 'g')
             ->innerJoin('connections', 'c', 'g.`id_guest` = c.`id_guest` AND g.`id_customer` = ' . (int) $order->id_customer)
             ->orderBy('c.`date_add` DESC')
@@ -87,7 +84,7 @@ class OrderTracker
         }
 
         // If not, we get the IP from the customer_ip table
-        $query = (new DbQuery())
+        $query = (new \DbQuery())
             ->from('customer_ip')
             ->where('id_customer = ' . (int) $order->id_customer)
             ->select('ip');
