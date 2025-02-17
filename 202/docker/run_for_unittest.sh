@@ -116,6 +116,6 @@ VALUES
 
 cd /var/www/html/modules/shoppingfeed/
 
-php -dmemory_limit=256M vendor/bin/phpunit -c 202/phpunit.xml
+php -dmemory_limit=512M vendor/bin/phpunit -c 202/phpunit.xml
 
 chown www-data:www-data /var/www/html/var -Rf
