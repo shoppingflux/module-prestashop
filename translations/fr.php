@@ -561,7 +561,7 @@ $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_c8878a5464
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_b9d1b8558d2d7145794f697158b6f253'] = 'Shoppingfeed Prestashop Plugin (Feed&Order)';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_ceff443491edd888ee91e6bef87446a6'] = 'Vous devez spécifier un \'Délai avant la synchronisation du numéro de suivi\' supérieur à 0.';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_23b574c89c8eafae9531357e5763d00f'] = 'Vous devez spécifier un \'Nombre de commandes maximum\' entre 1 et 200.';
-$_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_67838a580a67c01392c8bc906654228a'] = 'Séelctionner un transporteur';
+$_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_67838a580a67c01392c8bc906654228a'] = 'Sélectionner un transporteur';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedaccountsettings_b9d1b8558d2d7145794f697158b6f253'] = 'Shoppingfeed Prestashop Plugin (Feed&Order)';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedaccountsettings_5161b4f9ce9a8b7d966e8bf3c049f6f3'] = 'API Token';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedaccountsettings_bea8d9e6a0d57c4a264756b4f9822ed9'] = 'Mon Compte';
