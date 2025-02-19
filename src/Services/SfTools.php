@@ -20,6 +20,7 @@
 namespace ShoppingfeedAddon\Services;
 
 use Tools;
+use Validate;
 
 class SfTools
 {
@@ -30,5 +31,10 @@ class SfTools
         } else {
             return Tools::hash($string);
         }
+    }
+
+    public function isInt($value)
+    {
+        return Validate::isInt($value);
     }
 }
