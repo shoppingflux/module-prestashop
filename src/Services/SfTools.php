@@ -20,22 +20,19 @@
 
 namespace ShoppingfeedAddon\Services;
 
-use Tools;
-use Validate;
-
 class SfTools
 {
     public function hash($string)
     {
         if (version_compare(_PS_VERSION_, '1.7', '<')) {
-            return Tools::encrypt($string);
+            return \Tools::encrypt($string);
         } else {
-            return Tools::hash($string);
+            return \Tools::hash($string);
         }
     }
 
     public function isInt($value)
     {
-        return Validate::isInt($value);
+        return \Validate::isInt($value);
     }
 }
