@@ -685,10 +685,15 @@ class Shoppingfeed extends ShoppingfeedClasslib\Module
         $explodedReference = explode('_', $sfProductReference);
         $id_product = isset($explodedReference[0]) ? $explodedReference[0] : null;
 
-        $product = new Product($id_product, true, null, $id_shop);
-        $product->id_product_attribute = null;
-        if (isset($explodedReference[1])) {
+        if ($this->tools->isInt($id_product)) {
+            $product = new Product($id_product, true, null, $id_shop);
+        } else {
+            $product = new Product();
+        }
+        if (isset($explodedReference[1]) && $this->tools->isInt($explodedReference[1])) {
             $product->id_product_attribute = $explodedReference[1];
+        } else {
+            $product->id_product_attribute = null;
         }
 
         Hook::exec(

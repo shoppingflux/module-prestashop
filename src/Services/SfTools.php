@@ -30,4 +30,9 @@ class SfTools
             return \Tools::hash($string);
         }
     }
+
+    public function isInt($value)
+    {
+        return \Validate::isInt($value);
+    }
 }
