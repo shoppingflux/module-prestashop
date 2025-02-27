@@ -66,10 +66,10 @@ class OrderRuleTaxForBusinessTest extends AbstractOrdeTestCase
 
         $processResult = $handler->process('shoppingfeedOrderImport');
         $order = new \Order($handler->getConveyor()['id_order']);
-        $tax = $order->total_paid_tax_incl - $order->total_paid_tax_excl;
+        $tax = round($order->total_paid_tax_incl - $order->total_paid_tax_excl, 2);
 
         $this->assertTrue($processResult);
-        $this->assertEquals(0, $tax);
+        $this->assertEquals(10.74, $tax);
     }
 
     public function testImportRetifBusiness()
@@ -99,6 +99,6 @@ class OrderRuleTaxForBusinessTest extends AbstractOrdeTestCase
         $tax = round($order->total_paid_tax_incl - $order->total_paid_tax_excl, 2);
 
         $this->assertTrue($processResult);
-        $this->assertEquals(10.74, $tax);
+        $this->assertEquals(0, $tax);
     }
 }

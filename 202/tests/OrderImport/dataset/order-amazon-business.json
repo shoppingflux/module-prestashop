@@ -46,7 +46,7 @@
       "quantity": 2,
       "price": 53.7,
       "commission": null,
-      "taxAmount": 0,
+      "taxAmount": 10.74,
       "ecotaxAmount": 0,
       "channelReference": "41281286961602",
       "additionalFields": null,
