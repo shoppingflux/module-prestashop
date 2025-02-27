@@ -593,6 +593,7 @@ class ProductSerializer
             ->from('product_attribute_image', 'pai')
             ->leftJoin('image', 'i', 'pai.id_image = i.id_image')
             ->where('pai.id_product_attribute =' . (int) $id_product_attribute)
+            ->where('i.id_product = ' . (int) $this->product->id)
             ->orderBy('is.cover DESC, i.position ASC')
             ->leftJoin('image_shop', 'is', 'i.id_image = is.id_image')
             ->where('is.id_shop = ' . (int) $this->id_shop);
