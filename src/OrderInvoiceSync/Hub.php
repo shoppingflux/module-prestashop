@@ -135,8 +135,10 @@ class Hub
     protected function buildId($name_marketplace)
     {
         return md5(
-            trim(
-                (string) $name_marketplace
+            strtolower(
+                trim(
+                    (string) $name_marketplace
+                )
             )
         );
     }
