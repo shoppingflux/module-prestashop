@@ -1019,7 +1019,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             } else {
                 $orderDetailPrice_tax_excl = (float) $apiProduct->getTotalPrice();
                 $orderDetailPrice_tax_incl = (float) ($orderDetailPrice_tax_excl * (1 + ($tax_rate / 100)));
-                $apiProduct->unitPrice = $orderDetailPrice_tax_incl;
+                $apiProduct->unitPrice = (float) ($apiProduct->unitPrice * (1 + ($tax_rate / 100)));
             }
 
             $ordersList[(int) $productOrderDetail['id_order']]['total_products_tax_incl'] += $orderDetailPrice_tax_incl;
