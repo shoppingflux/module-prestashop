@@ -459,7 +459,7 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
                         [
                             'type' => 'shoppingfeed_double-list',
                             'name' => 'status_delivered_order',
-                            'label' => $this->module->l('Delivery orders synchronization + Status mapping', 'AdminShoppingfeedOrderImportRules'),
+                            'label' => $this->module->l('Delivery orders synchronization', 'AdminShoppingfeedOrderImportRules'),
                             'hint' => $this->module->l('When the order has been delivered to the customer, for platforms managing this status', 'AdminShoppingfeedOrderImportRules'),
                             'unselected' => [
                                 'id' => 'status_delivered_order_add',

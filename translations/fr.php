@@ -555,7 +555,7 @@ $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_1063e38cb5
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_10581f82378a00c00fb2d536628eb59c'] = 'Délai avant la synchronisation du numéro de suivi';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_1e0869c39e6beb9751e30641c1aaef36'] = 'Dans certains cas, le numéro de suivi peut être envoyé par votre boutique après la mise à jour du statut de la commande. Pour être sûr de toujours envoyer le numéro de suivi à la marketplace vous pouvez décider de synchroniser le statut passé un certain délai. Par défaut, l\'envoi du numéro de suivi et du statut de commande est différé de 5 minutes suivant la mise à jour effective de la commande sur votre PrestaShop.';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_640fd0cc0ffa0316ae087652871f4486'] = 'minutes';
-$_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_541d50ff4f79ad3c125b154568146103'] = 'Synchronisation des commandes reçues + Status mapping';
+$_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_381cf5ae81a519c800c5fd37b02e0267'] = 'Synchronisation des commandes reçues';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_0147ea0808683b0b0b2a66d987b3db2d'] = 'Lorsque la commande a bien été livrée chez le client, pour les plateformes gérant ce statut';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_5215c379ae41bad6a61896a26108f1b7'] = 'Synchronisation des commandes annulées';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_ad05c3a58e994bbb0140ab240c998dbb'] = 'Synchronisation des commandes remboursées';
