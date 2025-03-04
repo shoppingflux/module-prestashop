@@ -215,7 +215,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
             ->limit(100);
         $taskOrdersData = Db::getInstance()->executeS($query);
 
-        if (false === $taskOrdersData) {
+        if (empty($taskOrdersData)) {
             ProcessLoggerHandler::logInfo(
                 $this->l('Could not retrieve Task Orders.', 'ShoppingfeedProductSyncActions'),
                 'Order'
@@ -439,7 +439,8 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
 
             foreach ($order->getInvoicesCollection() as $invoice) {
                 $pdf = new PDF($invoice, PDF::TEMPLATE_INVOICE, Context::getContext()->smarty);
-                $file = _PS_MODULE_DIR_ . 'shoppingfeed/views/tmp/' . $invoice->id . '.pdf';
+                $cacheStorage = new ShoppingfeedClasslib\Utils\CacheStorage\CacheStorage();
+                $file = $cacheStorage->getDirectory() . $invoice->id . '.pdf';
                 $isInvoiceExist = file_put_contents($file, $pdf->render(false));
 
                 if ($isInvoiceExist) {
@@ -452,6 +453,14 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
                             'uri' => $file,
                         ],
                     ];
+                } else {
+                    ProcessLoggerHandler::logError(
+                        $logPrefix . ' ' .
+                        $this->l('Generation invoice is failed', 'ShoppingfeedOrderSyncActions'),
+                        'Order',
+                        $taskOrder->id_order
+                    );
+                    Registry::increment('syncStatusErrors');
                 }
             }
         }
@@ -567,11 +576,21 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
             $result = $shoppingfeedApi->updateMainStoreOrdersStatus($preparedTaskOrders, $this->conveyor['shoppingfeed_store_id']);
 
             if (!$result) {
+                ProcessLoggerHandler::logError(
+                    $this->l('API request is failed', 'ShoppingfeedOrderSyncActions'),
+                    'Order'
+                );
+                Registry::increment('syncStatusErrors');
                 continue;
             }
 
             $batchId = current($result->getBatchIds());
             if (empty($batchId) === true) {
+                ProcessLoggerHandler::logError(
+                    $this->l('API response does not contain batchId', 'ShoppingfeedOrderSyncActions'),
+                    'Order'
+                );
+                Registry::increment('syncStatusErrors');
                 continue;
             }
 
