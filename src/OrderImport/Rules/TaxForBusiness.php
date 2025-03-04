@@ -70,7 +70,7 @@ class TaxForBusiness extends RuleAbstract implements RuleInterface
         /** @var OrderResource $apiOrder */
         $apiOrder = $params['apiOrder'];
 
-        if (strtolower($apiOrder->getChannel()->getName()) === 'amazon') {
+        if (strtolower($apiOrder->getChannel()->getName()) !== 'amazon') {
             $params['skipTax'] = true;
             ProcessLoggerHandler::logInfo(
                 $this->logPrefix .
