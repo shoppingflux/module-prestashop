@@ -483,7 +483,7 @@ class ShoppingfeedApi
         return $filteredOrders;
     }
 
-    public function acknowledgeOrder($id_order_marketplace, $name_marketplace, $id_order_prestashop, $is_success = true, $message = '', $shoppingfeed_store_id = null)
+    public function acknowledgeOrder($id_order_marketplace, $id_order_prestashop, $is_success = true, $message = '', $shoppingfeed_store_id = null)
     {
         try {
             $orderApi = null;
@@ -502,11 +502,10 @@ class ShoppingfeedApi
                 throw new Exception('Invalid store ID');
             }
 
-            $operation = new ShoppingFeed\Sdk\Api\Order\OrderOperation();
+            $operation = new ShoppingFeed\Sdk\Api\Order\Operation();
             $operation
                 ->acknowledge(
-                    (string) $id_order_marketplace,
-                    (string) $name_marketplace,
+                    new Id($id_order_marketplace),
                     (string) $id_order_prestashop,
                     ($is_success === true) ? 'success' : 'error',
                     $message
