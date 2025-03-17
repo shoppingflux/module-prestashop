@@ -483,7 +483,7 @@ class ShoppingfeedApi
         return $filteredOrders;
     }
 
-    public function acknowledgeOrder($id_order_marketplace, $id_order_prestashop, $is_success = true, $message = '', $shoppingfeed_store_id = null)
+    public function acknowledgeOrder($id_internal_shoppingfeed, $id_order_prestashop, $is_success = true, $message = '', $shoppingfeed_store_id = null)
     {
         try {
             $orderApi = null;
@@ -505,7 +505,7 @@ class ShoppingfeedApi
             $operation = new ShoppingFeed\Sdk\Api\Order\Operation();
             $operation
                 ->acknowledge(
-                    new Id($id_order_marketplace),
+                    new Id($id_internal_shoppingfeed),
                     (string) $id_order_prestashop,
                     ($is_success === true) ? 'success' : 'error',
                     $message
