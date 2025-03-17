@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright since 2019 Shopping Feed
  *
@@ -26,6 +27,8 @@ if (!defined('_PS_VERSION_')) {
 class ShoppingfeedTaskOrder extends ObjectModel
 {
     const ACTION_SYNC_STATUS = 'SYNC_STATUS';
+
+    const ACTION_UPLOAD_INVOICE = 'UPLOAD_INVOICE';
 
     // As in, "check the ticket related to the Order Status synchronization"
     const ACTION_CHECK_TICKET_SYNC_STATUS = 'CHECK_TICKET_SYNC_STATUS';
@@ -60,7 +63,11 @@ class ShoppingfeedTaskOrder extends ObjectModel
                 'validate' => 'isGenericName',
                 'required' => true,
                 'unique' => true,
-                'values' => [self::ACTION_SYNC_STATUS, self::ACTION_CHECK_TICKET_SYNC_STATUS],
+                'values' => [
+                    self::ACTION_SYNC_STATUS,
+                    self::ACTION_CHECK_TICKET_SYNC_STATUS,
+                    self::ACTION_UPLOAD_INVOICE,
+                ],
             ],
             'id_order' => [
                 'type' => ObjectModel::TYPE_INT,

@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -25,10 +26,6 @@ if (!defined('_PS_VERSION_')) {
 
 use Address;
 use Carrier;
-use Configuration;
-use Country;
-use Customer;
-use Db;
 use Module;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use ShoppingfeedAddon\OrderImport\RuleAbstract;
@@ -44,18 +41,18 @@ class Socolissimo extends RuleAbstract implements RuleInterface
     {
         // There's no check on the carrier name in the old module, so we won't
         // do it here either
-        $module_soliberte = Module::getInstanceByName('soliberte');
+        $module_soliberte = \Module::getInstanceByName('soliberte');
         if ($module_soliberte && $module_soliberte->active) {
             Registry::set(self::class . '_id_shipping_address', null);
 
             return true;
         }
 
-        $module_soflexibilite = Module::getInstanceByName('soflexibilite');
+        $module_soflexibilite = \Module::getInstanceByName('soflexibilite');
         if ($module_soflexibilite && $module_soflexibilite->active
             && (
-                class_exists(SoFlexibiliteDelivery::class)
-                || class_exists(SoColissimoFlexibiliteDelivery::class)
+                class_exists(\SoFlexibiliteDelivery::class)
+                || class_exists(\SoColissimoFlexibiliteDelivery::class)
             )
         ) {
             Registry::set(self::class . '_id_shipping_address', null);
@@ -80,7 +77,7 @@ class Socolissimo extends RuleAbstract implements RuleInterface
 
         Registry::set(self::class . '_id_shipping_address', (int) $params['cart']->id_address_delivery);
 
-        $module_soliberte = Module::getInstanceByName('soliberte');
+        $module_soliberte = \Module::getInstanceByName('soliberte');
         if ($module_soliberte && $module_soliberte->active) {
             $result = $this->insertSoLiberteData($params['cart']);
 
@@ -101,11 +98,11 @@ class Socolissimo extends RuleAbstract implements RuleInterface
             return $result;
         }
 
-        $module_soflexibilite = Module::getInstanceByName('soflexibilite');
+        $module_soflexibilite = \Module::getInstanceByName('soflexibilite');
         if ($module_soflexibilite && $module_soflexibilite->active
             && (
-                class_exists(SoFlexibiliteDelivery::class)
-                || class_exists(SoColissimoFlexibiliteDelivery::class)
+                class_exists(\SoFlexibiliteDelivery::class)
+                || class_exists(\SoColissimoFlexibiliteDelivery::class)
             )
         ) {
             $result = $this->insertSoFlexibiliteData($params['cart']);
@@ -134,7 +131,7 @@ class Socolissimo extends RuleAbstract implements RuleInterface
         $id_shipping_address = Registry::get(self::class . '_id_shipping_address');
         if ($id_shipping_address) {
             Registry::set(self::class . '_id_shipping_address', null);
-            Db::getInstance()->update(
+            \Db::getInstance()->update(
                 'orders',
                 ['id_address_delivery' => (int) $id_shipping_address],
                 'id_order = ' . (int) $params['id_order']
@@ -144,9 +141,9 @@ class Socolissimo extends RuleAbstract implements RuleInterface
 
     protected function insertSoLiberteData($cart)
     {
-        $shippingAddress = new Address((int) $cart->id_address_delivery);
-        $shippingCountry = new Country($shippingAddress->id_country);
-        $customer = new Customer((int) $cart->id_customer);
+        $shippingAddress = new \Address((int) $cart->id_address_delivery);
+        $shippingCountry = new \Country($shippingAddress->id_country);
+        $customer = new \Customer((int) $cart->id_customer);
 
         $socotable_name = 'socolissimo_delivery_info';
 
@@ -160,19 +157,19 @@ class Socolissimo extends RuleAbstract implements RuleInterface
             'ceemail' => pSQL($customer->email),
         ];
 
-        return Db::getInstance()->insert($socotable_name, $socovalues);
+        return \Db::getInstance()->insert($socotable_name, $socovalues);
     }
 
     protected function insertSoFlexibiliteData($cart)
     {
-        $shippingAddress = new Address((int) $cart->id_address_delivery);
+        $shippingAddress = new \Address((int) $cart->id_address_delivery);
         if ($shippingAddress->phone_mobile) {
             $phone = $shippingAddress->phone_mobile;
         } else {
             $phone = $shippingAddress->phone;
         }
-        $shippingCountry = new Country($shippingAddress->id_country);
-        $customer = new Customer((int) $cart->id_customer);
+        $shippingCountry = new \Country($shippingAddress->id_country);
+        $customer = new \Customer((int) $cart->id_customer);
 
         // SoFlexibilite module may use a different class name depending of the
         // module's version.
@@ -208,35 +205,35 @@ class Socolissimo extends RuleAbstract implements RuleInterface
             'SOFLEXIBILITE_BPR_ID',
             'SOFLEXIBILITE_A2P_ID',
         ];
-        $conf = Configuration::getMultiple($soflexibilite_conf_key, null, null, null);
+        $conf = \Configuration::getMultiple($soflexibilite_conf_key, null, null, null);
 
-        $carrier = new Carrier($cart->id_carrier);
+        $carrier = new \Carrier($cart->id_carrier);
         if (isset($carrier->id_reference)) {
             $id_reference = $carrier->id_reference;
         } else {
             $id_reference = $carrier->id;
         }
 
-        if ($id_reference == $conf['SOFLEXIBILITE_DOM_ID'] ||
-            $carrier->id == $conf['SOFLEXIBILITE_DOM_ID']
+        if ($id_reference == $conf['SOFLEXIBILITE_DOM_ID']
+            || $carrier->id == $conf['SOFLEXIBILITE_DOM_ID']
         ) {
             $so_delivery->type = 'DOM';
         }
 
-        if ($id_reference == $conf['SOFLEXIBILITE_DOS_ID'] ||
-            $carrier->id == $conf['SOFLEXIBILITE_DOS_ID']
+        if ($id_reference == $conf['SOFLEXIBILITE_DOS_ID']
+            || $carrier->id == $conf['SOFLEXIBILITE_DOS_ID']
         ) {
             $so_delivery->type = 'DOS';
         }
 
-        if ($id_reference == $conf['SOFLEXIBILITE_BPR_ID'] ||
-            $carrier->id == $conf['SOFLEXIBILITE_BPR_ID']
+        if ($id_reference == $conf['SOFLEXIBILITE_BPR_ID']
+            || $carrier->id == $conf['SOFLEXIBILITE_BPR_ID']
         ) {
             $so_delivery->type = 'BPR';
         }
 
-        if ($id_reference == $conf['SOFLEXIBILITE_A2P_ID'] ||
-            $carrier->id == $conf['SOFLEXIBILITE_A2P_ID']
+        if ($id_reference == $conf['SOFLEXIBILITE_A2P_ID']
+            || $carrier->id == $conf['SOFLEXIBILITE_A2P_ID']
         ) {
             $so_delivery->type = 'A2P';
         }

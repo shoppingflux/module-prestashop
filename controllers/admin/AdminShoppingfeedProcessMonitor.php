@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -60,7 +61,7 @@ class AdminShoppingfeedProcessMonitorController extends AdminProcessMonitorContr
     public function renderCronTasks()
     {
         if (empty($this->module->cronTasks)) {
-            throw new \Exception($this->module->l('Unable to find cronTasks declaration in module.', 'AdminProcessMonitorController'));
+            throw new Exception($this->module->l('Unable to find cronTasks declaration in module.', 'AdminProcessMonitorController'));
         }
 
         $fieldsList = [

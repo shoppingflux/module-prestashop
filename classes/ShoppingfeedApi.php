@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright since 2019 Shopping Feed
  *
@@ -22,12 +23,13 @@ if (!defined('_PS_VERSION_')) {
 
 use ShoppingFeed\Sdk\Api\Catalog\InventoryUpdate;
 use ShoppingFeed\Sdk\Api\Catalog\PricingUpdate;
-use ShoppingFeed\Sdk\Api\Order\OrderOperation;
+use ShoppingFeed\Sdk\Api\Order\Document\Invoice;
+use ShoppingFeed\Sdk\Api\Order\Identifier\Id;
 use ShoppingFeed\Sdk\Client\Client;
 use ShoppingFeed\Sdk\Client\ClientOptions;
 use ShoppingFeed\Sdk\Credential\Password;
 use ShoppingFeed\Sdk\Credential\Token;
-use ShoppingFeed\Sdk\Http\Adapter\Guzzle6Adapter;
+use ShoppingFeed\Sdk\Http\Adapter\GuzzleHTTPAdapter;
 use ShoppingfeedAddon\OrderImport\SinceDate;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 
@@ -38,10 +40,10 @@ use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 class ShoppingfeedApi
 {
     /** @var ShoppingfeedApi */
-    private static $instance = null;
+    private static $instance;
 
-    /** @var \ShoppingFeed\Sdk\Api\Session\SessionResource */
-    private $session = null;
+    /** @var ShoppingFeed\Sdk\Api\Session\SessionResource */
+    private $session;
 
     protected $id_shop;
 
@@ -82,8 +84,8 @@ class ShoppingfeedApi
             $credential = new Token($token);
             // Add Guzzle as HTTP interface
             $clientOptions = new ClientOptions();
-            $clientOptions->setHttpAdapter(new Guzzle6Adapter());
-            /** @var \ShoppingFeed\Sdk\Api\Session\SessionResource $session */
+            $clientOptions->setHttpAdapter(new GuzzleHTTPAdapter());
+            /** @var ShoppingFeed\Sdk\Api\Session\SessionResource $session */
             $session = Client::createSession($credential, $clientOptions);
 
             static::$instance = new ShoppingfeedApi($session);
@@ -117,8 +119,8 @@ class ShoppingfeedApi
             $credential = new Password($username, $password);
             // Add Guzzle as HTTP interface
             $clientOptions = new ClientOptions();
-            $clientOptions->setHttpAdapter(new Guzzle6Adapter());
-            /** @var \ShoppingFeed\Sdk\Api\Session\SessionResource $session */
+            $clientOptions->setHttpAdapter(new GuzzleHTTPAdapter());
+            /** @var ShoppingFeed\Sdk\Api\Session\SessionResource $session */
             $session = Client::createSession($credential, $clientOptions);
             static::$instance = new ShoppingfeedApi($session);
 
@@ -286,29 +288,37 @@ class ShoppingfeedApi
                 throw new Exception('Invalid store ID');
             }
 
-            $operation = new \ShoppingFeed\Sdk\Api\Order\OrderOperation();
+            $operation = new ShoppingFeed\Sdk\Api\Order\Operation();
 
             foreach ($taskOrders as $taskOrder) {
                 switch ($taskOrder['operation']) {
-                    case OrderOperation::TYPE_SHIP:
+                    case Shoppingfeed::ORDER_OPERATION_SHIP:
                         $operation->ship(
-                            $taskOrder['reference_marketplace'],
-                            $taskOrder['marketplace'],
-                            $taskOrder['payload']['carrier_name'],
-                            $taskOrder['payload']['tracking_number'],
-                            $taskOrder['payload']['tracking_url']
+                            new Id((int) $taskOrder['id_internal_shoppingfeed']),
+                            (string) $taskOrder['payload']['carrier_name'],
+                            (string) $taskOrder['payload']['tracking_number'],
+                            (string) $taskOrder['payload']['tracking_url']
                         );
                         continue 2;
-                    case OrderOperation::TYPE_CANCEL:
+                    case Shoppingfeed::ORDER_OPERATION_CANCEL:
                         $operation->cancel(
-                            $taskOrder['reference_marketplace'],
-                            $taskOrder['marketplace']
+                            new Id((int) $taskOrder['id_internal_shoppingfeed'])
                         );
                         continue 2;
-                    case OrderOperation::TYPE_REFUND:
+                    case Shoppingfeed::ORDER_OPERATION_REFUND:
                         $operation->refund(
-                            $taskOrder['reference_marketplace'],
-                            $taskOrder['marketplace']
+                            new Id((int) $taskOrder['id_internal_shoppingfeed'])
+                        );
+                        continue 2;
+                    case Shoppingfeed::ORDER_OPERATION_DELIVER:
+                        $operation->deliver(
+                            new Id((int) $taskOrder['id_internal_shoppingfeed'])
+                        );
+                        continue 2;
+                    case Shoppingfeed::ORDER_OPERATION_UPLOAD_DOCUMENTS:
+                        $operation->uploadDocument(
+                            new Id((int) $taskOrder['id_internal_shoppingfeed']),
+                            new Invoice($taskOrder['payload']['uri'])
                         );
                         continue 2;
                 }
@@ -356,7 +366,7 @@ class ShoppingfeedApi
                     )
                 );
 
-                if (false == $e instanceof \SfGuzzle\GuzzleHttp\Exception\ClientException) {
+                if (false == $e instanceof SfGuzzle\GuzzleHttp\Exception\ClientException) {
                     return false;
                 }
 
@@ -420,6 +430,7 @@ class ShoppingfeedApi
         Hook::exec(
             'ShoppingfeedOrderImportCriteria', // hook_name
             [
+                'storeId' => $shoppingfeed_store_id,
                 'criteria' => &$criteria,
                 'iShipped' => &$iShipped,
             ] // hook_args
@@ -472,7 +483,7 @@ class ShoppingfeedApi
         return $filteredOrders;
     }
 
-    public function acknowledgeOrder($id_order_marketplace, $name_marketplace, $id_order_prestashop, $is_success = true, $message = '', $shoppingfeed_store_id = null)
+    public function acknowledgeOrder($id_internal_shoppingfeed, $id_order_prestashop, $is_success = true, $message = '', $shoppingfeed_store_id = null)
     {
         try {
             $orderApi = null;
@@ -491,11 +502,10 @@ class ShoppingfeedApi
                 throw new Exception('Invalid store ID');
             }
 
-            $operation = new \ShoppingFeed\Sdk\Api\Order\OrderOperation();
+            $operation = new ShoppingFeed\Sdk\Api\Order\Operation();
             $operation
                 ->acknowledge(
-                    (string) $id_order_marketplace,
-                    (string) $name_marketplace,
+                    new Id($id_internal_shoppingfeed),
                     (string) $id_order_prestashop,
                     ($is_success === true) ? 'success' : 'error',
                     $message
@@ -530,7 +540,7 @@ class ShoppingfeedApi
         }
 
         $clientOptions = new ClientOptions();
-        $clientOptions->setHttpAdapter(new Guzzle6Adapter());
+        $clientOptions->setHttpAdapter(new GuzzleHTTPAdapter());
         $client = new Client($clientOptions);
 
         return $client->ping();
@@ -570,7 +580,7 @@ class ShoppingfeedApi
                 ProcessLoggerHandler::logError(
                     sprintf(
                         'Error in ShoppingfeedApi::getTicketsByBatchId(): %s',
-                        (empty($e) ? '' : $e->getMessage())
+                        empty($e) ? '' : $e->getMessage()
                     )
                 );
 

@@ -1,4 +1,5 @@
 <?php
+
 namespace ShoppingFeed\Sdk\Api\Order;
 
 class OrderItemCollection implements \Countable, \IteratorAggregate
@@ -18,13 +19,27 @@ class OrderItemCollection implements \Countable, \IteratorAggregate
         $instance = new self;
         foreach ($items as $item) {
             $instance->add(
-                new OrderItem($item['reference'], $item['quantity'], $item['price'], $item['taxAmount'])
+                new OrderItem(
+                    $item['id'],
+                    $item['reference'],
+                    $item['status'],
+                    $item['quantity'],
+                    $item['price'],
+                    $item['commission'],
+                    $item['taxAmount'],
+                    $item['ecotaxAmount'],
+                    $item['channelReference'],
+                    $item['additionalFields'],
+                    $item['name'],
+                    $item['image']
+                )
             );
         }
 
         return $instance;
     }
 
+    #[\ReturnTypeWillChange]
     public function count()
     {
         return count($this->items);
@@ -33,6 +48,7 @@ class OrderItemCollection implements \Countable, \IteratorAggregate
     /**
      * @return \ArrayIterator|OrderItem[]
      */
+    #[\ReturnTypeWillChange]
     public function getIterator()
     {
         return new \ArrayIterator($this->items);

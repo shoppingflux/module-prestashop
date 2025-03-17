@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -29,7 +30,7 @@ class ShopSqlAssociator
     public function addAssociation($table, $alias, $inner_join = true, $on = null, $force_not_default = false, $idShop = null)
     {
         if (is_null($idShop)) {
-            $idShop = Shop::getContextShopID();
+            $idShop = \Shop::getContextShopID();
         }
 
         $table = pSQL($table);
@@ -40,7 +41,7 @@ class ShopSqlAssociator
             list($table_alias, $table) = explode('.', $table);
         }
 
-        $asso_table = Shop::getAssoTable($table);
+        $asso_table = \Shop::getAssoTable($table);
 
         if ($asso_table === false || $asso_table['type'] != 'shop') {
             return;
@@ -51,10 +52,10 @@ class ShopSqlAssociator
 
         if ((int) $idShop) {
             $sql .= ' AND ' . $table_alias . '.id_shop = ' . (int) $idShop;
-        } elseif (Shop::checkIdShopDefault($table) && !$force_not_default) {
+        } elseif (\Shop::checkIdShopDefault($table) && !$force_not_default) {
             $sql .= ' AND ' . $table_alias . '.id_shop = ' . $alias . '.id_shop_default';
         } else {
-            $sql .= ' AND ' . $table_alias . '.id_shop IN (' . implode(', ', Shop::getContextListShopID()) . ')';
+            $sql .= ' AND ' . $table_alias . '.id_shop IN (' . implode(', ', \Shop::getContextListShopID()) . ')';
         }
 
         $sql .= (($on) ? ' AND ' . $on : '') . ')';

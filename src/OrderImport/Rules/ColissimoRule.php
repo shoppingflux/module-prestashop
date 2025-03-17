@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -23,18 +24,11 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-use Carrier;
 use Cart;
-use ColissimoCartPickupPoint;
-use ColissimoPickupPoint;
-use Country;
-use Module;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
-use Tools;
-use Validate;
 
 class ColissimoRule extends RuleAbstract implements RuleInterface
 {
@@ -48,7 +42,7 @@ class ColissimoRule extends RuleAbstract implements RuleInterface
     {
         parent::__construct($configuration);
 
-        $this->colissimo = Module::getInstanceByName(self::COLISSIMO_MODULE_NAME);
+        $this->colissimo = \Module::getInstanceByName(self::COLISSIMO_MODULE_NAME);
     }
 
     public function isApplicable(OrderResource $apiOrder)
@@ -59,7 +53,7 @@ class ColissimoRule extends RuleAbstract implements RuleInterface
     protected function isModuleColissimoEnabled()
     {
         try {
-            return Validate::isLoadedObject($this->colissimo) && $this->colissimo->active;
+            return \Validate::isLoadedObject($this->colissimo) && $this->colissimo->active;
         } catch (\Throwable $e) {
             return false;
         }
@@ -83,14 +77,14 @@ class ColissimoRule extends RuleAbstract implements RuleInterface
 
     protected function isMonechelle(OrderResource $apiOrder)
     {
-        return 'monechelle' === Tools::strtolower($apiOrder->getChannel()->getName());
+        return 'monechelle' === \Tools::strtolower($apiOrder->getChannel()->getName());
     }
 
     protected function isCdiscount(OrderResource $apiOrder)
     {
         $apiOrderShipment = $apiOrder->getShipment();
 
-        if (preg_match('#^cdiscount$#', Tools::strtolower($apiOrder->getChannel()->getName()))) {
+        if (preg_match('#^cdiscount$#', \Tools::strtolower($apiOrder->getChannel()->getName()))) {
             if (in_array($apiOrderShipment['carrier'], ['SO1', 'REL', 'RCO'])) {
                 return true;
             }
@@ -113,7 +107,7 @@ class ColissimoRule extends RuleAbstract implements RuleInterface
     {
         $apiOrderData = $apiOrder->toArray();
 
-        if (preg_match('#^zalando#', Tools::strtolower($apiOrder->getChannel()->getName()))) {
+        if (preg_match('#^zalando#', \Tools::strtolower($apiOrder->getChannel()->getName()))) {
             if (false === empty($apiOrderData['additionalFields']['service_point_id'])) {
                 if (false === empty($apiOrderData['additionalFields']['service_point_name'])) {
                     return true;
@@ -239,14 +233,14 @@ class ColissimoRule extends RuleAbstract implements RuleInterface
     {
         $cart = $params['cart'];
 
-        if (false === $cart instanceof Cart) {
+        if (false === $cart instanceof \Cart) {
             return;
         }
-        $carrier = new Carrier($cart->id_carrier);
+        $carrier = new \Carrier($cart->id_carrier);
         if ($carrier->external_module_name != $this->colissimo->name) {
             return;
         }
-        if (class_exists(ColissimoPickupPoint::class) === false || class_exists(ColissimoCartPickupPoint::class) === false) {
+        if (class_exists(\ColissimoPickupPoint::class) === false || class_exists(\ColissimoCartPickupPoint::class) === false) {
             return;
         }
         /** @var OrderResource $apiOrder */
@@ -280,12 +274,12 @@ class ColissimoRule extends RuleAbstract implements RuleInterface
             'address2' => $shippingAddressObj->address2,
             'city' => $shippingAddressObj->city,
             'zipcode' => $shippingAddressObj->postcode,
-            'country' => Tools::strtoupper(Country::getNameById($params['cart']->id_lang, Country::getByIso($shippingAddress['country']))),
+            'country' => \Tools::strtoupper(\Country::getNameById($params['cart']->id_lang, \Country::getByIso($shippingAddress['country']))),
             'iso_country' => $shippingAddress['country'],
             'product_code' => $productCode,
-            'network' => '', //TODO; how do we get this field ? It's not in the data sent by SF. Ask Colissimo directly ? Then again, it's not required.
+            'network' => '', // TODO; how do we get this field ? It's not in the data sent by SF. Ask Colissimo directly ? Then again, it's not required.
         ];
-        $pickupPoint = ColissimoPickupPoint::getPickupPointByIdColissimo($colissimoPickupPointId);
+        $pickupPoint = \ColissimoPickupPoint::getPickupPointByIdColissimo($colissimoPickupPointId);
         $pickupPoint->hydrate(array_map('pSQL', $pickupPointData));
         $pickupPoint->save();
 
@@ -314,7 +308,7 @@ class ColissimoRule extends RuleAbstract implements RuleInterface
         );
 
         // Save pickup point/cart association
-        ColissimoCartPickupPoint::updateCartPickupPoint(
+        \ColissimoCartPickupPoint::updateCartPickupPoint(
             (int) $params['cart']->id,
             (int) $pickupPoint->id,
             !empty($shippingAddressObj->phone_mobile) ? $shippingAddressObj->phone_mobile : ''
@@ -396,7 +390,7 @@ class ColissimoRule extends RuleAbstract implements RuleInterface
 
     protected function setDefaultPhoneMobile(&$phone_mobile)
     {
-        if (empty($phone_mobile) || Validate::isPhoneNumber($phone_mobile) === false) {
+        if (empty($phone_mobile) || \Validate::isPhoneNumber($phone_mobile) === false) {
             $phone_mobile = '0611111111';
         }
     }

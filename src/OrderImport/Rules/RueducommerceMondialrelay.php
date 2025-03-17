@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -28,7 +29,6 @@ use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 use ShoppingfeedClasslib\Registry;
-use Tools;
 
 /**
  * RDC is using RelayID from the delivery adresse and Other for the order number
@@ -43,8 +43,8 @@ class RueducommerceMondialrelay extends RuleAbstract implements RuleInterface
     {
         $apiOrderShipment = $apiOrder->getShipment();
 
-        if (preg_match('#^rdc|rueducommerce$#', Tools::strtolower($apiOrder->getChannel()->getName()))
-            && preg_match('#livraison en point de proximité avec .+#', Tools::strtolower($apiOrderShipment['carrier']))
+        if (preg_match('#^rdc|rueducommerce$#', \Tools::strtolower($apiOrder->getChannel()->getName()))
+            && preg_match('#livraison en point de proximité avec .+#', \Tools::strtolower($apiOrderShipment['carrier']))
         ) {
             // If the rule is applicable, we'll make sure this is empty, just in case...
             Registry::set(self::class . '_mondialRelayId', null);
@@ -71,8 +71,8 @@ class RueducommerceMondialrelay extends RuleAbstract implements RuleInterface
         );
         $logPrefix .= '[' . $params['apiOrder']->getReference() . '] ' . self::class . ' | ';
 
-        $len = Tools::strlen('livraison en point de proximité avec ');
-        $orderData->shipment['carrier'] = Tools::substr($orderData->shipment['carrier'], $len);
+        $len = \Tools::strlen('livraison en point de proximité avec ');
+        $orderData->shipment['carrier'] = \Tools::substr($orderData->shipment['carrier'], $len);
 
         // Split the carrier name
         $explodedCarrier = explode(' ', $orderData->shipment['carrier']);

@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -61,7 +62,7 @@ class SymbolConformity extends RuleAbstract implements RuleInterface
      */
     public function onPreProcess($params)
     {
-        /** @var \ShoppingfeedAddon\OrderImport\OrderData $orderData */
+        /** @var OrderData $orderData */
         $orderData = $params['orderData'];
         $apiOrder = $params['apiOrder'];
 
@@ -140,63 +141,63 @@ class SymbolConformity extends RuleAbstract implements RuleInterface
             $address['firstName'],
             [
                 'Validate',
-                Address::$definition['fields']['firstname']['validate'],
+                \Address::$definition['fields']['firstname']['validate'],
             ]
         );
         $this->validator->validate(
             $address['lastName'],
             [
                 'Validate',
-                Address::$definition['fields']['lastname']['validate'],
+                \Address::$definition['fields']['lastname']['validate'],
             ]
         );
         $this->validator->validate(
             $address['company'],
             [
                 'Validate',
-                Address::$definition['fields']['company']['validate'],
+                \Address::$definition['fields']['company']['validate'],
             ]
         );
         $this->validator->validate(
             $address['street'],
             [
                 'Validate',
-                Address::$definition['fields']['address1']['validate'],
+                \Address::$definition['fields']['address1']['validate'],
             ]
         );
         $this->validator->validate(
             $address['street2'],
             [
                 'Validate',
-                Address::$definition['fields']['address2']['validate'],
+                \Address::$definition['fields']['address2']['validate'],
             ]
         );
         $this->validator->validate(
             $address['postalCode'],
             [
                 'Validate',
-                Address::$definition['fields']['postcode']['validate'],
+                \Address::$definition['fields']['postcode']['validate'],
             ]
         );
         $this->validator->validate(
             $address['city'],
             [
                 'Validate',
-                Address::$definition['fields']['city']['validate'],
+                \Address::$definition['fields']['city']['validate'],
             ]
         );
         $this->validator->validate(
             $address['phone'],
             [
                 'Validate',
-                Address::$definition['fields']['phone']['validate'],
+                \Address::$definition['fields']['phone']['validate'],
             ]
         );
         $this->validator->validate(
             $address['mobilePhone'],
             [
                 'Validate',
-                Address::$definition['fields']['phone_mobile']['validate'],
+                \Address::$definition['fields']['phone_mobile']['validate'],
             ]
         );
     }
@@ -212,7 +213,7 @@ class SymbolConformity extends RuleAbstract implements RuleInterface
                 $firstName,
                 [
                     'Validate',
-                    Customer::$definition['fields']['firstname']['validate'],
+                    \Customer::$definition['fields']['firstname']['validate'],
                 ]
             );
             $customerData->setFirstName($firstName);
@@ -223,7 +224,7 @@ class SymbolConformity extends RuleAbstract implements RuleInterface
                 $lastName,
                 [
                     'Validate',
-                    Customer::$definition['fields']['firstname']['validate'],
+                    \Customer::$definition['fields']['firstname']['validate'],
                 ]
             );
             $customerData->setLastName($lastName);

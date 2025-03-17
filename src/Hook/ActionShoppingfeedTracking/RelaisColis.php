@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -20,13 +21,8 @@
 namespace ShoppingfeedAddon\Hook\ActionShoppingfeedTracking;
 
 use Carrier;
-use Module;
-use Order;
-use RelaisColisOrder;
 use ShoppingfeedAddon\Services\CarrierFinder;
 use ShoppingfeedClasslib\Hook\AbstractHook;
-use Tools;
-use Validate;
 
 class RelaisColis extends AbstractHook
 {
@@ -40,7 +36,7 @@ class RelaisColis extends AbstractHook
             return;
         }
 
-        if (empty($params[0]['order']) || $params[0]['order'] instanceof Order == false) {
+        if (empty($params[0]['order']) || $params[0]['order'] instanceof \Order == false) {
             return;
         }
 
@@ -49,34 +45,34 @@ class RelaisColis extends AbstractHook
         }
 
         /**
-         * @var Carrier $carrier
-         * @var Order $order
+         * @var \Carrier $carrier
+         * @var \Order $order
          */
         $order = $params[0]['order'];
         $carrier = $this->initCarrierFinder()->findByOrder($order);
         // Getting a tracking number for relaiscolis carrier
-        if ($carrier->external_module_name == 'relaiscolis' && class_exists(RelaisColisOrder::class)) {
+        if ($carrier->external_module_name == 'relaiscolis' && class_exists(\RelaisColisOrder::class)) {
             $relaisColisOrder = $this->getRelaisColisOrderFromPsOrder($order);
 
-            if (Validate::isLoadedObject($relaisColisOrder)) {
-                $params[0]['taskOrderPayload']['tracking_number'] = Tools::substr($relaisColisOrder->pdf_number, 2, 10);
+            if (\Validate::isLoadedObject($relaisColisOrder)) {
+                $params[0]['taskOrderPayload']['tracking_number'] = \Tools::substr($relaisColisOrder->pdf_number, 2, 10);
             }
         }
     }
 
-    protected function getRelaisColisOrderFromPsOrder(Order $order)
+    protected function getRelaisColisOrderFromPsOrder(\Order $order)
     {
         try {
-            return new RelaisColisOrder($this->getIdRelaisColisOrderFromPsOrder($order));
+            return new \RelaisColisOrder($this->getIdRelaisColisOrderFromPsOrder($order));
         } catch (\Throwable $e) {
             return null;
         }
     }
 
-    protected function getIdRelaisColisOrderFromPsOrder(Order $order)
+    protected function getIdRelaisColisOrderFromPsOrder(\Order $order)
     {
         try {
-            return (int) RelaisColisOrder::getRelaisColisOrderId($order->id);
+            return (int) \RelaisColisOrder::getRelaisColisOrderId($order->id);
         } catch (\Throwable $e) {
             return null;
         }
@@ -84,9 +80,9 @@ class RelaisColis extends AbstractHook
 
     protected function isRelaisColisEnabled()
     {
-        $module = Module::getInstanceByName('relaiscolis');
+        $module = \Module::getInstanceByName('relaiscolis');
 
-        if (false == Validate::isLoadedObject($module)) {
+        if (false == \Validate::isLoadedObject($module)) {
             return false;
         }
 

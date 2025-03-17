@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -23,20 +24,13 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-use Configuration;
-use DateTimeImmutable;
 use Order;
-use OrderHistory;
-use OrderState;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
 use ShoppingfeedAddon\OrderImport\SinceDate;
 use ShoppingfeedAddon\OrderImport\SinceDateInterface;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
-use StockAvailable;
-use Tools;
-use Validate;
 
 /**
  * For orders managed directly by a marketplace, the product quantity
@@ -49,7 +43,7 @@ class ShippedByMarketplace extends RuleAbstract implements RuleInterface
     /** @var SinceDateInterface */
     protected $sinceDate;
 
-    public function __construct($configuration = [], $id_shop = null, SinceDateInterface $sinceDate = null)
+    public function __construct($configuration = [], $id_shop = null, ?SinceDateInterface $sinceDate = null)
     {
         parent::__construct($configuration, $id_shop);
 
@@ -98,7 +92,7 @@ class ShippedByMarketplace extends RuleAbstract implements RuleInterface
 
         // We directly add the ordered quantity; it will be deduced when
         // the order is validated
-        $currentStock = StockAvailable::getQuantityAvailableByProduct(
+        $currentStock = \StockAvailable::getQuantityAvailableByProduct(
             $psProduct->id,
             $psProduct->id_product_attribute,
             $params['id_shop']
@@ -120,7 +114,7 @@ class ShippedByMarketplace extends RuleAbstract implements RuleInterface
             ),
             'Order'
         );
-        StockAvailable::updateQuantity(
+        \StockAvailable::updateQuantity(
             $psProduct->id,
             $psProduct->id_product_attribute,
             (int) $apiProduct->quantity,
@@ -150,9 +144,9 @@ class ShippedByMarketplace extends RuleAbstract implements RuleInterface
             $apiOrder->getId()
         );
         $logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
-        $psOrder = new Order($idOrder);
+        $psOrder = new \Order($idOrder);
 
-        if (false === Validate::isLoadedObject($psOrder)) {
+        if (false === \Validate::isLoadedObject($psOrder)) {
             ProcessLoggerHandler::logError(
                 $logPrefix .
                 sprintf(
@@ -197,7 +191,7 @@ class ShippedByMarketplace extends RuleAbstract implements RuleInterface
         );
 
         // Set order to DELIVERED
-        $history = new OrderHistory();
+        $history = new \OrderHistory();
         $history->id_order = $idOrder;
         $use_existings_payment = true;
         $history->changeIdOrderState($changeStateId, $psOrder, $use_existings_payment);
@@ -243,10 +237,10 @@ class ShippedByMarketplace extends RuleAbstract implements RuleInterface
     public function getConfigurationSubform()
     {
         $context = \Context::getContext();
-        $statuses = OrderState::getOrderStates((int) $context->language->id);
+        $statuses = \OrderState::getOrderStates((int) $context->language->id);
         array_unshift($statuses, [
-          'id_order_state' => '',
-          'name' => '',
+            'id_order_state' => '',
+            'name' => '',
         ]);
         $states[] = [
             'type' => 'select',
@@ -294,8 +288,8 @@ class ShippedByMarketplace extends RuleAbstract implements RuleInterface
             $paymentInformation = $apiOrder->getPaymentInformation();
 
             return
-                isset($paymentInformation['method']) &&
-                strpos(strtolower($paymentInformation['method']), 'afn') !== false;
+                isset($paymentInformation['method'])
+                && strpos(strtolower($paymentInformation['method']), 'afn') !== false;
         } catch (\Throwable $e) {
             return false;
         }
@@ -312,8 +306,8 @@ class ShippedByMarketplace extends RuleAbstract implements RuleInterface
             $paymentOrderInformation = $apiOrder->getPaymentInformation();
 
             return
-                isset($paymentOrderInformation['method']) &&
-                strpos(strtolower($paymentOrderInformation['method']), 'clogistique') !== false;
+                isset($paymentOrderInformation['method'])
+                && strpos(strtolower($paymentOrderInformation['method']), 'clogistique') !== false;
         } catch (\Throwable $e) {
             return false;
         }
@@ -330,8 +324,8 @@ class ShippedByMarketplace extends RuleAbstract implements RuleInterface
             $apiOrderArray = $apiOrder->toArray();
 
             return
-                isset($apiOrderArray['additionalFields']['env']) &&
-                strtolower($apiOrderArray['additionalFields']['env']) == 'epmm';
+                isset($apiOrderArray['additionalFields']['env'])
+                && strtolower($apiOrderArray['additionalFields']['env']) == 'epmm';
         } catch (\Throwable $e) {
             return false;
         }
@@ -352,7 +346,7 @@ class ShippedByMarketplace extends RuleAbstract implements RuleInterface
         }
 
         if (false == empty($apiOrder->toArray()['fulfilledBy'])) {
-            if (Tools::strtolower($apiOrder->toArray()['fulfilledBy']) == 'channel') {
+            if (\Tools::strtolower($apiOrder->toArray()['fulfilledBy']) == 'channel') {
                 return true;
             }
         }
@@ -377,9 +371,9 @@ class ShippedByMarketplace extends RuleAbstract implements RuleInterface
     protected function getDefaultConfiguration()
     {
         return [
-            \Shoppingfeed::ORDER_IMPORT_SHIPPED_MARKETPLACE => Configuration::get(\Shoppingfeed::ORDER_IMPORT_SHIPPED_MARKETPLACE),
-            \Shoppingfeed::ORDER_IMPORT_SHIPPED => Configuration::get(\Shoppingfeed::ORDER_IMPORT_SHIPPED),
-            'PS_OS_DELIVERED' => Configuration::get('PS_OS_DELIVERED'),
+            \Shoppingfeed::ORDER_IMPORT_SHIPPED_MARKETPLACE => \Configuration::get(\Shoppingfeed::ORDER_IMPORT_SHIPPED_MARKETPLACE),
+            \Shoppingfeed::ORDER_IMPORT_SHIPPED => \Configuration::get(\Shoppingfeed::ORDER_IMPORT_SHIPPED),
+            'PS_OS_DELIVERED' => \Configuration::get('PS_OS_DELIVERED'),
             'payment_method_name_fulfillment' => 0,
         ];
     }
@@ -387,7 +381,7 @@ class ShippedByMarketplace extends RuleAbstract implements RuleInterface
     protected function isSkipByDate(OrderResource $apiOrder)
     {
         $createDate = $apiOrder->getCreatedAt();
-        $restrictDate = DateTimeImmutable::createFromFormat(
+        $restrictDate = \DateTimeImmutable::createFromFormat(
             SinceDate::DATE_FORMAT_PS,
             $this->sinceDate->getForShippedByMarketplace(SinceDate::DATE_FORMAT_PS, $this->id_shop)
         );

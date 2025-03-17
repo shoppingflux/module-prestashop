@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright since 2021 Shopping Feed
  *
@@ -19,24 +20,8 @@
 
 namespace ShoppingfeedAddon\Services;
 
-use Cart;
-use Configuration;
-use Context;
-use Country;
-use DateTime;
-use Db;
-use DbQuery;
-use Link;
 use Product;
-use ProductCore;
-use Shop;
-use Shoppingfeed;
-use ShoppingfeedProduct;
 use SpecificPrice;
-use StockAvailable;
-use Tag;
-use Tools;
-use Validate;
 
 class ProductSerializer
 {
@@ -54,16 +39,16 @@ class ProductSerializer
     public function __construct($id_product, $id_lang, $id_shop, $id_currency)
     {
         $this->sfModule = \Module::getInstanceByName('shoppingfeed');
-        $this->product = new Product($id_product, true, $id_lang, $id_shop);
+        $this->product = new \Product($id_product, true, $id_lang, $id_shop);
         $this->id_shop = $id_shop;
         $this->id_lang = $id_lang;
         $this->id_currency = $id_currency;
-        if (Validate::isLoadedObject($this->product) === false) {
+        if (\Validate::isLoadedObject($this->product) === false) {
             throw new \Exception('product must be a valid product');
         }
-        $this->link = new Link();
+        $this->link = new \Link();
         $this->id_lang = $id_lang;
-        $this->configurations = Configuration::getMultiple(
+        $this->configurations = \Configuration::getMultiple(
             [
                 'PS_SHOP_DEFAULT',
                 'PS_TAX_ADDRESS_TYPE',
@@ -73,11 +58,11 @@ class ProductSerializer
                 'PS_SHIPPING_METHOD',
                 'PS_SHIPPING_FREE_WEIGHT',
                 'SHOPPING_FLUX_IMAGE',
-                Shoppingfeed::PRODUCT_FEED_CATEGORY_DISPLAY,
-                Shoppingfeed::PRODUCT_FEED_IMAGE_FORMAT,
-                Shoppingfeed::PRODUCT_FEED_CARRIER_REFERENCE,
-                Shoppingfeed::PRODUCT_FEED_SYNC_PACK,
-                Shoppingfeed::PRODUCT_FEED_CUSTOM_FIELDS,
+                \Shoppingfeed::PRODUCT_FEED_CATEGORY_DISPLAY,
+                \Shoppingfeed::PRODUCT_FEED_IMAGE_FORMAT,
+                \Shoppingfeed::PRODUCT_FEED_CARRIER_REFERENCE,
+                \Shoppingfeed::PRODUCT_FEED_SYNC_PACK,
+                \Shoppingfeed::PRODUCT_FEED_CUSTOM_FIELDS,
             ]
         );
         $this->carrierFinder = new CarrierFinder();
@@ -90,9 +75,9 @@ class ProductSerializer
 
     public function serialize()
     {
-        $sfp = new ShoppingfeedProduct();
+        $sfp = new \ShoppingfeedProduct();
         $sfp->id_product = $this->product->id;
-        $link = new Link();
+        $link = new \Link();
         $carrier = $this->getCarrier();
         $productLink = $link->getProductLink($this->product, null, null, null, $this->id_lang, $this->id_shop);
 
@@ -141,10 +126,10 @@ class ProductSerializer
         $id_group = \Group::getCurrent()->id;
         $contentUpdate = $content;
         $carrier = $this->getCarrier();
-        $sfp = new ShoppingfeedProduct();
+        $sfp = new \ShoppingfeedProduct();
         $sfp->id_product = $this->product->id;
         $address = \Address::initialize(null, true);
-        $tax_manager = \TaxManagerFactory::getManager($address, Product::getIdTaxRulesGroupByIdProduct((int) $this->product->id, Context::getContext()));
+        $tax_manager = \TaxManagerFactory::getManager($address, \Product::getIdTaxRulesGroupByIdProduct((int) $this->product->id, \Context::getContext()));
         $product_tax_calculator = $tax_manager->getTaxCalculator();
         $priceWithoutReduction = $this->sfModule->mapProductPrice($sfp, $this->id_shop);
         $contentUpdate['price'] = $priceWithoutReduction;
@@ -182,7 +167,7 @@ class ProductSerializer
     public function serializeStock($content)
     {
         $contentUpdate = $content;
-        $contentUpdate['quantity'] = $quantity = (int) StockAvailable::getQuantityAvailableByProduct($this->product->id, null, $this->id_shop);
+        $contentUpdate['quantity'] = $quantity = (int) \StockAvailable::getQuantityAvailableByProduct($this->product->id, null, $this->id_shop);
 
         if ($quantity > 0 && empty($this->product->available_now) === false) {
             $contentUpdate['attributes']['availability_label'] = $this->product->available_now;
@@ -190,7 +175,7 @@ class ProductSerializer
             $contentUpdate['attributes']['availability_label'] = $this->product->available_later;
         }
         foreach ($contentUpdate['variations'] as $id_product_attribute => &$variation) {
-            $variation['quantity'] = $quantity = StockAvailable::getQuantityAvailableByProduct($this->product->id, $id_product_attribute, $this->id_shop);
+            $variation['quantity'] = $quantity = \StockAvailable::getQuantityAvailableByProduct($this->product->id, $id_product_attribute, $this->id_shop);
             if ($quantity > 0 && empty($this->product->available_now) === false) {
                 $variation['attributes']['availability_label'] = $this->product->available_now;
             } elseif ($quantity < 1 && empty($this->product->available_later) === false) {
@@ -217,7 +202,7 @@ class ProductSerializer
         if ($cat === false) {
             return $content;
         }
-        $link = new Link();
+        $link = new \Link();
         $contentUpdate = $content;
         $contentUpdate['category'] = [
             'name' => ($this->configurations[\Shoppingfeed::PRODUCT_FEED_CATEGORY_DISPLAY] === 'default_category') ? $cat : $this->_getFilAriane(),
@@ -243,9 +228,9 @@ class ProductSerializer
         if ($imagesFromDb != false) {
             foreach ($imagesFromDb as $image) {
                 $ids = $this->product->id . '-' . $image['id_image'];
-                $img_url = $this->getImageLink()->getImageLink($this->product->link_rewrite, $ids, $this->configurations[Shoppingfeed::PRODUCT_FEED_IMAGE_FORMAT], $this->id_shop);
-                if (!substr_count($img_url, Tools::getCurrentUrlProtocolPrefix())) {
-                    $img_url = Tools::getCurrentUrlProtocolPrefix() . $img_url;
+                $img_url = $this->getImageLink()->getImageLink($this->product->link_rewrite, $ids, $this->configurations[\Shoppingfeed::PRODUCT_FEED_IMAGE_FORMAT], $this->id_shop);
+                if (!substr_count($img_url, \Tools::getCurrentUrlProtocolPrefix())) {
+                    $img_url = \Tools::getCurrentUrlProtocolPrefix() . $img_url;
                 }
                 if ($first) {
                     $images['main'] = $img_url;
@@ -263,12 +248,12 @@ class ProductSerializer
     {
         $discounts = [];
         $specificPricesInFuture = [];
-        $specificPrices = SpecificPrice::getIdsByProductId($this->product->id);
+        $specificPrices = \SpecificPrice::getIdsByProductId($this->product->id);
         $priceComputed = $this->product->getPrice(true, null, 2, null, false, true, 1);
 
         foreach ($specificPrices as $idSpecificPrice) {
-            $specificPrice = new SpecificPrice($idSpecificPrice['id_specific_price']);
-            if (new DateTime($specificPrice->from) > new DateTime()) {
+            $specificPrice = new \SpecificPrice($idSpecificPrice['id_specific_price']);
+            if (new \DateTime($specificPrice->from) > new \DateTime()) {
                 $specificPricesInFuture[] = $specificPrice;
             }
         }
@@ -297,7 +282,7 @@ class ProductSerializer
 
     private function getStringTags()
     {
-        $tabTags = Tag::getProductTags($this->product->id);
+        $tabTags = \Tag::getProductTags($this->product->id);
         if (empty($tabTags[$this->id_lang])) {
             return '';
         } else {
@@ -311,13 +296,13 @@ class ProductSerializer
             return '';
         }
 
-        $query = new DbQuery();
+        $query = new \DbQuery();
         $query->from('product_supplier', 'ps');
         $query->where('ps.id_product = ' . (int) $this->product->id);
         $query->where('ps.id_supplier = ' . (int) $this->product->id_supplier);
         $query->select('ps.product_supplier_reference');
 
-        return (string) Db::getInstance()->getValue($query);
+        return (string) \Db::getInstance()->getValue($query);
     }
 
     protected function getAttributes()
@@ -378,8 +363,8 @@ class ProductSerializer
             $attributes['supplier_link'] = $supplier_link;
         }
 
-        if (empty($this->configurations[Shoppingfeed::PRODUCT_FEED_CUSTOM_FIELDS]) === false) {
-            $fields = json_decode($this->configurations[Shoppingfeed::PRODUCT_FEED_CUSTOM_FIELDS], true);
+        if (empty($this->configurations[\Shoppingfeed::PRODUCT_FEED_CUSTOM_FIELDS]) === false) {
+            $fields = json_decode($this->configurations[\Shoppingfeed::PRODUCT_FEED_CUSTOM_FIELDS], true);
             foreach ($this->getOverrideFields() as $fieldname) {
                 if (in_array($fieldname, $fields)) {
                     $attributes[$fieldname] = $this->product->$fieldname;
@@ -400,7 +385,7 @@ class ProductSerializer
         }
         $fileNumber = 0;
         foreach ($this->product->getAttachments($this->id_lang) as $attachment) {
-            $link = Context::getContext()->link->getPageLink('attachment', true, null, 'id_attachment=' . $attachment['id_attachment']);
+            $link = \Context::getContext()->link->getPageLink('attachment', true, null, 'id_attachment=' . $attachment['id_attachment']);
             $attributes['file-' . ++$fileNumber] = $link;
         }
 
@@ -412,7 +397,7 @@ class ProductSerializer
         $variations = [];
         $combinations = $this->getAttributeCombinationService()->get($this->product, $this->id_lang, $this->id_shop);
         $sfModule = \Module::getInstanceByName('shoppingfeed');
-        $sfp = new ShoppingfeedProduct();
+        $sfp = new \ShoppingfeedProduct();
         $sfp->id_product = $this->product->id;
 
         foreach ($combinations as $id => $combination) {
@@ -459,7 +444,7 @@ class ProductSerializer
                 $variation['attributes']['ref-constructeur'] = $combination['reference'];
             }
 
-            $variation['attributes']['link-variation'] = Context::getContext()->link->getProductLink($this->product, null, null, null, $this->id_lang, $this->id_shop, (int) $id, false, false, true);
+            $variation['attributes']['link-variation'] = \Context::getContext()->link->getProductLink($this->product, null, null, null, $this->id_lang, $this->id_shop, (int) $id, false, false, true);
 
             foreach ($this->_getAttributeImageAssociations($id) as $image) {
                 if (empty($image)) {
@@ -467,12 +452,12 @@ class ProductSerializer
                     continue;
                 }
 
-                $variation['images'][] = Tools::getCurrentUrlProtocolPrefix() . $this->link->getImageLink($this->product->link_rewrite, $this->product->id . '-' . $image, $this->configurations[Shoppingfeed::PRODUCT_FEED_IMAGE_FORMAT]);
+                $variation['images'][] = \Tools::getCurrentUrlProtocolPrefix() . $this->link->getImageLink($this->product->link_rewrite, $this->product->id . '-' . $image, $this->configurations[\Shoppingfeed::PRODUCT_FEED_IMAGE_FORMAT]);
             }
             if ($image_child === false) {
                 foreach ($this->product->getImages($this->id_lang) as $images) {
                     $ids = $this->product->id . '-' . $images['id_image'];
-                    $variation['images'][] = Tools::getCurrentUrlProtocolPrefix() . $this->link->getImageLink($this->product->link_rewrite, $ids, $this->configurations[Shoppingfeed::PRODUCT_FEED_IMAGE_FORMAT]);
+                    $variation['images'][] = \Tools::getCurrentUrlProtocolPrefix() . $this->link->getImageLink($this->product->link_rewrite, $ids, $this->configurations[\Shoppingfeed::PRODUCT_FEED_IMAGE_FORMAT]);
                 }
             }
             foreach ($combination['attributes'] as $attributeName => $attributeValue) {
@@ -492,15 +477,15 @@ class ProductSerializer
         $categories = [];
         $sqlAppend = 'FROM ' . _DB_PREFIX_ . 'category c
 			JOIN ' . _DB_PREFIX_ . 'category_lang cl ON (c.id_category = cl.id_category
-            AND `id_lang` = ' . (int) $this->id_lang . Shop::addSqlRestrictionOnLang('cl', $this->id_shop) . ')';
-        $category_default = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+            AND `id_lang` = ' . (int) $this->id_lang . \Shop::addSqlRestrictionOnLang('cl', $this->id_shop) . ')';
+        $category_default = \Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
             'SELECT c.nleft, c.nright ' . $sqlAppend . ' WHERE c.id_category = ' . (int) $this->product->id_category_default
         );
 
         if (empty($category_default)) {
             return '';
         }
-        $categories = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $categories = \Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
             sprintf(
                 'SELECT cl.name %s WHERE c.nleft <= %d AND c.nright >= %d ORDER BY c.nleft ASC',
                 $sqlAppend,
@@ -515,8 +500,8 @@ class ProductSerializer
 
     protected function getShippingCost($carrier, $address, $id_product_attribute, $weight = null)
     {
-        $cart = new Cart();
-        $country = new Country($address->id_country);
+        $cart = new \Cart();
+        $country = new \Country($address->id_country);
         $product = [
             'id_address_delivery' => $address->id,
             'id_product' => $this->product->id,
@@ -547,7 +532,7 @@ class ProductSerializer
 
     protected function getImagesFromDb($id_lang)
     {
-        $sql = (new DbQuery())
+        $sql = (new \DbQuery())
             ->from('image', 'i')
             ->leftJoin('image_lang', 'il', 'il.id_image = i.id_image AND il.id_lang = ' . (int) $id_lang)
             ->where('i.id_product = ' . $this->product->id)
@@ -556,7 +541,7 @@ class ProductSerializer
             ->leftJoin('image_shop', 'is', 'i.id_image = is.id_image')
             ->where('is.id_shop = ' . (int) $this->id_shop);
 
-        return Db::getInstance()->executeS($sql);
+        return \Db::getInstance()->executeS($sql);
     }
 
     protected function _clean($string)
@@ -570,8 +555,8 @@ class ProductSerializer
     {
         $newFields = [];
         $coreFields = [];
-        $overrideProductFields = Product::$definition['fields'];
-        $this->productCoreFields = ProductCore::$definition['fields'];
+        $overrideProductFields = \Product::$definition['fields'];
+        $this->productCoreFields = \ProductCore::$definition['fields'];
 
         foreach ($this->productCoreFields as $key => $value) {
             $coreFields[] = $key;
@@ -588,19 +573,20 @@ class ProductSerializer
     protected function _getAttributeImageAssociations($id_product_attribute)
     {
         $combinationImages = [];
-        $sql = (new DbQuery())
+        $sql = (new \DbQuery())
             ->select('pai.id_image')
             ->from('product_attribute_image', 'pai')
             ->leftJoin('image', 'i', 'pai.id_image = i.id_image')
             ->where('pai.id_product_attribute =' . (int) $id_product_attribute)
+            ->where('i.id_product = ' . (int) $this->product->id)
             ->orderBy('is.cover DESC, i.position ASC')
             ->leftJoin('image_shop', 'is', 'i.id_image = is.id_image')
             ->where('is.id_shop = ' . (int) $this->id_shop);
 
-        $data = Db::getInstance()->executeS($sql);
+        $data = \Db::getInstance()->executeS($sql);
 
         foreach ($data as $row) {
-            $combinationImages[] = (int) ($row['id_image']);
+            $combinationImages[] = (int) $row['id_image'];
         }
 
         return $combinationImages;
@@ -616,7 +602,7 @@ class ProductSerializer
             $id_parent = $id_parent;
             $id_category = $id_category;
         } else {
-            $row = Db::getInstance(_PS_USE_SQL_SLAVE_)->ExecuteS('
+            $row = \Db::getInstance(_PS_USE_SQL_SLAVE_)->ExecuteS('
             SELECT cl.`name`, p.`id_category_default` as id_category, c.`id_parent` FROM `' . _DB_PREFIX_ . 'product` p
             LEFT JOIN `' . _DB_PREFIX_ . 'category_lang` cl ON (p.`id_category_default` = cl.`id_category`)
             LEFT JOIN `' . _DB_PREFIX_ . 'category` c ON (p.`id_category_default` = c.`id_category`)
@@ -631,7 +617,7 @@ class ProductSerializer
         }
 
         while ($id_parent != 0 && $id_category != $id_parent) {
-            $row = Db::getInstance(_PS_USE_SQL_SLAVE_)->ExecuteS('
+            $row = \Db::getInstance(_PS_USE_SQL_SLAVE_)->ExecuteS('
                 SELECT cl.`name`, c.`id_category`, c.`id_parent` FROM `' . _DB_PREFIX_ . 'category_lang` cl
                 LEFT JOIN `' . _DB_PREFIX_ . 'category` c ON (c.`id_category` = ' . (int) $id_parent . ')
                 WHERE cl.`id_category` = ' . (int) $id_parent . '
@@ -639,7 +625,7 @@ class ProductSerializer
 
             if (!sizeof($row)) {
                 // There is a problem with the category parent, let's try another category
-                $this->productCategory = Db::getInstance(_PS_USE_SQL_SLAVE_)->ExecuteS('
+                $this->productCategory = \Db::getInstance(_PS_USE_SQL_SLAVE_)->ExecuteS('
                         SELECT DISTINCT c.`id_category`, cl.`name`,
                             c.`id_parent` FROM `' . _DB_PREFIX_ . 'category_product` cp
                         LEFT JOIN `' . _DB_PREFIX_ . 'category_lang` cl ON (cp.`id_category` = cl.`id_category`)
@@ -671,7 +657,7 @@ class ProductSerializer
     {
         $select = '(';
 
-        $priority = SpecificPrice::getPriority($id_product);
+        $priority = \SpecificPrice::getPriority($id_product);
         foreach (array_reverse($priority) as $k => $field) {
             if (!empty($field)) {
                 $select .= ' IF (`' . bqSQL($field) . '` = ' . (int) $$field . ', ' . pow(2, $k + 1) . ', 0) + ';
@@ -689,7 +675,7 @@ class ProductSerializer
      */
     protected function getSpecificPriceInfo($id_group, $id_country, $id_product_attribute = false)
     {
-        $query = (new DbQuery())
+        $query = (new \DbQuery())
             ->select('*, ' . self::_getScoreQuery($this->product->id, $this->id_shop, $this->id_currency, $id_country, $id_group, null))
             ->from('specific_price')
             ->where(sprintf('id_product IN (%d, 0)', (int) $this->product->id))
@@ -710,7 +696,7 @@ class ProductSerializer
             $query->where('id_product_attribute = ' . (int) $id_product_attribute);
         }
 
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($query);
+        return \Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($query);
     }
 
     /**
@@ -722,7 +708,7 @@ class ProductSerializer
     {
         $return = [];
 
-        if (Validate::isLoadedObject($this->product) === false) {
+        if (\Validate::isLoadedObject($this->product) === false) {
             return $return;
         }
         $specificPrices = $this->getSpecificPriceInfo($id_group, $address->id_country);
@@ -739,7 +725,6 @@ class ProductSerializer
                     $skip = true;
                 }
             }
-
             // Apply a specific price of a default variation for a product
             if ((int) $id_product_attribute === 0 && $skip) {
                 if ($this->product->getDefaultIdProductAttribute() === (int) $specificPrice['id_product_attribute']) {
@@ -754,7 +739,7 @@ class ProductSerializer
             if ($specificPrice['reduction_type'] == 'amount') {
                 $reduction_amount = $specificPrice['reduction'];
                 if (!$specificPrice['id_currency']) {
-                    $reduction_amount = Tools::convertPrice($reduction_amount, $this->id_currency);
+                    $reduction_amount = \Tools::convertPrice($reduction_amount, $this->id_currency);
                 }
                 $specific_price_reduction = $reduction_amount;
                 if (!$specificPrice['reduction_tax']) {
@@ -764,7 +749,7 @@ class ProductSerializer
                 $specific_price_reduction = $priceWithoutReduction * $specificPrice['reduction'];
             }
             $price = $priceWithoutReduction - $specific_price_reduction;
-            $price = Tools::ps_round($price, 2);
+            $price = \Tools::ps_round($price, 2);
             if ($price < 0) {
                 $price = 0;
             }

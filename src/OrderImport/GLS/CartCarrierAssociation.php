@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -19,13 +20,6 @@
 
 namespace ShoppingfeedAddon\OrderImport\GLS;
 
-use Address;
-use Cart;
-use Configuration;
-use Country;
-use Db;
-use Exception;
-
 class CartCarrierAssociation
 {
     protected $db;
@@ -34,26 +28,26 @@ class CartCarrierAssociation
 
     public function __construct(AdapterInterface $glsAdapter)
     {
-        $this->db = Db::getInstance();
+        $this->db = \Db::getInstance();
         $this->glsAdapter = $glsAdapter;
     }
 
-    public function create(Cart $cart, $relayId = null)
+    public function create(\Cart $cart, $relayId = null)
     {
         $relay_detail = [];
 
         if (false === empty($relayId)) {
             try {
                 $relay_detail = $this->glsAdapter->getRelayDetail($relayId);
-            } catch (Exception $e) {
-                throw new Exception($e->getMessage());
+            } catch (\Exception $e) {
+                throw new \Exception($e->getMessage());
             }
         }
 
-        $address = new Address($cart->id_address_delivery);
-        $country = new Country(empty($relay_detail['Country']) ? $address->id_country : Country::getByIso($relay_detail['Country']));
+        $address = new \Address($cart->id_address_delivery);
+        $country = new \Country(empty($relay_detail['Country']) ? $address->id_country : \Country::getByIso($relay_detail['Country']));
         $gls_product = $this->glsAdapter->getGlsProductCode(
-            Configuration::get('GLS_GLSRELAIS_ID', (int) $cart->id_carrier, $cart->id_shop_group, $cart->id_shop),
+            \Configuration::get('GLS_GLSRELAIS_ID', (int) $cart->id_carrier, $cart->id_shop_group, $cart->id_shop),
             $country->iso_code
         );
 
@@ -61,7 +55,7 @@ class CartCarrierAssociation
         $sql = 'INSERT IGNORE INTO ' . _DB_PREFIX_ . "gls_cart_carrier VALUES (
                 '" . (int) $cart->id . "',
                 '" . (int) $cart->id_customer . "',
-                '" . (int) Configuration::get('GLS_GLSRELAIS_ID', (int) $cart->id_carrier, $cart->id_shop_group, $cart->id_shop) . "',
+                '" . (int) \Configuration::get('GLS_GLSRELAIS_ID', (int) $cart->id_carrier, $cart->id_shop_group, $cart->id_shop) . "',
                 '" . pSQL($gls_product) . "',
                 '" . (empty($relayId) ? '' : pSQL($relayId)) . "',
                 '" . (empty($relay_detail['Name1']) ? '' : pSQL($relay_detail['Name1'])) . "',

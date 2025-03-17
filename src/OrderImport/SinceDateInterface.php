@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -19,8 +20,6 @@
 
 namespace ShoppingfeedAddon\OrderImport;
 
-use DateTimeInterface;
-
 interface SinceDateInterface
 {
     public function get($format, $id_shop = null);
@@ -29,9 +28,9 @@ interface SinceDateInterface
 
     public function getForShippedByMarketplace($format, $id_shop = null);
 
-    public function set(DateTimeInterface $date, $id_shop = null);
+    public function set(\DateTimeInterface $date, $id_shop = null);
 
-    public function setForShipped(DateTimeInterface $date, $id_shop = null);
+    public function setForShipped(\DateTimeInterface $date, $id_shop = null);
 
-    public function setForShippedByMarketplace(DateTimeInterface $date, $id_shop = null);
+    public function setForShippedByMarketplace(\DateTimeInterface $date, $id_shop = null);
 }

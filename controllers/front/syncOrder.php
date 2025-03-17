@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -100,6 +101,7 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
                     'id_shop' => $token['id_shop'],
                     'id_token' => $token['id_shoppingfeed_token'],
                     'order_action' => ShoppingfeedTaskOrder::ACTION_CHECK_TICKET_SYNC_STATUS,
+                    'shoppingfeed_store_id' => $token['shoppingfeed_store_id'],
                 ]);
                 $ticketsHandler->addActions(
                     'getTaskOrders',
@@ -159,6 +161,7 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
                     'id_shop' => $token['id_shop'],
                     'id_token' => $token['id_shoppingfeed_token'],
                     'order_action' => ShoppingfeedTaskOrder::ACTION_SYNC_STATUS,
+                    'shoppingfeed_store_id' => $token['shoppingfeed_store_id'],
                 ]);
                 $orderStatusHandler->addActions(
                     'getTaskOrders',
@@ -198,6 +201,65 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
                     $this->processMonitor->getProcessObjectModelId()
                 );
             }
+            // Start upload invoices
+            ProcessLoggerHandler::logInfo(
+                $logPrefix . ' ' . $this->module->l('Process start : Order invoice sync', 'syncOrder'),
+                $this->processMonitor->getProcessObjectModelName(),
+                $this->processMonitor->getProcessObjectModelId()
+            );
+
+            $failedSyncStatusTaskOrders = [];
+            $successfulSyncTaskOrders = [];
+            try {
+                Registry::set('syncStatusErrors', 0);
+
+                /** @var ShoppingfeedHandler $orderStatusHandler */
+                $orderStatusHandler = new ActionsHandler();
+                $orderStatusHandler->setConveyor([
+                    'id_shop' => $token['id_shop'],
+                    'id_token' => $token['id_shoppingfeed_token'],
+                    'order_action' => ShoppingfeedTaskOrder::ACTION_UPLOAD_INVOICE,
+                    'shoppingfeed_store_id' => $token['shoppingfeed_store_id'],
+                ]);
+                $orderStatusHandler->addActions(
+                    'getTaskOrders',
+                    'prepareTaskOrdersSyncInvoice',
+                    'sendTaskOrdersSyncInvoice'
+                );
+
+                if ($orderStatusHandler->process('ShoppingfeedOrderSync')) {
+                    $processData = $orderStatusHandler->getConveyor();
+                    $failedSyncStatusTaskOrders = isset($processData['failedTaskOrders']) ? $processData['failedTaskOrders'] : [];
+                    $successfulSyncTaskOrders = isset($processData['successfulTaskOrders']) ? $processData['successfulTaskOrders'] : [];
+
+                    ProcessLoggerHandler::logSuccess(
+                        sprintf(
+                            $logPrefix . ' ' . $this->module->l('%d tickets created; %d tickets not created; %d errors', 'syncOrder'),
+                            count($successfulSyncTaskOrders),
+                            count($failedSyncStatusTaskOrders),
+                            Registry::get('syncStatusErrors')
+                        ),
+                        $this->processMonitor->getProcessObjectModelName(),
+                        $this->processMonitor->getProcessObjectModelId()
+                    );
+                }
+
+                ProcessLoggerHandler::logInfo(
+                    $logPrefix . ' ' . $this->module->l('Process finished : Order invoice sync', 'syncOrder'),
+                    $this->processMonitor->getProcessObjectModelName(),
+                    $this->processMonitor->getProcessObjectModelId()
+                );
+            } catch (Throwable $e) {
+                ProcessLoggerHandler::logError(
+                    sprintf(
+                        $logPrefix . ' ' . $this->module->l('Error : %s', 'syncOrder'),
+                        $e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine()
+                    ),
+                    $this->processMonitor->getProcessObjectModelName(),
+                    $this->processMonitor->getProcessObjectModelId()
+                );
+            }
+            // End upload invoices
 
             // Send mail
             try {
@@ -238,9 +300,9 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
             foreach ($successfulTicketsStatusTaskOrders as $taskOrder) {
                 $taskOrder->delete();
             }
-            //Resend failed tickets.
+            // Resend failed tickets.
             foreach ($failedTicketsStatusTaskOrders as $failedTicket) {
-                /* @var ShoppingfeedTaskOrder $failedTicket*/
+                /* @var ShoppingfeedTaskOrder $failedTicket */
                 $failedTicket->action = ShoppingfeedTaskOrder::ACTION_SYNC_STATUS;
                 $failedTicket->ticket_number = '';
                 $failedTicket->batch_id = '';
@@ -285,8 +347,8 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
                 }
 
                 $result = $shoppingfeedApi->getUnacknowledgedOrders(false, $token['shoppingfeed_store_id']);
-                if (Configuration::get(\Shoppingfeed::ORDER_IMPORT_SHIPPED) == true
-                    || Configuration::get(\Shoppingfeed::ORDER_IMPORT_SHIPPED_MARKETPLACE) == true) {
+                if (Configuration::get(Shoppingfeed::ORDER_IMPORT_SHIPPED) == true
+                    || Configuration::get(Shoppingfeed::ORDER_IMPORT_SHIPPED_MARKETPLACE) == true) {
                     $result = array_merge($result, $shoppingfeedApi->getUnacknowledgedOrders(true, $token['shoppingfeed_store_id']));
                 }
             } catch (Throwable $e) {

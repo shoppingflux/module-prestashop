@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -24,7 +25,6 @@ if (!defined('_PS_VERSION_')) {
 }
 
 use Configuration;
-use Hook;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
 
 /**
@@ -48,11 +48,11 @@ class RulesManager
      *
      * @param OrderResource $apiOrder
      */
-    public function __construct($id_shop, OrderResource $apiOrder = null)
+    public function __construct($id_shop, ?OrderResource $apiOrder = null)
     {
         $this->apiOrder = $apiOrder;
         $this->rulesConfiguration = json_decode(
-            Configuration::get(
+            \Configuration::get(
                 \Shoppingfeed::ORDER_IMPORT_SPECIFIC_RULES_CONFIGURATION,
                 null,
                 null,
@@ -63,7 +63,7 @@ class RulesManager
 
         $rulesClassNames = [];
 
-        Hook::exec(
+        \Hook::exec(
             'actionShoppingfeedOrderImportRegisterSpecificRules',
             [
                 'specificRulesClassNames' => &$rulesClassNames,
@@ -75,7 +75,7 @@ class RulesManager
                 new $ruleClassName(
                     isset($this->rulesConfiguration[$ruleClassName]) ? $this->rulesConfiguration[$ruleClassName] : [],
                     $id_shop
-            )
+                )
             );
         }
     }
@@ -84,7 +84,7 @@ class RulesManager
      * Adds a rule to the manager. If an OrderResource was given, checks if the
      * rule matches the order.
      *
-     * @param \ShoppingfeedAddon\OrderImport\RuleInterface $ruleObject
+     * @param RuleInterface $ruleObject
      *
      * @return bool
      */

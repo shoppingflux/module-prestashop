@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright since 2019 Shopping Feed
  *
@@ -68,7 +69,7 @@ class ShoppingfeedProductSyncPreloadingActions extends DefaultActions
         if ($nb_total_product == $nb_preloaded_product) {
             return true;
         }
-        $iterations = range(0, floor((($nb_total_product - $nb_preloaded_product) / $limit)));
+        $iterations = range(0, floor(($nb_total_product - $nb_preloaded_product) / $limit));
 
         $db = Db::getInstance(_PS_USE_SQL_SLAVE_);
         $sfp = new ShoppingfeedPreloading();

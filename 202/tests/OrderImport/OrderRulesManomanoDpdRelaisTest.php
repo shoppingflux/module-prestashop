@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright since 2019 Shopping Feed
  *
@@ -19,7 +20,6 @@
 
 namespace Tests\OrderImport;
 
-use Cart;
 use ShoppingfeedAddon\OrderImport\OrderData;
 use ShoppingfeedAddon\OrderImport\Rules\ManomanoDpdRelais;
 
@@ -36,7 +36,7 @@ class OrderRulesManomanoDpdRelaisTest extends AbstractOrdeTestCase
     public function testSplitManoManoRelais(): void
     {
         $params['apiOrder'] = $this->getOrderRessourceFromDataset('order-manomano.json');
-        $params['cart'] = new Cart();
+        $params['cart'] = new \Cart();
 
         $rules = new ManomanoDpdRelais();
         $this->assertTrue($rules->isApplicable($params['apiOrder']));
@@ -45,18 +45,18 @@ class OrderRulesManomanoDpdRelaisTest extends AbstractOrdeTestCase
         $rules->onPreProcess($params);
 
         $expedtedAddress = [
-                'firstName' => 'patrice',
-                'lastName' => 'lafont',
-                'company' => 'tabac le phenix (p31175)',
-                'street' => '5 place du 11 novembre 1918',
-                'street2' => '',
-                'other' => 'p31175',
-                'postalCode' => '30150',
-                'city' => 'Saint-geniès-de-comolas',
-                'country' => 'FR',
-                'phone' => '+3361234567',
-                'mobilePhone' => '+3361234567',
-                'email' => 'm_bcaddf4fgca@message.manomano.com',
+            'firstName' => 'patrice',
+            'lastName' => 'lafont',
+            'company' => 'tabac le phenix (p31175)',
+            'street' => '5 place du 11 novembre 1918',
+            'street2' => '',
+            'other' => 'p31175',
+            'postalCode' => '30150',
+            'city' => 'Saint-geniès-de-comolas',
+            'country' => 'FR',
+            'phone' => '+3361234567',
+            'mobilePhone' => '+3361234567',
+            'email' => 'm_bcaddf4fgca@message.manomano.com',
         ];
         $this->assertSame($expedtedAddress, $params['orderData']->shippingAddress);
     }

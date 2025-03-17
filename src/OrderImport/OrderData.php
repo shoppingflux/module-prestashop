@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -24,8 +25,6 @@ if (!defined('_PS_VERSION_')) {
 }
 
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
-use Tools;
-use Validate;
 
 /**
  * This class is a mutable copy of \ShoppingFeed\Sdk\Api\Order\OrderResource. Its
@@ -141,7 +140,7 @@ class OrderData
         $this->customer = new OrderCustomerData();
 
         if (false == empty($this->billingAddress['firstName'])) {
-            $firstName = Tools::substr($this->billingAddress['firstName'], 0, 32);
+            $firstName = \Tools::substr($this->billingAddress['firstName'], 0, 32);
             // Numbers are forbidden in firstname / lastname
             $firstName = preg_replace('/\-?\d+/', '', $firstName);
             $firstName = str_replace('.', '-', $firstName);
@@ -149,16 +148,16 @@ class OrderData
         }
 
         if (false == empty($this->billingAddress['lastName'])) {
-            $lastName = Tools::substr($this->billingAddress['lastName'], 0, 32);
+            $lastName = \Tools::substr($this->billingAddress['lastName'], 0, 32);
             // Numbers are forbidden in firstname / lastname
             $lastName = preg_replace('/\-?\d+/', '', $lastName);
             $lastName = str_replace('.', '-', $lastName);
             $this->customer->setLastName($lastName);
         }
 
-        if (Validate::isEmail($this->billingAddress['email'])) {
+        if (\Validate::isEmail($this->billingAddress['email'])) {
             $this->customer->setEmail($this->billingAddress['email']);
-        } elseif (Validate::isEmail($this->shippingAddress['email'])) {
+        } elseif (\Validate::isEmail($this->shippingAddress['email'])) {
             $this->customer->setEmail($this->shippingAddress['email']);
         } else {
             $this->customer->setEmail($this->apiOrder->getId() . '@' . $this->apiOrder->getChannel()->getName() . '.sf');

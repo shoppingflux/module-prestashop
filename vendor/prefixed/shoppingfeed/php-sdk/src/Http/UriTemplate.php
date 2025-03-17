@@ -2,7 +2,7 @@
 namespace ShoppingFeed\Sdk\Http;
 
 /**
- * Extracted from SfGuzzle\GuzzleHttp v6 : https://github.com/guzzle/guzzle/blob/master/src/UriTemplate.php
+ * Extracted from GuzzleHttp v6 : https://github.com/guzzle/guzzle/blob/master/src/UriTemplate.php
  *
  * Expands URI templates. Userland implementation of PECL uri_template.
  *

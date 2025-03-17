@@ -26,7 +26,7 @@ interface AdapterInterface
     /**
      * Send a single HTTP request
      *
-     * @param Message\RequestInterface $request SfPsr\Psr\RequestInterface object ready to be sent
+     * @param Message\RequestInterface $request Psr\RequestInterface object ready to be sent
      * @param array                    $options Options to pass to the http client
      *
      * @return Message\ResponseInterface
@@ -36,7 +36,7 @@ interface AdapterInterface
     /**
      * Send multiples HTTP requests
      *
-     * @param array $requests An array of SfPsr\Psr\RequestInterface object ready to be sent
+     * @param array $requests An array of Psr\RequestInterface object ready to be sent
      * @param array $options  Options to pass to the http client
      *
      * @return void

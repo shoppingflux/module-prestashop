@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright since 2019 Shopping Feed
  *
@@ -19,32 +20,28 @@
 
 namespace Tests\OrderSync;
 
-use DateTime;
-use Db;
-use DbQuery;
 use PHPUnit\Framework\TestCase;
 use ShoppingfeedAddon\Services\TaskOrderCleaner;
-use ShoppingfeedTaskOrder;
 
 class TaskOrderCleanerTest extends TestCase
 {
     public function testTaskOrderCleaner()
     {
-        $sql = (new DbQuery())->select('count(*)')->from(ShoppingfeedTaskOrder::$definition['table']);
-        $countTaskOrder = Db::getInstance()->getValue($sql);
+        $sql = (new \DbQuery())->select('count(*)')->from(\ShoppingfeedTaskOrder::$definition['table']);
+        $countTaskOrder = \Db::getInstance()->getValue($sql);
         $taskOrderCleaner = new TaskOrderCleaner();
 
-        $shoppingfeedTaskOrder = new ShoppingfeedTaskOrder();
-        $shoppingfeedTaskOrder->action = ShoppingfeedTaskOrder::ACTION_SYNC_STATUS;
+        $shoppingfeedTaskOrder = new \ShoppingfeedTaskOrder();
+        $shoppingfeedTaskOrder->action = \ShoppingfeedTaskOrder::ACTION_SYNC_STATUS;
         $shoppingfeedTaskOrder->id_order = 1;
         $shoppingfeedTaskOrder->save();
         $taskOrderCleaner->clean();
-        $this->assertEquals(Db::getInstance()->getValue($sql), $countTaskOrder + 1);
+        $this->assertEquals(\Db::getInstance()->getValue($sql), $countTaskOrder + 1);
 
-        $shoppingfeedTaskOrder->date_add = (new DateTime())->modify('-8 day')->format('Y-m-d H:i:s');
+        $shoppingfeedTaskOrder->date_add = (new \DateTime())->modify('-8 day')->format('Y-m-d H:i:s');
         $shoppingfeedTaskOrder->save();
         $taskOrderCleaner->clean();
 
-        $this->assertEquals(Db::getInstance()->getValue($sql), $countTaskOrder);
+        $this->assertEquals(\Db::getInstance()->getValue($sql), $countTaskOrder);
     }
 }

@@ -161,6 +161,10 @@ $_MODULE['<{shoppingfeed}prestashop>order_status_syncro_0c097c8d2f2d519cf7bf6fd1
 $_MODULE['<{shoppingfeed}prestashop>order_status_syncro_8f07ae455b246a580ce7239c2b8dac63'] = 'Transporteur Shopping feed';
 $_MODULE['<{shoppingfeed}prestashop>order_status_syncro_d51f61bae1c0c52905c6b44619218e8c'] = 'Transporteur PrestaShop';
 $_MODULE['<{shoppingfeed}prestashop>order_status_syncro_b1c94ca2fbc3e78fc30069c8d0f01680'] = 'Tous';
+$_MODULE['<{shoppingfeed}prestashop>tax-for-business-desc_c4eb9097787df9878d3e63e9a44e5d04'] = 'En activant cette option:';
+$_MODULE['<{shoppingfeed}prestashop>tax-for-business-desc_3dde2db44a6795fe99ca74e32fc24597'] = 'si le chanel est Amazon et que la commande est business, le montant de la TVA de la commande sera reporté en l\'état, sans application des règles de taxe configurée dans le PrestaShop';
+$_MODULE['<{shoppingfeed}prestashop>tax-for-business-desc_34587757f52c0f744231105ad85c4955'] = 'si le channel n\'est pas Amazon et que la commande est business, la TVA sera passée à 0 sur la commande';
+$_MODULE['<{shoppingfeed}prestashop>tax-for-business-desc_d9608da8360e04a25cb1b6e88d50ae63'] = 'dans tous les autres cas, PrestaShop sera maître du calcul des taxes en fonction de sa configuration';
 $_MODULE['<{shoppingfeed}prestashop>runcronbutton_9506f0fd0f7f1b07960b15b4c9e68d1a'] = 'Lancer';
 $_MODULE['<{shoppingfeed}prestashop>product_filter_8418bb52f108670fbb6e0acc7d439cf7'] = 'Sélection des produits';
 $_MODULE['<{shoppingfeed}prestashop>product_filter_0f500d988373a125295a82293de0ff84'] = 'Choisir les produits envoyés à Shopping Feed';
@@ -248,7 +252,7 @@ $_MODULE['<{shoppingfeed}prestashop>hoststubhandler_4993d8516d8737159bcd735ca807
 $_MODULE['<{shoppingfeed}prestashop>hoststubhandler_d7c9a06f90261a728be71382fc06202a'] = 'Régler la configuration PHP \'register_globals\' à \'Off\'.';
 $_MODULE['<{shoppingfeed}prestashop>hoststubhandler_4a344651fb10eb9e339838fab7bb97ae'] = 'Activer la compression GZIP sur votre serrveur.';
 $_MODULE['<{shoppingfeed}prestashop>hoststubhandler_0996c7cf8e7f49f54d15b68262a6b68d'] = 'Des fichiers PrestaShop sont manquants sur votre serveur.';
-$_MODULE['<{shoppingfeed}prestashop>hoststubhandler_95095fc4bbc8b42ec512cfb1cfa19d8a'] = 'Vous utilisez la version de PHP %. Nous recommandons de mettre à jour PHP vers 5.6 minimum.';
+$_MODULE['<{shoppingfeed}prestashop>hoststubhandler_95095fc4bbc8b42ec512cfb1cfa19d8a'] = 'Vous utilisez la version de PHP %s. Nous recommandons de mettre à jour PHP vers 5.6 minimum.';
 $_MODULE['<{shoppingfeed}prestashop>databasestubhandler_0168d58830eab3aed7a65afcd652c8ca'] = 'La table n\'exite pas';
 $_MODULE['<{shoppingfeed}prestashop>databasestubhandler_27964128da66a773e4ccd1b4a7cd7e61'] = 'Index unique non valide. Clef d\'index manquante :';
 $_MODULE['<{shoppingfeed}prestashop>databasestubhandler_cf1e4aeb4d1db12dad300d406eafa65c'] = 'Le champs ne doit pas être présent dans cette table';
@@ -458,6 +462,7 @@ $_MODULE['<{shoppingfeed}prestashop>socolissimo_4c96fd6e2d4973be45673726772bf0a2
 $_MODULE['<{shoppingfeed}prestashop>socolissimo_dff8d31a11be2b3d707f69ac88e19388'] = 'Ajout des informations de la commande dans le module correspondant.';
 $_MODULE['<{shoppingfeed}prestashop>zalando_c6c141c3ae93d01dbc81fc342c5220f0'] = 'Si une commande provient de Zalando.';
 $_MODULE['<{shoppingfeed}prestashop>zalando_c6a9548e4c9704bb992bc369ac5d0ccc'] = 'Rajout des champs spécifique à Zalando dans les factures PrestaShop';
+$_MODULE['<{shoppingfeed}prestashop>taxforbusiness_1ac6e4bd554d6a51e774951e1a357179'] = 'Gestion des taxes pour les commandes B2B';
 $_MODULE['<{shoppingfeed}prestashop>skiptax_0cc1e925b5703e8da52b7c3e91829499'] = '[Commande: %s]';
 $_MODULE['<{shoppingfeed}prestashop>skiptax_7d19930a16163d26fccf93ebe5c54038'] = 'SkipTax - Règle déclenchée.';
 $_MODULE['<{shoppingfeed}prestashop>skiptax_315561e46d5db4fd6b94f36bdaa9ae04'] = 'Forcer la TVA à 0% pour les commandes business';
@@ -473,10 +478,6 @@ $_MODULE['<{shoppingfeed}prestashop>symbolconformity_6efbd4474b0556a3e01989218a4
 $_MODULE['<{shoppingfeed}prestashop>symbolconformity_a081c9610c122ca2d1fe29935930f908'] = 'Toutes les commandes';
 $_MODULE['<{shoppingfeed}prestashop>symbolconformity_9ee5add80ac1471878a0d5580e15056f'] = 'En activant cette option, les caractères spéciaux interdit par PrestaShop seront supprimés des données de la commandes. Attention, cela peut corrompre les adresses de livraison ou de facturation.';
 $_MODULE['<{shoppingfeed}prestashop>symbolconformity_5fe50b90ae3daff68f330c167bed6d72'] = 'Conformité des caractères.';
-$_MODULE['<{shoppingfeed}prestashop>taxexclmarketplace_0cc1e925b5703e8da52b7c3e91829499'] = '[Commande: %s]';
-$_MODULE['<{shoppingfeed}prestashop>taxexclmarketplace_0864f57e7158777184d00e221aa09824'] = 'TaxExclMarketplace - Règle déclenchée.';
-$_MODULE['<{shoppingfeed}prestashop>taxexclmarketplace_b335b19ef2a3c630c546f3d166c278ef'] = 'Importe la commande à partie des prix et montants fournis hors taxe.';
-$_MODULE['<{shoppingfeed}prestashop>taxexclmarketplace_7aed48c9909a116f48a53e3395359090'] = 'Si la commande vient de RETIF.';
 $_MODULE['<{shoppingfeed}prestashop>setdnitoaddress_b22d9f270f467fb7d976b28b61678413'] = 'Ajouter le DNI à l\'adresse';
 $_MODULE['<{shoppingfeed}prestashop>setdnitoaddress_0dc21bd8d6f546e6242c75981cd6f138'] = 'Si le champs order.additionalFields.buyer_identification_number n\'est pas vide';
 $_MODULE['<{shoppingfeed}prestashop>setdnitoaddress_989574d0af2153bef7aafbb81894313d'] = 'Méthode de validation du DNI manquante';
@@ -539,6 +540,7 @@ $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_6d2fb7c26d
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_bdb8360135ebed9ddd4bd71d82605cee'] = 'Les commandes seront importées quel que soit leur statut côté Shopping Feed';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_f6a566b2cb5358a6d47d58e4d13df905'] = 'Tracking commandes';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_83c5ced40150eafe750d3c5813d6ea8f'] = 'Vous pourrez lister les commandes venant des comparateurs de prix';
+$_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_264662277436fbe2ee7aa8250deb9fd8'] = 'Envoyer une notification par e-mail';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_0c097c8d2f2d519cf7bf6fd1f8476e3d'] = 'Correspondance des transporteurs';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_1e7cb1bf2bb42659e8a3f466e2191e5f'] = 'Correspondance des transporteurs entre les marketplaces et votre PrestaShop';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_578ec6d74357b4a196a9ff7c6d97e236'] = 'Le module Shopping Flux Officiel (shoppingfluxexport) doit être installé sur votre boutique pour permettre de synchroniser les commandes déjà importées. Les options “Expédition de commande“ et “Annulation de commande“ doivent être désactivées sur le module Shopping Flux Officiel. Si vous désactivez ces options sur le module Shopping Flux Officiel puis les ré-activez à nouveau plus tard, la \'synchronisation les commandes déjà importées\' via \'15 min Marketplace Updates - Shopping\' sera suspendu.';
@@ -553,6 +555,8 @@ $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_1063e38cb5
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_10581f82378a00c00fb2d536628eb59c'] = 'Délai avant la synchronisation du numéro de suivi';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_1e0869c39e6beb9751e30641c1aaef36'] = 'Dans certains cas, le numéro de suivi peut être envoyé par votre boutique après la mise à jour du statut de la commande. Pour être sûr de toujours envoyer le numéro de suivi à la marketplace vous pouvez décider de synchroniser le statut passé un certain délai. Par défaut, l\'envoi du numéro de suivi et du statut de commande est différé de 5 minutes suivant la mise à jour effective de la commande sur votre PrestaShop.';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_640fd0cc0ffa0316ae087652871f4486'] = 'minutes';
+$_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_381cf5ae81a519c800c5fd37b02e0267'] = 'Synchronisation des commandes reçues';
+$_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_0147ea0808683b0b0b2a66d987b3db2d'] = 'Lorsque la commande a bien été livrée chez le client, pour les plateformes gérant ce statut';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_5215c379ae41bad6a61896a26108f1b7'] = 'Synchronisation des commandes annulées';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_ad05c3a58e994bbb0140ab240c998dbb'] = 'Synchronisation des commandes remboursées';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_e3212a6266bce4b9444bfb291b89e719'] = 'Le paramètre \'Nombre de commande max par requête\' est reservée aux expert (100 par défaut). Vous pouvez configurer le nombre de commandes qui seront traitées à chaque appel de la tâche CRON. Plus vous augmentez ce nombre, plus il y aura de requête en base de données. La valeur de ce paramètre doit être ajustée en fonction de la capacité de votre serveur MYSQL.';
