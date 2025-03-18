@@ -10,7 +10,7 @@ mysql -h localhost -u root prestashop -e "
 SET @@wait_timeout=28800;
 SET @@interactive_timeout=28800;
 SET @@interactive_timeout=1073741824;
-SET @@innodb_log_file_size=128MB;
+SET GLOBAL innodb_log_file_size=128MB;
 "
 
 /etc/init.d/mariadb start
