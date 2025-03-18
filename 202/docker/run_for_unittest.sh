@@ -15,9 +15,13 @@ SET GLOBAL max_allowed_packet=1073741824;
 php /var/www/html/bin/console prestashop:module install shoppingfeed -e prod
 rm /var/www/html/var/cache/*/* -Rf
 php /var/www/html/bin/console prestashop:module install dpdfrance -e prod
+rm /var/www/html/var/cache/*/* -Rf
 php /var/www/html/bin/console prestashop:module install colissimo -e prod
+rm /var/www/html/var/cache/*/* -Rf
 php /var/www/html/bin/console prestashop:module install mondialrelay -e prod
+rm /var/www/html/var/cache/*/* -Rf
 php /var/www/html/bin/console prestashop:module install nkmgls -e prod
+rm /var/www/html/var/cache/*/* -Rf
 
 echo "Add data fixtures for Unit Tests"
 
