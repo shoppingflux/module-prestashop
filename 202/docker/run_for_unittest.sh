@@ -7,10 +7,13 @@ set -x
 
 sleep 3
 mysql -h localhost -u root prestashop -e "
-SET GLOBAL wait_timeout=6000;
-SET GLOBAL interactive_timeout=6000;
-SET GLOBAL max_allowed_packet=1073741824;
+SET @@wait_timeout=28800;
+SET @@interactive_timeout=28800;
+SET @@interactive_timeout=1073741824;
+SET @@innodb_log_file_size=128MB;
 "
+
+/etc/init.d/mariadb start
 
 php /var/www/html/bin/console prestashop:module install shoppingfeed -e prod
 rm /var/www/html/var/cache/*/* -Rf
