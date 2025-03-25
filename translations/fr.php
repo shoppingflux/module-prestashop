@@ -540,7 +540,8 @@ $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_6d2fb7c26d
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_bdb8360135ebed9ddd4bd71d82605cee'] = 'Les commandes seront importées quel que soit leur statut côté Shopping Feed';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_f6a566b2cb5358a6d47d58e4d13df905'] = 'Tracking commandes';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_83c5ced40150eafe750d3c5813d6ea8f'] = 'Vous pourrez lister les commandes venant des comparateurs de prix';
-$_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_264662277436fbe2ee7aa8250deb9fd8'] = 'Envoyer une notification par e-mail';
+$_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_fc6d84f6ad1f33a680fe83a3309d278f'] = 'Autoriser PrestaShop a envoyer les mails de changement de statut de commande sur les commandes MarketPlace';
+$_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_ffbeeb156c6b2531148188a61b1421c2'] = 'Attention, cette configuration supprime l\'envoi de mails à la fois pour le mail de confirmation de commande et les mails associés à des changements de statuts';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_0c097c8d2f2d519cf7bf6fd1f8476e3d'] = 'Correspondance des transporteurs';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_1e7cb1bf2bb42659e8a3f466e2191e5f'] = 'Correspondance des transporteurs entre les marketplaces et votre PrestaShop';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_578ec6d74357b4a196a9ff7c6d97e236'] = 'Le module Shopping Flux Officiel (shoppingfluxexport) doit être installé sur votre boutique pour permettre de synchroniser les commandes déjà importées. Les options “Expédition de commande“ et “Annulation de commande“ doivent être désactivées sur le module Shopping Flux Officiel. Si vous désactivez ces options sur le module Shopping Flux Officiel puis les ré-activez à nouveau plus tard, la \'synchronisation les commandes déjà importées\' via \'15 min Marketplace Updates - Shopping\' sera suspendu.';
@@ -565,7 +566,7 @@ $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_c8878a5464
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_b9d1b8558d2d7145794f697158b6f253'] = 'Shoppingfeed Prestashop Plugin (Feed&Order)';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_ceff443491edd888ee91e6bef87446a6'] = 'Vous devez spécifier un \'Délai avant la synchronisation du numéro de suivi\' supérieur à 0.';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_23b574c89c8eafae9531357e5763d00f'] = 'Vous devez spécifier un \'Nombre de commandes maximum\' entre 1 et 200.';
-$_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_67838a580a67c01392c8bc906654228a'] = 'Séelctionner un transporteur';
+$_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_67838a580a67c01392c8bc906654228a'] = 'Sélectionner un transporteur';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedaccountsettings_b9d1b8558d2d7145794f697158b6f253'] = 'Shoppingfeed Prestashop Plugin (Feed&Order)';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedaccountsettings_5161b4f9ce9a8b7d966e8bf3c049f6f3'] = 'API Token';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedaccountsettings_bea8d9e6a0d57c4a264756b4f9822ed9'] = 'Mon Compte';
