@@ -5,7 +5,7 @@
     <property name="src-dir" value="${basedir}" />
     <property name="TARGETNAME" value="shoppingfeed" />
     <property name="TARGETBRANCH" value="${env.GIT_BRANCH}" />
-    <property name="TARGETVERSION" value="2.0.0" />
+    <property name="TARGETVERSION" value="2.0.1" />
     <target name="build" depends="build-common,package-zip,psvalidator,tot-testing" />
 
     <target name="build-common" depends="lint,prepare" />

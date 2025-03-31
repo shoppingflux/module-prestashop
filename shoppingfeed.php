@@ -1600,11 +1600,8 @@ class Shoppingfeed extends ShoppingfeedClasslib\Module
         return true;
     }
 
-    public function actionEmailSendBefore($params)
+    public function hookActionEmailSendBefore($params)
     {
-        if ($params['$template'] !== 'order_conf') {
-            return true;
-        }
         if (empty($params['templateVars']['{order_name}'])) {
             return true;
         }

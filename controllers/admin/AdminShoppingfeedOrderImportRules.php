@@ -337,7 +337,8 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
                         ],
                         [
                             'type' => 'switch',
-                            'label' => $this->module->l('Send emails notification', 'AdminShoppingfeedOrderImportRules'),
+                            'label' => $this->module->l('Allow PrestaShop to send order status change emails on MarketPlace orders', 'AdminShoppingfeedOrderImportRules'),
+                            'desc' => $this->module->l('Please note that this configuration prevents emails from being sent for both order confirmation and status change emails', 'AdminShoppingfeedOrderImportRules'),
                             'name' => Shoppingfeed::SEND_NOTIFICATION,
                             'id' => 'shoppingfeed_order-import-switch',
                             'is_bool' => true,
