@@ -516,6 +516,7 @@ class ProductSerializer
     protected function getShippingCost($carrier, $address, $id_product_attribute, $weight = null)
     {
         $cart = new Cart();
+        $cart->id_currency = $this->id_currency;
         $country = new Country($address->id_country);
         $product = [
             'id_address_delivery' => $address->id,
