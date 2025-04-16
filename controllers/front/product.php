@@ -43,7 +43,7 @@ class ShoppingfeedProductModuleFrontController extends \ModuleFrontController
         }
 
         $this->isCompressFeed = (int) Configuration::get(Shoppingfeed::COMPRESS_PRODUCTS_FEED);
-        $this->productWithHierarchy = (Configuration::get(Shoppingfeed::PRODUCT_FEED_EXPORT_HIERARCHY) === 'product_with_children');
+        $this->productWithHierarchy = (Configuration::get(Shoppingfeed::PRODUCT_FEED_EXPORT_HIERARCHY) !== 'product_separate_children_with_parent');
     }
 
     public function checkAccess()
