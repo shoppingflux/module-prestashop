@@ -407,13 +407,7 @@ class ShoppingfeedApi
 
     public function getUnacknowledgedOrders($iShipped = false, $shoppingfeed_store_id = null)
     {
-        $status = 'waiting_shipment';
-        if ($iShipped === true) {
-            $status = 'shipped';
-            $since = $this->getSinceDateService()->getForShipped(SinceDate::DATE_FORMAT_SF, $this->id_shop);
-        } else {
-            $since = $this->getSinceDateService()->get(SinceDate::DATE_FORMAT_SF, $this->id_shop);
-        }
+        $status = $iShipped ? 'shipped' : 'waiting_shipment';
         // Criteria used to query order API
         $criteria = [
             'filters' => [
@@ -423,7 +417,7 @@ class ShoppingfeedApi
                 // created, waiting_store_acceptance, refused, waiting_shipment, shipped,
                 // cancelled, refunded, partially_refunded, partially_shipped
                 'status' => $status,
-                'since' => $since,
+                'since' => $this->getSinceDateService()->get(SinceDate::DATE_FORMAT_SF, $this->id_shop),
             ],
         ];
 
@@ -466,18 +460,25 @@ class ShoppingfeedApi
             return [];
         }
 
-        // If importing test orders is allowed
-        if (Configuration::get(Shoppingfeed::ORDER_IMPORT_TEST)) {
-            // Avoid surprises, make sure we're always returning an array
-            return is_array($orders) ? $orders : iterator_to_array($orders);
-        }
-
+        $ruleShippedByMarketplace = new ShoppingfeedAddon\OrderImport\Rules\ShippedByMarketplace();
         $filteredOrders = [];
         foreach ($orders as $order) {
             $orderRawData = $order->toArray();
-            if (!$orderRawData['isTest']) {
-                $filteredOrders[] = $order;
+            if ($orderRawData['isTest'] && !Configuration::get(Shoppingfeed::ORDER_IMPORT_TEST)) {
+                continue;
             }
+            if ($order->getStatus() === 'shipped' && false === $ruleShippedByMarketplace->isShippedByMarketplace($order)) {
+                $createDate = $order->getCreatedAt();
+                $restrictDate = DateTimeImmutable::createFromFormat(
+                    SinceDate::DATE_FORMAT_PS,
+                    $this->getSinceDateService()->getForShipped(SinceDate::DATE_FORMAT_PS, $this->id_shop)
+                );
+                if ($createDate->getTimestamp() < $restrictDate->getTimestamp()) {
+                    continue;
+                }
+            }
+
+            $filteredOrders[] = $order;
         }
 
         return $filteredOrders;
