@@ -83,17 +83,6 @@ class OrderTracker
             return $ip;
         }
 
-        // If not, we get the IP from the customer_ip table
-        $query = (new \DbQuery())
-            ->from('customer_ip')
-            ->where('id_customer = ' . (int) $order->id_customer)
-            ->select('ip');
-        $ip = $this->db->getValue($query);
-
-        if ($ip) {
-            return $ip;
-        }
-
         if (isset($_SERVER['HTTP_CF_CONNECTING_IP'])) {
             // Cloudflare is directly providing the client IP in this server variable (when correctly set)
             $ip = $_SERVER['HTTP_CF_CONNECTING_IP'];
