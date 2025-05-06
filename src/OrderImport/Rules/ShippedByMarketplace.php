@@ -331,7 +331,7 @@ class ShippedByMarketplace extends RuleAbstract implements RuleInterface
         }
     }
 
-    protected function isShippedByMarketplace(OrderResource $apiOrder)
+    public function isShippedByMarketplace(OrderResource $apiOrder)
     {
         if ($this->isShippedAmazon($apiOrder)) {
             return true;
