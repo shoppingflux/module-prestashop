@@ -33,6 +33,8 @@ class ShoppingfeedTaskOrder extends ObjectModel
     // As in, "check the ticket related to the Order Status synchronization"
     const ACTION_CHECK_TICKET_SYNC_STATUS = 'CHECK_TICKET_SYNC_STATUS';
 
+    const ACTION_CHECK_TICKET_UPLOAD_INVOICE = 'CHECK_TICKET_UPLOAD_INVOICE';
+
     /** @var string The action to execute for this order */
     public $action;
 
@@ -67,6 +69,7 @@ class ShoppingfeedTaskOrder extends ObjectModel
                     self::ACTION_SYNC_STATUS,
                     self::ACTION_CHECK_TICKET_SYNC_STATUS,
                     self::ACTION_UPLOAD_INVOICE,
+                    self::ACTION_CHECK_TICKET_UPLOAD_INVOICE,
                 ],
             ],
             'id_order' => [
