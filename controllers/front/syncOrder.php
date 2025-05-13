@@ -145,6 +145,67 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
             }
 
             ProcessLoggerHandler::logInfo(
+                $logPrefix . ' ' .
+                $this->module->l('Process start : check upload invoice tickets', 'syncOrder'),
+                $this->processMonitor->getProcessObjectModelName(),
+                $this->processMonitor->getProcessObjectModelId()
+            );
+
+            $failedTicketsInvoiceTaskOrders = [];
+            $successfulTicketsInvoiceTaskOrders = [];
+            try {
+                Registry::set('ticketsErrors', 0);
+
+                /** @var ShoppingfeedHandler $ticketsHandler */
+                $ticketsHandler = new ActionsHandler();
+                $ticketsHandler->setConveyor([
+                    'id_shop' => $token['id_shop'],
+                    'id_token' => $token['id_shoppingfeed_token'],
+                    'order_action' => ShoppingfeedTaskOrder::ACTION_CHECK_TICKET_UPLOAD_INVOICE,
+                    'shoppingfeed_store_id' => $token['shoppingfeed_store_id'],
+                ]);
+                $ticketsHandler->addActions(
+                    'getTaskOrders',
+                    'prepareTaskOrdersCheckTicketsSyncStatus',
+                    'sendTaskOrdersCheckTicketsSyncStatus'
+                // Create action to send error mail and delete success ?
+                );
+
+                if ($ticketsHandler->process('ShoppingfeedOrderSync')) {
+                    $processData = $ticketsHandler->getConveyor();
+                    $failedTicketsInvoiceTaskOrders = isset($processData['failedTaskOrders']) ? $processData['failedTaskOrders'] : [];
+                    $successfulTicketsInvoiceTaskOrders = isset($processData['successfulTaskOrders']) ? $processData['successfulTaskOrders'] : [];
+
+                    ProcessLoggerHandler::logSuccess(
+                        sprintf(
+                            $logPrefix . ' ' . $this->module->l('%d tickets with success; %d tickets with failure; %d errors', 'syncOrder'),
+                            count($successfulTicketsInvoiceTaskOrders),
+                            count($failedTicketsInvoiceTaskOrders),
+                            Registry::get('ticketsErrors')
+                        ),
+                        $this->processMonitor->getProcessObjectModelName(),
+                        $this->processMonitor->getProcessObjectModelId()
+                    );
+                }
+
+                ProcessLoggerHandler::logSuccess(
+                    $logPrefix . ' ' .
+                    $this->module->l('Process finished : check upload invoice tickets', 'syncOrder'),
+                    $this->processMonitor->getProcessObjectModelName(),
+                    $this->processMonitor->getProcessObjectModelId()
+                );
+            } catch (Throwable $e) {
+                ProcessLoggerHandler::logError(
+                    sprintf(
+                        $logPrefix . ' ' . $this->module->l('Error : %s', 'syncOrder'),
+                        $e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine()
+                    ),
+                    $this->processMonitor->getProcessObjectModelName(),
+                    $this->processMonitor->getProcessObjectModelId()
+                );
+            }
+
+            ProcessLoggerHandler::logInfo(
                 $logPrefix . ' ' . $this->module->l('Process start : Order sync status', 'syncOrder'),
                 $this->processMonitor->getProcessObjectModelName(),
                 $this->processMonitor->getProcessObjectModelId()
@@ -208,8 +269,8 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
                 $this->processMonitor->getProcessObjectModelId()
             );
 
-            $failedSyncStatusTaskOrders = [];
-            $successfulSyncTaskOrders = [];
+            $failedSyncInvoiceTaskOrders = [];
+            $successfulSyncInvoiceTaskOrders = [];
             try {
                 Registry::set('syncStatusErrors', 0);
 
@@ -229,14 +290,14 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
 
                 if ($orderStatusHandler->process('ShoppingfeedOrderSync')) {
                     $processData = $orderStatusHandler->getConveyor();
-                    $failedSyncStatusTaskOrders = isset($processData['failedTaskOrders']) ? $processData['failedTaskOrders'] : [];
-                    $successfulSyncTaskOrders = isset($processData['successfulTaskOrders']) ? $processData['successfulTaskOrders'] : [];
+                    $failedSyncInvoiceTaskOrders = isset($processData['failedTaskOrders']) ? $processData['failedTaskOrders'] : [];
+                    $successfulSyncInvoiceTaskOrders = isset($processData['successfulTaskOrders']) ? $processData['successfulTaskOrders'] : [];
 
                     ProcessLoggerHandler::logSuccess(
                         sprintf(
                             $logPrefix . ' ' . $this->module->l('%d tickets created; %d tickets not created; %d errors', 'syncOrder'),
-                            count($successfulSyncTaskOrders),
-                            count($failedSyncStatusTaskOrders),
+                            count($successfulSyncInvoiceTaskOrders),
+                            count($failedSyncInvoiceTaskOrders),
                             Registry::get('syncStatusErrors')
                         ),
                         $this->processMonitor->getProcessObjectModelName(),
@@ -263,7 +324,7 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
 
             // Send mail
             try {
-                $failedTaskOrders = array_merge($failedSyncStatusTaskOrders, $failedTicketsStatusTaskOrders);
+                $failedTaskOrders = array_merge($failedSyncStatusTaskOrders, $failedTicketsStatusTaskOrders, $failedSyncInvoiceTaskOrders, $failedTicketsInvoiceTaskOrders);
 
                 if (!empty($failedTaskOrders)) {
                     $errorMailHandler = new ActionsHandler();
@@ -301,12 +362,49 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
                 $taskOrder->delete();
             }
             // Resend failed tickets.
+            /* @var ShoppingfeedTaskOrder $failedTicket */
             foreach ($failedTicketsStatusTaskOrders as $failedTicket) {
-                /* @var ShoppingfeedTaskOrder $failedTicket */
+                if (Validate::isLoadedObject(ShoppingfeedTaskOrder::getFromOrderAction($failedTicket->id_order, ShoppingfeedTaskOrder::ACTION_SYNC_STATUS))) {
+                    $failedTicket->delete();
+                    continue;
+                }
                 $failedTicket->action = ShoppingfeedTaskOrder::ACTION_SYNC_STATUS;
                 $failedTicket->ticket_number = '';
                 $failedTicket->batch_id = '';
-                $failedTicket->save();
+                try {
+                    $failedTicket->save();
+                } catch (Throwable $e) {
+                    ProcessLoggerHandler::logError(
+                        sprintf(
+                            $logPrefix . ' ' . $this->module->l('Failed update ticket state to SYNC_STATUS : %s', 'syncOrder'),
+                            $e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine()
+                        ),
+                        'Order',
+                        $failedTicket->id_order
+                    );
+                }
+            }
+            /* @var ShoppingfeedTaskOrder $failedInvoiceTicket */
+            foreach ($failedTicketsInvoiceTaskOrders as $failedInvoiceTicket) {
+                if (Validate::isLoadedObject(ShoppingfeedTaskOrder::getFromOrderAction($failedInvoiceTicket->id_order, ShoppingfeedTaskOrder::ACTION_UPLOAD_INVOICE))) {
+                    $failedInvoiceTicket->delete();
+                    continue;
+                }
+                $failedInvoiceTicket->action = ShoppingfeedTaskOrder::ACTION_UPLOAD_INVOICE;
+                $failedInvoiceTicket->ticket_number = '';
+                $failedInvoiceTicket->batch_id = '';
+                try {
+                    $failedInvoiceTicket->save();
+                } catch (Throwable $e) {
+                    ProcessLoggerHandler::logError(
+                        sprintf(
+                            $logPrefix . ' ' . $this->module->l('Failed update ticket state to UPLOAD_INVOICE : %s', 'syncOrder'),
+                            $e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine()
+                        ),
+                        'Order',
+                        $failedInvoiceTicket->id_order
+                    );
+                }
             }
         }
     }
