@@ -597,7 +597,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
             foreach ($preparedTaskOrders as $preparedTaskOrder) {
                 $taskOrder = $preparedTaskOrder['taskOrder'];
                 $taskOrder->batch_id = $batchId;
-                $taskOrder->action = ShoppingfeedTaskOrder::ACTION_CHECK_TICKET_SYNC_STATUS;
+                $taskOrder->action = ShoppingfeedTaskOrder::ACTION_CHECK_TICKET_UPLOAD_INVOICE;
                 $taskOrder->save();
 
                 ProcessLoggerHandler::logSuccess(
