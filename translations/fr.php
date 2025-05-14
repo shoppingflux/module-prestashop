@@ -296,6 +296,7 @@ $_MODULE['<{shoppingfeed}prestashop>adminprocessmonitorcontroller_f1b81e4990e4ad
 $_MODULE['<{shoppingfeed}prestashop>adminprocessmonitorcontroller_bc33aa1314e7dcd3472db72472b909b2'] = 'Une erreur s\'est produite lors de la suppression.';
 $_MODULE['<{shoppingfeed}prestashop>adminprocessmonitorcontroller_7f290594963a303db17a5e21dc4cf0b7'] = 'Une erreur s\'est produite lors de la suppression de l\'objet';
 $_MODULE['<{shoppingfeed}prestashop>adminprocessmonitorcontroller_77ae44aa6c998166fcf1a87496278ad5'] = '(impossible de charger l\'objet)';
+$_MODULE['<{shoppingfeed}prestashop>shoppingfeedadmincontroller_94cc6f8e111381557e9d79af817234eb'] = 'Aucune commande ne pourra être importée tant que le mode catalogue de Prestashop est activé';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedtoken_83653a8164e3ff7f7dcea3cde853d181'] = 'Vous ne pouvez pas configurer deux fois le même store ID %d';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedordersyncactions_d8a735dbc925444997f3ea4c1637e76f'] = 'Commande provenant de Shopping feed non importé; Aucun ID de commande trouvé';
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeedordersyncactions_ac27fc46226fb62de9c98fdd00933e33'] = 'Commande provenant de Shopping feed non importé; La commande n\'a pas pu être chargée.';
@@ -462,17 +463,11 @@ $_MODULE['<{shoppingfeed}prestashop>socolissimo_4c96fd6e2d4973be45673726772bf0a2
 $_MODULE['<{shoppingfeed}prestashop>socolissimo_dff8d31a11be2b3d707f69ac88e19388'] = 'Ajout des informations de la commande dans le module correspondant.';
 $_MODULE['<{shoppingfeed}prestashop>zalando_c6c141c3ae93d01dbc81fc342c5220f0'] = 'Si une commande provient de Zalando.';
 $_MODULE['<{shoppingfeed}prestashop>zalando_c6a9548e4c9704bb992bc369ac5d0ccc'] = 'Rajout des champs spécifique à Zalando dans les factures PrestaShop';
-$_MODULE['<{shoppingfeed}prestashop>taxforbusiness_1ac6e4bd554d6a51e774951e1a357179'] = 'Gestion des taxes pour les commandes B2B';
-$_MODULE['<{shoppingfeed}prestashop>skiptax_0cc1e925b5703e8da52b7c3e91829499'] = '[Commande: %s]';
-$_MODULE['<{shoppingfeed}prestashop>skiptax_7d19930a16163d26fccf93ebe5c54038'] = 'SkipTax - Règle déclenchée.';
-$_MODULE['<{shoppingfeed}prestashop>skiptax_315561e46d5db4fd6b94f36bdaa9ae04'] = 'Forcer la TVA à 0% pour les commandes business';
-$_MODULE['<{shoppingfeed}prestashop>skiptax_a3b67acbb90c113c303c9f3fe39a51ff'] = 'En activant cette option, la TVA pour la commande importée sera portée à 0%.';
-$_MODULE['<{shoppingfeed}prestashop>skiptax_9c036563bd96ad0361096ee08d8b3268'] = 'Si la commande est `is_business_order`';
-$_MODULE['<{shoppingfeed}prestashop>skiptax_9c2a8e88249278963a885253cb2ec79d'] = 'Force la TAV à 0% si l\'option est activée et que la commande contient le paramètre `is_business_order`';
 $_MODULE['<{shoppingfeed}prestashop>groupcustomer_c38266740494aa4980d05c606fccac10'] = 'Groupe client';
 $_MODULE['<{shoppingfeed}prestashop>groupcustomer_d67e6326203b27ada212982f25aea950'] = 'Tous les clients importés depuis les marketplaces seront associés au groupe sélectionné.';
 $_MODULE['<{shoppingfeed}prestashop>groupcustomer_11298acaa992d09ad84d3f69bc11d104'] = 'Met à jour le groupe du client par celui sélectionné.';
 $_MODULE['<{shoppingfeed}prestashop>groupcustomer_4d6542644f688d5300e70ca4fd9bf6aa'] = 'Pour toutes les commandes.';
+$_MODULE['<{shoppingfeed}prestashop>taxforbusiness_1ac6e4bd554d6a51e774951e1a357179'] = 'Gestion des taxes pour les commandes B2B';
 $_MODULE['<{shoppingfeed}prestashop>symbolconformity_0cc1e925b5703e8da52b7c3e91829499'] = '[Commande %s]';
 $_MODULE['<{shoppingfeed}prestashop>symbolconformity_6efbd4474b0556a3e01989218a4c4745'] = 'Règle déclenchée. ';
 $_MODULE['<{shoppingfeed}prestashop>symbolconformity_a081c9610c122ca2d1fe29935930f908'] = 'Toutes les commandes';
@@ -516,6 +511,7 @@ $_MODULE['<{shoppingfeed}prestashop>syncorder_b48f96925a7edf0b769159a41c0c0829']
 $_MODULE['<{shoppingfeed}prestashop>syncorder_74046b48f0b5333e7a6825d3f62a31de'] = 'Échec de l\'envoi du mail récapitulatif des commandes en erreur.';
 $_MODULE['<{shoppingfeed}prestashop>syncorder_ebb79476cda6c08cfb142b5d33cb2545'] = 'Échec de l\'envoi du mail récapitulatif des commandes en erreur :%s.';
 $_MODULE['<{shoppingfeed}prestashop>syncorder_425ba278d4f2f2cb1502c8d7aef88357'] = 'Le module Shopping Flux Officiel (shoppingfluxexport) est installé sur votre boutique pour permettre d\'importer les commandes. L\'option “Importer les commandes“ doit être désactivées sur le module Shopping Flux Officiel. Si vous désactivez cette option sur le module Shopping Flux Officiel puis la ré-activez à nouveau plus tard, la l\'import des commandes via \'15 min Marketplace Updates - Shopping\' sera suspendu.';
+$_MODULE['<{shoppingfeed}prestashop>syncorder_94cc6f8e111381557e9d79af817234eb'] = 'Aucune commande ne pourra être importée tant que le mode catalogue de Prestashop est activé';
 $_MODULE['<{shoppingfeed}prestashop>syncorder_4930df58c29fc86597530234bec3d755'] = 'Impossible d\'accéder à l\'API Shopping Feed.';
 $_MODULE['<{shoppingfeed}prestashop>syncorder_f4636801e58ad3bf4def82b2d10e88f7'] = 'Impossible de récuperer des commandes à importer : %s';
 $_MODULE['<{shoppingfeed}prestashop>syncorder_b7c6a96154c79af2672579f7e073e383'] = 'Aucune commande à importer.';
@@ -637,10 +633,10 @@ $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_d0efb46cfd8
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_5dea57215a8ecd6d8c567941c7e7cbfb'] = 'Envoyer l\'image selon un format spécifique';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_f06033a25cf82f5da599bbb11787383b'] = 'Format fil d\'ariane contenant les catégories parentes';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_8fb0c54e427e68571bb7f4c4290bf081'] = 'Uniquement la catégorie par défaut';
-$_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_76818394289500d866e9e29ccca6d00e'] = 'Disposition des déclinaisons';
+$_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_47c2020568697db35e537dda74ffdbee'] = 'Afficher la catégorie';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_9aa153a3e3320c46fc8096d48ea5fd68'] = 'Produits enfants de leur produit parent';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_b33c3ff19ea8b64c069d838b70e88b77'] = 'Séparément (un nœud par produit parent et par produit enfant)';
-$_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_47c2020568697db35e537dda74ffdbee'] = 'Afficher la catégorie';
+$_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_76818394289500d866e9e29ccca6d00e'] = 'Disposition des déclinaisons';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_7b9324fd1b6cc33da6065e0338fd1828'] = 'Champs spécifiques';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_19ee59b152aff70de97b4a8432f85cb9'] = 'Sélectionner les champs produits à inclure sur le flux.';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_ab172765a622443a20f2c18f06b6fb05'] = 'Vous avez moins de 100 produits, nous vous recommandons de mettre le paramètre RealTime (Temps réel) à OUI. Vous avez peu de stock pour chaque référence et pour vous la précision est fondamentale. De plus, il n\'est pas nécessaire de mettre en place une tâche CRON). L\'envoi en temps réel de la mise à jour de votre inventaire à l\'API Shopping Feed vous permet de synchroniser votre inventaire en moins de 15 minutes. Cependant, la multitude de requetes vers l\'API Shopping Feed peux impacter le temps de chargement des pages qui augmentent ou diminuent le stock, en particulier pendant la mise à jours des statuts de commande.';
