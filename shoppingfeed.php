@@ -620,6 +620,11 @@ class Shoppingfeed extends ShoppingfeedClasslib\Module
         return true;
     }
 
+    public static function isCatalogModeEnabled()
+    {
+        return Configuration::isCatalogMode();
+    }
+
     /**
      * Redirects the user to our AdminController for configuration
      *

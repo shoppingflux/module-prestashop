@@ -28,4 +28,13 @@ class ShoppingfeedAdminController extends ModuleAdminController
     {
         return $this->tpl_form_vars;
     }
+
+    public function init()
+    {
+        parent::init();
+
+        if (Shoppingfeed::isCatalogModeEnabled()) {
+            $this->errors[] = $this->module->l('No order can be imported as long as Prestashop\'s catalog mode is activated', 'ShoppingfeedAdminController');
+        }
+    }
 }
