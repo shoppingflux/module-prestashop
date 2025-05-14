@@ -104,6 +104,19 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
             return false;
         }
 
+        $orderCreationDate = DateTime::createFromFormat('Y-m-d H:i:s', $order->date_add);
+
+        if ($orderCreationDate && (time() - $orderCreationDate->getTimestamp() > 60 * 60 * 24 * 90)) {
+            ProcessLoggerHandler::logError(
+                $logPrefix . ' ' .
+                $this->l('Order was imported more than 3 months ago', 'ShoppingfeedOrderSyncActions'),
+                'Order',
+                $id_order
+            );
+
+            return false;
+        }
+
         if (empty($this->conveyor['order_action'])) {
             ProcessLoggerHandler::logError(
                 $logPrefix . ' ' .
