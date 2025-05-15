@@ -1607,7 +1607,7 @@ class Shoppingfeed extends ShoppingfeedClasslib\Module
 
     public function hookActionEmailSendBefore($params)
     {
-        if ($params['template'] === 'new_order' || empty($params['templateVars']['{order_name}'])) {
+        if ($params['template'] === 'new_order' ||  empty($params['templateVars']['{order_name}'])) {
             return true;
         }
 
