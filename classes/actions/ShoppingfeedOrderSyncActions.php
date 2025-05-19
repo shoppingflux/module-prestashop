@@ -104,9 +104,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
             return false;
         }
 
-        $orderCreationDate = DateTime::createFromFormat('Y-m-d H:i:s', $order->date_add);
-
-        if ($orderCreationDate && (time() - $orderCreationDate->getTimestamp() > 60 * 60 * 24 * 90)) {
+        if (false === Shoppingfeed::isOrderEligibleToSync($order)) {
             ProcessLoggerHandler::logError(
                 $logPrefix . ' ' .
                 $this->l('Order was imported more than 3 months ago', 'ShoppingfeedOrderSyncActions'),
@@ -724,7 +722,12 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
             // them later...
             switch ($ticket->getStatus()) {
                 case 'failed':
-                    $this->conveyor['failedTaskOrders'][] = $taskOrder;
+                    if (Shoppingfeed::isOrderEligibleToSync(new Order($taskOrder->id_order))) {
+                        $this->conveyor['failedTaskOrders'][] = $taskOrder;
+                    } else {
+                        $this->conveyor['successfulTaskOrders'][] = $taskOrder;
+                    }
+
                     ProcessLoggerHandler::logError(
                         sprintf(
                             static::getLogPrefix($taskOrder->id_order) . ' ' .
