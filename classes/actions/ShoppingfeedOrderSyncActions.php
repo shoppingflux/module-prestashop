@@ -315,6 +315,9 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
                         'carrier_name' => '',
                         'tracking_number' => '',
                         'tracking_url' => '',
+                        'items' => [],
+                        'return_info' => null,
+                        'warehouse_id' => null,
                     ];
 
                     $carrier = $this->initCarrierFinder()->findByOrder($order);
@@ -342,6 +345,9 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
                             'carrier_name' => $orderShipping[0]['state_name'],
                             'tracking_number' => $trackingNumber,
                             'tracking_url' => $orderTrackingUrl,
+                            'items' => [],
+                            'return_info' => null,
+                            'warehouse_id' => null,
                         ];
                     }
 
@@ -349,10 +355,17 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
                     continue;
                 } elseif (in_array($idOrderState, $cancelled_status)) {
                     $taskOrderOperation = Shoppingfeed::ORDER_OPERATION_CANCEL;
+                    $taskOrderPayload = [
+                        'reason' => '',
+                    ];
                     continue;
                 // The "reason" field is not supported (at least for now)
                 } elseif (in_array($idOrderState, $refunded_status)) {
                     $taskOrderOperation = Shoppingfeed::ORDER_OPERATION_REFUND;
+                    $taskOrderPayload = [
+                        'shipping' => true,
+                        'products' => [],
+                    ];
                     continue;
                 // No partial refund (at least for now), so no optional
                 // parameters to set.

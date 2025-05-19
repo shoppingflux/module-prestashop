@@ -25,6 +25,7 @@ use ShoppingFeed\Sdk\Api\Catalog\InventoryUpdate;
 use ShoppingFeed\Sdk\Api\Catalog\PricingUpdate;
 use ShoppingFeed\Sdk\Api\Order\Document\Invoice;
 use ShoppingFeed\Sdk\Api\Order\Identifier\Id;
+use ShoppingFeed\Sdk\Api\Order\ShipReturnInfo;
 use ShoppingFeed\Sdk\Client\Client;
 use ShoppingFeed\Sdk\Client\ClientOptions;
 use ShoppingFeed\Sdk\Credential\Password;
@@ -290,24 +291,41 @@ class ShoppingfeedApi
 
             $operation = new ShoppingFeed\Sdk\Api\Order\Operation();
 
+            // improve tasks orders with custom data
+            Hook::exec('actionShoppingfeedOrderOperation', ['taskOrders' => &$taskOrders]);
+
             foreach ($taskOrders as $taskOrder) {
                 switch ($taskOrder['operation']) {
                     case Shoppingfeed::ORDER_OPERATION_SHIP:
+                        if (empty($taskOrder['payload']) === false) {
+                            $shipReturnInfo = new ShipReturnInfo(
+                                $taskOrder['payload']['return_info']['carrier'] ?? null,
+                                $taskOrder['payload']['return_info']['tracking_number'] ?? null
+                            );
+                        } else {
+                            $shipReturnInfo = null;
+                        }
                         $operation->ship(
                             new Id((int) $taskOrder['id_internal_shoppingfeed']),
                             (string) $taskOrder['payload']['carrier_name'],
                             (string) $taskOrder['payload']['tracking_number'],
-                            (string) $taskOrder['payload']['tracking_url']
+                            (string) $taskOrder['payload']['tracking_url'],
+                            $taskOrder['payload']['items'] ?? [],
+                            $shipReturnInfo,
+                            $taskOrder['payload']['warehouse_id'] ?? null
                         );
                         continue 2;
                     case Shoppingfeed::ORDER_OPERATION_CANCEL:
                         $operation->cancel(
-                            new Id((int) $taskOrder['id_internal_shoppingfeed'])
+                            new Id((int) $taskOrder['id_internal_shoppingfeed']),
+                            $taskOrder['payload']['reason'] ?? ''
                         );
                         continue 2;
                     case Shoppingfeed::ORDER_OPERATION_REFUND:
                         $operation->refund(
-                            new Id((int) $taskOrder['id_internal_shoppingfeed'])
+                            new Id((int) $taskOrder['id_internal_shoppingfeed']),
+                            $taskOrder['payload']['shipping'] ?? '',
+                            $taskOrder['payload']['products'] ?? [],
                         );
                         continue 2;
                     case Shoppingfeed::ORDER_OPERATION_DELIVER:
