@@ -104,17 +104,6 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
             return false;
         }
 
-        if (false === Shoppingfeed::isOrderEligibleToSync($order)) {
-            ProcessLoggerHandler::logError(
-                $logPrefix . ' ' .
-                $this->l('Order was imported more than 3 months ago', 'ShoppingfeedOrderSyncActions'),
-                'Order',
-                $id_order
-            );
-
-            return false;
-        }
-
         if (empty($this->conveyor['order_action'])) {
             ProcessLoggerHandler::logError(
                 $logPrefix . ' ' .
