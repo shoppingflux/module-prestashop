@@ -724,7 +724,12 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
             // them later...
             switch ($ticket->getStatus()) {
                 case 'failed':
-                    $this->conveyor['failedTaskOrders'][] = $taskOrder;
+                    if (Shoppingfeed::isOrderEligibleToSync(new Order($taskOrder->id_order))) {
+                        $this->conveyor['failedTaskOrders'][] = $taskOrder;
+                    } else {
+                        $this->conveyor['successfulTaskOrders'][] = $taskOrder;
+                    }
+
                     ProcessLoggerHandler::logError(
                         sprintf(
                             static::getLogPrefix($taskOrder->id_order) . ' ' .

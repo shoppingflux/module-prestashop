@@ -602,6 +602,17 @@ class Shoppingfeed extends ShoppingfeedClasslib\Module
         return true;
     }
 
+    public static function isOrderEligibleToSync(Order $order)
+    {
+        $orderCreationDate = DateTime::createFromFormat('Y-m-d H:i:s', $order->date_add);
+
+        if ($orderCreationDate && (time() - $orderCreationDate->getTimestamp() > 60 * 60 * 24 * 90)) {
+            return false;
+        }
+
+        return true;
+    }
+
     /**
      * Checks if order import can be activated
      *
