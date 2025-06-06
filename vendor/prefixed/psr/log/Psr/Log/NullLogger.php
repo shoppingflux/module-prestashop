@@ -1,6 +1,6 @@
 <?php
 
-namespace SfPsr\Psr\Log;
+namespace ShoppingfeedPrefix\Psr\Log;
 
 /**
  * This Logger can be used to avoid conditional log calls.

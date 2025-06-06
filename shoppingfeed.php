@@ -499,7 +499,7 @@ class Shoppingfeed extends ShoppingfeedClasslib\Module
 
             try {
                 $api = ShoppingfeedApi::getInstanceByToken(null, $tokenConfig);
-            } catch (SfGuzzle\GuzzleHttp\Exception\ClientException $e) {
+            } catch (ShoppingfeedPrefix\GuzzleHttp\Exception\ClientException $e) {
                 continue;
             }
 

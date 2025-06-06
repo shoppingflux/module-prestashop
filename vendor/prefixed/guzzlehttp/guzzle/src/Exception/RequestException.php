@@ -1,10 +1,10 @@
 <?php
-namespace SfGuzzle\GuzzleHttp\Exception;
+namespace ShoppingfeedPrefix\GuzzleHttp\Exception;
 
-use SfGuzzle\GuzzleHttp\Promise\PromiseInterface;
-use SfPsr\Psr\Http\Message\RequestInterface;
-use SfPsr\Psr\Http\Message\ResponseInterface;
-use SfPsr\Psr\Http\Message\UriInterface;
+use ShoppingfeedPrefix\GuzzleHttp\Promise\PromiseInterface;
+use ShoppingfeedPrefix\Psr\Http\Message\RequestInterface;
+use ShoppingfeedPrefix\Psr\Http\Message\ResponseInterface;
+use ShoppingfeedPrefix\Psr\Http\Message\UriInterface;
 
 /**
  * HTTP Request exception
@@ -124,7 +124,7 @@ class RequestException extends TransferException
      */
     public static function getResponseBodySummary(ResponseInterface $response)
     {
-        return \SfGuzzle\GuzzleHttp\Psr7\get_message_body_summary($response);
+        return \ShoppingfeedPrefix\GuzzleHttp\Psr7\get_message_body_summary($response);
     }
 
     /**

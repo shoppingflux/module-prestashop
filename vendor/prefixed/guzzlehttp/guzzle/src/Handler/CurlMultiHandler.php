@@ -1,10 +1,10 @@
 <?php
-namespace SfGuzzle\GuzzleHttp\Handler;
+namespace ShoppingfeedPrefix\GuzzleHttp\Handler;
 
-use SfGuzzle\GuzzleHttp\Promise as P;
-use SfGuzzle\GuzzleHttp\Promise\Promise;
-use SfGuzzle\GuzzleHttp\Utils;
-use SfPsr\Psr\Http\Message\RequestInterface;
+use ShoppingfeedPrefix\GuzzleHttp\Promise as P;
+use ShoppingfeedPrefix\GuzzleHttp\Promise\Promise;
+use ShoppingfeedPrefix\GuzzleHttp\Utils;
+use ShoppingfeedPrefix\Psr\Http\Message\RequestInterface;
 
 /**
  * Returns an asynchronous response using curl_multi_* functions.

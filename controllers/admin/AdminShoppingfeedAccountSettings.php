@@ -17,6 +17,9 @@
  * @copyright Since 2019 Shopping Feed
  * @license   https://opensource.org/licenses/AFL-3.0  Academic Free License (AFL 3.0)
  */
+
+use ShoppingfeedAddon\PrestaShopCloudSync\CloudSyncView;
+
 if (!defined('_PS_VERSION_')) {
     exit;
 }
@@ -58,6 +61,7 @@ class AdminShoppingfeedAccountSettingsController extends ShoppingfeedAdminContro
         $this->content .= $this->renderTokensList();
         $this->content .= $this->renderLoginForm($shops, $currencies, $languagues);
         $this->content .= $this->renderTokenForm($shops, $currencies, $languagues);
+        $this->content .= $this->renderCloudSyncSection();
 
         $this->module->setBreakingChangesNotices();
 
@@ -382,7 +386,7 @@ class AdminShoppingfeedAccountSettingsController extends ShoppingfeedAdminContro
                 $store_id,
                 $shoppingFeedApi->getMainStore()->getName()
             );
-        } catch (SfGuzzle\GuzzleHttp\Exception\ClientException $e) {
+        } catch (ShoppingfeedPrefix\GuzzleHttp\Exception\ClientException $e) {
             if ($e->getResponse()->getStatusCode() == 401) {
                 $this->errors[] = $this->module->l('This token was not recognized by the Shopping Feed API.', 'AdminShoppingfeedAccountSettings');
             } else {
@@ -433,7 +437,7 @@ class AdminShoppingfeedAccountSettingsController extends ShoppingfeedAdminContro
                 $store_id,
                 $shoppingFeedApi->getMainStore()->getName()
             );
-        } catch (SfGuzzle\GuzzleHttp\Exception\ClientException $e) {
+        } catch (ShoppingfeedPrefix\GuzzleHttp\Exception\ClientException $e) {
             if ($e->getResponse()->getStatusCode() == 401) {
                 $this->errors[] = $this->module->l('These credentials were not recognized by the Shopping Feed API.', 'AdminShoppingfeedAccountSettings');
             } else {
@@ -552,7 +556,7 @@ class AdminShoppingfeedAccountSettingsController extends ShoppingfeedAdminContro
                     Tools::getValue('password')
                 );
             }
-        } catch (SfGuzzle\GuzzleHttp\Exception\ClientException $e) {
+        } catch (ShoppingfeedPrefix\GuzzleHttp\Exception\ClientException $e) {
         }
 
         if (!$api) {
@@ -570,5 +574,10 @@ class AdminShoppingfeedAccountSettingsController extends ShoppingfeedAdminContro
             'success' => true,
             'storeID' => $storeID,
         ]));
+    }
+
+    protected function renderCloudSyncSection()
+    {
+        return (new CloudSyncView())->render();
     }
 }

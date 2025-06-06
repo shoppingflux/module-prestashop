@@ -1,6 +1,6 @@
 <?php
 
-namespace SfGuzzle\GuzzleHttp\Promise;
+namespace ShoppingfeedPrefix\GuzzleHttp\Promise;
 
 /**
  * Promises/A+ implementation that avoids recursion when possible.

@@ -1,7 +1,7 @@
 <?php
-namespace SfGuzzle\GuzzleHttp\Exception;
+namespace ShoppingfeedPrefix\GuzzleHttp\Exception;
 
-use SfPsr\Psr\Http\Message\RequestInterface;
+use ShoppingfeedPrefix\Psr\Http\Message\RequestInterface;
 
 /**
  * Exception thrown when a connection cannot be established.

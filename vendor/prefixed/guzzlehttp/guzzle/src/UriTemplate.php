@@ -1,5 +1,5 @@
 <?php
-namespace SfGuzzle\GuzzleHttp;
+namespace ShoppingfeedPrefix\GuzzleHttp;
 
 /**
  * Expands URI templates. Userland implementation of PECL uri_template.

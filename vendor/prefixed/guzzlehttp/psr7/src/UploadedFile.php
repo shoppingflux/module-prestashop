@@ -1,10 +1,10 @@
 <?php
 
-namespace SfGuzzle\GuzzleHttp\Psr7;
+namespace ShoppingfeedPrefix\GuzzleHttp\Psr7;
 
 use InvalidArgumentException;
-use SfPsr\Psr\Http\Message\StreamInterface;
-use SfPsr\Psr\Http\Message\UploadedFileInterface;
+use ShoppingfeedPrefix\Psr\Http\Message\StreamInterface;
+use ShoppingfeedPrefix\Psr\Http\Message\UploadedFileInterface;
 use RuntimeException;
 
 class UploadedFile implements UploadedFileInterface

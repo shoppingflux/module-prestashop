@@ -1,8 +1,8 @@
 <?php
 
-namespace SfPsr\Psr\Log\Test;
+namespace ShoppingfeedPrefix\Psr\Log\Test;
 
-use SfPsr\Psr\Log\AbstractLogger;
+use ShoppingfeedPrefix\Psr\Log\AbstractLogger;
 /**
  * Used for testing purposes.
  *

@@ -17,9 +17,9 @@
     ],
     "psr-4": {
       "ShoppingfeedClasslib\\":          "vendor/totpsclasslib/src/",
-      "SfGuzzle\\GuzzleHttp\\":          "vendor/prefixed/guzzlehttp/guzzle/src/",
-      "SfGuzzle\\GuzzleHttp\\Psr7\\":    "vendor/prefixed/guzzlehttp/psr7/src/",
-      "SfGuzzle\\GuzzleHttp\\Promise\\": "vendor/prefixed/guzzlehttp/promises/src/",
+      "ShoppingfeedPrefix\\GuzzleHttp\\":          "vendor/prefixed/guzzlehttp/guzzle/src/",
+      "ShoppingfeedPrefix\\GuzzleHttp\\Psr7\\":    "vendor/prefixed/guzzlehttp/psr7/src/",
+      "ShoppingfeedPrefix\\GuzzleHttp\\Promise\\": "vendor/prefixed/guzzlehttp/promises/src/",
       "ShoppingFeed\\Sdk\\":             "vendor/prefixed/shoppingfeed/php-sdk/src/",
       "ShoppingfeedAddon\\":             "src"
     }

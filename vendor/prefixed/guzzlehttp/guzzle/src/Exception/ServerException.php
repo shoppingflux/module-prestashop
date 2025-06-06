@@ -1,5 +1,5 @@
 <?php
-namespace SfGuzzle\GuzzleHttp\Exception;
+namespace ShoppingfeedPrefix\GuzzleHttp\Exception;
 
 /**
  * Exception when a server error is encountered (5xx codes)

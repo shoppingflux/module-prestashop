@@ -1,8 +1,8 @@
 <?php
-namespace SfGuzzle\GuzzleHttp\Exception;
+namespace ShoppingfeedPrefix\GuzzleHttp\Exception;
 
-use SfPsr\Psr\Http\Message\RequestInterface;
-use SfPsr\Psr\Http\Message\ResponseInterface;
+use ShoppingfeedPrefix\Psr\Http\Message\RequestInterface;
+use ShoppingfeedPrefix\Psr\Http\Message\ResponseInterface;
 
 /**
  * Exception when an HTTP error occurs (4xx or 5xx error)

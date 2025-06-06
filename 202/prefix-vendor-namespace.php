@@ -28,7 +28,7 @@ if (!php_sapi_name() === 'cli') {
 chdir(__DIR__);
 
 /** @var string $namespaces_prefix the prefix to use */
-$namespaces_prefix = 'SfGuzzle\\';
+$namespaces_prefix = 'ShoppingfeedPrefix\\';
 
 $dir_202 = './';
 $vendor_dir = '../vendor/';

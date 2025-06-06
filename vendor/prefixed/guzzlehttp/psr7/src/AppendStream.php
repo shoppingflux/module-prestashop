@@ -1,8 +1,8 @@
 <?php
 
-namespace SfGuzzle\GuzzleHttp\Psr7;
+namespace ShoppingfeedPrefix\GuzzleHttp\Psr7;
 
-use SfPsr\Psr\Http\Message\StreamInterface;
+use ShoppingfeedPrefix\Psr\Http\Message\StreamInterface;
 
 /**
  * Reads from multiple streams, one after the other.

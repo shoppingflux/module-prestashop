@@ -1,6 +1,6 @@
 <?php
 
-namespace SfGuzzle\GuzzleHttp\Promise;
+namespace ShoppingfeedPrefix\GuzzleHttp\Promise;
 
 /**
  * A promise represents the eventual result of an asynchronous operation.

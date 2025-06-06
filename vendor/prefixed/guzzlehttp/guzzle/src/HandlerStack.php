@@ -1,9 +1,9 @@
 <?php
-namespace SfGuzzle\GuzzleHttp;
+namespace ShoppingfeedPrefix\GuzzleHttp;
 
-use SfGuzzle\GuzzleHttp\Promise\PromiseInterface;
-use SfPsr\Psr\Http\Message\RequestInterface;
-use SfPsr\Psr\Http\Message\ResponseInterface;
+use ShoppingfeedPrefix\GuzzleHttp\Promise\PromiseInterface;
+use ShoppingfeedPrefix\Psr\Http\Message\RequestInterface;
+use ShoppingfeedPrefix\Psr\Http\Message\ResponseInterface;
 
 /**
  * Creates a composed Guzzle handler function by stacking middlewares on top of

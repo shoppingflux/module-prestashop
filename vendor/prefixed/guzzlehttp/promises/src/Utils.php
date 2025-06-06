@@ -1,6 +1,6 @@
 <?php
 
-namespace SfGuzzle\GuzzleHttp\Promise;
+namespace ShoppingfeedPrefix\GuzzleHttp\Promise;
 
 final class Utils
 {
@@ -13,7 +13,7 @@ final class Utils
      *
      * <code>
      * while ($eventLoop->isRunning()) {
-     *     SfGuzzle\GuzzleHttp\Promise\Utils::queue()->run();
+     *     ShoppingfeedPrefix\GuzzleHttp\Promise\Utils::queue()->run();
      * }
      * </code>
      *

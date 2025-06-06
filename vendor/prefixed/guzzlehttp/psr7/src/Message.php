@@ -1,10 +1,10 @@
 <?php
 
-namespace SfGuzzle\GuzzleHttp\Psr7;
+namespace ShoppingfeedPrefix\GuzzleHttp\Psr7;
 
-use SfPsr\Psr\Http\Message\MessageInterface;
-use SfPsr\Psr\Http\Message\RequestInterface;
-use SfPsr\Psr\Http\Message\ResponseInterface;
+use ShoppingfeedPrefix\Psr\Http\Message\MessageInterface;
+use ShoppingfeedPrefix\Psr\Http\Message\RequestInterface;
+use ShoppingfeedPrefix\Psr\Http\Message\ResponseInterface;
 
 final class Message
 {

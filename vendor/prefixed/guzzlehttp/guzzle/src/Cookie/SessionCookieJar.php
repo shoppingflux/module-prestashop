@@ -1,5 +1,5 @@
 <?php
-namespace SfGuzzle\GuzzleHttp\Cookie;
+namespace ShoppingfeedPrefix\GuzzleHttp\Cookie;
 
 /**
  * Persists cookies in the client session

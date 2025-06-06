@@ -45,14 +45,21 @@
     ],
     "psr-4": {
       "ShoppingfeedClasslib\\":          "vendor/totpsclasslib/src/",
-      "SfGuzzle\\GuzzleHttp\\":          "vendor/prefixed/guzzlehttp/guzzle/src/",
-      "SfGuzzle\\GuzzleHttp\\Psr7\\":    "vendor/prefixed/guzzlehttp/psr7/src/",
-      "SfGuzzle\\GuzzleHttp\\Promise\\": "vendor/prefixed/guzzlehttp/promises/src/",
-      "SfPsr\\Psr\\Http\\Message\\": "vendor/prefixed/psr/http-message/src/",
-      "SfPsr\\Psr\\EventDispatcher\\": "vendor/prefixed/psr/event-dispatcher/src/",
-      "SfPsr\\Psr\\Log\\": "vendor/prefixed/psr/log/Psr/Log/",
+      "ShoppingfeedPrefix\\GuzzleHttp\\":          "vendor/prefixed/guzzlehttp/guzzle/src/",
+      "ShoppingfeedPrefix\\GuzzleHttp\\Psr7\\":    "vendor/prefixed/guzzlehttp/psr7/src/",
+      "ShoppingfeedPrefix\\GuzzleHttp\\Promise\\": "vendor/prefixed/guzzlehttp/promises/src/",
+      "ShoppingfeedPrefix\\Psr\\Http\\Message\\": "vendor/prefixed/psr/http-message/src/",
+      "ShoppingfeedPrefix\\Psr\\EventDispatcher\\": "vendor/prefixed/psr/event-dispatcher/src/",
+      "ShoppingfeedPrefix\\Psr\\Log\\": "vendor/prefixed/psr/log/Psr/Log/",
       "ShoppingFeed\\Sdk\\":             "vendor/prefixed/shoppingfeed/php-sdk/src/",
-      "ShoppingfeedAddon\\":             "src"
+      "ShoppingfeedAddon\\":             "src",
+      "ShoppingfeedPrefix\\PrestaShop\\PsAccountsInstaller\\": "vendor/prefixed/prestashop/prestashop-accounts-installer/src",
+      "ShoppingfeedPrefix\\Prestashop\\ModuleLibGuzzleAdapter\\": "vendor/prefixed/prestashop/module-lib-guzzle-adapter/src",
+      "ShoppingfeedPrefix\\Prestashop\\ModuleLibMboInstaller\\": "vendor/prefixed/prestashop/module-lib-mbo-installer/src",
+      "ShoppingfeedPrefix\\Clue\\StreamFilter\\": "vendor/prefixed/clue/stream-filter/src",
+      "ShoppingfeedPrefix\\Http\\Client\\": "vendor/prefixed/php-http/httplug/src",
+      "ShoppingfeedPrefix\\Http\\Message\\": "vendor/prefixed/php-http/message/src",
+      "ShoppingfeedPrefix\\Http\\Promise\\": "vendor/prefixed/php-http/promise/src"
     }
   },
   "autoload-dev": {

@@ -19,7 +19,7 @@
     },
     "autoload": {
         "psr-4": {
-            "SfPsr\\Psr\\EventDispatcher\\": "src\/"
+            "ShoppingfeedPrefix\\Psr\\EventDispatcher\\": "src\/"
         }
     },
     "extra": {

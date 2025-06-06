@@ -1,6 +1,6 @@
 <?php
 
-namespace SfGuzzle\GuzzleHttp\Promise;
+namespace ShoppingfeedPrefix\GuzzleHttp\Promise;
 
 /**
  * A special exception that is thrown when waiting on a rejected promise.

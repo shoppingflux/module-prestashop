@@ -20,10 +20,10 @@
 
 namespace ShoppingfeedAddon\Services;
 
-use SfGuzzle\GuzzleHttp\Client;
 use ShoppingFeed\Sdk\Client\ClientOptions;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 use ShoppingfeedClasslib\Utils\Translate\TranslateTrait;
+use ShoppingfeedPrefix\GuzzleHttp\Client;
 
 class OrderTracker
 {
