@@ -86,7 +86,7 @@ class ShoppingfeedProductSyncPreloadingActions extends DefaultActions
                     $sfp->saveProduct($row['id_product'], $token->id_shoppingfeed_token, $token->id_lang, $token->id_shop, $token->id_currency);
                     Registry::increment('updatedProducts');
                 } catch (Exception $exception) {
-                    ProcessLoggerHandler::logError($exception->getMessage());
+                    ProcessLoggerHandler::logError($exception->getMessage(), 'Product', $row['id_product']);
                 }
             }
             ProcessLoggerHandler::logInfo(
