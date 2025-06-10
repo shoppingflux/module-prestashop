@@ -50,7 +50,7 @@
                   {foreach $hooks as $index => $hook}
                       {assign var='shouldBeFixed' value=false}
                     <tr>
-                      <td>{$index + 1}</td>
+                      <td>{$index + 1|escape:'htmlall':'UTF-8'}</td>
                       <td>{$hook.name|escape:'html':'UTF-8'}</td>
                         {foreach $shopList as $shop}
                             {foreach $hook.shops as $hookShop}

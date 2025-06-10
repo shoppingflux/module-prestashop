@@ -23,7 +23,6 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-
 use ShoppingfeedAddon\Services\CarrierFinder;
 use ShoppingfeedClasslib\Hook\AbstractHook;
 

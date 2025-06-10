@@ -23,7 +23,6 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-
 use Hook;
 use ShoppingfeedClasslib\Actions\ActionsHandler as DefaultActionHandler;
 

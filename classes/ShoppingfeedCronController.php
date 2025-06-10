@@ -23,7 +23,6 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-
 class ShoppingfeedCronController extends CronController
 {
     /**

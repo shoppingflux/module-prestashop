@@ -22,14 +22,22 @@ if (!defined('_PS_VERSION_')) {
 
 if (version_compare(phpversion(), '7', '<')) {
     if (false === class_exists('Throwable') && false === interface_exists('Throwable')) {
-        interface Throwable {
+        interface Throwable
+        {
             public function getMessage();
+
             public function getCode();
+
             public function getFile();
+
             public function getLine();
+
             public function getTrace();
+
             public function getTraceAsString();
+
             public function getPrevious();
+
             public function __toString();
         }
     }

@@ -16,7 +16,6 @@
  * @copyright Since 2019 Shopping Feed
  * @license   https://opensource.org/licenses/AFL-3.0  Academic Free License (AFL 3.0)
  */
-
 global $_MODULE;
 $_MODULE = [];
 $_MODULE['<{shoppingfeed}prestashop>shoppingfeed_b9d1b8558d2d7145794f697158b6f253'] = 'Shoppingfeed Prestashop Plugin (Feed&Order)';
@@ -684,4 +683,3 @@ $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_1110c4e6654
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_ec5714076eb1196bd416508b54da3a01'] = 'Nombre de produits max par requête de mise à jour produit';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_54f327717fd70f49b83705ecfac102d2'] = 'Compression Gzip du flux';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_618ff511e37a426d996068934ca4bed6'] = 'Vous devez spécifier le \'Nombre maximum de produit à mettre à jour par requête\' (nombre ente 1 et 2 000 inclus)';
-

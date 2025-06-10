@@ -1313,7 +1313,6 @@ class Shoppingfeed extends ShoppingfeedClasslib\Module
      * Saves an order for status synchronization
      *
      * @param type $params
-     *
      */
     public function hookActionOrderStatusPostUpdate($params)
     {

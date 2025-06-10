@@ -159,7 +159,7 @@ class SpecificPriceFormatter
         $specificPriceValue,
         $specificPriceReductionTax,
         $taxRate,
-        $ecoTaxAmount
+        $ecoTaxAmount,
     ) {
         $specificPrice = $specificPriceValue;
 

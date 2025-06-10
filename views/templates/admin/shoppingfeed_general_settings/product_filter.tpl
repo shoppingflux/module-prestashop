@@ -89,9 +89,9 @@
       ruleGenerator.addNewConditionSet();
       {foreach from=$groupFilter item=filter}
           ruleGenerator.addCondition({
-              filter: '{$filter->getFilter() nofilter}',
-              type: '{$filter->getType()|escape:'htmlall':'utf-8'}',
-              value: '{$filter->getValue()|escape:'htmlall':'utf-8'}'
+              filter: '{$filter->getFilter()|escape:'htmlall':'UTF-8'}',
+              type: '{$filter->getType()|escape:'htmlall':'UTF-8'}',
+              value: '{$filter->getValue()|escape:'htmlall':'UTF-8'}'
           });
       {/foreach}
   {/foreach}
