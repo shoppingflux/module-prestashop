@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Copyright since 2021 Shopping Feed
  *
@@ -17,11 +16,12 @@
  * @copyright Since 2021 Shopping Feed
  * @license   https://opensource.org/licenses/AFL-3.0  Academic Free License (AFL 3.0)
  */
+
+namespace ShoppingfeedAddon\Services;
+
 if (!defined('_PS_VERSION_')) {
     exit;
 }
-
-namespace ShoppingfeedAddon\Services;
 
 use Product;
 use SpecificPrice;

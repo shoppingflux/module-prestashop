@@ -1,5 +1,4 @@
 <?php
-
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -17,11 +16,12 @@
  *  @copyright Since 2019 Shopping Feed
  *  @license   https://opensource.org/licenses/AFL-3.0  Academic Free License (AFL 3.0)
  */
+
+namespace ShoppingfeedAddon\OrderImport\Rules;
+
 if (!defined('_PS_VERSION_')) {
     exit;
 }
-
-namespace ShoppingfeedAddon\OrderImport\Rules;
 
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use ShoppingfeedAddon\OrderImport\GLS\Adapter;
