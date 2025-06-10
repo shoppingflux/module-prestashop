@@ -132,7 +132,7 @@ class AdminShoppingfeedOrdersController extends ShoppingfeedAdminController
         $order_way = null,
         $start = 0,
         $limit = null,
-        $id_lang_shop = false,
+        $id_lang_shop = false
     ) {
         $result = parent::getList(
             $id_lang,
