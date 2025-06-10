@@ -23,7 +23,7 @@
 <div class="panel kpi-container">
     <div class="row">
         <div class="col-sm-6 col-lg-4">
-            <a style="display:block" href="{$link->getAdminLink('AdminShoppingfeedProcessMonitor', true)}|escape:'html':'UTF-8'" id="box-disabled-products" data-toggle="tooltip" class="box-stats label-tooltip {if $syncProduct->id == null || $syncProduct->last_update > date('Y-m-d H:i:s', (time() - 3660 * 24))}color2{else}color4{/if}" data-original-title="{l s='You can also launch product task on page Logs & Crons.' mod='shoppingfeed'}">
+            <a style="display:block" href="{$link->getAdminLink('AdminShoppingfeedProcessMonitor', true)|scapee:'html':'UTF-8'}" id="box-disabled-products" data-toggle="tooltip" class="box-stats label-tooltip {if $syncProduct->id == null || $syncProduct->last_update > date('Y-m-d H:i:s', (time() - 3660 * 24))}color2{else}color4{/if}" data-original-title="{l s='You can also launch product task on page Logs & Crons.' mod='shoppingfeed'}">
                 <div class="kpi-content">
                     <i class="icon-off"></i><span class="title">{l s='Product sync task' mod='shoppingfeed'}</span>
                     {if $syncProduct->id == null || $syncProduct->last_update < date('Y-m-d H:i:s', (time() - 3600 * 24))}
@@ -46,7 +46,7 @@
             </a>
         </div>
         <div class="col-sm-6 col-lg-4">
-            <a id="purge-cache" href="#" data-link-purge-cache="{{$link->getAdminLink('AdminShoppingfeedGeneralSettings')}}|escape:'html':'UTF-8'" id="box-avg-gross-margin" data-toggle="tooltip" class="box-stats label-tooltip {if $percent_preloading < 99}color2{else}color4{/if}" data-original-title="{l s='To avoid live computation of your feed during its call, your product are indexed in a cache system.' mod='shoppingfeed'}">
+            <a id="purge-cache" href="#" data-link-purge-cache="{{$link->getAdminLink('AdminShoppingfeedGeneralSettings')|scapee:'html':'UTF-8'}}" id="box-avg-gross-margin" data-toggle="tooltip" class="box-stats label-tooltip {if $percent_preloading < 99}color2{else}color4{/if}" data-original-title="{l s='To avoid live computation of your feed during its call, your product are indexed in a cache system.' mod='shoppingfeed'}">
                 <div class="kpi-content">
                     <i class="icon-beaker"></i>
                     <span class="title">{l s='Product feed indexing' mod='shoppingfeed'}</span>
