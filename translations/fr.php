@@ -116,6 +116,10 @@ $_MODULE['<{shoppingfeed}prestashop>logs_1fa29ae6a78c4c9174930f0e77d18def'] = 's
 $_MODULE['<{shoppingfeed}prestashop>logs_801ab24683a4a8c433c6eb40c48bcd9d'] = 'Télécharger';
 $_MODULE['<{shoppingfeed}prestashop>logs_df7d5d49ef970ad0d05a1a1ac424b2df'] = 'lignes / ';
 $_MODULE['<{shoppingfeed}prestashop>logs_b5d3525d98d11c67689b36ccd614465f'] = 'derniers jours';
+$_MODULE['<{shoppingfeed}prestashop>database_51c45b795d5d18a3e4e0c37e8b20a141'] = 'Table';
+$_MODULE['<{shoppingfeed}prestashop>database_3d9f514d46849760ef1b1412e314fd99'] = 'Erreur:';
+$_MODULE['<{shoppingfeed}prestashop>database_ece9d6e4d546b0e20be6df824508c1cb'] = 'Actuel:';
+$_MODULE['<{shoppingfeed}prestashop>database_d4fbb73c923710d53fe0ba471837b3cf'] = 'Devrait être:';
 $_MODULE['<{shoppingfeed}prestashop>database_83582f8c94c9600bf433dd1e0c8f9563'] = 'Vérification de l\'intégrité de la base de données';
 $_MODULE['<{shoppingfeed}prestashop>database_6fa22d51d1e170a7186de5e375dd8347'] = 'Toutes les tables sont valides';
 $_MODULE['<{shoppingfeed}prestashop>database_ee9f5c790a7207964fac4f37eafbbef6'] = 'Problèmes dans les tables du module détectés';
@@ -166,6 +170,7 @@ $_MODULE['<{shoppingfeed}prestashop>tax-for-business-desc_3dde2db44a6795fe99ca74
 $_MODULE['<{shoppingfeed}prestashop>tax-for-business-desc_34587757f52c0f744231105ad85c4955'] = 'si le channel n\'est pas Amazon et que la commande est business, la TVA sera passée à 0 sur la commande';
 $_MODULE['<{shoppingfeed}prestashop>tax-for-business-desc_d9608da8360e04a25cb1b6e88d50ae63'] = 'dans tous les autres cas, PrestaShop sera maître du calcul des taxes en fonction de sa configuration';
 $_MODULE['<{shoppingfeed}prestashop>runcronbutton_9506f0fd0f7f1b07960b15b4c9e68d1a'] = 'Lancer';
+$_MODULE['<{shoppingfeed}prestashop>product_filter_c9cc8cce247e49bae79f15173ce97354'] = 'Enregistrer';
 $_MODULE['<{shoppingfeed}prestashop>product_filter_8418bb52f108670fbb6e0acc7d439cf7'] = 'Sélection des produits';
 $_MODULE['<{shoppingfeed}prestashop>product_filter_0f500d988373a125295a82293de0ff84'] = 'Choisir les produits envoyés à Shopping Feed';
 $_MODULE['<{shoppingfeed}prestashop>product_filter_32c54267ec80754f2746e922ef335d06'] = 'Envoyer les produits en fonction de leur visibilité';
@@ -662,3 +667,4 @@ $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_1110c4e6654
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_ec5714076eb1196bd416508b54da3a01'] = 'Nombre de produits max par requête de mise à jour produit';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_54f327717fd70f49b83705ecfac102d2'] = 'Compression Gzip du flux';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedgeneralsettings_618ff511e37a426d996068934ca4bed6'] = 'Vous devez spécifier le \'Nombre maximum de produit à mettre à jour par requête\' (nombre ente 1 et 2 000 inclus)';
+
