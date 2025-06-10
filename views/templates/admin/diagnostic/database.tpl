@@ -114,7 +114,7 @@
                                           {foreach $queryModel.rows as $row}
                                             <tr>
                                                 {foreach $row as $column}
-                                                  <td>{$column|escape:'html'|truncate:150}</td>
+                                                  <td>{$column|escape:'html':'UTF-8'|truncate:150}</td>
                                                 {/foreach}
                                             </tr>
                                           {/foreach}

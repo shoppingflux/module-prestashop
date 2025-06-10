@@ -52,7 +52,7 @@
                   <div class="{if $index != (count($githubVersions)-1)}border-bottom{/if} mt-3 pb-3">
                     <div class="d-flex flex-column">
                       <div class="d-flex align-items-center">
-                        <span>{{l s='Your version is: %a but lastest stable version is: %b.' mod='shoppingfeed'}|replace:['%a','%b']:[$moduleVersion, $githubVersion.name]}</span>
+                        <span>{{l s='Your version is: %a but lastest stable version is: %b.' mod='shoppingfeed'}|replace:['%a','%b']:[$moduleVersion, $githubVersion.name]|escape:'html':'UTF-8'}</span>
                       </div>
                     </div>
                     <div class="text-center">

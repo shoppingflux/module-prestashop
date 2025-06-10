@@ -30,7 +30,7 @@
       </div>
       <div class="card-footer text-muted">
         <a href="http://www.prestashop.com/" onclick="return !window.open(this.href);">
-          &copy; PrestaShop&#8482; 2007-{$smarty.now|date_format:"%Y"} - All rights reserved
+          &copy; PrestaShop&#8482; 2007-{$smarty.now|date_format:"%Y"|escape:'html':'UTF-8'} - All rights reserved
         </a>
       </div>
     </div>
