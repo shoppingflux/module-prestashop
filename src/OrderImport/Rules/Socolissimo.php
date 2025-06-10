@@ -58,6 +58,8 @@ class Socolissimo extends RuleAbstract implements RuleInterface
 
             return true;
         }
+
+        return false;
     }
 
     public function afterCartCreation($params)

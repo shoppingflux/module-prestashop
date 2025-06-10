@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Copyright since 2019 Shopping Feed
  *
@@ -1315,7 +1314,6 @@ class Shoppingfeed extends ShoppingfeedClasslib\Module
      *
      * @param type $params
      *
-     * @return type
      */
     public function hookActionOrderStatusPostUpdate($params)
     {

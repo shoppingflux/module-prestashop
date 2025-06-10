@@ -42,7 +42,7 @@ class GlsRule extends RuleAbstract implements RuleInterface
 
     public function __construct($configuration = [])
     {
-        parent::__construct($configuration);
+        parent::__construct($configuration, null);
 
         $this->gls = \Module::getInstanceByName('nkmgls');
         $this->glsAdapter = $this->getDefaultGlsAdapter();

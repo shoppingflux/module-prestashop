@@ -1,5 +1,4 @@
 <?php
-
 /**
  * NOTICE OF LICENSE
  *
@@ -81,11 +80,6 @@ class ShoppingfeedSyncProductModuleFrontController extends ShoppingfeedCronContr
         $actions[ShoppingfeedPreloading::ACTION_SYNC_PRELODING] = [
             'actions_suffix' => 'Preloading',
         ];
-
-        if (empty($actions)) {
-            // The data to be saved in the CRON table
-            return $data;
-        }
 
         ProcessLoggerHandler::openLogger($this->processMonitor);
 

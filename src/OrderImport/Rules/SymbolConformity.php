@@ -39,7 +39,7 @@ class SymbolConformity extends RuleAbstract implements RuleInterface
 
     public function __construct($configuration = [])
     {
-        parent::__construct($configuration);
+        parent::__construct($configuration, null);
 
         $this->validator = new SymbolValidator();
     }

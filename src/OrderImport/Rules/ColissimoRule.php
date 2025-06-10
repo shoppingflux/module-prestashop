@@ -39,7 +39,7 @@ class ColissimoRule extends RuleAbstract implements RuleInterface
 
     public function __construct($configuration = [])
     {
-        parent::__construct($configuration);
+        parent::__construct($configuration, null);
 
         $this->colissimo = \Module::getInstanceByName(self::COLISSIMO_MODULE_NAME);
     }

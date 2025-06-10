@@ -39,7 +39,7 @@ class GroupCustomer extends RuleAbstract implements RuleInterface
 
     public function __construct($configuration = [])
     {
-        parent::__construct($configuration);
+        parent::__construct($configuration, null);
 
         $this->db = \Db::getInstance();
     }
