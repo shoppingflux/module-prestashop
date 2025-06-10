@@ -37,9 +37,9 @@ class GroupCustomer extends RuleAbstract implements RuleInterface
 
     const DEFAULT_GROUP_CUSTOMER = 3;
 
-    public function __construct($configuration = [])
+    public function __construct($configuration = [], $id_shop = null)
     {
-        parent::__construct($configuration, null);
+        parent::__construct($configuration, $id_shop);
 
         $this->db = \Db::getInstance();
     }
