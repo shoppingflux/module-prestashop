@@ -22,6 +22,10 @@
  * @copyright Copyright (c) 202-ecommerce
  * @license   Commercial license
  */
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
 function upgrade_module_1_5_11($module)
 {
     return Db::getInstance()->execute('DROP TABLE IF EXISTS ' . _DB_PREFIX_ . 'shoppingfeed_stock_and_prices;');

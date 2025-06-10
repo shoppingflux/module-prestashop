@@ -75,7 +75,7 @@
         </div>
         <div class="panel-footer">
             <button type="submit" value="1" name="saveFeedFilterConfig" class="btn btn-default pull-right">
-                <i class="process-icon-save"></i>{l s='Save'}
+                <i class="process-icon-save"></i>{l s='Save'  mod='shoppingfeed'}
             </button>
         </div>
     </div>

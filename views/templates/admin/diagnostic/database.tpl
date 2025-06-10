@@ -21,7 +21,7 @@
                   {foreach $tables as $tableTypeName => $tableTypes}
                       {foreach $tableTypes as $tableType}
                           {if !empty($tableType)}
-                            <div>{l s='Table '} <strong>{$tableType.name|escape:'html':'UTF-8'}</strong></div>
+                            <div>{l s='Table'  mod='shoppingfeed'} <strong>{$tableType.name|escape:'html':'UTF-8'}</strong></div>
                               {if !empty($tableType.errors)}
                                 <ul>
                                     {foreach $tableType.errors as $tableTypeError}
@@ -45,11 +45,11 @@
                                             <td>
                                               <ul>
                                                   {foreach $field.errors as $fieldError}
-                                                    <li>{l s='Error: '} <span
+                                                    <li>{l s='Error:' mod='shoppingfeed'} <span
                                                               class="badge-danger px-1">{$fieldError.text|escape:'html':'UTF-8'}</span></li>
-                                                    <li>{l s='Actual: '} <span
+                                                    <li>{l s='Actual:' mod='shoppingfeed'} <span
                                                               class="badge-warning px-1">{$fieldError.actual|escape:'html':'UTF-8'}</span></li>
-                                                    <li>{l s='Should be: '} <span
+                                                    <li>{l s='Should be:' mod='shoppingfeed'} <span
                                                               class="badge-success px-1">{$fieldError.fixed|escape:'html':'UTF-8'}</span></li>
                                                   {/foreach}
                                               </ul>

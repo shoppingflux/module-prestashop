@@ -22,6 +22,10 @@
  * @copyright Copyright (c) 202-ecommerce
  * @license   Commercial license
  */
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
 function upgrade_module_1_5_14($module)
 {
     $module->addDateIndexToLogs();
