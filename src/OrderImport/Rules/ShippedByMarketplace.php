@@ -43,7 +43,7 @@ class ShippedByMarketplace extends RuleAbstract implements RuleInterface
     /** @var SinceDateInterface */
     protected $sinceDate;
 
-    public function __construct($configuration = [], $id_shop = null, ?SinceDateInterface $sinceDate = null)
+    public function __construct($configuration = [], $id_shop = null, SinceDateInterface $sinceDate = null)
     {
         parent::__construct($configuration, $id_shop);
 
