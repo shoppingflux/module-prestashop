@@ -1085,6 +1085,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
 
         $carrier = $this->conveyor['carrier'];
         $paymentInformation = &$this->conveyor['orderData']->payment;
+        $additionalFields = $this->conveyor['orderData']->additionalFields;
 
         // Carrier tax calculation START
         if (Configuration::get('PS_TAX_ADDRESS_TYPE') == 'id_address_invoice') {
@@ -1095,6 +1096,9 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         $carrier_tax_rate = $carrier->getTaxesRate($address);
         if ($skipTax === true) {
             $carrier_tax_rate = 0;
+        }
+        if ($isUseSfTax && isset($additionalFields['shipping_tax'])) {
+            $carrier_tax_rate = $additionalFields['shipping_tax'] / ($paymentInformation['shippingAmount'] - $additionalFields['shipping_tax']) * 100;
         }
 
         if ($isAmountTaxIncl === true) {
