@@ -1,5 +1,4 @@
 <?php
-
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -48,7 +47,7 @@ class RulesManager
      *
      * @param OrderResource $apiOrder
      */
-    public function __construct($id_shop, ?OrderResource $apiOrder = null)
+    public function __construct($id_shop, OrderResource $apiOrder = null)
     {
         $this->apiOrder = $apiOrder;
         $this->rulesConfiguration = json_decode(

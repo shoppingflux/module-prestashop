@@ -1,5 +1,4 @@
 <?php
-
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -77,6 +76,8 @@ class ShoppingfeedSyncAllModuleFrontController extends ShoppingfeedCronControlle
 
         $return = ['success' => false, 'error' => 'Authentication failed'];
         $this->ajaxDie(json_encode($return));
+
+        return $return;
     }
 
     protected function processCron($data)

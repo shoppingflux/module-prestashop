@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Copyright since 2019 Shopping Feed
  *
@@ -17,6 +16,9 @@
  * @copyright Since 2019 Shopping Feed
  * @license   https://opensource.org/licenses/AFL-3.0  Academic Free License (AFL 3.0)
  */
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 
 use ShoppingfeedAddon\OrderImport\OrderData;
 use ShoppingfeedAddon\OrderImport\SFOrderState;

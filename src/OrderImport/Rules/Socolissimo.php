@@ -1,5 +1,4 @@
 <?php
-
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -59,6 +58,8 @@ class Socolissimo extends RuleAbstract implements RuleInterface
 
             return true;
         }
+
+        return false;
     }
 
     public function afterCartCreation($params)
