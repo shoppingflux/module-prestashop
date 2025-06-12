@@ -17,7 +17,7 @@
  *}
 <div class="shoppingfeedApp">
   {foreach $stubs as $stub}
-      {$stub|escape:'htmlall':'UTF-8'}
+      {$stub|cleanHtml nofilter}
   {/foreach}
 
   {include file="./export.tpl"}
