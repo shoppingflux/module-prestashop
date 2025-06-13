@@ -458,30 +458,6 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
                         ],
                         [
                             'type' => 'shoppingfeed_double-list',
-                            'name' => 'status_delivered_order',
-                            'label' => $this->module->l('Delivery orders synchronization', 'AdminShoppingfeedOrderImportRules'),
-                            'hint' => $this->module->l('When the order has been delivered to the customer, for platforms managing this status', 'AdminShoppingfeedOrderImportRules'),
-                            'unselected' => [
-                                'id' => 'status_delivered_order_add',
-                                'label' => $this->module->l('Unselected order status', 'AdminShoppingfeedOrderImportRules'),
-                                'options' => $orderDeliveredState['unselected'],
-                                'btn' => [
-                                    'id' => 'status_delivered_order_btn',
-                                    'label' => $this->module->l('Add', 'AdminShoppingfeedOrderImportRules'),
-                                ],
-                            ],
-                            'selected' => [
-                                'id' => 'status_delivered_order_remove',
-                                'label' => $this->module->l('Selected order status', 'AdminShoppingfeedOrderImportRules'),
-                                'options' => $orderDeliveredState['selected'],
-                                'btn' => [
-                                    'id' => 'status_delivered_order_remove_btn',
-                                    'label' => $this->module->l('Remove', 'AdminShoppingfeedOrderImportRules'),
-                                ],
-                            ],
-                        ],
-                        [
-                            'type' => 'shoppingfeed_double-list',
                             'name' => 'status_cancelled_order',
                             'label' => $this->module->l('Cancelled orders synchronization', 'AdminShoppingfeedOrderImportRules'),
                             'unselected' => [
@@ -522,6 +498,30 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
                                 'options' => $orderRefundedState['selected'],
                                 'btn' => [
                                     'id' => 'status_refunded_order_remove_btn',
+                                    'label' => $this->module->l('Remove', 'AdminShoppingfeedOrderImportRules'),
+                                ],
+                            ],
+                        ],
+                        [
+                            'type' => 'shoppingfeed_double-list',
+                            'name' => 'status_delivered_order',
+                            'label' => $this->module->l('Delivery orders synchronization', 'AdminShoppingfeedOrderImportRules'),
+                            'hint' => $this->module->l('When the order has been delivered to the customer, for platforms managing this status', 'AdminShoppingfeedOrderImportRules'),
+                            'unselected' => [
+                                'id' => 'status_delivered_order_add',
+                                'label' => $this->module->l('Unselected order status', 'AdminShoppingfeedOrderImportRules'),
+                                'options' => $orderDeliveredState['unselected'],
+                                'btn' => [
+                                    'id' => 'status_delivered_order_btn',
+                                    'label' => $this->module->l('Add', 'AdminShoppingfeedOrderImportRules'),
+                                ],
+                            ],
+                            'selected' => [
+                                'id' => 'status_delivered_order_remove',
+                                'label' => $this->module->l('Selected order status', 'AdminShoppingfeedOrderImportRules'),
+                                'options' => $orderDeliveredState['selected'],
+                                'btn' => [
+                                    'id' => 'status_delivered_order_remove_btn',
                                     'label' => $this->module->l('Remove', 'AdminShoppingfeedOrderImportRules'),
                                 ],
                             ],
