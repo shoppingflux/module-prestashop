@@ -309,7 +309,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
 
             foreach ($orderHistory as $state) {
                 $idOrderState = (int) $state['id_order_state'];
-                if (in_array($idOrderState, $shipped_status)) {
+                if (is_array($shipped_status) && in_array($idOrderState, $shipped_status)) {
                     $taskOrderOperation = Shoppingfeed::ORDER_OPERATION_SHIP;
 
                     // Default values...
@@ -355,14 +355,14 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
 
                     Hook::exec('actionShoppingfeedTracking', ['order' => $order, 'taskOrderPayload' => &$taskOrderPayload]);
                     continue;
-                } elseif (in_array($idOrderState, $cancelled_status)) {
+                } elseif (is_array($cancelled_status) && in_array($idOrderState, $cancelled_status)) {
                     $taskOrderOperation = Shoppingfeed::ORDER_OPERATION_CANCEL;
                     $taskOrderPayload = [
                         'reason' => '',
                     ];
                     continue;
                 // The "reason" field is not supported (at least for now)
-                } elseif (in_array($idOrderState, $refunded_status)) {
+                } elseif (is_array($refunded_status) && in_array($idOrderState, $refunded_status)) {
                     $taskOrderOperation = Shoppingfeed::ORDER_OPERATION_REFUND;
                     $taskOrderPayload = [
                         'shipping' => true,
@@ -371,7 +371,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
                     continue;
                 // No partial refund (at least for now), so no optional
                 // parameters to set.
-                } elseif (in_array($idOrderState, $delivered_status)) {
+                } elseif (is_array($delivered_status) && in_array($idOrderState, $delivered_status)) {
                     $taskOrderOperation = Shoppingfeed::ORDER_OPERATION_DELIVER;
                 }
             }
