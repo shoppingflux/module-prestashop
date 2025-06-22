@@ -1255,9 +1255,9 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         $shipped_status = json_decode(Configuration::get(Shoppingfeed::SHIPPED_ORDERS, null, null, $order->id_shop));
         $cancelled_status = json_decode(Configuration::get(Shoppingfeed::CANCELLED_ORDERS, null, null, $order->id_shop));
         $refunded_status = json_decode(Configuration::get(Shoppingfeed::REFUNDED_ORDERS, null, null, $order->id_shop));
-        if (!in_array($newOrderStatus->id, $shipped_status)
-            && !in_array($newOrderStatus->id, $cancelled_status)
-            && !in_array($newOrderStatus->id, $refunded_status)
+        if ((!is_array($shipped_status) || !in_array($newOrderStatus->id, $shipped_status))
+            && (!is_array($cancelled_status) || !in_array($newOrderStatus->id, $cancelled_status))
+            && (!is_array($refunded_status) || !in_array($newOrderStatus->id, $refunded_status))
         ) {
             return;
         }
