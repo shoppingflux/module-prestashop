@@ -1041,6 +1041,8 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 'unit_price_tax_incl' => (float) $apiProduct->unitPrice,
                 'unit_price_tax_excl' => (float) ((float) $apiProduct->unitPrice / (1 + ($tax_rate / 100))),
                 'original_product_price' => $original_product_price,
+                'product_quantity' => $apiProduct->quantity,
+                'product_quantity_in_stock' => $apiProduct->quantity,
             ];
             Db::getInstance()->update(
                 'order_detail',
@@ -1204,6 +1206,16 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             //Looking for gift product
             foreach ($cartRules as $cartRule) {
                 if (empty($cartRule['gift_product'])) {
+                    continue;
+                }
+                $removeGift = true;
+                foreach ($this->conveyor['prestashopProducts'] as $psProduct) {
+                    if ($psProduct->id == $cartRule['gift_product'] && $psProduct->id_product_attribute == $cartRule['gift_product_attribute']) {
+                        $removeGift = false;
+                    }
+                }
+
+                if ($removeGift === false) {
                     continue;
                 }
                 //Deleting the gift product
