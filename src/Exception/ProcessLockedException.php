@@ -1,5 +1,4 @@
 <?php
-
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -19,6 +18,10 @@
  */
 
 namespace ShoppingfeedAddon\Exception;
+
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 
 class ProcessLockedException extends \Exception
 {

@@ -75,7 +75,7 @@
         </div>
         <div class="panel-footer">
             <button type="submit" value="1" name="saveFeedFilterConfig" class="btn btn-default pull-right">
-                <i class="process-icon-save"></i>{l s='Save'}
+                <i class="process-icon-save"></i>{l s='Save'  mod='shoppingfeed'}
             </button>
         </div>
     </div>
@@ -89,9 +89,9 @@
       ruleGenerator.addNewConditionSet();
       {foreach from=$groupFilter item=filter}
           ruleGenerator.addCondition({
-              filter: '{$filter->getFilter() nofilter}',
-              type: '{$filter->getType()|escape:'htmlall':'utf-8'}',
-              value: '{$filter->getValue()|escape:'htmlall':'utf-8'}'
+              filter: '{$filter->getFilter()|escape:'htmlall':'UTF-8'}',
+              type: '{$filter->getType()|escape:'htmlall':'UTF-8'}',
+              value: '{$filter->getValue()|escape:'htmlall':'UTF-8'}'
           });
       {/foreach}
   {/foreach}

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * NOTICE OF LICENSE
  *
@@ -22,6 +21,10 @@
  * @copyright Copyright (c) 202-ecommerce
  * @license   Commercial license
  */
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
 require_once _PS_MODULE_DIR_ . 'shoppingfeed/classes/ShoppingfeedOrder.php';
 
 function upgrade_module_1_5_2($module)

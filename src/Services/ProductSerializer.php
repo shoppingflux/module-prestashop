@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Copyright since 2021 Shopping Feed
  *
@@ -19,6 +18,10 @@
  */
 
 namespace ShoppingfeedAddon\Services;
+
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 
 use Product;
 use SpecificPrice;

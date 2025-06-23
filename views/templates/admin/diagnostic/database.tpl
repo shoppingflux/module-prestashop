@@ -1,3 +1,20 @@
+{**
+ * Copyright since 2019 Shopping Feed
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Academic Free License (AFL 3.0)
+ * that is bundled with this package in the file LICENSE.md.
+ * It is also available through the world-wide-web at this URL:
+ * https://opensource.org/licenses/AFL-3.0
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to tech@202-ecommerce.com so we can send you a copy immediately.
+ *
+ * @author    202 ecommerce <tech@202-ecommerce.com>
+ * @copyright Since 2019 Shopping Feed
+ * @license   https://opensource.org/licenses/AFL-3.0  Academic Free License (AFL 3.0)
+ *}
 <div class="w-100 mb-3">
   <div class="row">
     <div class="col-sm-12">
@@ -21,7 +38,7 @@
                   {foreach $tables as $tableTypeName => $tableTypes}
                       {foreach $tableTypes as $tableType}
                           {if !empty($tableType)}
-                            <div>{l s='Table '} <strong>{$tableType.name|escape:'html':'UTF-8'}</strong></div>
+                            <div>{l s='Table'  mod='shoppingfeed'} <strong>{$tableType.name|escape:'html':'UTF-8'}</strong></div>
                               {if !empty($tableType.errors)}
                                 <ul>
                                     {foreach $tableType.errors as $tableTypeError}
@@ -45,11 +62,11 @@
                                             <td>
                                               <ul>
                                                   {foreach $field.errors as $fieldError}
-                                                    <li>{l s='Error: '} <span
+                                                    <li>{l s='Error:' mod='shoppingfeed'} <span
                                                               class="badge-danger px-1">{$fieldError.text|escape:'html':'UTF-8'}</span></li>
-                                                    <li>{l s='Actual: '} <span
+                                                    <li>{l s='Actual:' mod='shoppingfeed'} <span
                                                               class="badge-warning px-1">{$fieldError.actual|escape:'html':'UTF-8'}</span></li>
-                                                    <li>{l s='Should be: '} <span
+                                                    <li>{l s='Should be:' mod='shoppingfeed'} <span
                                                               class="badge-success px-1">{$fieldError.fixed|escape:'html':'UTF-8'}</span></li>
                                                   {/foreach}
                                               </ul>
@@ -97,7 +114,7 @@
                                           {foreach $queryModel.rows as $row}
                                             <tr>
                                                 {foreach $row as $column}
-                                                  <td>{$column|escape:'html'|truncate:150}</td>
+                                                  <td>{$column|escape:'html':'UTF-8'|truncate:150}</td>
                                                 {/foreach}
                                             </tr>
                                           {/foreach}

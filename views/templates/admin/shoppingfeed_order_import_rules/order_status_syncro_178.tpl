@@ -27,7 +27,7 @@
     {if $input.type == 'shoppingfeed_alert'}
         {if !isset($input.condition) || $input.condition}
             <div class="alert alert-{$input.severity|escape:'htmlall':'UTF-8'}">
-                {$input.message nofilter}
+                {$input.message|escape:'htmlall':'UTF-8'}
             </div>
         {/if}
     {elseif $input.type == 'shoppingfeed_switch_with_date'}
@@ -70,7 +70,7 @@
     {elseif $input.type == 'shoppingfeed_open-section'}
         <div id="{$input.id|escape:'htmlall':'UTF-8'}" class="shoppingfeed_form-section">
             {if isset($input.title)}
-                <h2>{$input.title nofilter}</h2>
+                <h2>{$input.title|escape:'htmlall':'UTF-8'}</h2>
             {/if}
 
             {if isset($input.desc)}

@@ -1,5 +1,4 @@
 <?php
-
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -38,9 +37,9 @@ class ColissimoRule extends RuleAbstract implements RuleInterface
 
     protected $fileName;
 
-    public function __construct($configuration = [])
+    public function __construct($configuration = [], $id_shop = null)
     {
-        parent::__construct($configuration);
+        parent::__construct($configuration, $id_shop);
 
         $this->colissimo = \Module::getInstanceByName(self::COLISSIMO_MODULE_NAME);
     }

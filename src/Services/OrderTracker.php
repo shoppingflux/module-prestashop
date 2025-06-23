@@ -1,5 +1,4 @@
 <?php
-
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -20,6 +19,11 @@
 
 namespace ShoppingfeedAddon\Services;
 
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
+use GuzzleHttp\Client;
 use ShoppingFeed\Sdk\Client\ClientOptions;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 use ShoppingfeedClasslib\Utils\Translate\TranslateTrait;
