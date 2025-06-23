@@ -1333,10 +1333,10 @@ class Shoppingfeed extends ShoppingfeedClasslib\Module
         $refunded_status = json_decode(Configuration::get(Shoppingfeed::REFUNDED_ORDERS, null, null, $order->id_shop));
         $delivered_status = json_decode(Configuration::get(Shoppingfeed::DELIVERED_ORDERS, null, null, $order->id_shop));
 
-        if (in_array($newOrderStatus->id, $shipped_status)
-            || in_array($newOrderStatus->id, $cancelled_status)
-            || in_array($newOrderStatus->id, $refunded_status)
-            || in_array($newOrderStatus->id, $delivered_status)
+        if ((is_array($shipped_status) && in_array($newOrderStatus->id, $shipped_status))
+            || (is_array($cancelled_status) && in_array($newOrderStatus->id, $cancelled_status))
+            || (is_array($refunded_status) && in_array($newOrderStatus->id, $refunded_status))
+            || (is_array($delivered_status) && in_array($newOrderStatus->id, $delivered_status))
         ) {
             $this->addOrderTask($shoppingFeedOrder->id_order, ShoppingfeedTaskOrder::ACTION_SYNC_STATUS);
         }
