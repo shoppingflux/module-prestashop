@@ -1,6 +1,6 @@
 <?php
 
-namespace SfPsr\Psr\Http\Message;
+namespace ShoppingfeedPrefix\Psr\Http\Message;
 
 /**
  * Value object representing a URI.

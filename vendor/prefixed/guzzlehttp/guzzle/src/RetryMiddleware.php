@@ -1,11 +1,11 @@
 <?php
-namespace SfGuzzle\GuzzleHttp;
+namespace ShoppingfeedPrefix\GuzzleHttp;
 
-use SfGuzzle\GuzzleHttp\Promise\PromiseInterface;
-use SfGuzzle\GuzzleHttp\Promise\RejectedPromise;
-use SfGuzzle\GuzzleHttp\Psr7;
-use SfPsr\Psr\Http\Message\RequestInterface;
-use SfPsr\Psr\Http\Message\ResponseInterface;
+use ShoppingfeedPrefix\GuzzleHttp\Promise\PromiseInterface;
+use ShoppingfeedPrefix\GuzzleHttp\Promise\RejectedPromise;
+use ShoppingfeedPrefix\GuzzleHttp\Psr7;
+use ShoppingfeedPrefix\Psr\Http\Message\RequestInterface;
+use ShoppingfeedPrefix\Psr\Http\Message\ResponseInterface;
 
 /**
  * Middleware that retries requests based on the boolean result of
@@ -110,7 +110,7 @@ class RetryMiddleware
                 null,
                 $reason
             )) {
-                return \SfGuzzle\GuzzleHttp\Promise\rejection_for($reason);
+                return \ShoppingfeedPrefix\GuzzleHttp\Promise\rejection_for($reason);
             }
             return $this->doRetry($req, $options);
         };

@@ -1,19 +1,19 @@
 <?php
-namespace SfGuzzle\GuzzleHttp;
+namespace ShoppingfeedPrefix\GuzzleHttp;
 
-use SfGuzzle\GuzzleHttp\Exception\BadResponseException;
-use SfGuzzle\GuzzleHttp\Exception\TooManyRedirectsException;
-use SfGuzzle\GuzzleHttp\Promise\PromiseInterface;
-use SfGuzzle\GuzzleHttp\Psr7;
-use SfPsr\Psr\Http\Message\RequestInterface;
-use SfPsr\Psr\Http\Message\ResponseInterface;
-use SfPsr\Psr\Http\Message\UriInterface;
+use ShoppingfeedPrefix\GuzzleHttp\Exception\BadResponseException;
+use ShoppingfeedPrefix\GuzzleHttp\Exception\TooManyRedirectsException;
+use ShoppingfeedPrefix\GuzzleHttp\Promise\PromiseInterface;
+use ShoppingfeedPrefix\GuzzleHttp\Psr7;
+use ShoppingfeedPrefix\Psr\Http\Message\RequestInterface;
+use ShoppingfeedPrefix\Psr\Http\Message\ResponseInterface;
+use ShoppingfeedPrefix\Psr\Http\Message\UriInterface;
 
 /**
  * Request redirect middleware.
  *
  * Apply this middleware like other middleware using
- * {@see \SfGuzzle\GuzzleHttp\Middleware::redirect()}.
+ * {@see \ShoppingfeedPrefix\GuzzleHttp\Middleware::redirect()}.
  */
 class RedirectMiddleware
 {

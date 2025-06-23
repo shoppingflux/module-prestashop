@@ -1,9 +1,9 @@
 <?php
-namespace SfGuzzle\GuzzleHttp;
+namespace ShoppingfeedPrefix\GuzzleHttp;
 
-use SfGuzzle\GuzzleHttp\Promise\PromiseInterface;
-use SfGuzzle\GuzzleHttp\Psr7;
-use SfPsr\Psr\Http\Message\RequestInterface;
+use ShoppingfeedPrefix\GuzzleHttp\Promise\PromiseInterface;
+use ShoppingfeedPrefix\GuzzleHttp\Psr7;
+use ShoppingfeedPrefix\Psr\Http\Message\RequestInterface;
 
 /**
  * Prepares requests that contain a body, adding the Content-Length,

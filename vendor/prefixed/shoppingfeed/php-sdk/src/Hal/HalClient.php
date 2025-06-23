@@ -1,8 +1,8 @@
 <?php
 namespace ShoppingFeed\Sdk\Hal;
 
-use SfPsr\Psr\Http\Message\RequestInterface;
-use SfPsr\Psr\Http\Message\ResponseInterface;
+use ShoppingfeedPrefix\Psr\Http\Message\RequestInterface;
+use ShoppingfeedPrefix\Psr\Http\Message\ResponseInterface;
 use ShoppingFeed\Sdk\Http\Adapter\AdapterInterface;
 use ShoppingFeed\Sdk\Resource\Json;
 

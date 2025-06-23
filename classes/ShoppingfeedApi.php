@@ -383,7 +383,7 @@ class ShoppingfeedApi
                     )
                 );
 
-                if (false == $e instanceof SfGuzzle\GuzzleHttp\Exception\ClientException) {
+                if (false == $e instanceof ShoppingfeedPrefix\GuzzleHttp\Exception\ClientException) {
                     return false;
                 }
 
@@ -547,12 +547,12 @@ class ShoppingfeedApi
      */
     public static function ping()
     {
-        if (!interface_exists(SfGuzzle\GuzzleHttp\ClientInterface::class)) {
+        if (!interface_exists(ShoppingfeedPrefix\GuzzleHttp\ClientInterface::class)) {
             throw new Exception('Shoppingfeed : Guzzle does not seem to be installed.');
         }
 
-        if (version_compare(SfGuzzle\GuzzleHttp\ClientInterface::VERSION, '6', '<')
-            || version_compare(SfGuzzle\GuzzleHttp\ClientInterface::VERSION, '7', '>=')
+        if (version_compare(ShoppingfeedPrefix\GuzzleHttp\ClientInterface::VERSION, '6', '<')
+            || version_compare(ShoppingfeedPrefix\GuzzleHttp\ClientInterface::VERSION, '7', '>=')
         ) {
             throw new Exception('Shoppingfeed : the module only supports Guzzle v6.');
         }

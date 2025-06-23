@@ -1,10 +1,10 @@
 <?php
-namespace SfGuzzle\GuzzleHttp\Handler;
+namespace ShoppingfeedPrefix\GuzzleHttp\Handler;
 
-use SfGuzzle\GuzzleHttp\Psr7\Response;
-use SfPsr\Psr\Http\Message\RequestInterface;
-use SfPsr\Psr\Http\Message\ResponseInterface;
-use SfPsr\Psr\Http\Message\StreamInterface;
+use ShoppingfeedPrefix\GuzzleHttp\Psr7\Response;
+use ShoppingfeedPrefix\Psr\Http\Message\RequestInterface;
+use ShoppingfeedPrefix\Psr\Http\Message\ResponseInterface;
+use ShoppingfeedPrefix\Psr\Http\Message\StreamInterface;
 
 /**
  * Represents a cURL easy handle and the data it populates.
@@ -50,8 +50,8 @@ final class EasyHandle
 
         // HTTP-version SP status-code SP reason-phrase
         $startLine = explode(' ', array_shift($this->headers), 3);
-        $headers = \SfGuzzle\GuzzleHttp\headers_from_lines($this->headers);
-        $normalizedKeys = \SfGuzzle\GuzzleHttp\normalize_header_keys($headers);
+        $headers = \ShoppingfeedPrefix\GuzzleHttp\headers_from_lines($this->headers);
+        $normalizedKeys = \ShoppingfeedPrefix\GuzzleHttp\normalize_header_keys($headers);
 
         if (!empty($this->options['decode_content'])
             && isset($normalizedKeys['content-encoding'])

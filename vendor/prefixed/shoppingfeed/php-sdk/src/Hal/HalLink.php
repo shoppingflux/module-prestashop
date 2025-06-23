@@ -1,7 +1,7 @@
 <?php
 namespace ShoppingFeed\Sdk\Hal;
 
-use SfPsr\Psr\Http\Message\ResponseInterface;
+use ShoppingfeedPrefix\Psr\Http\Message\ResponseInterface;
 use ShoppingFeed\Sdk\Http\UriTemplate;
 use ShoppingFeed\Sdk\Resource\Json;
 
@@ -245,7 +245,7 @@ class HalLink
     }
 
     /**
-     * @param \SfPsr\Psr\Http\Message\RequestInterface|\SfPsr\Psr\Http\Message\RequestInterface[] $request
+     * @param \ShoppingfeedPrefix\Psr\Http\Message\RequestInterface|\ShoppingfeedPrefix\Psr\Http\Message\RequestInterface[] $request
      * @param array                               $config
      *
      * @return null|HalResource
@@ -260,7 +260,7 @@ class HalLink
      * @param array  $variables
      * @param mixed  $body
      *
-     * @return \SfPsr\Psr\Http\Message\RequestInterface
+     * @return \ShoppingfeedPrefix\Psr\Http\Message\RequestInterface
      */
     public function createRequest($method, array $variables = [], $body = null, $headers = [])
     {

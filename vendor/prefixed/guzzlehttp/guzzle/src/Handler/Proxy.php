@@ -1,8 +1,8 @@
 <?php
-namespace SfGuzzle\GuzzleHttp\Handler;
+namespace ShoppingfeedPrefix\GuzzleHttp\Handler;
 
-use SfGuzzle\GuzzleHttp\RequestOptions;
-use SfPsr\Psr\Http\Message\RequestInterface;
+use ShoppingfeedPrefix\GuzzleHttp\RequestOptions;
+use ShoppingfeedPrefix\Psr\Http\Message\RequestInterface;
 
 /**
  * Provides basic proxies for handlers.

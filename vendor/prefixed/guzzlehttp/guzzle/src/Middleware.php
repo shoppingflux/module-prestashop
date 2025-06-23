@@ -1,12 +1,12 @@
 <?php
-namespace SfGuzzle\GuzzleHttp;
+namespace ShoppingfeedPrefix\GuzzleHttp;
 
-use SfGuzzle\GuzzleHttp\Cookie\CookieJarInterface;
-use SfGuzzle\GuzzleHttp\Exception\RequestException;
-use SfGuzzle\GuzzleHttp\Promise\RejectedPromise;
-use SfGuzzle\GuzzleHttp\Psr7;
-use SfPsr\Psr\Http\Message\ResponseInterface;
-use SfPsr\Psr\Log\LoggerInterface;
+use ShoppingfeedPrefix\GuzzleHttp\Cookie\CookieJarInterface;
+use ShoppingfeedPrefix\GuzzleHttp\Exception\RequestException;
+use ShoppingfeedPrefix\GuzzleHttp\Promise\RejectedPromise;
+use ShoppingfeedPrefix\GuzzleHttp\Psr7;
+use ShoppingfeedPrefix\Psr\Http\Message\ResponseInterface;
+use ShoppingfeedPrefix\Psr\Log\LoggerInterface;
 
 /**
  * Functions used to create and wrap handlers with handler middleware.
@@ -102,7 +102,7 @@ final class Middleware
                             'error'    => $reason,
                             'options'  => $options
                         ];
-                        return \SfGuzzle\GuzzleHttp\Promise\rejection_for($reason);
+                        return \ShoppingfeedPrefix\GuzzleHttp\Promise\rejection_for($reason);
                     }
                 );
             };
@@ -182,7 +182,7 @@ final class Middleware
      *
      * @return callable Returns a function that accepts the next handler.
      */
-    public static function log(LoggerInterface $logger, MessageFormatter $formatter, $logLevel = 'info' /* \SfPsr\Psr\Log\LogLevel::INFO */)
+    public static function log(LoggerInterface $logger, MessageFormatter $formatter, $logLevel = 'info' /* \ShoppingfeedPrefix\Psr\Log\LogLevel::INFO */)
     {
         return function (callable $handler) use ($logger, $formatter, $logLevel) {
             return function ($request, array $options) use ($handler, $logger, $formatter, $logLevel) {
@@ -198,7 +198,7 @@ final class Middleware
                             : null;
                         $message = $formatter->format($request, $response, $reason);
                         $logger->notice($message);
-                        return \SfGuzzle\GuzzleHttp\Promise\rejection_for($reason);
+                        return \ShoppingfeedPrefix\GuzzleHttp\Promise\rejection_for($reason);
                     }
                 );
             };

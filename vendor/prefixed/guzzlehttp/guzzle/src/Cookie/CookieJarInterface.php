@@ -1,8 +1,8 @@
 <?php
-namespace SfGuzzle\GuzzleHttp\Cookie;
+namespace ShoppingfeedPrefix\GuzzleHttp\Cookie;
 
-use SfPsr\Psr\Http\Message\RequestInterface;
-use SfPsr\Psr\Http\Message\ResponseInterface;
+use ShoppingfeedPrefix\Psr\Http\Message\RequestInterface;
+use ShoppingfeedPrefix\Psr\Http\Message\ResponseInterface;
 
 /**
  * Stores HTTP cookies.

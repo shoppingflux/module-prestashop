@@ -19,7 +19,7 @@
     },
     "autoload": {
         "psr-4": {
-            "SfPsr\\Psr\\Log\\": "Psr\/Log\/"
+            "ShoppingfeedPrefix\\Psr\\Log\\": "Psr\/Log\/"
         }
     },
     "extra": {

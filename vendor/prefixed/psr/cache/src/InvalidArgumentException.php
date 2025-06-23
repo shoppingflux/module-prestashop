@@ -1,6 +1,6 @@
 <?php
 
-namespace SfPsr\Psr\Cache;
+namespace ShoppingfeedPrefix\Psr\Cache;
 
 /**
  * Exception interface for invalid cache arguments.

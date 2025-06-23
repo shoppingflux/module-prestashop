@@ -1,7 +1,7 @@
 <?php
-namespace SfGuzzle\GuzzleHttp\Handler;
+namespace ShoppingfeedPrefix\GuzzleHttp\Handler;
 
-use SfPsr\Psr\Http\Message\RequestInterface;
+use ShoppingfeedPrefix\Psr\Http\Message\RequestInterface;
 
 interface CurlFactoryInterface
 {

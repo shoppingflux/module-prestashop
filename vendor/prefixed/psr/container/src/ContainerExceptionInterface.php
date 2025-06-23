@@ -1,6 +1,6 @@
 <?php
 
-namespace SfPsr\Psr\Container;
+namespace ShoppingfeedPrefix\Psr\Container;
 
 use Throwable;
 /**

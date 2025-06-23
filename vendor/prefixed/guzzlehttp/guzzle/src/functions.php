@@ -1,10 +1,10 @@
 <?php
-namespace SfGuzzle\GuzzleHttp;
+namespace ShoppingfeedPrefix\GuzzleHttp;
 
-use SfGuzzle\GuzzleHttp\Handler\CurlHandler;
-use SfGuzzle\GuzzleHttp\Handler\CurlMultiHandler;
-use SfGuzzle\GuzzleHttp\Handler\Proxy;
-use SfGuzzle\GuzzleHttp\Handler\StreamHandler;
+use ShoppingfeedPrefix\GuzzleHttp\Handler\CurlHandler;
+use ShoppingfeedPrefix\GuzzleHttp\Handler\CurlMultiHandler;
+use ShoppingfeedPrefix\GuzzleHttp\Handler\Proxy;
+use ShoppingfeedPrefix\GuzzleHttp\Handler\StreamHandler;
 
 /**
  * Expands a URI template

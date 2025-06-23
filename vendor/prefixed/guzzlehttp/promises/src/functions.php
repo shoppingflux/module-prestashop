@@ -1,6 +1,6 @@
 <?php
 
-namespace SfGuzzle\GuzzleHttp\Promise;
+namespace ShoppingfeedPrefix\GuzzleHttp\Promise;
 
 /**
  * Get the global task queue used for promise resolution.
@@ -11,7 +11,7 @@ namespace SfGuzzle\GuzzleHttp\Promise;
  *
  * <code>
  * while ($eventLoop->isRunning()) {
- *     SfGuzzle\GuzzleHttp\Promise\queue()->run();
+ *     ShoppingfeedPrefix\GuzzleHttp\Promise\queue()->run();
  * }
  * </code>
  *

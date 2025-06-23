@@ -1,13 +1,13 @@
 <?php
-namespace SfGuzzle\GuzzleHttp\Handler;
+namespace ShoppingfeedPrefix\GuzzleHttp\Handler;
 
-use SfGuzzle\GuzzleHttp\Exception\RequestException;
-use SfGuzzle\GuzzleHttp\HandlerStack;
-use SfGuzzle\GuzzleHttp\Promise\PromiseInterface;
-use SfGuzzle\GuzzleHttp\Promise\RejectedPromise;
-use SfGuzzle\GuzzleHttp\TransferStats;
-use SfPsr\Psr\Http\Message\RequestInterface;
-use SfPsr\Psr\Http\Message\ResponseInterface;
+use ShoppingfeedPrefix\GuzzleHttp\Exception\RequestException;
+use ShoppingfeedPrefix\GuzzleHttp\HandlerStack;
+use ShoppingfeedPrefix\GuzzleHttp\Promise\PromiseInterface;
+use ShoppingfeedPrefix\GuzzleHttp\Promise\RejectedPromise;
+use ShoppingfeedPrefix\GuzzleHttp\TransferStats;
+use ShoppingfeedPrefix\Psr\Http\Message\RequestInterface;
+use ShoppingfeedPrefix\Psr\Http\Message\ResponseInterface;
 
 /**
  * Handler that returns responses or throw exceptions from a queue.
@@ -91,8 +91,8 @@ class MockHandler implements \Countable
         }
 
         $response = $response instanceof \Exception
-            ? \SfGuzzle\GuzzleHttp\Promise\rejection_for($response)
-            : \SfGuzzle\GuzzleHttp\Promise\promise_for($response);
+            ? \ShoppingfeedPrefix\GuzzleHttp\Promise\rejection_for($response)
+            : \ShoppingfeedPrefix\GuzzleHttp\Promise\promise_for($response);
 
         return $response->then(
             function ($value) use ($request, $options) {
@@ -108,7 +108,7 @@ class MockHandler implements \Countable
                         fwrite($sink, $contents);
                     } elseif (is_string($sink)) {
                         file_put_contents($sink, $contents);
-                    } elseif ($sink instanceof \SfPsr\Psr\Http\Message\StreamInterface) {
+                    } elseif ($sink instanceof \ShoppingfeedPrefix\Psr\Http\Message\StreamInterface) {
                         $sink->write($contents);
                     }
                 }
@@ -120,7 +120,7 @@ class MockHandler implements \Countable
                 if ($this->onRejected) {
                     call_user_func($this->onRejected, $reason);
                 }
-                return \SfGuzzle\GuzzleHttp\Promise\rejection_for($reason);
+                return \ShoppingfeedPrefix\GuzzleHttp\Promise\rejection_for($reason);
             }
         );
     }
@@ -140,7 +140,7 @@ class MockHandler implements \Countable
                 $this->queue[] = $value;
             } else {
                 throw new \InvalidArgumentException('Expected a response or '
-                    . 'exception. Found ' . \SfGuzzle\GuzzleHttp\describe_type($value));
+                    . 'exception. Found ' . \ShoppingfeedPrefix\GuzzleHttp\describe_type($value));
             }
         }
     }
