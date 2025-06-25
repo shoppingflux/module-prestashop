@@ -1102,7 +1102,11 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             $carrier_tax_rate = 0;
         }
         if ($isUseSfTax && isset($additionalFields['shipping_tax'])) {
-            $carrier_tax_rate = $additionalFields['shipping_tax'] / ($paymentInformation['shippingAmount'] - $additionalFields['shipping_tax']) * 100;
+            if ($additionalFields['shipping_tax'] > 0) {
+                $carrier_tax_rate = $additionalFields['shipping_tax'] / ($paymentInformation['shippingAmount'] - $additionalFields['shipping_tax']) * 100;
+            } else {
+                $carrier_tax_rate = 0;
+            }
         }
 
         if ($isAmountTaxIncl === true) {
