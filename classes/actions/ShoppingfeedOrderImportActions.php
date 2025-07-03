@@ -1210,7 +1210,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 }
                 $removeGift = true;
                 foreach ($this->conveyor['prestashopProducts'] as $psProduct) {
-                    if ($psProduct->id == $cartRule['gift_product'] && $psProduct->id_product_attribute == $cartRule['gift_product_attribute']) {
+                    if ((int) $psProduct->id == (int) $cartRule['gift_product'] && (int) $psProduct->id_product_attribute === (int) $cartRule['gift_product_attribute']) {
                         $removeGift = false;
                     }
                 }
