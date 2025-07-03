@@ -60,7 +60,7 @@ class AdminShoppingfeedAccountSettingsController extends ShoppingfeedAdminContro
         $this->content .= $this->renderTokensList();
         $this->content .= $this->renderLoginForm($shops, $currencies, $languagues);
         $this->content .= $this->renderTokenForm($shops, $currencies, $languagues);
-        $this->content .= $this->renderCloudSyncSection();
+        //$this->content .= $this->renderCloudSyncSection();
 
         $this->module->setBreakingChangesNotices();
 
