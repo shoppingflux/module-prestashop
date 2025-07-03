@@ -1,20 +1,20 @@
 <?php
 namespace ShoppingFeed\Sdk\Http\Adapter;
 
-use \SfGuzzle\GuzzleHttp;
-use SfPsr\Psr\Http\Message\RequestInterface;
+use \ShoppingfeedPrefix\GuzzleHttp;
+use ShoppingfeedPrefix\Psr\Http\Message\RequestInterface;
 use ShoppingFeed\Sdk\Client;
 use ShoppingFeed\Sdk\Client\ClientOptions;
 use ShoppingFeed\Sdk\Hal\HalClient;
 use ShoppingFeed\Sdk\Http;
 
 /**
- * Http Client Adapter for \SfGuzzle\GuzzleHttp v6
+ * Http Client Adapter for \ShoppingfeedPrefix\GuzzleHttp v6
  */
 class GuzzleHTTPAdapter implements Http\Adapter\AdapterInterface
 {
     /**
-     * @var \SfGuzzle\GuzzleHttp\HandlerStack
+     * @var \ShoppingfeedPrefix\GuzzleHttp\HandlerStack
      */
     private $stack;
 
@@ -24,18 +24,18 @@ class GuzzleHTTPAdapter implements Http\Adapter\AdapterInterface
     private $options;
 
     /**
-     * @var \SfGuzzle\GuzzleHttp\Client
+     * @var \ShoppingfeedPrefix\GuzzleHttp\Client
      */
     private $client;
 
     /**
-     * @var \SfGuzzle\GuzzleHttp\Pool
+     * @var \ShoppingfeedPrefix\GuzzleHttp\Pool
      */
     private $pool;
 
     public function __construct(
         Client\ClientOptions $options = null,
-        \SfGuzzle\GuzzleHttp\HandlerStack $stack = null
+        \ShoppingfeedPrefix\GuzzleHttp\HandlerStack $stack = null
     )
     {
         $this->options = $options ?: new Client\ClientOptions();
@@ -80,7 +80,7 @@ class GuzzleHTTPAdapter implements Http\Adapter\AdapterInterface
     {
         $options['rejected'] = $this->createExceptionCallback();
 
-        $this->pool = new \SfGuzzle\GuzzleHttp\Pool($this->client, $requests, $options);
+        $this->pool = new \ShoppingfeedPrefix\GuzzleHttp\Pool($this->client, $requests, $options);
         $this->pool->promise()->wait(true);
     }
 
@@ -91,10 +91,10 @@ class GuzzleHTTPAdapter implements Http\Adapter\AdapterInterface
     {
         if (isset($headers['Content-Type']) && 'multipart/form-data' === $headers['Content-Type']) {
             unset($headers['Content-Type']);
-            $body = new \SfGuzzle\GuzzleHttp\Psr7\MultipartStream($body);
+            $body = new \ShoppingfeedPrefix\GuzzleHttp\Psr7\MultipartStream($body);
         }
 
-        return new \SfGuzzle\GuzzleHttp\Psr7\Request($method, $uri, $headers, $body);
+        return new \ShoppingfeedPrefix\GuzzleHttp\Psr7\Request($method, $uri, $headers, $body);
     }
 
     /**
@@ -104,7 +104,7 @@ class GuzzleHTTPAdapter implements Http\Adapter\AdapterInterface
     {
         $stack = clone $this->stack;
         $stack->push(
-            \SfGuzzle\GuzzleHttp\Middleware::mapRequest(function (RequestInterface $request) use ($token) {
+            \ShoppingfeedPrefix\GuzzleHttp\Middleware::mapRequest(function (RequestInterface $request) use ($token) {
                 return $request->withHeader('Authorization', 'Bearer ' . trim($token));
             }),
             'token_auth'
@@ -120,8 +120,8 @@ class GuzzleHTTPAdapter implements Http\Adapter\AdapterInterface
      */
     private function createExceptionCallback(callable $callback = null)
     {
-        return function (\SfGuzzle\GuzzleHttp\Exception\TransferException $exception) use ($callback) {
-            if ($callback && $exception instanceof \SfGuzzle\GuzzleHttp\Exception\RequestException && $exception->hasResponse()) {
+        return function (\ShoppingfeedPrefix\GuzzleHttp\Exception\TransferException $exception) use ($callback) {
+            if ($callback && $exception instanceof \ShoppingfeedPrefix\GuzzleHttp\Exception\RequestException && $exception->hasResponse()) {
                 $halClient = new HalClient($this->options->getBaseUri(), $this);
                 $resource  = $halClient->createResource($exception->getResponse());
 
@@ -135,7 +135,7 @@ class GuzzleHTTPAdapter implements Http\Adapter\AdapterInterface
      */
     private function initClient()
     {
-        $this->client = new \SfGuzzle\GuzzleHttp\Client([
+        $this->client = new \ShoppingfeedPrefix\GuzzleHttp\Client([
             'handler'  => $this->stack,
             'base_uri' => $this->options->getBaseUri(),
             'headers'  => $this->options->getHeaders(),
@@ -146,7 +146,7 @@ class GuzzleHTTPAdapter implements Http\Adapter\AdapterInterface
      * Create new adapter with given stack
      *
      * @param string                  $baseUri
-     * @param \SfGuzzle\GuzzleHttp\HandlerStack $stack
+     * @param \ShoppingfeedPrefix\GuzzleHttp\HandlerStack $stack
      *
      * @return Http\Adapter\AdapterInterface
      *
@@ -163,26 +163,26 @@ class GuzzleHTTPAdapter implements Http\Adapter\AdapterInterface
     /**
      * Create handler stack
      *
-     * @return \SfGuzzle\GuzzleHttp\HandlerStack
+     * @return \ShoppingfeedPrefix\GuzzleHttp\HandlerStack
      */
     private function createHandlerStack()
     {
-        $this->stack = \SfGuzzle\GuzzleHttp\HandlerStack::create();
+        $this->stack = \ShoppingfeedPrefix\GuzzleHttp\HandlerStack::create();
         $logger      = $this->options->getLogger();
 
         if ($this->options->handleRateLimit()) {
             $handler = new Http\Middleware\RateLimitHandler(3, $logger);
-            $this->stack->push(\SfGuzzle\GuzzleHttp\Middleware::retry([$handler, 'decide'], [$handler, 'delay']), 'rate_limit');
+            $this->stack->push(\ShoppingfeedPrefix\GuzzleHttp\Middleware::retry([$handler, 'decide'], [$handler, 'delay']), 'rate_limit');
         }
 
         $retryCount = $this->options->getRetryOnServerError();
         if ($retryCount) {
             $handler = new Http\Middleware\ServerErrorHandler($retryCount);
-            $this->stack->push(\SfGuzzle\GuzzleHttp\Middleware::retry([$handler, 'decide']), 'retry_count');
+            $this->stack->push(\ShoppingfeedPrefix\GuzzleHttp\Middleware::retry([$handler, 'decide']), 'retry_count');
         }
 
         if ($logger) {
-            $this->stack->push(\SfGuzzle\GuzzleHttp\Middleware::log($logger, new \SfGuzzle\GuzzleHttp\MessageFormatter()), 'logger');
+            $this->stack->push(\ShoppingfeedPrefix\GuzzleHttp\Middleware::log($logger, new \ShoppingfeedPrefix\GuzzleHttp\MessageFormatter()), 'logger');
         }
 
         return $this->stack;

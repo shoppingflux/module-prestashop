@@ -1,6 +1,6 @@
 <?php
 
-namespace SfGuzzle\GuzzleHttp\Promise;
+namespace ShoppingfeedPrefix\GuzzleHttp\Promise;
 
 /**
  * Interface used with classes that return a promise.

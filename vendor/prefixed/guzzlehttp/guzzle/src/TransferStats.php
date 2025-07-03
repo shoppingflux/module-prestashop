@@ -1,9 +1,9 @@
 <?php
-namespace SfGuzzle\GuzzleHttp;
+namespace ShoppingfeedPrefix\GuzzleHttp;
 
-use SfPsr\Psr\Http\Message\RequestInterface;
-use SfPsr\Psr\Http\Message\ResponseInterface;
-use SfPsr\Psr\Http\Message\UriInterface;
+use ShoppingfeedPrefix\Psr\Http\Message\RequestInterface;
+use ShoppingfeedPrefix\Psr\Http\Message\ResponseInterface;
+use ShoppingfeedPrefix\Psr\Http\Message\UriInterface;
 
 /**
  * Represents data at the point after it was transferred either successfully

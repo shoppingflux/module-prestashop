@@ -1,16 +1,16 @@
 <?php
-namespace SfGuzzle\GuzzleHttp\Handler;
+namespace ShoppingfeedPrefix\GuzzleHttp\Handler;
 
-use SfGuzzle\GuzzleHttp\Exception\ConnectException;
-use SfGuzzle\GuzzleHttp\Exception\RequestException;
-use SfGuzzle\GuzzleHttp\Promise\FulfilledPromise;
-use SfGuzzle\GuzzleHttp\Promise\PromiseInterface;
-use SfGuzzle\GuzzleHttp\Psr7;
-use SfGuzzle\GuzzleHttp\TransferStats;
-use SfGuzzle\GuzzleHttp\Utils;
-use SfPsr\Psr\Http\Message\RequestInterface;
-use SfPsr\Psr\Http\Message\ResponseInterface;
-use SfPsr\Psr\Http\Message\StreamInterface;
+use ShoppingfeedPrefix\GuzzleHttp\Exception\ConnectException;
+use ShoppingfeedPrefix\GuzzleHttp\Exception\RequestException;
+use ShoppingfeedPrefix\GuzzleHttp\Promise\FulfilledPromise;
+use ShoppingfeedPrefix\GuzzleHttp\Promise\PromiseInterface;
+use ShoppingfeedPrefix\GuzzleHttp\Psr7;
+use ShoppingfeedPrefix\GuzzleHttp\TransferStats;
+use ShoppingfeedPrefix\GuzzleHttp\Utils;
+use ShoppingfeedPrefix\Psr\Http\Message\RequestInterface;
+use ShoppingfeedPrefix\Psr\Http\Message\ResponseInterface;
+use ShoppingfeedPrefix\Psr\Http\Message\StreamInterface;
 
 /**
  * HTTP handler that uses PHP's HTTP stream wrapper.
@@ -68,7 +68,7 @@ class StreamHandler
             $e = RequestException::wrapException($request, $e);
             $this->invokeStats($options, $request, $startTime, null, $e);
 
-            return \SfGuzzle\GuzzleHttp\Promise\rejection_for($e);
+            return \ShoppingfeedPrefix\GuzzleHttp\Promise\rejection_for($e);
         }
     }
 
@@ -103,7 +103,7 @@ class StreamHandler
         $ver = explode('/', $parts[0])[1];
         $status = $parts[1];
         $reason = isset($parts[2]) ? $parts[2] : null;
-        $headers = \SfGuzzle\GuzzleHttp\headers_from_lines($hdrs);
+        $headers = \ShoppingfeedPrefix\GuzzleHttp\headers_from_lines($hdrs);
         list($stream, $headers) = $this->checkDecode($options, $headers, $stream);
         $stream = Psr7\stream_for($stream);
         $sink = $stream;
@@ -120,7 +120,7 @@ class StreamHandler
             } catch (\Exception $e) {
                 $msg = 'An error was encountered during the on_headers event';
                 $ex = new RequestException($msg, $request, $response, $e);
-                return \SfGuzzle\GuzzleHttp\Promise\rejection_for($ex);
+                return \ShoppingfeedPrefix\GuzzleHttp\Promise\rejection_for($ex);
             }
         }
 
@@ -158,7 +158,7 @@ class StreamHandler
     {
         // Automatically decode responses when instructed.
         if (!empty($options['decode_content'])) {
-            $normalizedKeys = \SfGuzzle\GuzzleHttp\normalize_header_keys($headers);
+            $normalizedKeys = \ShoppingfeedPrefix\GuzzleHttp\normalize_header_keys($headers);
             if (isset($normalizedKeys['content-encoding'])) {
                 $encoding = $headers[$normalizedKeys['content-encoding']];
                 if ($encoding[0] === 'gzip' || $encoding[0] === 'deflate') {
@@ -437,7 +437,7 @@ class StreamHandler
             // PHP 5.6 or greater will find the system cert by default. When
             // < 5.6, use the Guzzle bundled cacert.
             if (PHP_VERSION_ID < 50600) {
-                $options['ssl']['cafile'] = \SfGuzzle\GuzzleHttp\default_ca_bundle();
+                $options['ssl']['cafile'] = \ShoppingfeedPrefix\GuzzleHttp\default_ca_bundle();
             }
         } elseif (is_string($value)) {
             $options['ssl']['cafile'] = $value;
@@ -504,7 +504,7 @@ class StreamHandler
         static $args = ['severity', 'message', 'message_code',
             'bytes_transferred', 'bytes_max'];
 
-        $value = \SfGuzzle\GuzzleHttp\debug_resource($value);
+        $value = \ShoppingfeedPrefix\GuzzleHttp\debug_resource($value);
         $ident = $request->getMethod() . ' ' . $request->getUri()->withFragment('');
         $this->addNotification(
             $params,

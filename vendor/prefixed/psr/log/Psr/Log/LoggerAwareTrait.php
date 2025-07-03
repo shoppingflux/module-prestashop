@@ -1,6 +1,6 @@
 <?php
 
-namespace SfPsr\Psr\Log;
+namespace ShoppingfeedPrefix\Psr\Log;
 
 /**
  * Basic Implementation of LoggerAwareInterface.

@@ -1,5 +1,4 @@
 <?php
-
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -20,6 +19,10 @@
 
 namespace ShoppingfeedAddon\OrderImport\Rules;
 
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use ShoppingfeedAddon\OrderImport\GLS\Adapter;
 use ShoppingfeedAddon\OrderImport\GLS\AdapterInterface;
@@ -37,9 +40,9 @@ class GlsRule extends RuleAbstract implements RuleInterface
 
     protected $logPrefix = '';
 
-    public function __construct($configuration = [])
+    public function __construct($configuration = [], $id_shop = null)
     {
-        parent::__construct($configuration);
+        parent::__construct($configuration, $id_shop);
 
         $this->gls = \Module::getInstanceByName('nkmgls');
         $this->glsAdapter = $this->getDefaultGlsAdapter();

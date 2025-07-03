@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Copyright since 2019 Shopping Feed
  *
@@ -499,7 +498,7 @@ class Shoppingfeed extends ShoppingfeedClasslib\Module
 
             try {
                 $api = ShoppingfeedApi::getInstanceByToken(null, $tokenConfig);
-            } catch (SfGuzzle\GuzzleHttp\Exception\ClientException $e) {
+            } catch (ShoppingfeedPrefix\GuzzleHttp\Exception\ClientException $e) {
                 continue;
             }
 
@@ -602,6 +601,17 @@ class Shoppingfeed extends ShoppingfeedClasslib\Module
         return true;
     }
 
+    public static function isOrderEligibleToSync(Order $order)
+    {
+        $orderCreationDate = DateTime::createFromFormat('Y-m-d H:i:s', $order->date_add);
+
+        if ($orderCreationDate && (time() - $orderCreationDate->getTimestamp() > 60 * 60 * 24 * 90)) {
+            return false;
+        }
+
+        return true;
+    }
+
     /**
      * Checks if order import can be activated
      *
@@ -618,6 +628,11 @@ class Shoppingfeed extends ShoppingfeedClasslib\Module
         }
 
         return true;
+    }
+
+    public static function isCatalogModeEnabled()
+    {
+        return Configuration::isCatalogMode();
     }
 
     /**
@@ -1298,8 +1313,6 @@ class Shoppingfeed extends ShoppingfeedClasslib\Module
      * Saves an order for status synchronization
      *
      * @param type $params
-     *
-     * @return type
      */
     public function hookActionOrderStatusPostUpdate($params)
     {
@@ -1320,10 +1333,10 @@ class Shoppingfeed extends ShoppingfeedClasslib\Module
         $refunded_status = json_decode(Configuration::get(Shoppingfeed::REFUNDED_ORDERS, null, null, $order->id_shop));
         $delivered_status = json_decode(Configuration::get(Shoppingfeed::DELIVERED_ORDERS, null, null, $order->id_shop));
 
-        if (in_array($newOrderStatus->id, $shipped_status)
-            || in_array($newOrderStatus->id, $cancelled_status)
-            || in_array($newOrderStatus->id, $refunded_status)
-            || in_array($newOrderStatus->id, $delivered_status)
+        if ((is_array($shipped_status) && in_array($newOrderStatus->id, $shipped_status))
+            || (is_array($cancelled_status) && in_array($newOrderStatus->id, $cancelled_status))
+            || (is_array($refunded_status) && in_array($newOrderStatus->id, $refunded_status))
+            || (is_array($delivered_status) && in_array($newOrderStatus->id, $delivered_status))
         ) {
             $this->addOrderTask($shoppingFeedOrder->id_order, ShoppingfeedTaskOrder::ACTION_SYNC_STATUS);
         }
@@ -1602,7 +1615,7 @@ class Shoppingfeed extends ShoppingfeedClasslib\Module
 
     public function hookActionEmailSendBefore($params)
     {
-        if (empty($params['templateVars']['{order_name}'])) {
+        if ($params['template'] === 'new_order' || empty($params['templateVars']['{order_name}'])) {
             return true;
         }
 

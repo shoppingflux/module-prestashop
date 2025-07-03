@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Copyright since 2019 Shopping Feed
  *
@@ -17,6 +16,9 @@
  * @copyright Since 2019 Shopping Feed
  * @license   https://opensource.org/licenses/AFL-3.0  Academic Free License (AFL 3.0)
  */
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 
 use ShoppingfeedAddon\Services\CarrierFinder;
 use ShoppingfeedAddon\Services\TaskOrderCleaner;
@@ -307,7 +309,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
 
             foreach ($orderHistory as $state) {
                 $idOrderState = (int) $state['id_order_state'];
-                if (in_array($idOrderState, $shipped_status)) {
+                if (is_array($shipped_status) && in_array($idOrderState, $shipped_status)) {
                     $taskOrderOperation = Shoppingfeed::ORDER_OPERATION_SHIP;
 
                     // Default values...
@@ -315,6 +317,9 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
                         'carrier_name' => '',
                         'tracking_number' => '',
                         'tracking_url' => '',
+                        'items' => [],
+                        'return_info' => null,
+                        'warehouse_id' => null,
                     ];
 
                     $carrier = $this->initCarrierFinder()->findByOrder($order);
@@ -342,21 +347,31 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
                             'carrier_name' => $orderShipping[0]['state_name'],
                             'tracking_number' => $trackingNumber,
                             'tracking_url' => $orderTrackingUrl,
+                            'items' => [],
+                            'return_info' => null,
+                            'warehouse_id' => null,
                         ];
                     }
 
                     Hook::exec('actionShoppingfeedTracking', ['order' => $order, 'taskOrderPayload' => &$taskOrderPayload]);
                     continue;
-                } elseif (in_array($idOrderState, $cancelled_status)) {
+                } elseif (is_array($cancelled_status) && in_array($idOrderState, $cancelled_status)) {
                     $taskOrderOperation = Shoppingfeed::ORDER_OPERATION_CANCEL;
+                    $taskOrderPayload = [
+                        'reason' => '',
+                    ];
                     continue;
                 // The "reason" field is not supported (at least for now)
-                } elseif (in_array($idOrderState, $refunded_status)) {
+                } elseif (is_array($refunded_status) && in_array($idOrderState, $refunded_status)) {
                     $taskOrderOperation = Shoppingfeed::ORDER_OPERATION_REFUND;
+                    $taskOrderPayload = [
+                        'shipping' => true,
+                        'products' => [],
+                    ];
                     continue;
                 // No partial refund (at least for now), so no optional
                 // parameters to set.
-                } elseif (in_array($idOrderState, $delivered_status)) {
+                } elseif (is_array($delivered_status) && in_array($idOrderState, $delivered_status)) {
                     $taskOrderOperation = Shoppingfeed::ORDER_OPERATION_DELIVER;
                 }
             }
@@ -711,7 +726,12 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
             // them later...
             switch ($ticket->getStatus()) {
                 case 'failed':
-                    $this->conveyor['failedTaskOrders'][] = $taskOrder;
+                    if (Shoppingfeed::isOrderEligibleToSync(new Order($taskOrder->id_order))) {
+                        $this->conveyor['failedTaskOrders'][] = $taskOrder;
+                    } else {
+                        $this->conveyor['successfulTaskOrders'][] = $taskOrder;
+                    }
+
                     ProcessLoggerHandler::logError(
                         sprintf(
                             static::getLogPrefix($taskOrder->id_order) . ' ' .

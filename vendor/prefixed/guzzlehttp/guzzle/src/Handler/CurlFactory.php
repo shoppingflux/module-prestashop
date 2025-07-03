@@ -1,13 +1,13 @@
 <?php
-namespace SfGuzzle\GuzzleHttp\Handler;
+namespace ShoppingfeedPrefix\GuzzleHttp\Handler;
 
-use SfGuzzle\GuzzleHttp\Exception\ConnectException;
-use SfGuzzle\GuzzleHttp\Exception\RequestException;
-use SfGuzzle\GuzzleHttp\Promise\FulfilledPromise;
-use SfGuzzle\GuzzleHttp\Psr7;
-use SfGuzzle\GuzzleHttp\Psr7\LazyOpenStream;
-use SfGuzzle\GuzzleHttp\TransferStats;
-use SfPsr\Psr\Http\Message\RequestInterface;
+use ShoppingfeedPrefix\GuzzleHttp\Exception\ConnectException;
+use ShoppingfeedPrefix\GuzzleHttp\Exception\RequestException;
+use ShoppingfeedPrefix\GuzzleHttp\Promise\FulfilledPromise;
+use ShoppingfeedPrefix\GuzzleHttp\Psr7;
+use ShoppingfeedPrefix\GuzzleHttp\Psr7\LazyOpenStream;
+use ShoppingfeedPrefix\GuzzleHttp\TransferStats;
+use ShoppingfeedPrefix\Psr\Http\Message\RequestInterface;
 
 /**
  * Creates curl resources from a request
@@ -90,7 +90,7 @@ class CurlFactory implements CurlFactoryInterface
      * @param EasyHandle           $easy
      * @param CurlFactoryInterface $factory Dictates how the handle is released
      *
-     * @return \SfGuzzle\GuzzleHttp\Promise\PromiseInterface
+     * @return \ShoppingfeedPrefix\GuzzleHttp\Promise\PromiseInterface
      */
     public static function finish(
         callable $handler,
@@ -168,7 +168,7 @@ class CurlFactory implements CurlFactoryInterface
         // If an exception was encountered during the onHeaders event, then
         // return a rejected promise that wraps that exception.
         if ($easy->onHeadersException) {
-            return \SfGuzzle\GuzzleHttp\Promise\rejection_for(
+            return \ShoppingfeedPrefix\GuzzleHttp\Promise\rejection_for(
                 new RequestException(
                     'An error was encountered during the on_headers event',
                     $easy->request,
@@ -200,7 +200,7 @@ class CurlFactory implements CurlFactoryInterface
             ? new ConnectException($message, $easy->request, null, $ctx)
             : new RequestException($message, $easy->request, $easy->response, null, $ctx);
 
-        return \SfGuzzle\GuzzleHttp\Promise\rejection_for($error);
+        return \ShoppingfeedPrefix\GuzzleHttp\Promise\rejection_for($error);
     }
 
     private function getDefaultConf(EasyHandle $easy)
@@ -379,7 +379,7 @@ class CurlFactory implements CurlFactoryInterface
         if (isset($options['sink'])) {
             $sink = $options['sink'];
             if (!is_string($sink)) {
-                $sink = \SfGuzzle\GuzzleHttp\Psr7\stream_for($sink);
+                $sink = \ShoppingfeedPrefix\GuzzleHttp\Psr7\stream_for($sink);
             } elseif (!is_dir(dirname($sink))) {
                 // Ensure that the directory exists before failing in curl.
                 throw new \RuntimeException(sprintf(
@@ -491,7 +491,7 @@ class CurlFactory implements CurlFactoryInterface
         }
 
         if (!empty($options['debug'])) {
-            $conf[CURLOPT_STDERR] = \SfGuzzle\GuzzleHttp\debug_resource($options['debug']);
+            $conf[CURLOPT_STDERR] = \ShoppingfeedPrefix\GuzzleHttp\debug_resource($options['debug']);
             $conf[CURLOPT_VERBOSE] = true;
         }
     }

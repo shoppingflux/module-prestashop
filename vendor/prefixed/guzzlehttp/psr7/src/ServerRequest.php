@@ -1,12 +1,12 @@
 <?php
 
-namespace SfGuzzle\GuzzleHttp\Psr7;
+namespace ShoppingfeedPrefix\GuzzleHttp\Psr7;
 
 use InvalidArgumentException;
-use SfPsr\Psr\Http\Message\ServerRequestInterface;
-use SfPsr\Psr\Http\Message\StreamInterface;
-use SfPsr\Psr\Http\Message\UploadedFileInterface;
-use SfPsr\Psr\Http\Message\UriInterface;
+use ShoppingfeedPrefix\Psr\Http\Message\ServerRequestInterface;
+use ShoppingfeedPrefix\Psr\Http\Message\StreamInterface;
+use ShoppingfeedPrefix\Psr\Http\Message\UploadedFileInterface;
+use ShoppingfeedPrefix\Psr\Http\Message\UriInterface;
 
 /**
  * Server-side HTTP request

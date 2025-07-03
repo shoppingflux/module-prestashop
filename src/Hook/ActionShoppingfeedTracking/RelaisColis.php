@@ -1,5 +1,4 @@
 <?php
-
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -19,6 +18,10 @@
  */
 
 namespace ShoppingfeedAddon\Hook\ActionShoppingfeedTracking;
+
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 
 use Carrier;
 use ShoppingfeedAddon\Services\CarrierFinder;

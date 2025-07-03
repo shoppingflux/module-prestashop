@@ -1,8 +1,8 @@
 <?php
-namespace SfGuzzle\GuzzleHttp\Handler;
+namespace ShoppingfeedPrefix\GuzzleHttp\Handler;
 
-use SfGuzzle\GuzzleHttp\Psr7;
-use SfPsr\Psr\Http\Message\RequestInterface;
+use ShoppingfeedPrefix\GuzzleHttp\Psr7;
+use ShoppingfeedPrefix\Psr\Http\Message\RequestInterface;
 
 /**
  * HTTP handler that uses cURL easy handles as a transport layer.

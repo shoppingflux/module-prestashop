@@ -1,5 +1,4 @@
 <?php
-
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -430,6 +429,15 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
                     $this->processMonitor->getProcessObjectModelName(),
                     $this->processMonitor->getProcessObjectModelId()
                 );
+                continue;
+            }
+            if (Shoppingfeed::isCatalogModeEnabled()) {
+                ProcessLoggerHandler::logInfo(
+                    $this->module->l('No order can be imported as long as Prestashop\'s catalog mode is activated', 'syncOrder'),
+                    $this->processMonitor->getProcessObjectModelName(),
+                    $this->processMonitor->getProcessObjectModelId()
+                );
+                continue;
             }
 
             try {

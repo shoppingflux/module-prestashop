@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Copyright since 2019 Shopping Feed
  *
@@ -17,6 +16,10 @@
  * @copyright Since 2019 Shopping Feed
  * @license   https://opensource.org/licenses/AFL-3.0  Academic Free License (AFL 3.0)
  */
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
 class ShoppingfeedAdminController extends ModuleAdminController
 {
     /**
@@ -27,5 +30,14 @@ class ShoppingfeedAdminController extends ModuleAdminController
     public function getTemplateFormVars()
     {
         return $this->tpl_form_vars;
+    }
+
+    public function init()
+    {
+        parent::init();
+
+        if (Shoppingfeed::isCatalogModeEnabled()) {
+            $this->errors[] = $this->module->l('No order can be imported as long as Prestashop\'s catalog mode is activated', 'ShoppingfeedAdminController');
+        }
     }
 }

@@ -1,8 +1,8 @@
 <?php
-namespace SfGuzzle\GuzzleHttp;
+namespace ShoppingfeedPrefix\GuzzleHttp;
 
-use SfGuzzle\GuzzleHttp\Exception\InvalidArgumentException;
-use SfPsr\Psr\Http\Message\UriInterface;
+use ShoppingfeedPrefix\GuzzleHttp\Exception\InvalidArgumentException;
+use ShoppingfeedPrefix\Psr\Http\Message\UriInterface;
 use Symfony\Polyfill\Intl\Idn\Idn;
 
 final class Utils

@@ -1,9 +1,9 @@
 <?php
-namespace SfGuzzle\GuzzleHttp;
+namespace ShoppingfeedPrefix\GuzzleHttp;
 
-use SfPsr\Psr\Http\Message\MessageInterface;
-use SfPsr\Psr\Http\Message\RequestInterface;
-use SfPsr\Psr\Http\Message\ResponseInterface;
+use ShoppingfeedPrefix\Psr\Http\Message\MessageInterface;
+use ShoppingfeedPrefix\Psr\Http\Message\RequestInterface;
+use ShoppingfeedPrefix\Psr\Http\Message\ResponseInterface;
 
 /**
  * Formats log messages using variable substitutions for requests, responses,

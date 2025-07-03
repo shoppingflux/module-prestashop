@@ -1,8 +1,8 @@
 <?php
 
-namespace SfGuzzle\GuzzleHttp\Psr7;
+namespace ShoppingfeedPrefix\GuzzleHttp\Psr7;
 
-use SfPsr\Psr\Http\Message\StreamInterface;
+use ShoppingfeedPrefix\Psr\Http\Message\StreamInterface;
 
 /**
  * Lazily reads or writes to a file that is opened only after an IO operation

@@ -1,5 +1,4 @@
 <?php
-
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -20,16 +19,16 @@
 
 namespace ShoppingfeedAddon\OrderImport\Rules;
 
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use ShoppingfeedAddon\OrderImport\DpdAssociation;
 use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
 use ShoppingfeedAddon\Services\CarrierFinder;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
-
-if (!defined('_PS_VERSION_')) {
-    exit;
-}
 
 class ManomanoDpdRelais extends RuleAbstract implements RuleInterface
 {

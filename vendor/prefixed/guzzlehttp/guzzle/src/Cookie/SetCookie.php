@@ -1,5 +1,5 @@
 <?php
-namespace SfGuzzle\GuzzleHttp\Cookie;
+namespace ShoppingfeedPrefix\GuzzleHttp\Cookie;
 
 /**
  * Set-Cookie object

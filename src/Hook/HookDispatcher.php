@@ -1,5 +1,4 @@
 <?php
-
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -19,6 +18,10 @@
  */
 
 namespace ShoppingfeedAddon\Hook;
+
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 
 use ShoppingfeedAddon\Hook\ActionShoppingfeedTracking\RelaisColis;
 use ShoppingfeedClasslib\Hook\AbstractHookDispatcher;

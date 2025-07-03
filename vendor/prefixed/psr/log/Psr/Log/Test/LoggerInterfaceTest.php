@@ -1,10 +1,10 @@
 <?php
 
-namespace SfPsr\Psr\Log\Test;
+namespace ShoppingfeedPrefix\Psr\Log\Test;
 
-use SfPsr\Psr\Log\LoggerInterface;
-use SfPsr\Psr\Log\LogLevel;
-use SfPsr\PHPUnit\Framework\TestCase;
+use ShoppingfeedPrefix\Psr\Log\LoggerInterface;
+use ShoppingfeedPrefix\Psr\Log\LogLevel;
+use ShoppingfeedPrefix\PHPUnit\Framework\TestCase;
 /**
  * Provides a base test class for ensuring compliance with the LoggerInterface.
  *
@@ -29,7 +29,7 @@ abstract class LoggerInterfaceTest extends TestCase
     public abstract function getLogs();
     public function testImplements()
     {
-        $this->assertInstanceOf('SfPsr\\Psr\\Log\\LoggerInterface', $this->getLogger());
+        $this->assertInstanceOf('ShoppingfeedPrefix\\Psr\\Log\\LoggerInterface', $this->getLogger());
     }
     /**
      * @dataProvider provideLevelsAndMessages
@@ -64,9 +64,9 @@ abstract class LoggerInterfaceTest extends TestCase
     public function testObjectCastToString()
     {
         if (\method_exists($this, 'createPartialMock')) {
-            $dummy = $this->createPartialMock('SfPsr\\Psr\\Log\\Test\\DummyTest', array('__toString'));
+            $dummy = $this->createPartialMock('ShoppingfeedPrefix\\Psr\\Log\\Test\\DummyTest', array('__toString'));
         } else {
-            $dummy = $this->getMock('SfPsr\\Psr\\Log\\Test\\DummyTest', array('__toString'));
+            $dummy = $this->getMock('ShoppingfeedPrefix\\Psr\\Log\\Test\\DummyTest', array('__toString'));
         }
         $dummy->expects($this->once())->method('__toString')->will($this->returnValue('DUMMY'));
         $this->getLogger()->warning($dummy);

@@ -1,6 +1,6 @@
 <?php
 
-namespace SfGuzzle\GuzzleHttp\Promise;
+namespace ShoppingfeedPrefix\GuzzleHttp\Promise;
 
 /**
  * A task queue that executes tasks in a FIFO order.
@@ -9,7 +9,7 @@ namespace SfGuzzle\GuzzleHttp\Promise;
  * maintains a constant stack size. You can use the task queue asynchronously
  * by calling the `run()` function of the global task queue in an event loop.
  *
- *     SfGuzzle\GuzzleHttp\Promise\Utils::queue()->run();
+ *     ShoppingfeedPrefix\GuzzleHttp\Promise\Utils::queue()->run();
  */
 class TaskQueue implements TaskQueueInterface
 {

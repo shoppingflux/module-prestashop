@@ -1,5 +1,5 @@
 <?php
-namespace SfGuzzle\GuzzleHttp\Exception;
+namespace ShoppingfeedPrefix\GuzzleHttp\Exception;
 
 class TransferException extends \RuntimeException implements GuzzleException
 {

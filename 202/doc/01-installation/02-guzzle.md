@@ -43,9 +43,9 @@ Our composer.json file :
       "vendor/prefixed/guzzlehttp/promises/src/functions_include.php"
     ],
     "psr-4": {
-      "SfGuzzle\\GuzzleHttp\\":          "vendor/prefixed/guzzlehttp/guzzle/src/",
-      "SfGuzzle\\GuzzleHttp\\Psr7\\":    "vendor/prefixed/guzzlehttp/psr7/src/",
-      "SfGuzzle\\GuzzleHttp\\Promise\\": "vendor/prefixed/guzzlehttp/promises/src/",
+      "ShoppingfeedPrefix\\GuzzleHttp\\":          "vendor/prefixed/guzzlehttp/guzzle/src/",
+      "ShoppingfeedPrefix\\GuzzleHttp\\Psr7\\":    "vendor/prefixed/guzzlehttp/psr7/src/",
+      "ShoppingfeedPrefix\\GuzzleHttp\\Promise\\": "vendor/prefixed/guzzlehttp/promises/src/",
       "ShoppingFeed\\Sdk\\":             "vendor/prefixed/shoppingfeed/php-sdk/src/"
     }
   }
@@ -57,7 +57,7 @@ The "directly included files"
 must be modified by hand, as they use namespaces in strings.
 
 ```php
-if (!function_exists('SfGuzzle\GuzzleHttp\uri_template')) {
+if (!function_exists('ShoppingfeedPrefix\GuzzleHttp\uri_template')) {
     require __DIR__ . '/functions.php';
 }
 ```

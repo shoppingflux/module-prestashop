@@ -1,8 +1,8 @@
 <?php
 
-namespace SfGuzzle\GuzzleHttp\Psr7;
+namespace ShoppingfeedPrefix\GuzzleHttp\Psr7;
 
-use SfPsr\Psr\Http\Message\UriInterface;
+use ShoppingfeedPrefix\Psr\Http\Message\UriInterface;
 
 /**
  * Provides methods to determine if a modified URL should be considered cross-origin.

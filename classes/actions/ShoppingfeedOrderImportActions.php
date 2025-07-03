@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Copyright since 2019 Shopping Feed
  *
@@ -17,6 +16,9 @@
  * @copyright Since 2019 Shopping Feed
  * @license   https://opensource.org/licenses/AFL-3.0  Academic Free License (AFL 3.0)
  */
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 
 use ShoppingfeedAddon\OrderImport\OrderData;
 use ShoppingfeedAddon\OrderImport\SFOrderState;
@@ -1031,6 +1033,8 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 'unit_price_tax_incl' => (float) $apiProduct->unitPrice,
                 'unit_price_tax_excl' => (float) ((float) $apiProduct->unitPrice / (1 + ($tax_rate / 100))),
                 'original_product_price' => $original_product_price,
+                'product_quantity' => $apiProduct->quantity,
+                'product_quantity_in_stock' => $apiProduct->quantity,
             ];
             Db::getInstance()->update(
                 'order_detail',
@@ -1085,6 +1089,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
 
         $carrier = $this->conveyor['carrier'];
         $paymentInformation = &$this->conveyor['orderData']->payment;
+        $additionalFields = $this->conveyor['orderData']->additionalFields;
 
         // Carrier tax calculation START
         if (Configuration::get('PS_TAX_ADDRESS_TYPE') == 'id_address_invoice') {
@@ -1095,6 +1100,13 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         $carrier_tax_rate = $carrier->getTaxesRate($address);
         if ($skipTax === true) {
             $carrier_tax_rate = 0;
+        }
+        if ($isUseSfTax && isset($additionalFields['shipping_tax'])) {
+            if ($additionalFields['shipping_tax'] > 0) {
+                $carrier_tax_rate = $additionalFields['shipping_tax'] / ($paymentInformation['shippingAmount'] - $additionalFields['shipping_tax']) * 100;
+            } else {
+                $carrier_tax_rate = 0;
+            }
         }
 
         if ($isAmountTaxIncl === true) {
@@ -1194,6 +1206,16 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             // Looking for gift product
             foreach ($cartRules as $cartRule) {
                 if (empty($cartRule['gift_product'])) {
+                    continue;
+                }
+                $removeGift = true;
+                foreach ($this->conveyor['prestashopProducts'] as $psProduct) {
+                    if ((int) $psProduct->id == (int) $cartRule['gift_product'] && (int) $psProduct->id_product_attribute === (int) $cartRule['gift_product_attribute']) {
+                        $removeGift = false;
+                    }
+                }
+
+                if ($removeGift === false) {
                     continue;
                 }
                 // Deleting the gift product

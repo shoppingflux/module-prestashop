@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Copyright since 2019 Shopping Feed
  *
@@ -20,6 +19,10 @@
 
 namespace ShoppingfeedAddon\OrderImport\Rules;
 
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use ShoppingfeedAddon\OrderImport\OrderData;
 use ShoppingfeedAddon\OrderImport\RuleAbstract;
@@ -34,9 +37,9 @@ class GroupCustomer extends RuleAbstract implements RuleInterface
 
     const DEFAULT_GROUP_CUSTOMER = 3;
 
-    public function __construct($configuration = [])
+    public function __construct($configuration = [], $id_shop = null)
     {
-        parent::__construct($configuration);
+        parent::__construct($configuration, $id_shop);
 
         $this->db = \Db::getInstance();
     }

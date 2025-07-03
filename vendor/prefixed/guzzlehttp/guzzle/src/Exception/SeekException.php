@@ -1,7 +1,7 @@
 <?php
-namespace SfGuzzle\GuzzleHttp\Exception;
+namespace ShoppingfeedPrefix\GuzzleHttp\Exception;
 
-use SfPsr\Psr\Http\Message\StreamInterface;
+use ShoppingfeedPrefix\Psr\Http\Message\StreamInterface;
 
 /**
  * Exception thrown when a seek fails on a stream.
