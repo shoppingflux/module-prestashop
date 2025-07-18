@@ -296,6 +296,7 @@ class Shoppingfeed extends ShoppingfeedClasslib\Module
         'actionObjectCombinationUpdateAfter',
         'actionValidateOrder',
         'actionOrderStatusPostUpdate',
+        'actionOrderSlipAdd',
         'actionShoppingfeedOrderImportRegisterSpecificRules',
         'actionObjectProductDeleteBefore',
         'ActionObjectCategoryUpdateAfter',
@@ -1350,6 +1351,21 @@ class Shoppingfeed extends ShoppingfeedClasslib\Module
                 }
             }
         }
+    }
+
+    public function hookActionOrderSlipAdd($params)
+    {
+        if (false == (int) Configuration::get(self::ALLOW_PARTIAL_REFUND)) {
+            return;
+        }
+
+        $shoppingFeedOrder = ShoppingfeedOrder::getByIdOrder($params['order']->id);
+
+        if (!Validate::isLoadedObject($shoppingFeedOrder)) {
+            return;
+        }
+
+        $this->addOrderTask($shoppingFeedOrder->id_order, ShoppingfeedTaskOrder::ACTION_PARTIAL_REFUND);
     }
 
     /**

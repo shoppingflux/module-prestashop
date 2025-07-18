@@ -145,6 +145,67 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
 
             ProcessLoggerHandler::logInfo(
                 $logPrefix . ' ' .
+                $this->module->l('Process start : check partial refund tickets', 'syncOrder'),
+                $this->processMonitor->getProcessObjectModelName(),
+                $this->processMonitor->getProcessObjectModelId()
+            );
+            $failedTicketsPartialRefundTaskOrders = [];
+            $successfulTicketsPartialRefundTaskOrders = [];
+
+            try {
+                Registry::set('ticketsErrors', 0);
+
+                /** @var ActionsHandler $ticketsHandler */
+                $ticketsHandler = new ActionsHandler();
+                $ticketsHandler->setConveyor([
+                    'id_shop' => $token['id_shop'],
+                    'id_token' => $token['id_shoppingfeed_token'],
+                    'order_action' => ShoppingfeedTaskOrder::ACTION_CHECK_TICKET_PARTIAL_REFUND,
+                    'shoppingfeed_store_id' => $token['shoppingfeed_store_id'],
+                ]);
+                $ticketsHandler->addActions(
+                    'getTaskOrders',
+                    'prepareTaskOrdersCheckTicketsSyncStatus',
+                    'sendTaskOrdersCheckTicketsSyncStatus'
+                // Create action to send error mail and delete success ?
+                );
+
+                if ($ticketsHandler->process('ShoppingfeedOrderSync')) {
+                    $processData = $ticketsHandler->getConveyor();
+                    $failedTicketsPartialRefundTaskOrders = isset($processData['failedTaskOrders']) ? $processData['failedTaskOrders'] : [];
+                    $successfulTicketsPartialRefundTaskOrders = isset($processData['successfulTaskOrders']) ? $processData['successfulTaskOrders'] : [];
+
+                    ProcessLoggerHandler::logSuccess(
+                        sprintf(
+                            $logPrefix . ' ' . $this->module->l('%d tickets with success; %d tickets with failure; %d errors', 'syncOrder'),
+                            count($successfulTicketsPartialRefundTaskOrders),
+                            count($failedTicketsPartialRefundTaskOrders),
+                            Registry::get('ticketsErrors')
+                        ),
+                        $this->processMonitor->getProcessObjectModelName(),
+                        $this->processMonitor->getProcessObjectModelId()
+                    );
+                }
+
+                ProcessLoggerHandler::logSuccess(
+                    $logPrefix . ' ' .
+                    $this->module->l('Process finished : check partial refund tickets', 'syncOrder'),
+                    $this->processMonitor->getProcessObjectModelName(),
+                    $this->processMonitor->getProcessObjectModelId()
+                );
+            } catch (Throwable $e) {
+                ProcessLoggerHandler::logError(
+                    sprintf(
+                        $logPrefix . ' ' . $this->module->l('Error : %s', 'syncOrder'),
+                        $e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine()
+                    ),
+                    $this->processMonitor->getProcessObjectModelName(),
+                    $this->processMonitor->getProcessObjectModelId()
+                );
+            }
+
+            ProcessLoggerHandler::logInfo(
+                $logPrefix . ' ' .
                 $this->module->l('Process start : check upload invoice tickets', 'syncOrder'),
                 $this->processMonitor->getProcessObjectModelName(),
                 $this->processMonitor->getProcessObjectModelId()
@@ -261,6 +322,66 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
                     $this->processMonitor->getProcessObjectModelId()
                 );
             }
+            // Start send partial refunds
+            ProcessLoggerHandler::logInfo(
+                $logPrefix . ' ' . $this->module->l('Process start : Partial refund sync', 'syncOrder'),
+                $this->processMonitor->getProcessObjectModelName(),
+                $this->processMonitor->getProcessObjectModelId()
+            );
+
+            $failedSyncPartialRefundTaskOrders = [];
+            $successfulSyncPartialRefundTaskOrders = [];
+            try {
+                Registry::set('syncStatusErrors', 0);
+
+                /** @var ActionsHandler $handler */
+                $handler = new ActionsHandler();
+                $handler->setConveyor([
+                    'id_shop' => $token['id_shop'],
+                    'id_token' => $token['id_shoppingfeed_token'],
+                    'order_action' => ShoppingfeedTaskOrder::ACTION_PARTIAL_REFUND,
+                    'shoppingfeed_store_id' => $token['shoppingfeed_store_id'],
+                ]);
+                $handler->addActions(
+                    'getTaskOrders',
+                    'prepareTaskOrdersSyncPartialRefund',
+                    'sendTaskOrdersSyncPartialRefund'
+                );
+
+                if ($handler->process('ShoppingfeedOrderSync')) {
+                    $processData = $handler->getConveyor();
+                    $failedSyncPartialRefundTaskOrders = isset($processData['failedTaskOrders']) ? $processData['failedTaskOrders'] : [];
+                    $successfulSyncPartialRefundTaskOrders = isset($processData['successfulTaskOrders']) ? $processData['successfulTaskOrders'] : [];
+
+                    ProcessLoggerHandler::logSuccess(
+                        sprintf(
+                            $logPrefix . ' ' . $this->module->l('%d tickets created; %d tickets not created; %d errors', 'syncOrder'),
+                            count($successfulSyncPartialRefundTaskOrders),
+                            count($failedSyncPartialRefundTaskOrders),
+                            Registry::get('syncStatusErrors')
+                        ),
+                        $this->processMonitor->getProcessObjectModelName(),
+                        $this->processMonitor->getProcessObjectModelId()
+                    );
+                }
+
+                ProcessLoggerHandler::logInfo(
+                    $logPrefix . ' ' . $this->module->l('Process finished : Partial refund sync', 'syncOrder'),
+                    $this->processMonitor->getProcessObjectModelName(),
+                    $this->processMonitor->getProcessObjectModelId()
+                );
+            } catch (Throwable $e) {
+                ProcessLoggerHandler::logError(
+                    sprintf(
+                        $logPrefix . ' ' . $this->module->l('Error : %s', 'syncOrder'),
+                        $e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine()
+                    ),
+                    $this->processMonitor->getProcessObjectModelName(),
+                    $this->processMonitor->getProcessObjectModelId()
+                );
+            }
+            // End send partial refunds
+
             // Start upload invoices
             ProcessLoggerHandler::logInfo(
                 $logPrefix . ' ' . $this->module->l('Process start : Order invoice sync', 'syncOrder'),
@@ -358,6 +479,12 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
 
             // Delete successfully processed task orders
             foreach ($successfulTicketsStatusTaskOrders as $taskOrder) {
+                $taskOrder->delete();
+            }
+            foreach ($successfulTicketsInvoiceTaskOrders as $taskOrder) {
+                $taskOrder->delete();
+            }
+            foreach ($successfulTicketsPartialRefundTaskOrders as $taskOrder) {
                 $taskOrder->delete();
             }
             // Resend failed tickets.
