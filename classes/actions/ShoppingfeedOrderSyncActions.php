@@ -697,7 +697,6 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
                 );
 
                 $this->conveyor['successfulTaskOrders'][] = $taskOrder;
-                unlink($preparedTaskOrder['file']);
             }
         }
         if (empty($this->conveyor['successfulTaskOrders'])) {
