@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -167,7 +168,7 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
                     'getTaskOrders',
                     'prepareTaskOrdersCheckTicketsSyncStatus',
                     'sendTaskOrdersCheckTicketsSyncStatus'
-                // Create action to send error mail and delete success ?
+                    // Create action to send error mail and delete success ?
                 );
 
                 if ($ticketsHandler->process('ShoppingfeedOrderSync')) {

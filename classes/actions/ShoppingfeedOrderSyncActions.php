@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright since 2019 Shopping Feed
  *
@@ -718,9 +719,9 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
         }
         $taskOrders = $this->conveyor['taskOrders'];
         /** @var Shoppingfeed $shoppingfeed */
-        $shoppingfeed = \Module::getInstanceByName('shoppingfeed');
+        $shoppingfeed = Module::getInstanceByName('shoppingfeed');
         $this->conveyor['preparedTaskOrders'] = [];
-        /** @var ShoppingfeedTaskOrder $taskOrder*/
+        /** @var ShoppingfeedTaskOrder $taskOrder */
         foreach ($taskOrders as $taskOrder) {
             /** @var $taskOrder ShoppingfeedTaskOrder */
             $logPrefix = self::getLogPrefix($taskOrder->id_order);
@@ -750,15 +751,15 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
                 Registry::increment('syncStatusErrors');
                 continue;
             }
-            /** @var OrderSlip $orderSlip*/
+            /** @var OrderSlip $orderSlip */
             foreach ($order->getOrderSlipsCollection()->getResults() as $orderSlip) {
                 $isShippingRefund = (bool) $orderSlip->shipping_cost;
                 foreach ($orderSlip->getProducts() as $productInfo) {
-                    $sfp = new \ShoppingfeedProduct();
+                    $sfp = new ShoppingfeedProduct();
                     $sfp->id_product = (int) $productInfo['product_id'];
                     $products[] = [
                         'reference' => $shoppingfeed->mapReference($sfp),
-                        'quantity' => $productInfo['product_quantity']
+                        'quantity' => $productInfo['product_quantity'],
                     ];
                 }
             }
