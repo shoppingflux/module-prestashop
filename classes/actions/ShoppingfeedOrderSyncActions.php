@@ -727,6 +727,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
             $order = new Order($taskOrder->id_order);
             $sfOrder = ShoppingfeedOrder::getByIdOrder($taskOrder->id_order);
             $products = [];
+            $isShippingRefund = false;
 
             if (!Validate::isLoadedObject($order)) {
                 ProcessLoggerHandler::logError(
@@ -751,6 +752,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
             }
             /** @var OrderSlip $orderSlip*/
             foreach ($order->getOrderSlipsCollection()->getResults() as $orderSlip) {
+                $isShippingRefund = (bool) $orderSlip->shipping_cost;
                 foreach ($orderSlip->getProducts() as $productInfo) {
                     $sfp = new \ShoppingfeedProduct();
                     $sfp->id_product = (int) $productInfo['product_id'];
@@ -769,7 +771,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
                     'taskOrder' => $taskOrder,
                     'operation' => Shoppingfeed::ORDER_OPERATION_REFUND,
                     'payload' => [
-                        'shipping' => true,
+                        'shipping' => $isShippingRefund,
                         'products' => $products,
                     ],
                 ];
