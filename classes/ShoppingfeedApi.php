@@ -324,7 +324,7 @@ class ShoppingfeedApi
                         $operation->refund(
                             new Id((int) $taskOrder['id_internal_shoppingfeed']),
                             !empty($taskOrder['payload']['shipping']) ? $taskOrder['payload']['shipping'] : '',
-                            !empty($taskOrder['payload']['products']) ? $taskOrder['payload']['products'] : [],
+                            !empty($taskOrder['payload']['products']) ? $taskOrder['payload']['products'] : []
                         );
                         continue 2;
                     case Shoppingfeed::ORDER_OPERATION_DELIVER:
