@@ -299,7 +299,7 @@ class ShoppingfeedApi
                         if (empty($taskOrder['payload']) === false) {
                             $shipReturnInfo = new ShipReturnInfo(
                                 !empty($taskOrder['payload']['return_info']['carrier']) ? $taskOrder['payload']['return_info']['carrier'] : null,
-                                !empty($taskOrder['payload']['return_info']['tracking_number']) ? $taskOrder['payload']['return_info']['tracking_number'] : null,
+                                !empty($taskOrder['payload']['return_info']['tracking_number']) ? $taskOrder['payload']['return_info']['tracking_number'] : null
                             );
                         } else {
                             $shipReturnInfo = null;
@@ -311,13 +311,13 @@ class ShoppingfeedApi
                             (string) $taskOrder['payload']['tracking_url'],
                             !empty($taskOrder['payload']['items']) ? $taskOrder['payload']['items'] : [],
                             $shipReturnInfo,
-                            !empty($taskOrder['payload']['warehouse_id']) ? $taskOrder['payload']['warehouse_id'] : null,
+                            !empty($taskOrder['payload']['warehouse_id']) ? $taskOrder['payload']['warehouse_id'] : null
                         );
                         continue 2;
                     case Shoppingfeed::ORDER_OPERATION_CANCEL:
                         $operation->cancel(
                             new Id((int) $taskOrder['id_internal_shoppingfeed']),
-                            !empty($taskOrder['payload']['reason']) ? $taskOrder['payload']['reason'] : '',
+                            !empty($taskOrder['payload']['reason']) ? $taskOrder['payload']['reason'] : ''
                         );
                         continue 2;
                     case Shoppingfeed::ORDER_OPERATION_REFUND:
