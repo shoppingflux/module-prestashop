@@ -298,8 +298,8 @@ class ShoppingfeedApi
                     case Shoppingfeed::ORDER_OPERATION_SHIP:
                         if (empty($taskOrder['payload']) === false) {
                             $shipReturnInfo = new ShipReturnInfo(
-                                $taskOrder['payload']['return_info']['carrier'] ?? null,
-                                $taskOrder['payload']['return_info']['tracking_number'] ?? null
+                                !empty($taskOrder['payload']['return_info']['carrier']) ? $taskOrder['payload']['return_info']['carrier'] : null,
+                                !empty($taskOrder['payload']['return_info']['tracking_number']) ? $taskOrder['payload']['return_info']['tracking_number'] : null,
                             );
                         } else {
                             $shipReturnInfo = null;
@@ -309,22 +309,22 @@ class ShoppingfeedApi
                             (string) $taskOrder['payload']['carrier_name'],
                             (string) $taskOrder['payload']['tracking_number'],
                             (string) $taskOrder['payload']['tracking_url'],
-                            $taskOrder['payload']['items'] ?? [],
+                            !empty($taskOrder['payload']['items']) ? $taskOrder['payload']['items'] : [],
                             $shipReturnInfo,
-                            $taskOrder['payload']['warehouse_id'] ?? null
+                            !empty($taskOrder['payload']['warehouse_id']) ? $taskOrder['payload']['warehouse_id'] : null,
                         );
                         continue 2;
                     case Shoppingfeed::ORDER_OPERATION_CANCEL:
                         $operation->cancel(
                             new Id((int) $taskOrder['id_internal_shoppingfeed']),
-                            $taskOrder['payload']['reason'] ?? ''
+                            !empty($taskOrder['payload']['reason']) ? $taskOrder['payload']['reason'] : '',
                         );
                         continue 2;
                     case Shoppingfeed::ORDER_OPERATION_REFUND:
                         $operation->refund(
                             new Id((int) $taskOrder['id_internal_shoppingfeed']),
-                            $taskOrder['payload']['shipping'] ?? '',
-                            $taskOrder['payload']['products'] ?? [],
+                            !empty($taskOrder['payload']['shipping']) ? $taskOrder['payload']['shipping'] : '',
+                            !empty($taskOrder['payload']['products']) ? $taskOrder['payload']['products'] : [],
                         );
                         continue 2;
                     case Shoppingfeed::ORDER_OPERATION_DELIVER:
