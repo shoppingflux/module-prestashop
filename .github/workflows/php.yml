@@ -3,14 +3,15 @@ on: [pull_request]
 jobs:
     # Check there is no syntax errors in the project
     php-linter:
-        name: PHP Syntax check 7.1
+        name: PHP Syntax check 7.2 => 8.2
         runs-on: ubuntu-latest
         steps:
-            - name: PHP syntax checker 7.1
-              uses: prestashop/github-action-php-lint/7.1@master
-              with:
-                folder-to-exclude: "! -path \"./202/*\""
-
+          - name: Checkout
+            uses: actions/checkout@v4
+          - name: PHP syntax checker 7.1
+            uses: prestashop/github-action-php-lint/7.1@master
+            with:
+              folder-to-exclude: "! -path \"./202/*\""
     # Check the PHP code follow the coding standards
     php-cs-fixer:
         name: PHP-CS-Fixer
