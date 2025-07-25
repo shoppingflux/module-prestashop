@@ -13,11 +13,11 @@ jobs:
             with:
               folder-to-exclude: "! -path \"./202/*\""
           - name: PHP syntax checker 7.4
-            uses: prestashop/github-action-php-lint/7.1@master
+            uses: prestashop/github-action-php-lint/7.4@master
             with:
               folder-to-exclude: "! -path \"./202/*\""
           - name: PHP syntax checker 8.2
-            uses: prestashop/github-action-php-lint/7.1@master
+            uses: prestashop/github-action-php-lint/7.4@master
             with:
               folder-to-exclude: "! -path \"./202/*\""
     # Check the PHP code follow the coding standards
