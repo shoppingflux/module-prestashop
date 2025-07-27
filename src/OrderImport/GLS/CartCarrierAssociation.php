@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -28,8 +29,8 @@ class CartCarrierAssociation
     protected $db;
 
     protected $glsAdapter;
-    /** @var \Module*/
-    protected $nkmgls = null;
+    /** @var \Module */
+    protected $nkmgls;
 
     public function __construct(AdapterInterface $glsAdapter)
     {

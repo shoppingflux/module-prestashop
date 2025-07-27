@@ -1,5 +1,6 @@
 #!/bin/php
 <?php
+
 /**
  * Copyright since 2019 Shopping Feed
  *
