@@ -29,8 +29,8 @@ class CartCarrierAssociation
     protected $db;
 
     protected $glsAdapter;
-    /** @var \Module */
-    protected $nkmgls;
+    /** @var \Module|null */
+    protected $nkmgls = null;
 
     public function __construct(AdapterInterface $glsAdapter)
     {
