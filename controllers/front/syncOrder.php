@@ -533,6 +533,28 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
                     );
                 }
             }
+            /* @var ShoppingfeedTaskOrder $failedTicketsPartialRefundTaskOrder */
+            foreach ($failedTicketsPartialRefundTaskOrders as $failedTicketsPartialRefundTaskOrder) {
+                if (Validate::isLoadedObject(ShoppingfeedTaskOrder::getFromOrderAction($failedTicketsPartialRefundTaskOrder->id_order, ShoppingfeedTaskOrder::ACTION_PARTIAL_REFUND))) {
+                    $failedTicketsPartialRefundTaskOrder->delete();
+                    continue;
+                }
+                $failedTicketsPartialRefundTaskOrder->action = ShoppingfeedTaskOrder::ACTION_PARTIAL_REFUND;
+                $failedTicketsPartialRefundTaskOrder->ticket_number = '';
+                $failedTicketsPartialRefundTaskOrder->batch_id = '';
+                try {
+                    $failedTicketsPartialRefundTaskOrder->save();
+                } catch (Throwable $e) {
+                    ProcessLoggerHandler::logError(
+                        sprintf(
+                            $logPrefix . ' ' . $this->module->l('Failed update ticket state to PARTIAL_REFUND : %s', 'syncOrder'),
+                            $e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine()
+                        ),
+                        'Order',
+                        $failedTicketsPartialRefundTaskOrder->id_order
+                    );
+                }
+            }
         }
     }
 
