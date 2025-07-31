@@ -46,9 +46,10 @@ class RulesManager
      * If no OrderResource is specified, the manager will retrieve all rules but
      * never execute them.
      *
-     * @param OrderResource $apiOrder
+     * @param int $id_shop
+     * @param ?OrderResource $apiOrder
      */
-    public function __construct($id_shop, ?OrderResource $apiOrder = null)
+    public function __construct($id_shop, OrderResource $apiOrder = null)
     {
         $this->apiOrder = $apiOrder;
         $this->rulesConfiguration = json_decode(
