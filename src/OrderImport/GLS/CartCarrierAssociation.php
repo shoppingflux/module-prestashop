@@ -30,7 +30,7 @@ class CartCarrierAssociation
 
     protected $glsAdapter;
     /** @var \Module|null */
-    protected $nkmgls = null;
+    protected $nkmgls;
 
     public function __construct(AdapterInterface $glsAdapter)
     {
