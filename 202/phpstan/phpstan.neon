@@ -21,4 +21,4 @@ parameters:
     - ../../classes/Compatibility/backword-compatibility.php
 
   reportUnmatchedIgnoredErrors: false
-  level: 1
+  level: 5
