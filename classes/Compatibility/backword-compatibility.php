@@ -17,10 +17,6 @@
  *  @copyright Since 2019 Shopping Feed
  *  @license   https://opensource.org/licenses/AFL-3.0  Academic Free License (AFL 3.0)
  */
-if (!defined('_PS_VERSION_')) {
-    exit;
-}
-
 if (version_compare(phpversion(), '7', '<')) {
     if (false === class_exists('Throwable') && false === interface_exists('Throwable')) {
         interface Throwable
