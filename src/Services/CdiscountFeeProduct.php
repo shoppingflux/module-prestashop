@@ -48,9 +48,9 @@ class CdiscountFeeProduct
     {
         $product = new \Product();
         $product->active = true;
-        /** @phpstan-ignore-next-line */
+        /* @phpstan-ignore-next-line */
         $product->name = [];
-        /** @phpstan-ignore-next-line */
+        /* @phpstan-ignore-next-line */
         $product->link_rewrite = [];
 
         foreach (\Language::getLanguages(false) as $lang) {

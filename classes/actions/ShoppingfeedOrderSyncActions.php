@@ -828,7 +828,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
             $sfOrder->save();
             $failedTaskOrdersMailData[] = [
                 'reference' => $order->reference,
-                /** @phpstan-ignore-next-line */
+                /* @phpstan-ignore-next-line */
                 'status' => !empty($orderState->name[$id_lang]) ? $orderState->name[$id_lang] : reset($orderState->name),
             ];
         }

@@ -21,7 +21,6 @@
 namespace ShoppingfeedAddon\PrestaShopCloudSync;
 
 use PrestaShop\PrestaShop\Core\Addon\Module\ModuleManagerBuilder;
-use PrestaShop\PrestaShop\Core\Module\ModuleManager;
 use ShoppingfeedPrefix\Prestashop\ModuleLibMboInstaller\DependencyBuilder;
 use ShoppingfeedPrefix\PrestaShop\PsAccountsInstaller\Installer\Facade\PsAccounts;
 use ShoppingfeedPrefix\PrestaShop\PsAccountsInstaller\Installer\Installer;

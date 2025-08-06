@@ -199,7 +199,7 @@ class RelaisColisRule extends RuleAbstract implements RuleInterface
         $idDeliveryAddress = (int) array_pop($addresses);
         $address = new \Address($idDeliveryAddress);
         $isoCountry = $this->getIsoConvertor()->toISO3(\Country::getIsoById($address->id_country));
-        /** @phpstan-ignore-next-line */
+        /* @phpstan-ignore-next-line */
         $relaisColisInfo = new \RelaisColisInfo();
         /* @phpstan-ignore-next-line */
         $relaisColisInfo->id_cart = $cart->id;

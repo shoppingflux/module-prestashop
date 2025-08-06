@@ -331,7 +331,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             $customer = new Customer();
             $customer->lastname = !empty($orderCustomerData->getLastName()) ? $orderCustomerData->getLastName() : '-';
             $customer->firstname = !empty($orderCustomerData->getFirstName()) ? $orderCustomerData->getFirstName() : '-';
-            /** @phpstan-ignore-next-line */
+            /* @phpstan-ignore-next-line */
             $customer->passwd = md5(pSQL(_COOKIE_KEY_ . rand()));
             $customer->id_default_group = (int) Configuration::get('PS_UNIDENTIFIED_GROUP');
             $customer->email = $orderCustomerData->getEmail();
@@ -740,10 +740,10 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 $paymentMethod,
                 null,
                 ['transaction_id' => $transactionId],
-                /** @phpstan-ignore-next-line */
+                /* @phpstan-ignore-next-line */
                 $cart->id_currency,
                 false,
-                /** @phpstan-ignore-next-line */
+                /* @phpstan-ignore-next-line */
                 $cart->secure_key,
                 new Shop($this->getIdShop())
             );
@@ -1438,7 +1438,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         }
 
         $stockManager = StockManagerFactory::getManager();
-        /** @phpstan-ignore-next-line */
+        /* @phpstan-ignore-next-line */
         $productWarehouses = Warehouse::getWarehousesByProductId($product->id, $product->id_product_attribute);
 
         if (count($productWarehouses) == 0) {
