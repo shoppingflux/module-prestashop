@@ -29,6 +29,9 @@ use ShoppingfeedClasslib\Extensions\ProcessMonitor\Controllers\Admin\AdminProces
  */
 class AdminShoppingfeedProcessMonitorController extends AdminProcessMonitorController
 {
+    /** @var Shoppingfeed */
+    public $module;
+
     public function __construct()
     {
         parent::__construct();

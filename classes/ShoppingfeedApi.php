@@ -40,7 +40,7 @@ use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
  */
 class ShoppingfeedApi
 {
-    /** @var ShoppingfeedApi */
+    /** @var ShoppingfeedApi|null */
     private static $instance;
 
     /** @var ShoppingFeed\Sdk\Api\Session\SessionResource */
@@ -62,10 +62,10 @@ class ShoppingfeedApi
      * Returns the object's instance, using a token. If no session was
      * initialized, creates it. No exceptions are handled here.
      *
-     * @param $id_token the shop to use (one token per shop)
-     * @param $token the token to use, if no shop is specified
+     * @param int|null $id_token the shop to use (one token per shop)
+     * @param string|null $token the token to use, if no shop is specified
      *
-     * @return ShoppingfeedApi
+     * @return ShoppingfeedApi|bool
      */
     public static function getInstanceByToken($id_token = null, $token = null)
     {
@@ -108,10 +108,10 @@ class ShoppingfeedApi
      * Returns the object's instance, using credentials. Always creates a new
      * session. No exceptions are handled here.
      *
-     * @param $username
-     * @param $password
+     * @param string $username
+     * @param string $password
      *
-     * @return ShoppingfeedApi
+     * @return ShoppingfeedApi|bool
      */
     public static function getInstanceByCredentials($username, $password)
     {
@@ -170,7 +170,7 @@ class ShoppingfeedApi
      *                        )
      *                        </pre>
      *
-     * @return ShoppingFeed\Sdk\Api\Catalog\InventoryCollection
+     * @return ShoppingFeed\Sdk\Api\Catalog\InventoryCollection|bool
      */
     public function updateMainStoreInventory($products, $shoppingfeed_store_id = null)
     {
@@ -226,7 +226,7 @@ class ShoppingfeedApi
      *                        )
      *                        </pre>
      *
-     * @return ShoppingFeed\Sdk\Api\Catalog\InventoryCollection
+     * @return ShoppingFeed\Sdk\Api\Catalog\InventoryCollection|bool
      */
     public function updateMainStorePrices($products, $shoppingfeed_store_id = null)
     {
@@ -550,12 +550,6 @@ class ShoppingfeedApi
     {
         if (!interface_exists(ShoppingfeedPrefix\GuzzleHttp\ClientInterface::class)) {
             throw new Exception('Shoppingfeed : Guzzle does not seem to be installed.');
-        }
-
-        if (version_compare(ShoppingfeedPrefix\GuzzleHttp\ClientInterface::VERSION, '6', '<')
-            || version_compare(ShoppingfeedPrefix\GuzzleHttp\ClientInterface::VERSION, '7', '>=')
-        ) {
-            throw new Exception('Shoppingfeed : the module only supports Guzzle v6.');
         }
 
         $clientOptions = new ClientOptions();

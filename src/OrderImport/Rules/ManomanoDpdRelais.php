@@ -33,7 +33,7 @@ use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 
 class ManomanoDpdRelais extends RuleAbstract implements RuleInterface
 {
-    /** @var \Module */
+    /** @var \ModuleCore */
     protected $dpdfrance;
 
     const MODULE_NAME = 'dpdfrance';

@@ -35,7 +35,7 @@ class ProductAttributeCombination
      * @param int|null $idLang
      * @param int|null $idShop
      *
-     * @return []
+     * @return array
      */
     public function get(\Product $product, $idLang = null, $idShop = null)
     {

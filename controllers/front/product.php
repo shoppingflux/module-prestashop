@@ -28,6 +28,8 @@ use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 
 class ShoppingfeedProductModuleFrontController extends ModuleFrontController
 {
+    /** @var Shoppingfeed */
+    public $module;
     protected $sfToken;
 
     protected $isCompressFeed;

@@ -28,6 +28,9 @@ require_once _PS_MODULE_DIR_ . 'shoppingfeed/vendor/autoload.php';
  */
 class AdminShoppingfeedOrdersController extends ShoppingfeedAdminController
 {
+    /** @var Shoppingfeed */
+    public $module;
+
     public $bootstrap = true;
 
     public $table = 'shoppingfeed_order';
@@ -133,7 +136,7 @@ class AdminShoppingfeedOrdersController extends ShoppingfeedAdminController
         $order_way = null,
         $start = 0,
         $limit = null,
-        $id_lang_shop = false
+        $id_lang_shop = false,
     ) {
         $result = parent::getList(
             $id_lang,
@@ -155,10 +158,10 @@ class AdminShoppingfeedOrdersController extends ShoppingfeedAdminController
     /**
      * From \AdminOrdersController
      *
-     * @param arry $echo
-     * @param arry $tr
+     * @param float $echo
+     * @param array $tr
      *
-     * @return type
+     * @return float|string
      */
     public static function setOrderCurrency($echo, $tr)
     {

@@ -78,7 +78,7 @@ class ShoppingfeedSyncAllModuleFrontController extends ShoppingfeedCronControlle
         $return = ['success' => false, 'error' => 'Authentication failed'];
         $this->ajaxDie(json_encode($return));
 
-        return $return;
+        return false;
     }
 
     protected function processCron($data)
@@ -103,6 +103,7 @@ class ShoppingfeedSyncAllModuleFrontController extends ShoppingfeedCronControlle
      */
     protected function execute(CronController $cron, $processName)
     {
+        /* @phpstan-ignore-next-line */
         $cron->processMonitor = new ProcessMonitorHandler();
         FrontController::$initialized = false;
         $cron->init();
@@ -142,7 +143,7 @@ class ShoppingfeedSyncAllModuleFrontController extends ShoppingfeedCronControlle
         $cron->processMonitor->unlock($data);
     }
 
-    protected function handleExeption(Exception $e)
+    protected function handleExeption(Throwable $e)
     {
         if ($e instanceof ProcessLockedException) {
             $return = ['success' => false, 'error' => $e->getMessage()];

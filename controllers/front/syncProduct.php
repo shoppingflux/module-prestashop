@@ -40,6 +40,8 @@ use ShoppingfeedClasslib\Registry;
  */
 class ShoppingfeedSyncProductModuleFrontController extends ShoppingfeedCronController
 {
+    /** @var ShoppingfeedClasslib\Extensions\ProcessMonitor\ProcessMonitorHandler */
+    public $processMonitor;
     public $taskDefinition = [
         'name' => 'shoppingfeed:syncProduct',
         'title' => [
@@ -51,7 +53,7 @@ class ShoppingfeedSyncProductModuleFrontController extends ShoppingfeedCronContr
     /**
      * Executed by the CRON
      *
-     * @param $data the data saved for this CRON (see totpsclasslib doc)
+     * @param mixed $data data saved for this CRON (see totpsclasslib doc)
      *
      * @return mixed
      *
@@ -100,11 +102,10 @@ class ShoppingfeedSyncProductModuleFrontController extends ShoppingfeedCronContr
             $this->processMonitor->getProcessObjectModelName(),
             $this->processMonitor->getProcessObjectModelId()
         );
-        Registry::set('updatedProducts', 0);
-        Registry::set('not-in-catalog', 0);
-        Registry::set('errors', 0);
+        Registry::set('updatedProducts', '0');
+        Registry::set('not-in-catalog', '0');
+        Registry::set('errors', '0');
 
-        /** @var ShoppingfeedHandler $handler */
         $handler = new ActionsHandler();
         $handler->addActions('getBatch');
         $sft = new ShoppingfeedToken();

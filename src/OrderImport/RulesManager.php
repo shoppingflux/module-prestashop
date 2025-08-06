@@ -33,7 +33,7 @@ use ShoppingFeed\Sdk\Api\Order\OrderResource;
  */
 class RulesManager
 {
-    /** @var ShoppingFeed\Sdk\Api\Order\OrderResource */
+    /** @var OrderResource|null */
     protected $apiOrder;
 
     /** @var array The rules to be applied */
@@ -71,6 +71,10 @@ class RulesManager
             ]
         );
 
+        if (empty($rulesClassNames)) {
+            return;
+        }
+
         foreach ($rulesClassNames as $ruleClassName) {
             $this->addRule(
                 new $ruleClassName(
@@ -85,7 +89,7 @@ class RulesManager
      * Adds a rule to the manager. If an OrderResource was given, checks if the
      * rule matches the order.
      *
-     * @param RuleInterface $ruleObject
+     * @param RuleAbstract $ruleObject
      *
      * @return bool
      */

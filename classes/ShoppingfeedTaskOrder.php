@@ -120,8 +120,8 @@ class ShoppingfeedTaskOrder extends ObjectModel
      * Attempts to retrieve an object using its id_order and action. Returns
      * false if none was found.
      *
-     * @param $id_order
-     * @param $action
+     * @param int $id_order
+     * @param string $action
      *
      * @return bool|ShoppingfeedTaskOrder
      *
@@ -136,7 +136,7 @@ class ShoppingfeedTaskOrder extends ObjectModel
             ->where('id_order = ' . (int) $id_order)
             ->where("action = '" . pSQL($action) . "'");
 
-        $id = Db::getInstance()->getValue($sql);
+        $id = (int) Db::getInstance()->getValue($sql);
         if ($id) {
             return new ShoppingfeedTaskOrder($id);
         }

@@ -26,7 +26,7 @@ if (!defined('_PS_VERSION_')) {
 
 class CloudSyncView
 {
-    /** @var \Module|\Shoppingfeed */
+    /** @var \ModuleCore|\Shoppingfeed */
     protected $module;
     /** @var \Context */
     protected $context;

@@ -21,4 +21,5 @@ parameters:
     - ../../classes/Compatibility/backword-compatibility.php
 
   reportUnmatchedIgnoredErrors: false
+  treatPhpDocTypesAsCertain: false
   level: 5

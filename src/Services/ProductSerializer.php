@@ -29,6 +29,7 @@ use SpecificPrice;
 
 class ProductSerializer
 {
+    /** @var \Product */
     private $product;
     private $configurations;
     private $link;
@@ -400,6 +401,7 @@ class ProductSerializer
     {
         $variations = [];
         $combinations = $this->getAttributeCombinationService()->get($this->product, $this->id_lang, $this->id_shop);
+        /** @var \Shoppingfeed $sfModule */
         $sfModule = \Module::getInstanceByName('shoppingfeed');
         $sfp = new \ShoppingfeedProduct();
         $sfp->id_product = $this->product->id;
@@ -704,7 +706,7 @@ class ProductSerializer
     }
 
     /**
-     * @param int $idProductAttribute
+     * @param int|null $id_product_attribute
      *
      * @return array
      */

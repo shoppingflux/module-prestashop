@@ -111,9 +111,11 @@ class ShoppingfeedPreloading extends ObjectModel
     /**
      * save content product in preloading table
      *
-     * @param $id_product
-     * @param $id_token
-     * @param $action
+     * @param int $id_product
+     * @param int $id_token
+     * @param int $id_lang
+     * @param int $id_shop
+     * @param int $id_currency
      *
      * @return bool
      *
@@ -251,9 +253,9 @@ class ShoppingfeedPreloading extends ObjectModel
     }
 
     /**
-     * @param $id_product
-     * @param $id_token
-     * @param $action
+     * @param int $id_product
+     * @param int $id_token
+     * @param string $action
      *
      * @return bool
      */

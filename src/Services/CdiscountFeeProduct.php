@@ -35,7 +35,7 @@ class CdiscountFeeProduct
 
     public function getProduct()
     {
-        $product = new \Product(\Configuration::get(\Shoppingfeed::CDISCOUNT_FEE_PRODUCT));
+        $product = new \Product((int) \Configuration::get(\Shoppingfeed::CDISCOUNT_FEE_PRODUCT));
 
         if (\Validate::isLoadedObject($product)) {
             return $product;
@@ -62,7 +62,7 @@ class CdiscountFeeProduct
         }
 
         $product->visibility = 'none';
-        $product->depends_on_stock = 1; // do not depend on stock
+        $product->depends_on_stock = true; // do not depend on stock
         $product->available_for_order = true;
         $product->reference = $this->getReference();
         $product->save();
@@ -74,7 +74,7 @@ class CdiscountFeeProduct
 
     public function removeProduct()
     {
-        $product = new \Product(\Configuration::get(\Shoppingfeed::CDISCOUNT_FEE_PRODUCT));
+        $product = new \Product((int) \Configuration::get(\Shoppingfeed::CDISCOUNT_FEE_PRODUCT));
 
         if (\Validate::isLoadedObject($product)) {
             $product->delete();
@@ -85,7 +85,7 @@ class CdiscountFeeProduct
 
     public function getIdProduct()
     {
-        $product = new \Product(\Configuration::get(\Shoppingfeed::CDISCOUNT_FEE_PRODUCT));
+        $product = new \Product((int) \Configuration::get(\Shoppingfeed::CDISCOUNT_FEE_PRODUCT));
 
         if (\Validate::isLoadedObject($product)) {
             return $product->id;

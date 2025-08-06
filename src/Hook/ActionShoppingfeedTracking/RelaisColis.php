@@ -48,11 +48,9 @@ class RelaisColis extends AbstractHook
             return;
         }
 
-        /**
-         * @var \Carrier $carrier
-         * @var \Order $order
-         */
+        /** @var \Order $order */
         $order = $params[0]['order'];
+        /** @var \Carrier $carrier */
         $carrier = $this->initCarrierFinder()->findByOrder($order);
         // Getting a tracking number for relaiscolis carrier
         if ($carrier->external_module_name == 'relaiscolis' && class_exists(\RelaisColisOrder::class)) {

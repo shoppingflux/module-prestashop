@@ -37,7 +37,7 @@ class ActionsHandler extends DefaultActionHandler
     /**
      * Values classAction by the classes
      *
-     * @var ShoppingfeedClasslib\Actions\DefaultActions
+     * @var DefaultActionHandler
      */
     protected $classAction;
 

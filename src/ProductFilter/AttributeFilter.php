@@ -36,7 +36,7 @@ class AttributeFilter implements Filter
 
     public function __construct($id)
     {
-        $this->attribute = new \Attribute($id);
+        $this->attribute = new \ProductAttribute($id);
         $this->attributeGroup = new \AttributeGroup($this->attribute->id_attribute_group, \Context::getContext()->language->id);
     }
 

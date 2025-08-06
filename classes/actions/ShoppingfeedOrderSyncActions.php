@@ -70,7 +70,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
         $newShoppingFeedOrder->name_marketplace = $order->payment;
         $newShoppingFeedOrder->id_order = $id_order;
         $newShoppingFeedOrder->payment_method = '-';
-        $newShoppingFeedOrder->id_shoppingfeed_token = '1';
+        $newShoppingFeedOrder->id_shoppingfeed_token = 1;
         $newShoppingFeedOrder->save();
 
         ProcessLoggerHandler::logSuccess(
@@ -266,7 +266,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
 
         $this->conveyor['preparedTaskOrders'] = [];
         foreach ($taskOrders as $taskOrder) {
-            /** @var $taskOrder ShoppingfeedTaskOrder */
+            /** @var ShoppingfeedTaskOrder $taskOrder */
             $logPrefix = self::getLogPrefix($taskOrder->id_order);
             $order = new Order($taskOrder->id_order);
 
@@ -280,7 +280,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
                 Registry::increment('syncStatusErrors');
                 continue;
             }
-
+            /** @var ShoppingfeedOrder $sfOrder */
             $sfOrder = ShoppingfeedOrder::getByIdOrder($taskOrder->id_order);
             if (empty($sfOrder->id_order_marketplace)) {
                 ProcessLoggerHandler::logError(
@@ -426,7 +426,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
         $this->conveyor['preparedTaskOrders'] = [];
 
         foreach ($taskOrders as $taskOrder) {
-            /** @var $taskOrder ShoppingfeedTaskOrder */
+            /** @var ShoppingfeedTaskOrder $taskOrder */
             $logPrefix = self::getLogPrefix($taskOrder->id_order);
             $order = new Order($taskOrder->id_order);
             $sfOrder = ShoppingfeedOrder::getByIdOrder($taskOrder->id_order);
@@ -649,7 +649,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
         // ticket number, and link each task to its SF order
         $this->conveyor['preparedTaskOrders'] = [];
         foreach ($taskOrders as $taskOrder) {
-            /** @var $taskOrder ShoppingfeedTaskOrder */
+            /** @var ShoppingfeedTaskOrder $taskOrder */
             $logPrefix = self::getLogPrefix($taskOrder->id_order);
             $shoppingfeedOrder = ShoppingfeedOrder::getByIdOrder($taskOrder->id_order);
             if (!Validate::isLoadedObject($shoppingfeedOrder)) {

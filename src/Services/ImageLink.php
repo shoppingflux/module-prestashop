@@ -35,7 +35,7 @@ class ImageLink
 
     public function __construct()
     {
-        $this->allow = (int) \Configuration::get('PS_REWRITING_SETTINGS');
+        $this->allow = (int) \Configuration::get('PS_REWRITING_SETTINGS') !== 0;
     }
 
     /**

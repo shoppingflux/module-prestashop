@@ -31,6 +31,8 @@ require_once _PS_MODULE_DIR_ . 'shoppingfeed/vendor/autoload.php';
  */
 class AdminShoppingfeedAccountSettingsController extends ShoppingfeedAdminController
 {
+    /** @var Shoppingfeed */
+    public $module;
     public $bootstrap = true;
     public $override_folder;
 
@@ -108,12 +110,12 @@ class AdminShoppingfeedAccountSettingsController extends ShoppingfeedAdminContro
         $helper->base_folder = $this->getTemplatePath();
         $helper->base_tpl = 'shoppingfeed_account_settings/register.tpl';
 
-        $id_default_country = Configuration::get('PS_COUNTRY_DEFAULT');
+        $id_default_country = (int) Configuration::get('PS_COUNTRY_DEFAULT');
         $default_country = new Country($id_default_country);
         $this->context->smarty->assign('phone', Tools::safeOutput(Configuration::get('PS_SHOP_PHONE')));
         $this->context->smarty->assign('email', Tools::safeOutput(Configuration::get('PS_SHOP_EMAIL')));
         $this->context->smarty->assign('lang', Tools::strtolower($default_country->iso_code));
-        $this->context->smarty->assign('shoppingfeed_token', md5(rand()));
+        $this->context->smarty->assign('shoppingfeed_token', md5((string) rand()));
 
         return $helper->generateForm([['form' => $fields_form]]);
     }
@@ -344,7 +346,7 @@ class AdminShoppingfeedAccountSettingsController extends ShoppingfeedAdminContro
             $result &= $this->login($shop_id, $lang_id, $currency_id);
         }
 
-        $result &= $this->module->updateShoppingfeedStoreId();
+        $this->module->updateShoppingfeedStoreId();
 
         return $result;
     }
@@ -451,8 +453,8 @@ class AdminShoppingfeedAccountSettingsController extends ShoppingfeedAdminContro
             return false;
         }
 
-        $id_shop = $this->context->shop->id;
-        Configuration::updateValue(Shoppingfeed::AUTH_TOKEN, $shoppingFeedApi->getToken(), null, null, $id_shop);
+        $id_shop = (int) $this->context->shop->id;
+        Configuration::updateValue(Shoppingfeed::AUTH_TOKEN, $shoppingFeedApi->getToken(), false, null, $id_shop);
 
         $this->confirmations[] = $this->module->l('Login successful; your token has been saved.', 'AdminShoppingfeedAccountSettings');
 
@@ -474,7 +476,7 @@ class AdminShoppingfeedAccountSettingsController extends ShoppingfeedAdminContro
                 'product',
                 ['feed_key' => $listToken['feed_key']],
                 true,
-                Configuration::get('PS_LANG_DEFAULT'),
+                (int) Configuration::get('PS_LANG_DEFAULT'),
                 $listToken['id_shop']
             );
             $listTokens[$key]['link'] = $link;
