@@ -32,7 +32,6 @@ if (!defined('_PS_VERSION_')) {
 
 class CloudSyncWrapper
 {
-    /** @var ModuleManager */
     protected $moduleManager;
     /** @var Installer */
     protected $accountInstaller;

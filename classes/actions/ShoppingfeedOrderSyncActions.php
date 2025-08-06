@@ -160,7 +160,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
         $updateAt = time();
         $shippedStatuses = json_decode(Configuration::get(Shoppingfeed::SHIPPED_ORDERS));
         if (in_array($order->current_state, $shippedStatuses)) {
-            $updateAt += (60 * Configuration::get(Shoppingfeed::ORDER_STATUS_TIME_SHIFT));
+            $updateAt += (60 * (int) Configuration::get(Shoppingfeed::ORDER_STATUS_TIME_SHIFT));
         }
 
         // Save the task order
@@ -828,6 +828,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
             $sfOrder->save();
             $failedTaskOrdersMailData[] = [
                 'reference' => $order->reference,
+                /** @phpstan-ignore-next-line */
                 'status' => !empty($orderState->name[$id_lang]) ? $orderState->name[$id_lang] : reset($orderState->name),
             ];
         }

@@ -136,7 +136,7 @@ class AdminShoppingfeedOrdersController extends ShoppingfeedAdminController
         $order_way = null,
         $start = 0,
         $limit = null,
-        $id_lang_shop = false,
+        $id_lang_shop = false
     ) {
         $result = parent::getList(
             $id_lang,
@@ -165,7 +165,7 @@ class AdminShoppingfeedOrdersController extends ShoppingfeedAdminController
      */
     public static function setOrderCurrency($echo, $tr)
     {
-        return Tools::displayPrice($echo, (int) $tr['id_currency']);
+        return Tools::displayPrice($echo, new Currency((int) $tr['id_currency']));
     }
 
     /**

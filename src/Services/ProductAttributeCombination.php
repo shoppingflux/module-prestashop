@@ -96,7 +96,7 @@ class ProductAttributeCombination
                 if (!\Cache::isStored($cache_key)) {
                     \Cache::store(
                         $cache_key,
-                        \StockAvailable::getQuantityAvailableByProduct($row['id_product'], $row['id_product_attribute'])
+                        (string) \StockAvailable::getQuantityAvailableByProduct($row['id_product'], $row['id_product_attribute'])
                     );
                 }
                 $combinations[$idProductAttribute]['id_product_attribute'] = $idProductAttribute;

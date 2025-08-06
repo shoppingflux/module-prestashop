@@ -490,7 +490,7 @@ class Shoppingfeed extends ShoppingfeedClasslib\Module
         $shops = Shop::getShops();
         foreach ($shops as $shop) {
             $tokenConfig = Configuration::get('SHOPPING_FLUX_TOKEN', null, null, $shop['id_shop']);
-            if ($tokenConfig === false) {
+            if ($tokenConfig == false) {
                 continue;
             }
             $tokenTable = $sfToken->findByToken($tokenConfig);

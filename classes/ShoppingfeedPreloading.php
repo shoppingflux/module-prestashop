@@ -126,6 +126,7 @@ class ShoppingfeedPreloading extends ObjectModel
         $productSerialize = new ProductSerializer((int) $id_product, $id_lang, $id_shop, $id_currency);
         $shoppingfeedPreloading = $this->findByTokenIdAndProductId($id_token, $id_product);
         if ($shoppingfeedPreloading === false) {
+            /** @phpstan-ignore-next-line */
             $this->id = null;
             $this->id_token = $id_token;
             $this->id_product = $id_product;
@@ -267,6 +268,7 @@ class ShoppingfeedPreloading extends ObjectModel
             ->where('id_product = ' . (int) $id_product);
         $shoppingfeedPreloading = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($query);
         if ($shoppingfeedPreloading === false) {
+            /** @phpstan-ignore-next-line */
             $this->id = null;
             $this->id_token = $id_token;
             $this->id_product = $id_product;

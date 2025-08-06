@@ -75,8 +75,9 @@ class ActionsHandler extends DefaultActionHandler
         }
 
         $moduleId = \Module::getModuleIdByName('shoppingfeed');
+        /** @var array|false|mixed|null|string $hookResult */
         $hookResult = \Hook::exec(self::PROCESS_OVERRIDE_HOOK, ['className' => $className], $moduleId, true, false);
-        if (!empty($hookResult) && !empty($hookResult['shoppingfeed'])) {
+        if (is_array($hookResult) && !empty($hookResult['shoppingfeed'])) {
             $className = $hookResult['shoppingfeed'];
         }
 
