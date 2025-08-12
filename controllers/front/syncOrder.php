@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -30,6 +31,10 @@ use ShoppingfeedClasslib\Registry;
 
 class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronController
 {
+    /** @var ShoppingfeedClasslib\Extensions\ProcessMonitor\ProcessMonitorHandler
+     * @phpstan-ignore-next-line
+     */
+    public $processMonitor;
     public $taskDefinition = [
         'name' => 'shoppingfeed:syncOrder',
         'title' => [
@@ -41,7 +46,7 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
     /**
      * Executed by the CRON
      *
-     * @param $data the data saved for this CRON (see totpsclasslib doc)
+     * @param mixed $data the data saved for this CRON (see totpsclasslib doc)
      *
      * @return mixed
      *
@@ -92,9 +97,8 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
             $failedTicketsStatusTaskOrders = [];
             $successfulTicketsStatusTaskOrders = [];
             try {
-                Registry::set('ticketsErrors', 0);
+                Registry::set('ticketsErrors', '0');
 
-                /** @var ShoppingfeedHandler $ticketsHandler */
                 $ticketsHandler = new ActionsHandler();
                 $ticketsHandler->setConveyor([
                     'id_shop' => $token['id_shop'],
@@ -153,9 +157,8 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
             $failedTicketsInvoiceTaskOrders = [];
             $successfulTicketsInvoiceTaskOrders = [];
             try {
-                Registry::set('ticketsErrors', 0);
+                Registry::set('ticketsErrors', '0');
 
-                /** @var ShoppingfeedHandler $ticketsHandler */
                 $ticketsHandler = new ActionsHandler();
                 $ticketsHandler->setConveyor([
                     'id_shop' => $token['id_shop'],
@@ -213,9 +216,8 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
             $failedSyncStatusTaskOrders = [];
             $successfulSyncTaskOrders = [];
             try {
-                Registry::set('syncStatusErrors', 0);
+                Registry::set('syncStatusErrors', '0');
 
-                /** @var ShoppingfeedHandler $orderStatusHandler */
                 $orderStatusHandler = new ActionsHandler();
                 $orderStatusHandler->setConveyor([
                     'id_shop' => $token['id_shop'],
@@ -271,9 +273,8 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
             $failedSyncInvoiceTaskOrders = [];
             $successfulSyncInvoiceTaskOrders = [];
             try {
-                Registry::set('syncStatusErrors', 0);
+                Registry::set('syncStatusErrors', '0');
 
-                /** @var ShoppingfeedHandler $orderStatusHandler */
                 $orderStatusHandler = new ActionsHandler();
                 $orderStatusHandler->setConveyor([
                     'id_shop' => $token['id_shop'],
@@ -478,8 +479,8 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
                 continue;
             }
 
-            Registry::set('errors', 0);
-            Registry::set('importedOrders', 0);
+            Registry::set('errors', '0');
+            Registry::set('importedOrders', '0');
             Shop::setContext(Shop::CONTEXT_SHOP, $id_shop);
             $this->context->shop = new Shop($id_shop);
             foreach ($result as $apiOrder) {
@@ -490,7 +491,6 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
                 $logPrefix .= '[' . $apiOrder->getReference() . '] ';
 
                 try {
-                    /** @var ShoppingfeedHandler $handler */
                     $handler = new SfActionsHandler();
                     $handler->addActions(
                         'registerSpecificRules',
@@ -509,7 +509,7 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
                         'isSkipImport' => false,
                         'shoppingfeed_store_id' => $token['shoppingfeed_store_id'],
                     ]);
-
+                    /* @phpstan-ignore-next-line */
                     Registry::set('shoppingfeedOrderImportHandler', $handler);
                     $processResult = $handler->process('shoppingfeedOrderImport');
                     if (!$processResult) {

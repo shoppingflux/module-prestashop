@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -46,7 +47,7 @@ class RueducommerceMondialrelay extends RuleAbstract implements RuleInterface
             && preg_match('#livraison en point de proximité avec .+#', \Tools::strtolower($apiOrderShipment['carrier']))
         ) {
             // If the rule is applicable, we'll make sure this is empty, just in case...
-            Registry::set(self::class . '_mondialRelayId', null);
+            Registry::set(self::class . '_mondialRelayId', '');
 
             return true;
         }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -28,8 +29,8 @@ class CartCarrierAssociation
     protected $db;
 
     protected $glsAdapter;
-    /** @var \Module*/
-    protected $nkmgls = null;
+    /** @var \ModuleCore|null */
+    protected $nkmgls;
 
     public function __construct(AdapterInterface $glsAdapter)
     {
@@ -57,14 +58,14 @@ class CartCarrierAssociation
             $country->iso_code
         );
 
-        $this->db->delete('gls_cart_carrier', 'id_cart = "' . pSQL($cart->id) . '"');
+        $this->db->delete('gls_cart_carrier', 'id_cart = "' . (int) $cart->id . '"');
 
         if (version_compare($this->nkmgls->version, '3.2.0', '>=')) {
             $sql = 'INSERT IGNORE INTO ' . _DB_PREFIX_ . "gls_cart_carrier VALUES (
                 '" . (int) $cart->id . "',
                 '" . (int) $cart->id_customer . "',
                 '" . (int) \Configuration::get('GLS_GLSRELAIS_ID', (int) $cart->id_carrier, $cart->id_shop_group, $cart->id_shop) . "',
-                '" . pSQL($address->id) . "',
+                '" . (int) $address->id . "',
                 '" . pSQL($gls_product) . "',
                 '" . (empty($relayId) ? '' : pSQL($relayId)) . "',
                 '" . (empty($relay_detail['Name1']) ? '' : pSQL($relay_detail['Name1'])) . "',

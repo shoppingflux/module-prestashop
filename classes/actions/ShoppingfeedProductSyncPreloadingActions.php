@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright since 2019 Shopping Feed
  *
@@ -43,7 +44,7 @@ class ShoppingfeedProductSyncPreloadingActions extends DefaultActions
         $currency = new Currency($token->id_currency);
         $shop = new Shop($token->id_shop);
         $country = new Country(
-            Configuration::get('PS_COUNTRY_DEFAULT', null, $shop->id_shop_group, $shop->id)
+            (int) Configuration::get('PS_COUNTRY_DEFAULT', null, $shop->id_shop_group, $shop->id)
         );
 
         if (Validate::isLoadedObject($currency) === false) {
@@ -60,9 +61,9 @@ class ShoppingfeedProductSyncPreloadingActions extends DefaultActions
         Context::getContext()->shop = $shop;
         Context::getContext()->country = $country;
         Shop::setContext(Shop::CONTEXT_SHOP, $shop->id);
-
+        /** @var Shoppingfeed $sfModule */
         $sfModule = Module::getInstanceByName('shoppingfeed');
-        $limit = Configuration::getGlobalValue(Shoppingfeed::STOCK_SYNC_MAX_PRODUCTS);
+        $limit = (int) Configuration::getGlobalValue(Shoppingfeed::STOCK_SYNC_MAX_PRODUCTS);
         $nb_total_product = $sfModule->countProductsOnFeed($token->id_shop);
         $nb_preloaded_product = (new ShoppingfeedPreloading())->getPreloadingCountForSync($token->id_shoppingfeed_token);
         if ($nb_total_product == $nb_preloaded_product) {
@@ -113,6 +114,7 @@ class ShoppingfeedProductSyncPreloadingActions extends DefaultActions
         $action = $this->conveyor['product_action'];
         $tokens = (new ShoppingfeedToken())->findAllActive();
         $sfp = new ShoppingfeedPreloading();
+        /** @var Shoppingfeed $sfModule */
         $sfModule = Module::getInstanceByName('shoppingfeed');
         $db = Db::getInstance(_PS_USE_SQL_SLAVE_);
 
@@ -161,6 +163,7 @@ class ShoppingfeedProductSyncPreloadingActions extends DefaultActions
     public function removeProductFeed()
     {
         $tokens = (new ShoppingfeedToken())->findAllActive();
+        /** @var Shoppingfeed $sfModule */
         $sfModule = Module::getInstanceByName('shoppingfeed');
         $db = Db::getInstance(_PS_USE_SQL_SLAVE_);
 
@@ -194,7 +197,7 @@ class ShoppingfeedProductSyncPreloadingActions extends DefaultActions
         }
 
         $product = $this->conveyor['product'];
-        $tokens = (new ShoppingfeedToken())->findAllActive(Shop::getContextListShopID());
+        $tokens = (new ShoppingfeedToken())->findAllActive();
         $sfp = new ShoppingfeedPreloading();
 
         foreach ($tokens as $token) {

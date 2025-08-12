@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -31,11 +32,14 @@ use ShoppingfeedAddon\OrderImport\SinceDate;
  */
 class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminController
 {
+    /** @var Shoppingfeed */
+    public $module;
+
     public $bootstrap = true;
 
     public $override_folder;
 
-    /** @var ShoppingfeedOrderImportSpecificRulesManager */
+    /** @var RulesManager */
     protected $specificRulesManager;
 
     /**
@@ -735,7 +739,7 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
                 $sfCarrier = new ShoppingfeedCarrier($id_shoppingfeed_carrier);
                 if (Validate::isLoadedObject($sfCarrier)) {
                     $sfCarrier->id_carrier_reference = (int) $id_carrier_reference;
-                    $sfCarrier->is_new = 0;
+                    $sfCarrier->is_new = false;
                     $sfCarrier->update();
                 }
             }
@@ -791,7 +795,7 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
         $carriers = [
             [
                 'value' => 0,
-                'label' => $this->l('Select carrier', 'AdminShoppingfeedOrderImportRules'),
+                'label' => $this->module->l('Select carrier', 'AdminShoppingfeedOrderImportRules'),
             ],
         ];
 

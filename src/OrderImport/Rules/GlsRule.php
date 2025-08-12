@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -35,7 +36,7 @@ class GlsRule extends RuleAbstract implements RuleInterface
 {
     protected $gls;
 
-    /** @var Adapter */
+    /** @var AdapterInterface */
     protected $glsAdapter;
 
     protected $logPrefix = '';

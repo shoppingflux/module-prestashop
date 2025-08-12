@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -30,6 +31,9 @@ use ShoppingfeedClasslib\Actions\ActionsHandler;
  */
 class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminController
 {
+    /** @var Shoppingfeed */
+    public $module;
+
     public $bootstrap = true;
 
     public $nbr_products;
@@ -580,7 +584,7 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
     protected function getProductFilters()
     {
         $product_feed_rule_filters = Configuration::getGlobalValue(Shoppingfeed::PRODUCT_FEED_RULE_FILTERS);
-        if ($product_feed_rule_filters === false) {
+        if (!$product_feed_rule_filters) {
             return [];
         }
         $product_feed_rule_filters = json_decode($product_feed_rule_filters, true);

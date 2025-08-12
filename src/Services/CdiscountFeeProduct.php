@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -26,15 +27,18 @@ if (!defined('_PS_VERSION_')) {
 class CdiscountFeeProduct
 {
     protected $symbolValidator;
+    /** @var SfTools */
+    protected $tools;
 
     public function __construct()
     {
         $this->symbolValidator = new SymbolValidator();
+        $this->tools = new SfTools();
     }
 
     public function getProduct()
     {
-        $product = new \Product(\Configuration::get(\Shoppingfeed::CDISCOUNT_FEE_PRODUCT));
+        $product = new \Product((int) \Configuration::get(\Shoppingfeed::CDISCOUNT_FEE_PRODUCT));
 
         if (\Validate::isLoadedObject($product)) {
             return $product;
@@ -47,21 +51,23 @@ class CdiscountFeeProduct
     {
         $product = new \Product();
         $product->active = true;
+        /* @phpstan-ignore-next-line */
         $product->name = [];
+        /* @phpstan-ignore-next-line */
         $product->link_rewrite = [];
 
         foreach (\Language::getLanguages(false) as $lang) {
             if ($lang['iso_code'] == 'fr') {
                 $product->name[$lang['id_lang']] = 'Frais CDiscount';
-                $product->link_rewrite[$lang['id_lang']] = \Tools::link_rewrite('Frais CDiscount');
+                $product->link_rewrite[$lang['id_lang']] = $this->tools->str2url('Frais CDiscount');
             } else {
                 $product->name[$lang['id_lang']] = 'CDiscount Fees';
-                $product->link_rewrite[$lang['id_lang']] = \Tools::link_rewrite('CDiscount Fees');
+                $product->link_rewrite[$lang['id_lang']] = $this->tools->str2url('CDiscount Fees');
             }
         }
 
         $product->visibility = 'none';
-        $product->depends_on_stock = 1; // do not depend on stock
+        $product->depends_on_stock = true; // do not depend on stock
         $product->available_for_order = true;
         $product->reference = $this->getReference();
         $product->save();
@@ -73,7 +79,7 @@ class CdiscountFeeProduct
 
     public function removeProduct()
     {
-        $product = new \Product(\Configuration::get(\Shoppingfeed::CDISCOUNT_FEE_PRODUCT));
+        $product = new \Product((int) \Configuration::get(\Shoppingfeed::CDISCOUNT_FEE_PRODUCT));
 
         if (\Validate::isLoadedObject($product)) {
             $product->delete();
@@ -84,7 +90,7 @@ class CdiscountFeeProduct
 
     public function getIdProduct()
     {
-        $product = new \Product(\Configuration::get(\Shoppingfeed::CDISCOUNT_FEE_PRODUCT));
+        $product = new \Product((int) \Configuration::get(\Shoppingfeed::CDISCOUNT_FEE_PRODUCT));
 
         if (\Validate::isLoadedObject($product)) {
             return $product->id;

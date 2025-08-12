@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright since 2019 Shopping Feed
  *
@@ -22,4 +23,6 @@ if (!defined('_PS_VERSION_')) {
 
 class ShoppingfeedPaymentModule extends PaymentModule
 {
+    /** @var string */
+    public $currentOrderReference;
 }

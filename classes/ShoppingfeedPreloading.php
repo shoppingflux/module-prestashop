@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright since 2019 Shopping Feed
  *
@@ -110,9 +111,11 @@ class ShoppingfeedPreloading extends ObjectModel
     /**
      * save content product in preloading table
      *
-     * @param $id_product
-     * @param $id_token
-     * @param $action
+     * @param int $id_product
+     * @param int $id_token
+     * @param int $id_lang
+     * @param int $id_shop
+     * @param int $id_currency
      *
      * @return bool
      *
@@ -123,6 +126,7 @@ class ShoppingfeedPreloading extends ObjectModel
         $productSerialize = new ProductSerializer((int) $id_product, $id_lang, $id_shop, $id_currency);
         $shoppingfeedPreloading = $this->findByTokenIdAndProductId($id_token, $id_product);
         if ($shoppingfeedPreloading === false) {
+            /* @phpstan-ignore-next-line */
             $this->id = null;
             $this->id_token = $id_token;
             $this->id_product = $id_product;
@@ -250,9 +254,9 @@ class ShoppingfeedPreloading extends ObjectModel
     }
 
     /**
-     * @param $id_product
-     * @param $id_token
-     * @param $action
+     * @param int $id_product
+     * @param int $id_token
+     * @param string $action
      *
      * @return bool
      */
@@ -264,6 +268,7 @@ class ShoppingfeedPreloading extends ObjectModel
             ->where('id_product = ' . (int) $id_product);
         $shoppingfeedPreloading = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($query);
         if ($shoppingfeedPreloading === false) {
+            /* @phpstan-ignore-next-line */
             $this->id = null;
             $this->id_token = $id_token;
             $this->id_product = $id_product;

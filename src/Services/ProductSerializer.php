@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright since 2021 Shopping Feed
  *
@@ -28,6 +29,7 @@ use SpecificPrice;
 
 class ProductSerializer
 {
+    /** @var \Product */
     private $product;
     private $configurations;
     private $link;
@@ -215,11 +217,6 @@ class ProductSerializer
         return $contentUpdate;
     }
 
-    private function getDiscounts()
-    {
-        return array_column($this->_getDiscounts(), 'price');
-    }
-
     private function getImages()
     {
         $imagesFromDb = $this->getImagesFromDb($this->id_lang);
@@ -245,42 +242,6 @@ class ProductSerializer
         }
 
         return $images;
-    }
-
-    protected function _getDiscounts()
-    {
-        $discounts = [];
-        $specificPricesInFuture = [];
-        $specificPrices = \SpecificPrice::getIdsByProductId($this->product->id);
-        $priceComputed = $this->product->getPrice(true, null, 2, null, false, true, 1);
-
-        foreach ($specificPrices as $idSpecificPrice) {
-            $specificPrice = new \SpecificPrice($idSpecificPrice['id_specific_price']);
-            if (new \DateTime($specificPrice->from) > new \DateTime()) {
-                $specificPricesInFuture[] = $specificPrice;
-            }
-        }
-        foreach ($specificPricesInFuture as $currentSpecificPrice) {
-            $discount = [];
-            if ($currentSpecificPrice->price == -1) {
-                if ($currentSpecificPrice->reduction_type == 'amount') {
-                    $reduction_amount = $currentSpecificPrice->reduction;
-                    $reduc = $reduction_amount;
-                } else {
-                    $reduc = $priceComputed * $currentSpecificPrice->reduction;
-                }
-                $priceComputed -= $reduc;
-                $priceComputed = round($priceComputed, 2);
-            } else {
-                $priceComputed = $currentSpecificPrice->price;
-            }
-            $discount['from'] = $currentSpecificPrice->from;
-            $discount['to'] = $currentSpecificPrice->to;
-            $discount['price'] = $priceComputed;
-            $discounts[] = $discount;
-        }
-
-        return $discounts;
     }
 
     private function getStringTags()
@@ -399,6 +360,7 @@ class ProductSerializer
     {
         $variations = [];
         $combinations = $this->getAttributeCombinationService()->get($this->product, $this->id_lang, $this->id_shop);
+        /** @var \Shoppingfeed $sfModule */
         $sfModule = \Module::getInstanceByName('shoppingfeed');
         $sfp = new \ShoppingfeedProduct();
         $sfp->id_product = $this->product->id;
@@ -703,7 +665,7 @@ class ProductSerializer
     }
 
     /**
-     * @param int $idProductAttribute
+     * @param int|null $id_product_attribute
      *
      * @return array
      */

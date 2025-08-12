@@ -21,7 +21,6 @@
 namespace ShoppingfeedAddon\PrestaShopCloudSync;
 
 use PrestaShop\PrestaShop\Core\Addon\Module\ModuleManagerBuilder;
-use PrestaShop\PrestaShop\Core\Module\ModuleManager;
 use ShoppingfeedPrefix\Prestashop\ModuleLibMboInstaller\DependencyBuilder;
 use ShoppingfeedPrefix\PrestaShop\PsAccountsInstaller\Installer\Facade\PsAccounts;
 use ShoppingfeedPrefix\PrestaShop\PsAccountsInstaller\Installer\Installer;
@@ -32,7 +31,6 @@ if (!defined('_PS_VERSION_')) {
 
 class CloudSyncWrapper
 {
-    /** @var ModuleManager */
     protected $moduleManager;
     /** @var Installer */
     protected $accountInstaller;
@@ -60,7 +58,7 @@ class CloudSyncWrapper
     {
         $eventbusModule = \Module::getInstanceByName('ps_eventbus');
 
-        return $eventbusModule->getService('PrestaShop\Module\PsEventbus\Service\PresenterService');
+        return call_user_func([$eventbusModule, 'getService'], 'PrestaShop\Module\PsEventbus\Service\PresenterService');
     }
 
     public function areDependenciesMet()
