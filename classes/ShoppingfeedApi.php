@@ -69,8 +69,8 @@ class ShoppingfeedApi
      */
     public static function getInstanceByToken($id_token = null, $token = null)
     {
-        if (static::$instance && static::$instance->getToken() == $token) {
-            return static::$instance;
+        if (self::$instance && self::$instance->getToken() == $token) {
+            return self::$instance;
         }
 
         if (!$token && !$id_token) {
@@ -89,9 +89,9 @@ class ShoppingfeedApi
             /** @var ShoppingFeed\Sdk\Api\Session\SessionResource $session */
             $session = Client::createSession($credential, $clientOptions);
 
-            static::$instance = new ShoppingfeedApi($session);
+            self::$instance = new ShoppingfeedApi($session);
 
-            return static::$instance;
+            return self::$instance;
         } catch (Exception $e) {
             ProcessLoggerHandler::logError(
                 sprintf(
@@ -123,9 +123,9 @@ class ShoppingfeedApi
             $clientOptions->setHttpAdapter(new GuzzleHTTPAdapter());
             /** @var ShoppingFeed\Sdk\Api\Session\SessionResource $session */
             $session = Client::createSession($credential, $clientOptions);
-            static::$instance = new ShoppingfeedApi($session);
+            self::$instance = new ShoppingfeedApi($session);
 
-            return static::$instance;
+            return self::$instance;
         } catch (Exception $e) {
             ProcessLoggerHandler::logError(
                 sprintf(
@@ -586,19 +586,15 @@ class ShoppingfeedApi
             }
 
             $result = $ticketApi->getByBatch($batchId, $filters);
-        } catch (Exception $e) {
         } catch (Throwable $e) {
-        } finally {
-            if (is_null($result)) {
-                ProcessLoggerHandler::logError(
-                    sprintf(
-                        'Error in ShoppingfeedApi::getTicketsByBatchId(): %s',
-                        empty($e) ? '' : $e->getMessage()
-                    )
-                );
+            ProcessLoggerHandler::logError(
+                sprintf(
+                    'Error in ShoppingfeedApi::getTicketsByBatchId(): %s',
+                    $e->getMessage()
+                )
+            );
 
-                return $tickets;
-            }
+            return $tickets;
         }
 
         foreach ($result->getIterator() as $ticket) {

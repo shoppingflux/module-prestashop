@@ -126,7 +126,9 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         // See old module checkData()
 
         // Vefify the order currency
-        if (empty($this->conveyor['orderData']->payment['currency']) || false == Currency::getIdByIsoCode((string) $this->conveyor['orderData']->payment['currency'])) {
+        /** @var OrderData $orderData */
+        $orderData = $this->conveyor['orderData'];
+        if (empty($orderData->payment['currency']) || false == Currency::getIdByIsoCode((string) $orderData->payment['currency'])) {
             $this->conveyor['error'] = $this->l('Skip an order import because of the unsupported currency', 'ShoppingfeedOrderImportActions');
             ProcessLoggerHandler::logError($this->logPrefix . $this->conveyor['error'], 'Order');
             $this->forward('acknowledgeOrder');
@@ -148,7 +150,9 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         $this->conveyor['prestashopProducts'] = [];
         /** @var Shoppingfeed $sfModule */
         $sfModule = Module::getInstanceByName('shoppingfeed');
-        if (count($this->conveyor['orderData']->items) === 0) {
+        /** @var OrderData $orderData */
+        $orderData = $this->conveyor['orderData'];
+        if (count($orderData->items) === 0) {
             ProcessLoggerHandler::logInfo(
                 sprintf(
                     $this->logPrefix .
@@ -160,20 +164,21 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             return false;
         }
 
+        /** @var OrderData $orderData */
+        $orderData = $this->conveyor['orderData'];
         /** @var ShoppingfeedAddon\OrderImport\OrderItemData $apiProduct */
-        foreach ($this->conveyor['orderData']->items as &$apiProduct) {
-            if (isset($this->conveyor['orderData']->itemsReferencesAliases) === true
-                    && empty($this->conveyor['orderData']->itemsReferencesAliases[$apiProduct->reference]) === false) {
+        foreach ($orderData->items as &$apiProduct) {
+            if (empty($orderData->itemsReferencesAliases[$apiProduct->reference]) === false) {
                 ProcessLoggerHandler::logInfo(
                     sprintf(
                         $this->logPrefix .
                             $this->l('Reference alias replace %s by %s.', 'ShoppingfeedOrderImportActions'),
                         $apiProduct->reference,
-                        $this->conveyor['orderData']->itemsReferencesAliases[$apiProduct->reference]
+                        $orderData->itemsReferencesAliases[$apiProduct->reference]
                     ),
                     'Order'
                 );
-                $apiProduct->reference = $this->conveyor['orderData']->itemsReferencesAliases[$apiProduct->reference];
+                $apiProduct->reference = $orderData->itemsReferencesAliases[$apiProduct->reference];
             }
             $psProduct = $sfModule->mapPrestashopProduct(
                 $apiProduct->reference,
@@ -220,7 +225,9 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         }
 
         // Check carrier
-        $apiOrderShipment = &$this->conveyor['orderData']->shipment;
+        /** @var OrderData $orderData */
+        $orderData = $this->conveyor['orderData'];
+        $apiOrderShipment = &$orderData->shipment;
         $carrier = null;
         $skipSfCarrierCreation = false;
 
@@ -318,10 +325,12 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         $this->initProcess($apiOrder);
 
         // Try to retrieve customer using the billing address mail
-        $apiBillingAddress = &$this->conveyor['orderData']->billingAddress;
-        $apiShippingAddress = &$this->conveyor['orderData']->shippingAddress;
+        /** @var OrderData $orderData */
+        $orderData = $this->conveyor['orderData'];
+        $apiBillingAddress = &$orderData->billingAddress;
+        $apiShippingAddress = &$orderData->shippingAddress;
         /** @var ShoppingfeedAddon\OrderImport\OrderCustomerData $orderCustomerData */
-        $orderCustomerData = $this->conveyor['orderData']->getCustomer();
+        $orderCustomerData = $orderData->getCustomer();
         // see old module _getCustomer()
         $customer = new Customer();
         $customer->getByEmail($orderCustomerData->getEmail());
@@ -401,7 +410,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 $apiBillingAddress,
                 $customer,
                 'Billing-' . $apiOrder->getId(),
-                $this->conveyor['orderData']->shippingAddress
+                $orderData->shippingAddress
             );
 
             try {
@@ -428,7 +437,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 $billingAddress->id
             );
 
-            $apiShippingAddress = &$this->conveyor['orderData']->shippingAddress;
+            $apiShippingAddress = &$orderData->shippingAddress;
 
             // Specific rules
             $this->specificRulesManager->applyRules(
@@ -443,7 +452,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 $apiShippingAddress,
                 $customer,
                 'Shipping-' . $apiOrder->getId(),
-                $this->conveyor['orderData']->billingAddress
+                $orderData->billingAddress
             );
 
             try {
@@ -487,7 +496,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         $isAdvancedStockEnabled = Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT') == 1 ? true : false;
 
         /** @var ShoppingfeedAddon\OrderImport\OrderItemData $apiProduct */
-        foreach ($this->conveyor['orderData']->items as &$apiProduct) {
+        foreach ($orderData->items as &$apiProduct) {
             $psProduct = $this->conveyor['prestashopProducts'][$apiProduct->reference];
             $useAdvancedStock = $isAdvancedStockEnabled && $psProduct->advanced_stock_management;
 
@@ -551,7 +560,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         );
 
         // See old module _getCart()
-        $paymentInformation = &$this->conveyor['orderData']->payment;
+        $paymentInformation = &$orderData->payment;
 
         // Create cart
         $cart = new Cart();
@@ -585,7 +594,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
 
         // Add products to cart
         /** @var ShoppingfeedAddon\OrderImport\OrderItemData $apiProduct */
-        foreach ($this->conveyor['orderData']->items as &$apiProduct) {
+        foreach ($orderData->items as &$apiProduct) {
             $psProduct = $this->conveyor['prestashopProducts'][$apiProduct->reference];
             try {
                 $addToCartResult = $cart->updateQty(
@@ -747,30 +756,26 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 $cart->secure_key,
                 new Shop($this->getIdShop())
             );
-        } catch (Exception $e) {
-        } catch (Throwable $e) {// for php 7.x and higher
-        } finally {
-            if (isset($e)) {
-                if (!$paymentModule->currentOrder) {
-                    $order = $this->getOrderByCartId((int) $cart->id);
+        } catch (Throwable $e) {
+            if (!$paymentModule->currentOrder) {
+                $order = $this->getOrderByCartId((int) $cart->id);
 
-                    if (Validate::isLoadedObject($order)) {
-                        $paymentModule->currentOrder = $order->id;
-                        $paymentModule->currentOrderReference = $order->reference;
-                    }
+                if (Validate::isLoadedObject($order)) {
+                    $paymentModule->currentOrder = $order->id;
+                    $paymentModule->currentOrderReference = $order->reference;
                 }
-
-                $log = [
-                    'Message: ' . $e->getMessage(),
-                    'File: ' . $e->getFile(),
-                    'Line: ' . $e->getLine(),
-                    'Error type: ' . get_class($e),
-                ];
-                $message = implode(';', $log);
-                $this->conveyor['error'] = $this->l('Order not valid on PrestaShop.', 'ShoppingfeedOrderImportActions') . ' ' . $message;
-                ProcessLoggerHandler::logInfo($this->logPrefix . $this->conveyor['error'], 'Order');
-                unset($e);
             }
+
+            $log = [
+                'Message: ' . $e->getMessage(),
+                'File: ' . $e->getFile(),
+                'Line: ' . $e->getLine(),
+                'Error type: ' . get_class($e),
+            ];
+            $message = implode(';', $log);
+            $this->conveyor['error'] = $this->l('Order not valid on PrestaShop.', 'ShoppingfeedOrderImportActions') . ' ' . $message;
+            ProcessLoggerHandler::logInfo($this->logPrefix . $this->conveyor['error'], 'Order');
+            unset($e);
         }
 
         if ($paymentModule->currentOrder && $paymentModule->currentOrderReference) {
@@ -809,12 +814,13 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         $sfOrder->id_order_marketplace = $apiOrder->getReference();
         $sfOrder->name_marketplace = $apiOrder->getChannel()->getName();
         $sfOrder->id_shoppingfeed_token = (int) $this->conveyor['id_token'];
-
-        $paymentInformation = $this->conveyor['orderData']->payment;
+        /** @var OrderData $orderData */
+        $orderData = $this->conveyor['orderData'];
+        $paymentInformation = $orderData->payment;
         $sfOrder->payment_method = !empty($paymentInformation['method']) ? $paymentInformation['method'] : '-';
 
-        if ($this->conveyor['orderData']->createdAt->getTimestamp() != 0) {
-            $sfOrder->date_marketplace_creation = $this->conveyor['orderData']->createdAt->format('Y-m-d H:i:s');
+        if ($orderData->createdAt->getTimestamp() != 0) {
+            $sfOrder->date_marketplace_creation = $orderData->createdAt->format('Y-m-d H:i:s');
         }
         $sfOrder->additionalFields = json_encode($data['additionalFields']);
         $sfOrder->save();
@@ -960,10 +966,11 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         // We may have multiple orders created for the same reference, (advanced stock management)
         // therefore the total price of each orders needs to be calculated separately
         $ordersList = [];
-
+        /** @var OrderData $orderData */
+        $orderData = $this->conveyor['orderData'];
         // See old module _updatePrices()
         /** @var ShoppingfeedAddon\OrderImport\OrderItemData $apiProduct */
-        foreach ($this->conveyor['orderData']->items as &$apiProduct) {
+        foreach ($orderData->items as &$apiProduct) {
             /** @var Product $psProduct */
             $psProduct = $this->conveyor['prestashopProducts'][$apiProduct->reference];
 
@@ -1098,8 +1105,8 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         }
 
         $carrier = $this->conveyor['carrier'];
-        $paymentInformation = &$this->conveyor['orderData']->payment;
-        $additionalFields = $this->conveyor['orderData']->additionalFields;
+        $paymentInformation = &$orderData->payment;
+        $additionalFields = $orderData->additionalFields;
 
         // Carrier tax calculation START
         if (Configuration::get('PS_TAX_ADDRESS_TYPE') == 'id_address_invoice') {
@@ -1472,7 +1479,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
     protected function getOrderByCartId($idCart)
     {
         if (version_compare(_PS_VERSION_, '1.7.1', '<')) {
-            return new Order(Order::getOrderByCartId((int) $idCart));
+            return new Order((int) call_user_func([Order::class, 'getOrderByCartId'], (int) $idCart));
         } else {
             return new Order(Order::getIdByCartId((int) $idCart));
         }

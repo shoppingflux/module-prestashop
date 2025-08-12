@@ -902,7 +902,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
         $context = Context::getContext();
         $scope = $context->smarty->createData($context->smarty);
         $scope->assign($var);
-
+        /* @phpstan-ignore-next-line */
         if (isset($shop->theme)) {
             // PS17
             $themeName = $shop->theme->getName();
@@ -936,7 +936,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
         if (false === Validate::isLoadedObject($shop)) {
             return $templatePath;
         }
-
+        /* @phpstan-ignore-next-line */
         if (isset($shop->theme)) {
             // PS17
             $themeName = $shop->theme->getName();

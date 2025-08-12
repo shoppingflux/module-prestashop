@@ -31,7 +31,9 @@ use ShoppingfeedClasslib\Registry;
 
 class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronController
 {
-    /** @var ShoppingfeedClasslib\Extensions\ProcessMonitor\ProcessMonitorHandler */
+    /** @var ShoppingfeedClasslib\Extensions\ProcessMonitor\ProcessMonitorHandler
+     * @phpstan-ignore-next-line
+     */
     public $processMonitor;
     public $taskDefinition = [
         'name' => 'shoppingfeed:syncOrder',

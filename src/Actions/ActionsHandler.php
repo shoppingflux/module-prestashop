@@ -37,7 +37,7 @@ class ActionsHandler extends DefaultActionHandler
     /**
      * Values classAction by the classes
      *
-     * @var DefaultActionHandler
+     * @var DefaultActionHandler|null
      */
     protected $classAction;
 
@@ -81,10 +81,10 @@ class ActionsHandler extends DefaultActionHandler
             $className = $hookResult['shoppingfeed'];
         }
 
-        if (class_exists($className) === false && empty($this->classAction) === true) {
+        if (class_exists($className) === false && empty($this->classAction)) {
             throw new \Exception($className . '" class not defined "');
         }
-        if (class_exists($className) === true && empty($this->classAction) === true) {
+        if (class_exists($className) && empty($this->classAction)) {
             /* @var DefaultActions $this->classAction */
             $this->classAction = new $className();
         }

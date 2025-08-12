@@ -27,10 +27,13 @@ if (!defined('_PS_VERSION_')) {
 class CdiscountFeeProduct
 {
     protected $symbolValidator;
+    /** @var SfTools */
+    protected $tools;
 
     public function __construct()
     {
         $this->symbolValidator = new SymbolValidator();
+        $this->tools = new SfTools();
     }
 
     public function getProduct()
@@ -56,10 +59,10 @@ class CdiscountFeeProduct
         foreach (\Language::getLanguages(false) as $lang) {
             if ($lang['iso_code'] == 'fr') {
                 $product->name[$lang['id_lang']] = 'Frais CDiscount';
-                $product->link_rewrite[$lang['id_lang']] = \Tools::link_rewrite('Frais CDiscount');
+                $product->link_rewrite[$lang['id_lang']] = $this->tools->str2url('Frais CDiscount');
             } else {
                 $product->name[$lang['id_lang']] = 'CDiscount Fees';
-                $product->link_rewrite[$lang['id_lang']] = \Tools::link_rewrite('CDiscount Fees');
+                $product->link_rewrite[$lang['id_lang']] = $this->tools->str2url('CDiscount Fees');
             }
         }
 

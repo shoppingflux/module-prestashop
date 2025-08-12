@@ -40,7 +40,9 @@ use ShoppingfeedClasslib\Registry;
  */
 class ShoppingfeedSyncProductModuleFrontController extends ShoppingfeedCronController
 {
-    /** @var ShoppingfeedClasslib\Extensions\ProcessMonitor\ProcessMonitorHandler */
+    /** @var ShoppingfeedClasslib\Extensions\ProcessMonitor\ProcessMonitorHandler
+     * @phpstan-ignore-next-line
+     */
     public $processMonitor;
     public $taskDefinition = [
         'name' => 'shoppingfeed:syncProduct',

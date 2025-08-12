@@ -41,4 +41,16 @@ class ShoppingfeedAdminController extends ModuleAdminController
             $this->errors[] = $this->module->l('No order can be imported as long as Prestashop\'s catalog mode is activated', 'ShoppingfeedAdminController');
         }
     }
+
+    protected function ajaxDie($value = null, $controller = null, $method = null)
+    {
+        if (version_compare(_PS_VERSION_, '1.7.5', '<')) {
+            /* @phpstan-ignore-next-line */
+            parent::ajaxDie($value, $controller, $method);
+        } else {
+            /* @phpstan-ignore-next-line */
+            parent::ajaxRender($value, $controller, $method);
+        }
+        exit;
+    }
 }

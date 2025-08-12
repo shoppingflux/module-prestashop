@@ -223,7 +223,7 @@ class Socolissimo extends RuleAbstract implements RuleInterface
         $conf = \Configuration::getMultiple($soflexibilite_conf_key, null, null, null);
 
         $carrier = new \Carrier($cart->id_carrier);
-        if (isset($carrier->id_reference)) {
+        if (!$carrier->id_reference) {
             $id_reference = $carrier->id_reference;
         } else {
             $id_reference = $carrier->id;

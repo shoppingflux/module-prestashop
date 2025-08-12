@@ -70,7 +70,7 @@ class RulesManager
                 'specificRulesClassNames' => &$rulesClassNames,
             ]
         );
-
+        /* @phpstan-ignore-next-line */
         if (empty($rulesClassNames)) {
             return;
         }

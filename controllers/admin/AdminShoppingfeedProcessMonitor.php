@@ -81,7 +81,7 @@ class AdminShoppingfeedProcessMonitorController extends AdminProcessMonitorContr
                 'name' => 'frequency',
             ],
             'url' => [
-                'title' => $this->l('URL'),
+                'title' => $this->module->l('URL'),
                 'name' => 'url',
                 'class' => 'cron-url',
             ],

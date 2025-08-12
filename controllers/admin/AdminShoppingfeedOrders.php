@@ -17,6 +17,9 @@
  *  @copyright Since 2019 Shopping Feed
  *  @license   https://opensource.org/licenses/AFL-3.0  Academic Free License (AFL 3.0)
  */
+
+use ShoppingfeedAddon\Services\SfTools;
+
 if (!defined('_PS_VERSION_')) {
     exit;
 }
@@ -165,7 +168,7 @@ class AdminShoppingfeedOrdersController extends ShoppingfeedAdminController
      */
     public static function setOrderCurrency($echo, $tr)
     {
-        return Tools::displayPrice($echo, new Currency((int) $tr['id_currency']));
+        return (new SfTools())->displayPrice($echo, new Currency((int) $tr['id_currency']));
     }
 
     /**

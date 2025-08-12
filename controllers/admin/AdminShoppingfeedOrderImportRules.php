@@ -795,7 +795,7 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
         $carriers = [
             [
                 'value' => 0,
-                'label' => $this->l('Select carrier', 'AdminShoppingfeedOrderImportRules'),
+                'label' => $this->module->l('Select carrier', 'AdminShoppingfeedOrderImportRules'),
             ],
         ];
 
