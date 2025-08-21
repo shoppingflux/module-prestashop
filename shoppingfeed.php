@@ -334,6 +334,7 @@ class Shoppingfeed extends ShoppingfeedClasslib\Module
         $this->ps_versions_compliancy = ['min' => '1.6', 'max' => '8.99.99'];
         $this->need_instance = 0;
         $this->bootstrap = true;
+        $this->module_key = '7251acf8971b8f1de58ce48f01f86a9d';
         $this->tools = new SfTools();
 
         parent::__construct();
