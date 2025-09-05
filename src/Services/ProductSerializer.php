@@ -329,9 +329,11 @@ class ProductSerializer
 
         if (empty($this->configurations[\Shoppingfeed::PRODUCT_FEED_CUSTOM_FIELDS]) === false) {
             $fields = json_decode($this->configurations[\Shoppingfeed::PRODUCT_FEED_CUSTOM_FIELDS], true);
-            foreach ($this->getOverrideFields() as $fieldname) {
-                if (in_array($fieldname, $fields)) {
-                    $attributes[$fieldname] = $this->product->$fieldname;
+            if (is_array($fields)) {
+                foreach ($this->getOverrideFields() as $fieldname) {
+                    if (in_array($fieldname, $fields)) {
+                        $attributes[$fieldname] = $this->product->$fieldname;
+                    }
                 }
             }
         }
