@@ -110,6 +110,10 @@ class AmazonManomanoTva extends RuleAbstract implements RuleInterface
             return $data['additionalFields']['billing_fiscal_number'];
         }
 
+        if (false == empty($data['additionalFields']['intraco_vat_number'])) {
+            return $data['additionalFields']['intraco_vat_number'];
+        }
+
         return '';
     }
 }
