@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -32,7 +33,7 @@ use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 
 class RelaisColisRule extends RuleAbstract implements RuleInterface
 {
-    /** @var \Relaiscolis */
+    /** @var \ModuleCore */
     protected $relaisColis;
 
     /**
@@ -45,7 +46,7 @@ class RelaisColisRule extends RuleAbstract implements RuleInterface
         $apiOrderShipment = $apiOrder->getShipment();
         $this->relaisColis = \Module::getInstanceByName('relaiscolis');
 
-        if (\Validate::isLoadedObject($this->relaisColis) == false) {
+        if (\Validate::isLoadedObject($this->relaisColis) === false) {
             return false;
         }
 
@@ -131,11 +132,9 @@ class RelaisColisRule extends RuleAbstract implements RuleInterface
             return false;
         }
 
-        /**
-         * @var OrderResource $apiOrder
-         * @var \ShoppingfeedOrder $sfOrder
-         */
+        /** @var OrderResource $apiOrder */
         $apiOrder = $params['apiOrder'];
+        /** @var \ShoppingfeedOrder $sfOrder */
         $sfOrder = $params['sfOrder'];
         $psOrder = new \Order($sfOrder->id_order);
         $addressShipping = new \Address($psOrder->id_address_delivery);
@@ -184,9 +183,6 @@ class RelaisColisRule extends RuleAbstract implements RuleInterface
         return $this->l('If the order has \'Laredoute\' in its marketplace name.', 'RelaisColisRule');
     }
 
-    /**
-     * @return \RelaisColisInfo
-     */
     protected function createRelaisColisInfo(\Cart $cart, $idRelais)
     {
         if (version_compare(_PS_VERSION_, '1.7.2.5', '>=')) {
@@ -203,20 +199,29 @@ class RelaisColisRule extends RuleAbstract implements RuleInterface
         $idDeliveryAddress = (int) array_pop($addresses);
         $address = new \Address($idDeliveryAddress);
         $isoCountry = $this->getIsoConvertor()->toISO3(\Country::getIsoById($address->id_country));
-
+        /* @phpstan-ignore-next-line */
         $relaisColisInfo = new \RelaisColisInfo();
+        /* @phpstan-ignore-next-line */
         $relaisColisInfo->id_cart = $cart->id;
+        /* @phpstan-ignore-next-line */
         $relaisColisInfo->id_customer = $cart->id_customer;
+        /* @phpstan-ignore-next-line */
         $relaisColisInfo->rel = $idRelais;
+        /* @phpstan-ignore-next-line */
         $relaisColisInfo->selected_date = date('Y-m-d');
+        /* @phpstan-ignore-next-line */
         $relaisColisInfo->rel_adr = $address->address1;
+        /* @phpstan-ignore-next-line */
         $relaisColisInfo->rel_cp = $address->postcode;
+        /* @phpstan-ignore-next-line */
         $relaisColisInfo->rel_vil = $address->city;
+        /* @phpstan-ignore-next-line */
         $relaisColisInfo->fcod_pays = $isoCountry;
+        /* @phpstan-ignore-next-line */
         $relaisColisInfo->rel_name = $address->lastname;
 
         try {
-            $relaisColisInfo->save();
+            call_user_func([$relaisColisInfo, 'save']);
         } catch (\Throwable $e) {
             return new \RelaisColisInfo();
         }

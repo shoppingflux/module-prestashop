@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -76,7 +77,7 @@ class CarrierFinder
         }
 
         if (!\Validate::isLoadedObject($carrier) && !empty(\Configuration::get('PS_CARRIER_DEFAULT'))) {
-            $carrier = new \Carrier(\Configuration::get('PS_CARRIER_DEFAULT'));
+            $carrier = new \Carrier((int) \Configuration::get('PS_CARRIER_DEFAULT'));
         }
 
         return $carrier;

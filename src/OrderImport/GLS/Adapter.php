@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -25,10 +26,9 @@ if (!defined('_PS_VERSION_')) {
 
 class Adapter implements AdapterInterface
 {
-    /** @var \NkmGls */
+    /** @var \ModuleCore|null */
     protected $glsModule;
 
-    /** @var \Nukium\GLS\Legacy\GlsController */
     protected $gls;
 
     public function __construct()
@@ -44,10 +44,12 @@ class Adapter implements AdapterInterface
 
         if (true == class_exists(\Nukium\GLS\Legacy\GlsController::class)) {
             $this->glsModule = $glsModule;
-            $this->gls = \Nukium\GLS\Legacy\GlsController::createInstance($this->glsModule->getConfigFormValues());
+            $configs = call_user_func([$this->glsModule, 'getConfigFormValues']);
+            $this->gls = call_user_func(['Nukium\GLS\Legacy\GlsController', 'createInstance'], $configs);
         } elseif (true == class_exists(\Nukium\GLS\Common\Legacy\GlsController::class)) {
             $this->glsModule = $glsModule;
-            $this->gls = \Nukium\GLS\Common\Legacy\GlsController::createInstance($this->glsModule->getConfigFormValues());
+            $configs = call_user_func([$this->glsModule, 'getConfigFormValues']);
+            $this->gls = call_user_func(['Nukium\GLS\Common\Legacy\GlsController', 'createInstance'], $configs);
         }
     }
 
@@ -57,7 +59,7 @@ class Adapter implements AdapterInterface
             return [];
         }
 
-        return $this->gls->getRelayDetail($relayId);
+        return call_user_func([$this->gls, 'getRelayDetail'], $relayId);
     }
 
     public function getGlsProductCode($idCarrier, $countryCode = 'FR')
@@ -66,6 +68,6 @@ class Adapter implements AdapterInterface
             return false;
         }
 
-        return $this->glsModule->getGlsProductCode($idCarrier, $countryCode);
+        return call_user_func([$this->glsModule, 'getGlsProductCode'], $idCarrier, $countryCode);
     }
 }

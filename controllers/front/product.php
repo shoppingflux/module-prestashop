@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -27,6 +28,8 @@ use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 
 class ShoppingfeedProductModuleFrontController extends ModuleFrontController
 {
+    /** @var Shoppingfeed */
+    public $module;
     protected $sfToken;
 
     protected $isCompressFeed;

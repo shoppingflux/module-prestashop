@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright since 2019 Shopping Feed
  *
@@ -39,7 +40,7 @@ use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
  */
 class ShoppingfeedApi
 {
-    /** @var ShoppingfeedApi */
+    /** @var ShoppingfeedApi|null */
     private static $instance;
 
     /** @var ShoppingFeed\Sdk\Api\Session\SessionResource */
@@ -61,15 +62,15 @@ class ShoppingfeedApi
      * Returns the object's instance, using a token. If no session was
      * initialized, creates it. No exceptions are handled here.
      *
-     * @param $id_token the shop to use (one token per shop)
-     * @param $token the token to use, if no shop is specified
+     * @param int|null $id_token the shop to use (one token per shop)
+     * @param string|null $token the token to use, if no shop is specified
      *
-     * @return ShoppingfeedApi
+     * @return ShoppingfeedApi|bool
      */
     public static function getInstanceByToken($id_token = null, $token = null)
     {
-        if (static::$instance && static::$instance->getToken() == $token) {
-            return static::$instance;
+        if (self::$instance && self::$instance->getToken() == $token) {
+            return self::$instance;
         }
 
         if (!$token && !$id_token) {
@@ -88,9 +89,9 @@ class ShoppingfeedApi
             /** @var ShoppingFeed\Sdk\Api\Session\SessionResource $session */
             $session = Client::createSession($credential, $clientOptions);
 
-            static::$instance = new ShoppingfeedApi($session);
+            self::$instance = new ShoppingfeedApi($session);
 
-            return static::$instance;
+            return self::$instance;
         } catch (Exception $e) {
             ProcessLoggerHandler::logError(
                 sprintf(
@@ -107,10 +108,10 @@ class ShoppingfeedApi
      * Returns the object's instance, using credentials. Always creates a new
      * session. No exceptions are handled here.
      *
-     * @param $username
-     * @param $password
+     * @param string $username
+     * @param string $password
      *
-     * @return ShoppingfeedApi
+     * @return ShoppingfeedApi|bool
      */
     public static function getInstanceByCredentials($username, $password)
     {
@@ -122,9 +123,9 @@ class ShoppingfeedApi
             $clientOptions->setHttpAdapter(new GuzzleHTTPAdapter());
             /** @var ShoppingFeed\Sdk\Api\Session\SessionResource $session */
             $session = Client::createSession($credential, $clientOptions);
-            static::$instance = new ShoppingfeedApi($session);
+            self::$instance = new ShoppingfeedApi($session);
 
-            return static::$instance;
+            return self::$instance;
         } catch (Exception $e) {
             ProcessLoggerHandler::logError(
                 sprintf(
@@ -169,7 +170,7 @@ class ShoppingfeedApi
      *                        )
      *                        </pre>
      *
-     * @return ShoppingFeed\Sdk\Api\Catalog\InventoryCollection
+     * @return ShoppingFeed\Sdk\Api\Catalog\InventoryCollection|bool
      */
     public function updateMainStoreInventory($products, $shoppingfeed_store_id = null)
     {
@@ -225,7 +226,7 @@ class ShoppingfeedApi
      *                        )
      *                        </pre>
      *
-     * @return ShoppingFeed\Sdk\Api\Catalog\InventoryCollection
+     * @return ShoppingFeed\Sdk\Api\Catalog\InventoryCollection|bool
      */
     public function updateMainStorePrices($products, $shoppingfeed_store_id = null)
     {
@@ -298,8 +299,8 @@ class ShoppingfeedApi
                     case Shoppingfeed::ORDER_OPERATION_SHIP:
                         if (empty($taskOrder['payload']) === false) {
                             $shipReturnInfo = new ShipReturnInfo(
-                                $taskOrder['payload']['return_info']['carrier'] ?? null,
-                                $taskOrder['payload']['return_info']['tracking_number'] ?? null
+                                !empty($taskOrder['payload']['return_info']['carrier']) ? $taskOrder['payload']['return_info']['carrier'] : null,
+                                !empty($taskOrder['payload']['return_info']['tracking_number']) ? $taskOrder['payload']['return_info']['tracking_number'] : null
                             );
                         } else {
                             $shipReturnInfo = null;
@@ -309,22 +310,22 @@ class ShoppingfeedApi
                             (string) $taskOrder['payload']['carrier_name'],
                             (string) $taskOrder['payload']['tracking_number'],
                             (string) $taskOrder['payload']['tracking_url'],
-                            $taskOrder['payload']['items'] ?? [],
+                            !empty($taskOrder['payload']['items']) ? $taskOrder['payload']['items'] : [],
                             $shipReturnInfo,
-                            $taskOrder['payload']['warehouse_id'] ?? null
+                            !empty($taskOrder['payload']['warehouse_id']) ? $taskOrder['payload']['warehouse_id'] : null
                         );
                         continue 2;
                     case Shoppingfeed::ORDER_OPERATION_CANCEL:
                         $operation->cancel(
                             new Id((int) $taskOrder['id_internal_shoppingfeed']),
-                            $taskOrder['payload']['reason'] ?? ''
+                            !empty($taskOrder['payload']['reason']) ? $taskOrder['payload']['reason'] : ''
                         );
                         continue 2;
                     case Shoppingfeed::ORDER_OPERATION_REFUND:
                         $operation->refund(
                             new Id((int) $taskOrder['id_internal_shoppingfeed']),
-                            $taskOrder['payload']['shipping'] ?? '',
-                            $taskOrder['payload']['products'] ?? [],
+                            !empty($taskOrder['payload']['shipping']) ? $taskOrder['payload']['shipping'] : '',
+                            !empty($taskOrder['payload']['products']) ? $taskOrder['payload']['products'] : []
                         );
                         continue 2;
                     case Shoppingfeed::ORDER_OPERATION_DELIVER:
@@ -551,12 +552,6 @@ class ShoppingfeedApi
             throw new Exception('Shoppingfeed : Guzzle does not seem to be installed.');
         }
 
-        if (version_compare(ShoppingfeedPrefix\GuzzleHttp\ClientInterface::VERSION, '6', '<')
-            || version_compare(ShoppingfeedPrefix\GuzzleHttp\ClientInterface::VERSION, '7', '>=')
-        ) {
-            throw new Exception('Shoppingfeed : the module only supports Guzzle v6.');
-        }
-
         $clientOptions = new ClientOptions();
         $clientOptions->setHttpAdapter(new GuzzleHTTPAdapter());
         $client = new Client($clientOptions);
@@ -591,19 +586,15 @@ class ShoppingfeedApi
             }
 
             $result = $ticketApi->getByBatch($batchId, $filters);
-        } catch (Exception $e) {
         } catch (Throwable $e) {
-        } finally {
-            if (is_null($result)) {
-                ProcessLoggerHandler::logError(
-                    sprintf(
-                        'Error in ShoppingfeedApi::getTicketsByBatchId(): %s',
-                        empty($e) ? '' : $e->getMessage()
-                    )
-                );
+            ProcessLoggerHandler::logError(
+                sprintf(
+                    'Error in ShoppingfeedApi::getTicketsByBatchId(): %s',
+                    $e->getMessage()
+                )
+            );
 
-                return $tickets;
-            }
+            return $tickets;
         }
 
         foreach ($result->getIterator() as $ticket) {

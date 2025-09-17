@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright since 2019 Shopping Feed
  *
@@ -30,6 +31,8 @@ require_once _PS_MODULE_DIR_ . 'shoppingfeed/vendor/autoload.php';
  */
 class AdminShoppingfeedAccountSettingsController extends ShoppingfeedAdminController
 {
+    /** @var Shoppingfeed */
+    public $module;
     public $bootstrap = true;
     public $override_folder;
 
@@ -57,10 +60,11 @@ class AdminShoppingfeedAccountSettingsController extends ShoppingfeedAdminContro
         } else {
             $this->content .= $this->registerForm();
         }
+
+        $this->content .= $this->renderCloudSyncSection();
         $this->content .= $this->renderTokensList();
         $this->content .= $this->renderLoginForm($shops, $currencies, $languagues);
         $this->content .= $this->renderTokenForm($shops, $currencies, $languagues);
-        $this->content .= $this->renderCloudSyncSection();
 
         $this->module->setBreakingChangesNotices();
 
@@ -107,12 +111,12 @@ class AdminShoppingfeedAccountSettingsController extends ShoppingfeedAdminContro
         $helper->base_folder = $this->getTemplatePath();
         $helper->base_tpl = 'shoppingfeed_account_settings/register.tpl';
 
-        $id_default_country = Configuration::get('PS_COUNTRY_DEFAULT');
+        $id_default_country = (int) Configuration::get('PS_COUNTRY_DEFAULT');
         $default_country = new Country($id_default_country);
         $this->context->smarty->assign('phone', Tools::safeOutput(Configuration::get('PS_SHOP_PHONE')));
         $this->context->smarty->assign('email', Tools::safeOutput(Configuration::get('PS_SHOP_EMAIL')));
         $this->context->smarty->assign('lang', Tools::strtolower($default_country->iso_code));
-        $this->context->smarty->assign('shoppingfeed_token', md5(rand()));
+        $this->context->smarty->assign('shoppingfeed_token', md5((string) rand()));
 
         return $helper->generateForm([['form' => $fields_form]]);
     }
@@ -126,7 +130,7 @@ class AdminShoppingfeedAccountSettingsController extends ShoppingfeedAdminContro
     {
         $fields_form = [
             'legend' => [
-                'title' => $this->l('API Token', 'AdminShoppingfeedAccountSettings'),
+                'title' => $this->module->l('API Token', 'AdminShoppingfeedAccountSettings'),
                 'icon' => 'icon-user',
             ],
             'input' => [
@@ -155,7 +159,7 @@ class AdminShoppingfeedAccountSettingsController extends ShoppingfeedAdminContro
                 ],
                 [
                     'type' => 'select',
-                    'label' => $this->l('Shop'),
+                    'label' => $this->module->l('Shop'),
                     'name' => 'shop',
                     'required' => true,
                     'options' => [
@@ -166,7 +170,7 @@ class AdminShoppingfeedAccountSettingsController extends ShoppingfeedAdminContro
                 ],
                 [
                     'type' => 'select',
-                    'label' => $this->l('Language'),
+                    'label' => $this->module->l('Language'),
                     'name' => 'language',
                     'required' => true,
                     'options' => [
@@ -177,7 +181,7 @@ class AdminShoppingfeedAccountSettingsController extends ShoppingfeedAdminContro
                 ],
                 [
                     'type' => 'select',
-                    'label' => $this->l('Currency'),
+                    'label' => $this->module->l('Currency'),
                     'name' => 'currency',
                     'required' => true,
                     'options' => [
@@ -188,7 +192,7 @@ class AdminShoppingfeedAccountSettingsController extends ShoppingfeedAdminContro
                 ],
                 [
                     'type' => 'select',
-                    'label' => $this->l('StoreID ShoppingFeed'),
+                    'label' => $this->module->l('StoreID ShoppingFeed'),
                     'name' => 'store_id',
                     'required' => true,
                     'options' => [
@@ -199,7 +203,7 @@ class AdminShoppingfeedAccountSettingsController extends ShoppingfeedAdminContro
                 ],
             ],
             'submit' => [
-                'title' => $this->l('Save', 'AdminShoppingfeedAccountSettings'),
+                'title' => $this->module->l('Save', 'AdminShoppingfeedAccountSettings'),
                 'name' => 'saveToken',
             ],
         ];
@@ -229,7 +233,7 @@ class AdminShoppingfeedAccountSettingsController extends ShoppingfeedAdminContro
     {
         $fields_form = [
             'legend' => [
-                'title' => $this->l('Login', 'AdminShoppingfeedAccountSettings'),
+                'title' => $this->module->l('Login', 'AdminShoppingfeedAccountSettings'),
                 'icon' => 'icon-user',
             ],
             'input' => [
@@ -258,7 +262,7 @@ class AdminShoppingfeedAccountSettingsController extends ShoppingfeedAdminContro
                 ],
                 [
                     'type' => 'select',
-                    'label' => $this->l('Shop'),
+                    'label' => $this->module->l('Shop'),
                     'name' => 'shop',
                     'required' => true,
                     'options' => [
@@ -269,7 +273,7 @@ class AdminShoppingfeedAccountSettingsController extends ShoppingfeedAdminContro
                 ],
                 [
                     'type' => 'select',
-                    'label' => $this->l('Language'),
+                    'label' => $this->module->l('Language'),
                     'name' => 'language',
                     'required' => true,
                     'options' => [
@@ -280,7 +284,7 @@ class AdminShoppingfeedAccountSettingsController extends ShoppingfeedAdminContro
                 ],
                 [
                     'type' => 'select',
-                    'label' => $this->l('Currency'),
+                    'label' => $this->module->l('Currency'),
                     'name' => 'currency',
                     'required' => true,
                     'options' => [
@@ -291,7 +295,7 @@ class AdminShoppingfeedAccountSettingsController extends ShoppingfeedAdminContro
                 ],
                 [
                     'type' => 'select',
-                    'label' => $this->l('StoreID ShoppingFeed'),
+                    'label' => $this->module->l('StoreID ShoppingFeed'),
                     'name' => 'store_id',
                     'required' => true,
                     'options' => [
@@ -343,7 +347,7 @@ class AdminShoppingfeedAccountSettingsController extends ShoppingfeedAdminContro
             $result &= $this->login($shop_id, $lang_id, $currency_id);
         }
 
-        $result &= $this->module->updateShoppingfeedStoreId();
+        $this->module->updateShoppingfeedStoreId();
 
         return $result;
     }
@@ -450,8 +454,8 @@ class AdminShoppingfeedAccountSettingsController extends ShoppingfeedAdminContro
             return false;
         }
 
-        $id_shop = $this->context->shop->id;
-        Configuration::updateValue(Shoppingfeed::AUTH_TOKEN, $shoppingFeedApi->getToken(), null, null, $id_shop);
+        $id_shop = (int) $this->context->shop->id;
+        Configuration::updateValue(Shoppingfeed::AUTH_TOKEN, $shoppingFeedApi->getToken(), false, null, $id_shop);
 
         $this->confirmations[] = $this->module->l('Login successful; your token has been saved.', 'AdminShoppingfeedAccountSettings');
 
@@ -473,7 +477,7 @@ class AdminShoppingfeedAccountSettingsController extends ShoppingfeedAdminContro
                 'product',
                 ['feed_key' => $listToken['feed_key']],
                 true,
-                Configuration::get('PS_LANG_DEFAULT'),
+                (int) Configuration::get('PS_LANG_DEFAULT'),
                 $listToken['id_shop']
             );
             $listTokens[$key]['link'] = $link;
@@ -529,16 +533,16 @@ class AdminShoppingfeedAccountSettingsController extends ShoppingfeedAdminContro
     public function ajaxProcessActiveConfiguration()
     {
         if (!$id_shoppingfeed_token = (int) Tools::getValue('id_shoppingfeed_token')) {
-            exit(json_encode(['success' => false, 'error' => true, 'text' => $this->l('Failed to update the status')]));
+            exit(json_encode(['success' => false, 'error' => true, 'text' => $this->module->l('Failed to update the status')]));
         }
         $shoppingfeedToken = new ShoppingfeedToken((int) $id_shoppingfeed_token);
         if (Validate::isLoadedObject($shoppingfeedToken) === false) {
-            exit(json_encode(['success' => false, 'error' => true, 'text' => $this->l('Failed to update the status')]));
+            exit(json_encode(['success' => false, 'error' => true, 'text' => $this->module->l('Failed to update the status')]));
         }
         $shoppingfeedToken->active = !$shoppingfeedToken->active;
         $shoppingfeedToken->save() ?
-            exit(json_encode(['success' => true, 'text' => $this->l('The status has been updated successfully')])) :
-            exit(json_encode(['success' => false, 'error' => true, 'text' => $this->l('Failed to update the status')]));
+            exit(json_encode(['success' => true, 'text' => $this->module->l('The status has been updated successfully')])) :
+            exit(json_encode(['success' => false, 'error' => true, 'text' => $this->module->l('Failed to update the status')]));
     }
 
     public function ajaxProcessGetStoreId()
@@ -561,7 +565,7 @@ class AdminShoppingfeedAccountSettingsController extends ShoppingfeedAdminContro
         if (!$api) {
             exit(json_encode([
                 'success' => false,
-                'message' => $this->l('Wrong credentials'),
+                'message' => $this->module->l('Wrong credentials'),
             ]));
         }
 

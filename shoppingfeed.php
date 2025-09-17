@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright since 2019 Shopping Feed
  *
@@ -18,6 +19,7 @@
  */
 
 use ShoppingfeedAddon\OrderInvoiceSync\Hub;
+use ShoppingfeedAddon\Services\SfTools;
 
 if (!defined('_PS_VERSION_')) {
     exit;
@@ -332,9 +334,10 @@ class Shoppingfeed extends ShoppingfeedClasslib\Module
         $this->author = '202 ecommerce';
         $this->tab = 'market_place';
         $this->ps_versions_compliancy = ['min' => '1.6', 'max' => '8.99.99'];
-        $this->need_instance = false;
+        $this->need_instance = 0;
         $this->bootstrap = true;
-        $this->tools = new ShoppingfeedAddon\Services\SfTools();
+        $this->module_key = '7251acf8971b8f1de58ce48f01f86a9d';
+        $this->tools = new SfTools();
 
         parent::__construct();
 
@@ -481,7 +484,7 @@ class Shoppingfeed extends ShoppingfeedClasslib\Module
         }
         $this->saveToken();
 
-        return $res;
+        return (bool) $res;
     }
 
     private function saveToken()
@@ -490,7 +493,7 @@ class Shoppingfeed extends ShoppingfeedClasslib\Module
         $shops = Shop::getShops();
         foreach ($shops as $shop) {
             $tokenConfig = Configuration::get('SHOPPING_FLUX_TOKEN', null, null, $shop['id_shop']);
-            if ($tokenConfig === false) {
+            if ($tokenConfig == false) {
                 continue;
             }
             $tokenTable = $sfToken->findByToken($tokenConfig);
@@ -540,7 +543,7 @@ class Shoppingfeed extends ShoppingfeedClasslib\Module
         if ($tab->id == null) {
             return true;
         }
-        $tab->active = 0;
+        $tab->active = false;
         $tab->save();
 
         return true;
@@ -561,7 +564,7 @@ class Shoppingfeed extends ShoppingfeedClasslib\Module
         if ($tab->id == null) {
             return true;
         }
-        $tab->active = 1;
+        $tab->active = true;
         $tab->save();
 
         return true;
@@ -653,7 +656,7 @@ class Shoppingfeed extends ShoppingfeedClasslib\Module
      * Returns the product's Shopping Feed reference. The developer can skip
      * products to sync by overriding this method and have it return false.
      *
-     * @param ShoppingFeedProduct $sfProduct
+     * @param ShoppingfeedProduct $sfProduct
      * @param array $arguments Should you want to pass more arguments to this
      *                         function, you can find them in this array
      *
@@ -680,11 +683,11 @@ class Shoppingfeed extends ShoppingfeedClasslib\Module
      * this method and have it return false.
      *
      * @param string $sfProductReference The product's reference in Shopping Feed's system
-     * @param string $id_shop
+     * @param int $id_shop
      * @param array $arguments Should you want to pass more arguments to this
      *                         function, you can find them in this array
      *
-     * @return array
+     * @return Product
      */
     public function mapPrestashopProduct($sfProductReference, $id_shop, ...$arguments)
     {
@@ -700,7 +703,7 @@ class Shoppingfeed extends ShoppingfeedClasslib\Module
         );
 
         $explodedReference = explode('_', $sfProductReference);
-        $id_product = isset($explodedReference[0]) ? $explodedReference[0] : null;
+        $id_product = isset($explodedReference[0]) ? (int) $explodedReference[0] : null;
 
         if ($this->tools->isInt($id_product)) {
             $product = new Product($id_product, true, null, $id_shop);
@@ -708,8 +711,10 @@ class Shoppingfeed extends ShoppingfeedClasslib\Module
             $product = new Product();
         }
         if (isset($explodedReference[1]) && $this->tools->isInt($explodedReference[1])) {
+            /* @phpstan-ignore-next-line */
             $product->id_product_attribute = $explodedReference[1];
         } else {
+            /* @phpstan-ignore-next-line */
             $product->id_product_attribute = null;
         }
 
@@ -731,12 +736,12 @@ class Shoppingfeed extends ShoppingfeedClasslib\Module
      * false. Note that the comparison with the return value is strict to allow
      * "0" as a valid price.
      *
-     * @param ShoppingFeedProduct $sfProduct
+     * @param ShoppingfeedProduct $sfProduct
      * @param int $id_shop
      * @param array $arguments Should you want to pass more arguments to this
      *                         function, you can find them in this array
      *
-     * @return string
+     * @return float
      */
     public function mapProductPrice(ShoppingfeedProduct $sfProduct, $id_shop, $arguments = [])
     {
@@ -755,7 +760,7 @@ class Shoppingfeed extends ShoppingfeedClasslib\Module
                 $sfProduct->id_product_attribute : null,
             $id_country,
             0,// id_state
-            0,// postcode
+            '',// postcode
             $id_currency,// id_currency
             $id_group,// id_group
             1,// quantity
@@ -798,7 +803,7 @@ class Shoppingfeed extends ShoppingfeedClasslib\Module
         $sql->select('COUNT(distinct p.`id_product`)');
         $countProductsOnFeed = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
 
-        return $countProductsOnFeed;
+        return (int) $countProductsOnFeed;
     }
 
     /**
@@ -889,7 +894,6 @@ class Shoppingfeed extends ShoppingfeedClasslib\Module
         $id_product_attribute = $params['id_product_attribute'];
 
         try {
-            /** @var ShoppingfeedHandler $handler */
             $handler = new ShoppingfeedClasslib\Actions\ActionsHandler();
             $handler
                 ->setConveyor([
@@ -1214,7 +1218,7 @@ class Shoppingfeed extends ShoppingfeedClasslib\Module
     /**
      * This hook is used to "record" SF orders imported using the old module.
      *
-     * @param type array
+     * @param mixed $params
      *
      * @return void
      */
@@ -1314,7 +1318,7 @@ class Shoppingfeed extends ShoppingfeedClasslib\Module
     /**
      * Saves an order for status synchronization
      *
-     * @param type $params
+     * @param mixed $params
      */
     public function hookActionOrderStatusPostUpdate($params)
     {

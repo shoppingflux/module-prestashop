@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -28,6 +29,9 @@ use ShoppingfeedClasslib\Extensions\ProcessMonitor\Controllers\Admin\AdminProces
  */
 class AdminShoppingfeedProcessMonitorController extends AdminProcessMonitorController
 {
+    /** @var Shoppingfeed */
+    public $module;
+
     public function __construct()
     {
         parent::__construct();
@@ -77,7 +81,7 @@ class AdminShoppingfeedProcessMonitorController extends AdminProcessMonitorContr
                 'name' => 'frequency',
             ],
             'url' => [
-                'title' => $this->l('URL'),
+                'title' => $this->module->l('URL'),
                 'name' => 'url',
                 'class' => 'cron-url',
             ],

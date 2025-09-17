@@ -17,8 +17,17 @@ parameters:
     - '#Call to static method getRelaisColisOrderId\(\) on an unknown class RelaisColisOrder\.#'
     - '#Call to an undefined static method ImageType::getFormatedName\(\)#'
     - '#Call to static method createInstance\(\) on an unknown class Nukium\\GLS\\Legacy\\GlsController\.#'
+    - '#Parameter \#1 \$id of class Customer constructor expects null, int given\.#'
+    - '#Parameter \#1 \$idCategory of class Category constructor expects null, int given\.#'
+    - '#Parameter \#1 \$id of class Currency constructor expects null, int given\.#'
+    - '#Parameter \#4 \$ssl of method LinkCore::getModuleLink\(\) expects null, true given\.#'
+    - '#Parameter \#1 \$master of static method DbCore::getInstance\(\) expects bool, int given\.#'
+    - '#Parameter \#4 \$templateVars of static method MailCore::send\(\) expects string, array<string, string> given\.#'
+    - '#Access to property \$id_attribute_group on an unknown class ProductAttribute\.#'
+    - '#Unreachable statement - code above always terminates\.#'
   excludePaths:
     - ../../classes/Compatibility/backword-compatibility.php
 
   reportUnmatchedIgnoredErrors: false
-  level: 1
+  treatPhpDocTypesAsCertain: false
+  level: 5

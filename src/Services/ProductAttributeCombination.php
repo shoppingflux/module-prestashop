@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -34,7 +35,7 @@ class ProductAttributeCombination
      * @param int|null $idLang
      * @param int|null $idShop
      *
-     * @return []
+     * @return array
      */
     public function get(\Product $product, $idLang = null, $idShop = null)
     {
@@ -95,7 +96,7 @@ class ProductAttributeCombination
                 if (!\Cache::isStored($cache_key)) {
                     \Cache::store(
                         $cache_key,
-                        \StockAvailable::getQuantityAvailableByProduct($row['id_product'], $row['id_product_attribute'])
+                        (string) \StockAvailable::getQuantityAvailableByProduct($row['id_product'], $row['id_product_attribute'])
                     );
                 }
                 $combinations[$idProductAttribute]['id_product_attribute'] = $idProductAttribute;

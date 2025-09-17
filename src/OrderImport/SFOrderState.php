@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -34,7 +35,7 @@ class SFOrderState
 
     public function get()
     {
-        $sfOrderState = new \OrderState(\Configuration::get(\Shoppingfeed::IMPORT_ORDER_STATE, null, null, $this->idShop));
+        $sfOrderState = new \OrderState((int) \Configuration::get(\Shoppingfeed::IMPORT_ORDER_STATE, null, null, $this->idShop));
 
         if (\Validate::isLoadedObject($sfOrderState)) {
             return $sfOrderState;
@@ -52,6 +53,6 @@ class SFOrderState
 
     protected function getDefault()
     {
-        return new \OrderState(\Configuration::get('PS_OS_PAYMENT'));
+        return new \OrderState((int) \Configuration::get('PS_OS_PAYMENT'));
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright since 2019 Shopping Feed
  *
@@ -28,14 +29,46 @@ class SfTools
     public function hash($string)
     {
         if (version_compare(_PS_VERSION_, '1.7', '<')) {
-            return \Tools::encrypt($string);
+            return call_user_func([\Tools::class, 'encrypt'], $string);
         } else {
             return \Tools::hash($string);
+        }
+    }
+
+    public function str2url($str)
+    {
+        if (version_compare(_PS_VERSION_, '8.1', '<')) {
+            return call_user_func([\Tools::class, 'link_rewrite'], $str);
+        } else {
+            return call_user_func([\Tools::class, 'str2url'], $str);
         }
     }
 
     public function isInt($value)
     {
         return \Validate::isInt($value);
+    }
+
+    public function displayPrice($price, $currency = null, $no_utf8 = false, ?\Context $context = null)
+    {
+        if (version_compare(_PS_VERSION_, '1.7.6.0', '<')) {
+            return call_user_func([\Tools::class, 'display_price'], $price, $currency, $no_utf8, $context);
+        }
+
+        if (!is_numeric($price)) {
+            return $price;
+        }
+
+        $context = $context ?: \Context::getContext();
+        $currency = $currency ?: $context->currency;
+
+        if (is_int($currency)) {
+            $currency = \Currency::getCurrencyInstance($currency);
+        }
+        /* @phpstan-ignore-next-line */
+        $locale = \Tools::getContextLocale($context);
+        $currencyCode = is_array($currency) ? $currency['iso_code'] : $currency->iso_code;
+
+        return $locale->formatPrice($price, $currencyCode);
     }
 }

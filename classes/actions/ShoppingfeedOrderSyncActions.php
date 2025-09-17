@@ -70,7 +70,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
         $newShoppingFeedOrder->name_marketplace = $order->payment;
         $newShoppingFeedOrder->id_order = $id_order;
         $newShoppingFeedOrder->payment_method = '-';
-        $newShoppingFeedOrder->id_shoppingfeed_token = '1';
+        $newShoppingFeedOrder->id_shoppingfeed_token = 1;
         $newShoppingFeedOrder->save();
 
         ProcessLoggerHandler::logSuccess(
@@ -160,7 +160,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
         $updateAt = time();
         $shippedStatuses = json_decode(Configuration::get(Shoppingfeed::SHIPPED_ORDERS));
         if (in_array($order->current_state, $shippedStatuses)) {
-            $updateAt += (60 * Configuration::get(Shoppingfeed::ORDER_STATUS_TIME_SHIFT));
+            $updateAt += (60 * (int) Configuration::get(Shoppingfeed::ORDER_STATUS_TIME_SHIFT));
         }
 
         // Save the task order
@@ -266,7 +266,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
 
         $this->conveyor['preparedTaskOrders'] = [];
         foreach ($taskOrders as $taskOrder) {
-            /** @var $taskOrder ShoppingfeedTaskOrder */
+            /** @var ShoppingfeedTaskOrder $taskOrder */
             $logPrefix = self::getLogPrefix($taskOrder->id_order);
             $order = new Order($taskOrder->id_order);
 
@@ -280,7 +280,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
                 Registry::increment('syncStatusErrors');
                 continue;
             }
-
+            /** @var ShoppingfeedOrder $sfOrder */
             $sfOrder = ShoppingfeedOrder::getByIdOrder($taskOrder->id_order);
             if (empty($sfOrder->id_order_marketplace)) {
                 ProcessLoggerHandler::logError(
@@ -426,7 +426,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
         $this->conveyor['preparedTaskOrders'] = [];
 
         foreach ($taskOrders as $taskOrder) {
-            /** @var $taskOrder ShoppingfeedTaskOrder */
+            /** @var ShoppingfeedTaskOrder $taskOrder */
             $logPrefix = self::getLogPrefix($taskOrder->id_order);
             $order = new Order($taskOrder->id_order);
             $sfOrder = ShoppingfeedOrder::getByIdOrder($taskOrder->id_order);
@@ -798,7 +798,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
         // ticket number, and link each task to its SF order
         $this->conveyor['preparedTaskOrders'] = [];
         foreach ($taskOrders as $taskOrder) {
-            /** @var $taskOrder ShoppingfeedTaskOrder */
+            /** @var ShoppingfeedTaskOrder $taskOrder */
             $logPrefix = self::getLogPrefix($taskOrder->id_order);
             $shoppingfeedOrder = ShoppingfeedOrder::getByIdOrder($taskOrder->id_order);
             if (!Validate::isLoadedObject($shoppingfeedOrder)) {
@@ -977,6 +977,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
             $sfOrder->save();
             $failedTaskOrdersMailData[] = [
                 'reference' => $order->reference,
+                /* @phpstan-ignore-next-line */
                 'status' => !empty($orderState->name[$id_lang]) ? $orderState->name[$id_lang] : reset($orderState->name),
             ];
         }
@@ -1050,7 +1051,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
         $context = Context::getContext();
         $scope = $context->smarty->createData($context->smarty);
         $scope->assign($var);
-
+        /* @phpstan-ignore-next-line */
         if (isset($shop->theme)) {
             // PS17
             $themeName = $shop->theme->getName();
@@ -1084,7 +1085,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
         if (false === Validate::isLoadedObject($shop)) {
             return $templatePath;
         }
-
+        /* @phpstan-ignore-next-line */
         if (isset($shop->theme)) {
             // PS17
             $themeName = $shop->theme->getName();

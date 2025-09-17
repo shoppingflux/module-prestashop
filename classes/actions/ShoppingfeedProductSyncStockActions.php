@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright since 2019 Shopping Feed
  *
@@ -42,13 +43,13 @@ class ShoppingfeedProductSyncStockActions extends ShoppingfeedProductSyncActions
     public function prepareBatch()
     {
         $this->conveyor['preparedBatch'] = [];
+        /** @var Shoppingfeed $sfModule */
         $sfModule = Module::getInstanceByName('shoppingfeed');
         $token = new ShoppingfeedToken($this->conveyor['id_token']);
 
         /** @var ShoppingfeedProduct $sfProduct */
         foreach ($this->conveyor['batch'] as $sfProduct) {
             $sfReference = $sfModule->mapReference($sfProduct);
-
             // The developer can skip products to sync by overriding
             // ShoppingFeed::mapReference and have it return false
             if (empty($sfReference)) {
@@ -90,7 +91,7 @@ class ShoppingfeedProductSyncStockActions extends ShoppingfeedProductSyncActions
 
             return false;
         }
-        $limit = Configuration::getGlobalValue(Shoppingfeed::STOCK_SYNC_MAX_PRODUCTS);
+        $limit = (int) Configuration::getGlobalValue(Shoppingfeed::STOCK_SYNC_MAX_PRODUCTS);
         $preparedBatch = $this->conveyor['preparedBatch'];
         foreach (array_chunk($preparedBatch, $limit, true) as $products) {
             $res = $shoppingfeedApi->updateMainStoreInventory($products, $this->conveyor['shoppingfeed_store_id']);

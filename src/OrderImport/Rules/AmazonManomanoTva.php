@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -107,6 +108,10 @@ class AmazonManomanoTva extends RuleAbstract implements RuleInterface
 
         if (false == empty($data['additionalFields']['billing_fiscal_number'])) {
             return $data['additionalFields']['billing_fiscal_number'];
+        }
+
+        if (false == empty($data['additionalFields']['intraco_vat_number'])) {
+            return $data['additionalFields']['intraco_vat_number'];
         }
 
         return '';
