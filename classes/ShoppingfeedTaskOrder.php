@@ -30,10 +30,14 @@ class ShoppingfeedTaskOrder extends ObjectModel
 
     const ACTION_UPLOAD_INVOICE = 'UPLOAD_INVOICE';
 
+    const ACTION_PARTIAL_REFUND = 'PARTIAL_REFUND';
+
     // As in, "check the ticket related to the Order Status synchronization"
     const ACTION_CHECK_TICKET_SYNC_STATUS = 'CHECK_TICKET_SYNC_STATUS';
 
     const ACTION_CHECK_TICKET_UPLOAD_INVOICE = 'CHECK_TICKET_UPLOAD_INVOICE';
+
+    const ACTION_CHECK_TICKET_PARTIAL_REFUND = 'ACTION_CHECK_TICKET_PARTIAL_REFUND';
 
     /** @var string The action to execute for this order */
     public $action;
@@ -70,6 +74,8 @@ class ShoppingfeedTaskOrder extends ObjectModel
                     self::ACTION_CHECK_TICKET_SYNC_STATUS,
                     self::ACTION_UPLOAD_INVOICE,
                     self::ACTION_CHECK_TICKET_UPLOAD_INVOICE,
+                    self::ACTION_PARTIAL_REFUND,
+                    self::ACTION_CHECK_TICKET_PARTIAL_REFUND,
                 ],
             ],
             'id_order' => [

@@ -90,6 +90,7 @@ class Shoppingfeed extends ShoppingfeedClasslib\Module
     const CDISCOUNT_FEE_PRODUCT = 'SHOPPINGFEED_CDISCOUNT_FEE_PRODUCT';
     const NEED_UPDATE_HOOK = 'SHOPPINGFEED_IS_NEED_UPDATE_HOOK';
     const ORDER_TRACKING = 'SHOPPINGFEED_ORDER_TRACKING';
+    const ALLOW_PARTIAL_REFUND = 'SHOPPINGFEED_ALLOW_PARTIAL_REFUND';
     const COMPRESS_PRODUCTS_FEED = 'SHOPPINGFEED_COMPRESS_PRODUCTS_FEED';
     const SEND_NOTIFICATION = 'SHOPPINGFEED_SEND_NOTIFICATION';
     const PRODUCT_FEED_EXPORT_HIERARCHY = 'SHOPPINGFEED_PRODUCT_FEED_EXPORT_HIERARCHY';
@@ -297,6 +298,7 @@ class Shoppingfeed extends ShoppingfeedClasslib\Module
         'actionObjectCombinationUpdateAfter',
         'actionValidateOrder',
         'actionOrderStatusPostUpdate',
+        'actionOrderSlipAdd',
         'actionShoppingfeedOrderImportRegisterSpecificRules',
         'actionObjectProductDeleteBefore',
         'ActionObjectCategoryUpdateAfter',
@@ -1353,6 +1355,21 @@ class Shoppingfeed extends ShoppingfeedClasslib\Module
                 }
             }
         }
+    }
+
+    public function hookActionOrderSlipAdd($params)
+    {
+        if (false == (int) Configuration::get(self::ALLOW_PARTIAL_REFUND)) {
+            return;
+        }
+
+        $shoppingFeedOrder = ShoppingfeedOrder::getByIdOrder($params['order']->id);
+
+        if (!Validate::isLoadedObject($shoppingFeedOrder)) {
+            return;
+        }
+
+        $this->addOrderTask($shoppingFeedOrder->id_order, ShoppingfeedTaskOrder::ACTION_PARTIAL_REFUND);
     }
 
     /**
