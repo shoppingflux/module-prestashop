@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -22,7 +23,7 @@ if (!defined('_PS_VERSION_')) {
 
 use ShoppingfeedClasslib\Install\ModuleInstaller;
 
-function upgrade_module_2_2_0($module)
+function upgrade_module_2_3_0($module)
 {
     /**
      * @var Shoppingfeed $module

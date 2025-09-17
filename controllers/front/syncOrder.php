@@ -157,7 +157,7 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
             $successfulTicketsPartialRefundTaskOrders = [];
 
             try {
-                Registry::set('ticketsErrors', 0);
+                Registry::set('ticketsErrors', '0');
 
                 /** @var ActionsHandler $ticketsHandler */
                 $ticketsHandler = new ActionsHandler();
@@ -334,7 +334,7 @@ class ShoppingfeedSyncOrderModuleFrontController extends ShoppingfeedCronControl
             $failedSyncPartialRefundTaskOrders = [];
             $successfulSyncPartialRefundTaskOrders = [];
             try {
-                Registry::set('syncStatusErrors', 0);
+                Registry::set('syncStatusErrors', '0');
 
                 /** @var ActionsHandler $handler */
                 $handler = new ActionsHandler();

@@ -723,9 +723,9 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
         $this->conveyor['preparedTaskOrders'] = [];
         /** @var ShoppingfeedTaskOrder $taskOrder */
         foreach ($taskOrders as $taskOrder) {
-            /** @var $taskOrder ShoppingfeedTaskOrder */
             $logPrefix = self::getLogPrefix($taskOrder->id_order);
             $order = new Order($taskOrder->id_order);
+            /** @var ShoppingfeedOrder $sfOrder */
             $sfOrder = ShoppingfeedOrder::getByIdOrder($taskOrder->id_order);
             $products = [];
             $isShippingRefund = false;
