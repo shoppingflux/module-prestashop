@@ -40,6 +40,12 @@ use ShoppingFeed\Sdk\Api\Order\OrderResource;
 class OrderData
 {
     /** @var string */
+    public $id;
+
+    /** @var string */
+    public $reference;
+
+    /** @var string */
     public $storeReference;
 
     /** @var string */
@@ -87,6 +93,8 @@ class OrderData
 
     public function __construct(OrderResource $apiOrder)
     {
+        $this->id = $apiOrder->getId();
+        $this->reference = $apiOrder->getReference();
         $this->storeReference = $apiOrder->getStoreReference();
         $this->status = $apiOrder->getStatus();
         $this->acknowledgedAt = $apiOrder->getAcknowledgedAt();
