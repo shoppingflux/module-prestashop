@@ -93,8 +93,8 @@ class OrderData
 
     public function __construct(OrderResource $apiOrder)
     {
-        $this->id = $apiOrder->getId();
-        $this->reference = $apiOrder->getReference();
+        $this->id = (string) $apiOrder->getId();
+        $this->reference = (string) $apiOrder->getReference();
         $this->storeReference = $apiOrder->getStoreReference();
         $this->status = $apiOrder->getStatus();
         $this->acknowledgedAt = $apiOrder->getAcknowledgedAt();

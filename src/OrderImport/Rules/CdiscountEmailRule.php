@@ -65,7 +65,7 @@ class CdiscountEmailRule extends RuleAbstract implements RuleInterface
 
         if ($customer->getEmail() === 'noreply@clemarche.com') {
             $customer->setEmail($orderData->reference . '-' . $customer->getEmail());
-            ProcessLoggerHandler::logInfo($this->logPrefix . $this->l('Rule triggered', 'TaxForBusiness'));
+            ProcessLoggerHandler::logInfo($this->logPrefix . $this->l('Rule triggered', 'CdiscountEmailRule'));
         }
     }
 
@@ -74,7 +74,7 @@ class CdiscountEmailRule extends RuleAbstract implements RuleInterface
      */
     public function getConditions()
     {
-        return $this->l('Rule is applied to all orders coming from CDiscount', 'Cdiscount');
+        return $this->l('Rule is applied to all orders coming from CDiscount', 'CdiscountEmailRule');
     }
 
     /**
@@ -82,6 +82,6 @@ class CdiscountEmailRule extends RuleAbstract implements RuleInterface
      */
     public function getDescription()
     {
-        return $this->l('Rule adds the prefix to email noreply@clemarche.com', 'Cdiscount');
+        return $this->l('Rule adds the prefix to email noreply@clemarche.com', 'CdiscountEmailRule');
     }
 }
