@@ -26,18 +26,18 @@ if (!defined('_PS_VERSION_')) {
  */
 class ShoppingfeedTaskOrder extends ObjectModel
 {
-    const ACTION_SYNC_STATUS = 'SYNC_STATUS';
+    public const ACTION_SYNC_STATUS = 'SYNC_STATUS';
 
-    const ACTION_UPLOAD_INVOICE = 'UPLOAD_INVOICE';
+    public const ACTION_UPLOAD_INVOICE = 'UPLOAD_INVOICE';
 
-    const ACTION_PARTIAL_REFUND = 'PARTIAL_REFUND';
+    public const ACTION_PARTIAL_REFUND = 'PARTIAL_REFUND';
 
     // As in, "check the ticket related to the Order Status synchronization"
-    const ACTION_CHECK_TICKET_SYNC_STATUS = 'CHECK_TICKET_SYNC_STATUS';
+    public const ACTION_CHECK_TICKET_SYNC_STATUS = 'CHECK_TICKET_SYNC_STATUS';
 
-    const ACTION_CHECK_TICKET_UPLOAD_INVOICE = 'CHECK_TICKET_UPLOAD_INVOICE';
+    public const ACTION_CHECK_TICKET_UPLOAD_INVOICE = 'CHECK_TICKET_UPLOAD_INVOICE';
 
-    const ACTION_CHECK_TICKET_PARTIAL_REFUND = 'ACTION_CHECK_TICKET_PARTIAL_REFUND';
+    public const ACTION_CHECK_TICKET_PARTIAL_REFUND = 'ACTION_CHECK_TICKET_PARTIAL_REFUND';
 
     /** @var string The action to execute for this order */
     public $action;
