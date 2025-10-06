@@ -25,11 +25,11 @@ use ShoppingfeedAddon\Services\ProductSerializer;
 
 class ShoppingfeedPreloading extends ObjectModel
 {
-    const ACTION_SYNC_STOCK = 'SYNC_STOCK';
-    const ACTION_SYNC_PRICE = 'SYNC_PRICE';
-    const ACTION_SYNC_ALL = 'SYNC_ALL';
-    const ACTION_SYNC_PRELODING = 'SYNC_PRELODING';
-    const ACTION_SYNC_CATEGORY = 'ACTION_SYNC_CATEGORY';
+    public const ACTION_SYNC_STOCK = 'SYNC_STOCK';
+    public const ACTION_SYNC_PRICE = 'SYNC_PRICE';
+    public const ACTION_SYNC_ALL = 'SYNC_ALL';
+    public const ACTION_SYNC_PRELODING = 'SYNC_PRELODING';
+    public const ACTION_SYNC_CATEGORY = 'ACTION_SYNC_CATEGORY';
 
     public $id_shoppingfeed_preloading;
 

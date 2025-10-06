@@ -33,9 +33,9 @@ use ShoppingFeed\Feed\Xml\XmlProductFeedWriter;
 
 class SfProductGenerator
 {
-    const VALIDATE_NONE = 0;
-    const VALIDATE_EXCLUDE = 1;
-    const VALIDATE_EXCEPTION = 2;
+    public const VALIDATE_NONE = 0;
+    public const VALIDATE_EXCLUDE = 1;
+    public const VALIDATE_EXCEPTION = 2;
 
     /**
      * File destination for the output feed

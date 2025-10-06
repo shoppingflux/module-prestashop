@@ -29,7 +29,7 @@ use ShoppingfeedClasslib\Hook\AbstractHook;
 
 class BackOfficeHeader extends AbstractHook
 {
-    const AVAILABLE_HOOKS = [
+    public const AVAILABLE_HOOKS = [
         'displayBackOfficeHeader',
     ];
 
