@@ -1,0 +1,113 @@
+{
+  "id": 19503675601,
+  "storeId": 26317,
+  "channelId": 259,
+  "reference": "M240571903601",
+  "storeReference": "1010063201",
+  "isTest": false,
+  "acknowledgedAt": "2024-05-25T20:01:33+02:00",
+  "createdAt": "2024-05-25T21:36:07+02:00",
+  "updatedAt": "2024-05-27T21:32:01+02:00",
+  "status": "waiting_shipment",
+  "anonymized": false,
+  "payment": {
+    "shippingAmount": 0,
+    "productAmount": 213.46,
+    "totalAmount": 213.46,
+    "currency": "EUR",
+    "method": "",
+    "taxMode": "undefined"
+  },
+  "shipment": {
+    "type": "full",
+    "carrier": "DPD",
+    "trackingNumber": "123456789",
+    "trackingLink": "https://trace.dpd.fr/trace/123456789",
+    "returnInfo": {
+      "carrier": null,
+      "trackingNumber": null
+    }
+  },
+  "additionalFields": {
+    "seller_voucher": "50",
+    "channel_voucher": "0",
+    "intraco_vat_number": "",
+    "billing_fiscal_number": "",
+    "buyer_identification_number": ""
+  },
+  "latestShipDate": null,
+  "errors": [],
+  "itemsReferencesAliases": null,
+  "fulfilledBy": "store",
+  "items": [
+    {
+      "reference": "1",
+      "status": "",
+      "quantity": 1,
+      "price": 263.46,
+      "commission": null,
+      "taxAmount": 43.91,
+      "ecotaxAmount": 0,
+      "channelReference": "0",
+      "additionalFields": {
+        "taxRate": 43.91
+      },
+      "name":"Mug Today is a good day",
+      "image":"http://localhost/img/p/1/1-small_default.jpg"
+    }
+  ],
+  "commission": null,
+  "shippingAddress": {
+    "firstName": "John",
+    "lastName": "Dow",
+    "company": "202 ecommerce",
+    "street": "10 rue Vivienne",
+    "street2": "",
+    "other": "",
+    "postalCode": "75001",
+    "city": "Paris",
+    "country": "FR",
+    "phone": "0123456789",
+    "mobilePhone": "",
+    "province": "",
+    "email": "unique-07102025@test.com"
+  },
+  "billingAddress": {
+    "firstName": "John",
+    "lastName": "Dow",
+    "company": "202 ecommerce",
+    "street": "10 rue Vivienne",
+    "street2": "",
+    "other": "",
+    "postalCode": "75001",
+    "city": "Paris",
+    "country": "FR",
+    "phone": "0123456789",
+    "mobilePhone": "",
+    "province": "",
+    "email": "unique-07102025@test.com"
+  },
+  "_links": {
+    "self": {
+      "href": "/v1/store/26301/order/19503675601"
+    },
+    "store": {
+      "href": "/v1/store/26301"
+    }
+  },
+  "_embedded": {
+    "channel": {
+      "id": 259,
+      "name": "Monechelle",
+      "_links": {
+        "self": {
+          "href": "/v1/channel/259"
+        },
+        "image": {
+          "href": "https://assets.shopping-feed.com/channel/logo/Monechelle.png"
+        }
+      }
+    },
+    "tag": []
+  }
+}
