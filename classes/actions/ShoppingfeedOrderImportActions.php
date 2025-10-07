@@ -1009,6 +1009,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             $tax_rate = $productOrderDetail['tax_rate'] === null ? 0 : $productOrderDetail['tax_rate'];
             /* @phpstan-ignore-next-line */
             if ($isUseSfTax) {
+                /* @phpstan-ignore-next-line */
                 if ($isAmountTaxIncl) {
                     $tax_rate = $apiProduct->taxAmount / ($apiProduct->getTotalPrice() - $apiProduct->taxAmount) * 100;
                 } else {
@@ -1132,6 +1133,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             if ($additionalFields['shipping_tax'] > 0) {
                 if ($isAmountTaxIncl === true) {
                     $carrier_tax_rate = $additionalFields['shipping_tax'] / ($paymentInformation['shippingAmount'] - $additionalFields['shipping_tax']) * 100;
+                /* @phpstan-ignore-next-line */
                 } else {
                     $carrier_tax_rate = $additionalFields['shipping_tax'] / $paymentInformation['shippingAmount'] * 100;
                 }
