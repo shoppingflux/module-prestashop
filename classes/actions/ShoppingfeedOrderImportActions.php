@@ -1009,7 +1009,11 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             $tax_rate = $productOrderDetail['tax_rate'] === null ? 0 : $productOrderDetail['tax_rate'];
             /* @phpstan-ignore-next-line */
             if ($isUseSfTax) {
-                $tax_rate = $apiProduct->taxAmount / ($apiProduct->getTotalPrice() - $apiProduct->taxAmount) * 100;
+                if ($isAmountTaxIncl) {
+                    $tax_rate = $apiProduct->taxAmount / ($apiProduct->getTotalPrice() - $apiProduct->taxAmount) * 100;
+                } else {
+                    $tax_rate = $apiProduct->taxAmount / $apiProduct->getTotalPrice() * 100;
+                }
             }
             /* @phpstan-ignore-next-line */
             if ($skipTax === true) {
@@ -1126,7 +1130,11 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         /* @phpstan-ignore-next-line */
         if ($isUseSfTax && isset($additionalFields['shipping_tax'])) {
             if ($additionalFields['shipping_tax'] > 0) {
-                $carrier_tax_rate = $additionalFields['shipping_tax'] / ($paymentInformation['shippingAmount'] - $additionalFields['shipping_tax']) * 100;
+                if ($isAmountTaxIncl === true) {
+                    $carrier_tax_rate = $additionalFields['shipping_tax'] / ($paymentInformation['shippingAmount'] - $additionalFields['shipping_tax']) * 100;
+                } else {
+                    $carrier_tax_rate = $additionalFields['shipping_tax'] / $paymentInformation['shippingAmount'] * 100;
+                }
             } else {
                 $carrier_tax_rate = 0;
             }
