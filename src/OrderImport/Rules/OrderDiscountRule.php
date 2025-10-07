@@ -87,7 +87,7 @@ class OrderDiscountRule extends RuleAbstract implements RuleInterface
                         $cart->id
                     ),
                     'Cart',
-                    $cart->id,
+                    $cart->id
                 );
             } else {
                 ProcessLoggerHandler::logInfo(
@@ -98,7 +98,7 @@ class OrderDiscountRule extends RuleAbstract implements RuleInterface
                         $cart->id
                     ),
                     'Cart',
-                    $cart->id,
+                    $cart->id
                 );
             }
         }
@@ -211,7 +211,7 @@ class OrderDiscountRule extends RuleAbstract implements RuleInterface
                     $e->getLine()
                 ),
                 'Cart',
-                $cart->id,
+                $cart->id
             );
 
             return null;
