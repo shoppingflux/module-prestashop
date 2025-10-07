@@ -962,7 +962,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 'isAmountTaxIncl' => &$isAmountTaxIncl,
                 'skipTax' => &$skipTax,
                 'isUseSfTax' => &$isUseSfTax,
-                'discount' => &$discount
+                'discount' => &$discount,
             ]
         );
 

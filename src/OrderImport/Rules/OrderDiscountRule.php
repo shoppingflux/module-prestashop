@@ -24,7 +24,6 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-use Cart;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use ShoppingfeedAddon\OrderImport\DiscountProvider;
 use ShoppingfeedAddon\OrderImport\OrderData;
@@ -175,7 +174,7 @@ class OrderDiscountRule extends RuleAbstract implements RuleInterface
         return ['enabled' => (int) $rulesConfiguration['ShoppingfeedAddon\OrderImport\Rules\OrderDiscountRule']['enabled']];
     }
 
-    protected function getCartRule(OrderData $orderData, Cart $cart)
+    protected function getCartRule(OrderData $orderData, \Cart $cart)
     {
         $additionalFields = $orderData->additionalFields;
         $amount = 0;
@@ -214,6 +213,7 @@ class OrderDiscountRule extends RuleAbstract implements RuleInterface
                 'Cart',
                 $cart->id,
             );
+
             return null;
         }
 

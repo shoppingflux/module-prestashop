@@ -20,8 +20,6 @@
 
 namespace ShoppingfeedAddon\OrderImport;
 
-use CartRule;
-use Configuration;
 use ShoppingfeedAddon\Services\SfTools;
 
 class DiscountProvider
@@ -29,23 +27,23 @@ class DiscountProvider
     public function getForOrder($orderRef, $amount, $id_currency, $id_customer, $name)
     {
         $code = 'SF-' . (new SfTools())->hash(sprintf(
-                '%s_%f_%d_%d_%s',
-                (string) $orderRef,
-                (float) $amount,
-                (int) $id_customer,
-                (int) $id_currency,
-                (string) $name
-            ));
-        $id_lang = (int) Configuration::get('PS_LANG_DEFAULT');
-        $result = CartRule::getCartsRuleByCode($code, $id_lang);
+            '%s_%f_%d_%d_%s',
+            (string) $orderRef,
+            (float) $amount,
+            (int) $id_customer,
+            (int) $id_currency,
+            (string) $name
+        ));
+        $id_lang = (int) \Configuration::get('PS_LANG_DEFAULT');
+        $result = \CartRule::getCartsRuleByCode($code, $id_lang);
 
         if (false === empty($result)) {
-            return new CartRule($result[0]['id_cart_rule']);
+            return new \CartRule($result[0]['id_cart_rule']);
         }
 
         $dateFrom = \DateTime::createFromFormat('U', time() - 600);
         $dateTo = \DateTime::createFromFormat('U', time() + 60 * 60 * 24 * 30);
-        $cartRule = new CartRule();
+        $cartRule = new \CartRule();
         $cartRule->name = [$id_lang => $name];
         $cartRule->description = 'For marketplace order ' . (string) $orderRef;
         $cartRule->code = $code;
