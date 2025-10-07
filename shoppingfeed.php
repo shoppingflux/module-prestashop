@@ -115,6 +115,8 @@ class Shoppingfeed extends ShoppingfeedClasslib\Module
 
     const ORDER_INVOICE_SYNC_MARKETPLACES = 'SHOPPINGFEED_ORDER_INVOICE_SYNC_MARKETPLACES';
 
+    public const IMPORT_MARKETPLACE_DISCOUNT = 'SHOPPINGFEED_IMPORT_MARKETPLACE_DISCOUNT';
+
     public $extensions = [
         ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerExtension::class,
         ShoppingfeedClasslib\Extensions\ProcessMonitor\ProcessMonitorExtension::class,
@@ -1405,6 +1407,7 @@ class Shoppingfeed extends ShoppingfeedClasslib\Module
             ShoppingfeedAddon\OrderImport\Rules\GroupCustomer::class,
             ShoppingfeedAddon\OrderImport\Rules\Cdiscount::class,
             ShoppingfeedAddon\OrderImport\Rules\CdiscountEmailRule::class,
+            \ShoppingfeedAddon\OrderImport\Rules\OrderDiscountRule::class,
         ];
 
         foreach ($defaultRulesClassNames as $ruleClassName) {
