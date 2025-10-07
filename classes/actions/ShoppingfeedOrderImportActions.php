@@ -943,6 +943,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         $isResetShipping = false;
         $cart = new Cart($psOrder->id_cart);
         $this->initProcess($apiOrder);
+        $tax_rate = 0;
 
         $isAmountTaxIncl = true;
         $skipTax = false;
@@ -1094,7 +1095,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         // then this order includes only gift product.
         // Such order should be removed
         if (empty($ordersList)) {
-            Registry::set('order_to_delete', $psOrder->id);
+            Registry::set('order_to_delete', (string) $psOrder->id);
 
             return true;
         }
@@ -1144,7 +1145,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         foreach ($ordersList as $id_order => $orderPrices) {
             $total_discount_tax_incl = 0;
             $total_discount_tax_excl = 0;
-
+            /* @phpstan-ignore-next-line */
             if ((float) $psOrder->total_discounts_tax_incl > 0 && $discount instanceof CartRule) {
                 $total_discount_tax_incl = $discount->reduction_amount;
                 $total_discount_tax_excl = Tools::ps_round($total_discount_tax_incl / (1 + ($tax_rate / 100)), 4);
@@ -1218,7 +1219,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             );
 
             Db::getInstance()->update('order_invoice', $updateOrderInvoice, '`id_order` = ' . (int) $id_order);
-
+            /* @phpstan-ignore-next-line */
             if ($discount instanceof CartRule) {
                 Db::getInstance()->update(
                     'order_cart_rule',
@@ -1250,6 +1251,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 if (empty($cartRule['gift_product'])) {
                     continue;
                 }
+                /* @phpstan-ignore-next-line */
                 if ($discount instanceof CartRule && $discount->id == $cartRule['id_cart_rule']) {
                     continue;
                 }
@@ -1280,7 +1282,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             }
             // deleting cart rules
             $where = 'id_order = ' . (int) $psOrder->id;
-
+            /* @phpstan-ignore-next-line */
             if ($discount instanceof CartRule) {
                 $where .= ' AND id_cart_rule <> ' . (int) $discount->id;
             }

@@ -41,14 +41,14 @@ class DiscountProvider
             return new \CartRule($result[0]['id_cart_rule']);
         }
 
-        $dateFrom = \DateTime::createFromFormat('U', time() - 600);
-        $dateTo = \DateTime::createFromFormat('U', time() + 60 * 60 * 24 * 30);
+        $dateFrom = \DateTime::createFromFormat('U', sprintf('%d', time() - 600));
+        $dateTo = \DateTime::createFromFormat('U', sprintf('%d', time() + 60 * 60 * 24 * 30));
         $cartRule = new \CartRule();
         $cartRule->name = [$id_lang => $name];
         $cartRule->description = 'For marketplace order ' . (string) $orderRef;
         $cartRule->code = $code;
         $cartRule->reduction_amount = (float) $amount;
-        $cartRule->reduction_tax = 1;
+        $cartRule->reduction_tax = true;
         $cartRule->id_customer = (int) $id_customer;
         $cartRule->minimum_amount = 0;
         $cartRule->active = true;
