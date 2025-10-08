@@ -26,9 +26,9 @@ if (!defined('_PS_VERSION_')) {
 
 class SinceDate implements SinceDateInterface
 {
-    const DATE_FORMAT_PS = 'Y-m-d';
+    public const DATE_FORMAT_PS = 'Y-m-d';
 
-    const DATE_FORMAT_SF = 'Y-m-dTH:i:s';
+    public const DATE_FORMAT_SF = 'Y-m-dTH:i:s';
 
     public function get($format = self::DATE_FORMAT_PS, $id_shop = null)
     {

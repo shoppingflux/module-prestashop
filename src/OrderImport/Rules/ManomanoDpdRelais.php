@@ -36,7 +36,7 @@ class ManomanoDpdRelais extends RuleAbstract implements RuleInterface
     /** @var \ModuleCore */
     protected $dpdfrance;
 
-    const MODULE_NAME = 'dpdfrance';
+    public const MODULE_NAME = 'dpdfrance';
 
     /**
      * {@inheritdoc}

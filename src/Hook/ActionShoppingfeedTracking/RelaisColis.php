@@ -30,7 +30,7 @@ use ShoppingfeedClasslib\Hook\AbstractHook;
 
 class RelaisColis extends AbstractHook
 {
-    const AVAILABLE_HOOKS = [
+    public const AVAILABLE_HOOKS = [
         'actionShoppingfeedTracking',
     ];
 

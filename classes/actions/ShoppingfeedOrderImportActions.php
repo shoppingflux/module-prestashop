@@ -938,14 +938,17 @@ class ShoppingfeedOrderImportActions extends DefaultActions
     {
         /** @var ShoppingFeed\Sdk\Api\Order\OrderResource $apiOrder */
         $apiOrder = $this->conveyor['apiOrder'];
+        /** @var Order $psOrder */
         $psOrder = $this->conveyor['psOrder'];
         $isResetShipping = false;
         $cart = new Cart($psOrder->id_cart);
         $this->initProcess($apiOrder);
+        $tax_rate = 0;
 
         $isAmountTaxIncl = true;
         $skipTax = false;
         $isUseSfTax = false;
+        $discount = null;
         // Specific rules
         $this->specificRulesManager->applyRules(
             'beforeRecalculateOrderPrices',
@@ -960,6 +963,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 'isAmountTaxIncl' => &$isAmountTaxIncl,
                 'skipTax' => &$skipTax,
                 'isUseSfTax' => &$isUseSfTax,
+                'discount' => &$discount,
             ]
         );
 
@@ -1005,7 +1009,12 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             $tax_rate = $productOrderDetail['tax_rate'] === null ? 0 : $productOrderDetail['tax_rate'];
             /* @phpstan-ignore-next-line */
             if ($isUseSfTax) {
-                $tax_rate = $apiProduct->taxAmount / ($apiProduct->getTotalPrice() - $apiProduct->taxAmount) * 100;
+                /* @phpstan-ignore-next-line */
+                if ($isAmountTaxIncl) {
+                    $tax_rate = $apiProduct->taxAmount / ($apiProduct->getTotalPrice() - $apiProduct->taxAmount) * 100;
+                } else {
+                    $tax_rate = $apiProduct->taxAmount / $apiProduct->getTotalPrice() * 100;
+                }
             }
             /* @phpstan-ignore-next-line */
             if ($skipTax === true) {
@@ -1091,7 +1100,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         // then this order includes only gift product.
         // Such order should be removed
         if (empty($ordersList)) {
-            Registry::set('order_to_delete', $psOrder->id);
+            Registry::set('order_to_delete', (string) $psOrder->id);
 
             return true;
         }
@@ -1122,7 +1131,12 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         /* @phpstan-ignore-next-line */
         if ($isUseSfTax && isset($additionalFields['shipping_tax'])) {
             if ($additionalFields['shipping_tax'] > 0) {
-                $carrier_tax_rate = $additionalFields['shipping_tax'] / ($paymentInformation['shippingAmount'] - $additionalFields['shipping_tax']) * 100;
+                if ($isAmountTaxIncl === true) {
+                    $carrier_tax_rate = $additionalFields['shipping_tax'] / ($paymentInformation['shippingAmount'] - $additionalFields['shipping_tax']) * 100;
+                /* @phpstan-ignore-next-line */
+                } else {
+                    $carrier_tax_rate = $additionalFields['shipping_tax'] / $paymentInformation['shippingAmount'] * 100;
+                }
             } else {
                 $carrier_tax_rate = 0;
             }
@@ -1139,8 +1153,16 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         $id_order = 0;
 
         foreach ($ordersList as $id_order => $orderPrices) {
-            $total_paid = Tools::ps_round($orderPrices['total_products_tax_incl'], 2);
-            $total_paid_tax_excl = Tools::ps_round($orderPrices['total_products_tax_excl'], 4);
+            $total_discount_tax_incl = 0;
+            $total_discount_tax_excl = 0;
+            /* @phpstan-ignore-next-line */
+            if ((float) $psOrder->total_discounts_tax_incl > 0 && $discount instanceof CartRule) {
+                $total_discount_tax_incl = $discount->reduction_amount;
+                $total_discount_tax_excl = Tools::ps_round($total_discount_tax_incl / (1 + ($tax_rate / 100)), 4);
+            }
+
+            $total_paid = Tools::ps_round($orderPrices['total_products_tax_incl'] - $total_discount_tax_incl, 2);
+            $total_paid_tax_excl = Tools::ps_round($orderPrices['total_products_tax_excl'] - $total_discount_tax_excl, 4);
             // Only on main order
             if ($isResetShipping == false) {
                 // main order
@@ -1171,9 +1193,9 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 'total_shipping_tax_excl' => Tools::ps_round($orderPrices['total_shipping_tax_excl'], 4),
                 'carrier_tax_rate' => $carrier_tax_rate,
                 'id_carrier' => $carrier->id,
-                'total_discounts' => 0,
-                'total_discounts_tax_incl' => 0,
-                'total_discounts_tax_excl' => 0,
+                'total_discounts' => $total_discount_tax_incl,
+                'total_discounts_tax_incl' => $total_discount_tax_incl,
+                'total_discounts_tax_excl' => $total_discount_tax_excl,
             ];
 
             $updateOrderInvoice = [
@@ -1183,8 +1205,8 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 'total_products_wt' => Tools::ps_round($orderPrices['total_products_tax_incl'], 2),
                 'total_shipping_tax_incl' => Tools::ps_round($orderPrices['total_shipping_tax_incl'], 2),
                 'total_shipping_tax_excl' => Tools::ps_round($orderPrices['total_shipping_tax_excl'], 4),
-                'total_discount_tax_excl' => 0,
-                'total_discount_tax_incl' => 0,
+                'total_discount_tax_excl' => $total_discount_tax_excl,
+                'total_discount_tax_incl' => $total_discount_tax_incl,
             ];
 
             $updateOrderTracking = [
@@ -1207,6 +1229,17 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             );
 
             Db::getInstance()->update('order_invoice', $updateOrderInvoice, '`id_order` = ' . (int) $id_order);
+            /* @phpstan-ignore-next-line */
+            if ($discount instanceof CartRule) {
+                Db::getInstance()->update(
+                    'order_cart_rule',
+                    [
+                        'value' => $total_discount_tax_incl,
+                        'value_tax_excl' => $total_discount_tax_excl,
+                    ],
+                    sprintf('id_order = %d and id_cart_rule = %d', (int) $psOrder->id, (int) $discount->id)
+                );
+            }
 
             if ($id_order_carrier) {
                 Db::getInstance()->update('order_carrier', $updateOrderTracking, '`id_order_carrier` = ' . (int) $id_order_carrier);
@@ -1226,6 +1259,10 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             // Looking for gift product
             foreach ($cartRules as $cartRule) {
                 if (empty($cartRule['gift_product'])) {
+                    continue;
+                }
+                /* @phpstan-ignore-next-line */
+                if ($discount instanceof CartRule && $discount->id == $cartRule['id_cart_rule']) {
                     continue;
                 }
                 $removeGift = true;
@@ -1254,15 +1291,15 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 );
             }
             // deleting cart rules
-            Db::getInstance()->delete('order_cart_rule', 'id_order = ' . (int) $psOrder->id);
+            $where = 'id_order = ' . (int) $psOrder->id;
+            /* @phpstan-ignore-next-line */
+            if ($discount instanceof CartRule) {
+                $where .= ' AND id_cart_rule <> ' . (int) $discount->id;
+            }
+
+            Db::getInstance()->delete('order_cart_rule', $where);
         }
 
-        if ($isAmountTaxIncl === true) {
-            $totalAmount = Tools::ps_round((float) $paymentInformation['totalAmount'], 4);
-        /* @phpstan-ignore-next-line */
-        } else {
-            $totalAmount = $orderPrices['total_paid'];
-        }
         $queryUpdateOrderPayment = sprintf(
             '
                 UPDATE 
@@ -1273,7 +1310,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             ',
             _DB_PREFIX_ . 'orders',
             _DB_PREFIX_ . 'order_payment',
-            $totalAmount,
+            $orderPrices['total_paid'],
             (int) $psOrder->id
         );
         Db::getInstance()->execute($queryUpdateOrderPayment);

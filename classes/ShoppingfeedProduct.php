@@ -29,8 +29,8 @@ if (!defined('_PS_VERSION_')) {
  */
 class ShoppingfeedProduct extends ObjectModel
 {
-    const ACTION_SYNC_STOCK = 'SYNC_STOCK';
-    const ACTION_SYNC_PRICE = 'SYNC_PRICE';
+    public const ACTION_SYNC_STOCK = 'SYNC_STOCK';
+    public const ACTION_SYNC_PRICE = 'SYNC_PRICE';
 
     /** @var string The action to execute for this product */
     public $action;

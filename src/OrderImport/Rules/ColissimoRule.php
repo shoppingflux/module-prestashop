@@ -32,7 +32,7 @@ use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 
 class ColissimoRule extends RuleAbstract implements RuleInterface
 {
-    const COLISSIMO_MODULE_NAME = 'colissimo';
+    public const COLISSIMO_MODULE_NAME = 'colissimo';
 
     protected $colissimo;
 
