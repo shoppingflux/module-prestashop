@@ -109,7 +109,7 @@ class ShoppingfeedSyncAllModuleFrontController extends ShoppingfeedCronControlle
         $cron->init();
 
         if (false === ($data = $cron->processMonitor->lock($processName))) {
-            throw new ProcessLockedException(sprintf('Lock return false. Process %s already in run.', $processName));
+            return;
         }
 
         try {
