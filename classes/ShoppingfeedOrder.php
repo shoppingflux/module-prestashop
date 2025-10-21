@@ -25,10 +25,10 @@ if (!defined('_PS_VERSION_')) {
  */
 class ShoppingfeedOrder extends ObjectModel
 {
-    /** @var int The order's id in Shopping Feed's internal system */
+    /** @var string The order's id in Shopping Feed's internal system */
     public $id_internal_shoppingfeed;
 
-    /** @var int The order's id on the original marketplace */
+    /** @var string The order's id on the original marketplace */
     public $id_order_marketplace;
 
     /** @var string name_marketplace */

@@ -42,7 +42,7 @@ class Socolissimo extends RuleAbstract implements RuleInterface
         // do it here either
         $module_soliberte = \Module::getInstanceByName('soliberte');
         if ($module_soliberte && $module_soliberte->active) {
-            Registry::set(self::class . '_id_shipping_address', null);
+            Registry::set(self::class . '_id_shipping_address', '');
 
             return true;
         }
@@ -54,7 +54,7 @@ class Socolissimo extends RuleAbstract implements RuleInterface
                 || class_exists(\SoColissimoFlexibiliteDelivery::class)
             )
         ) {
-            Registry::set(self::class . '_id_shipping_address', null);
+            Registry::set(self::class . '_id_shipping_address', '');
 
             return true;
         }
@@ -76,7 +76,7 @@ class Socolissimo extends RuleAbstract implements RuleInterface
             'Order'
         );
 
-        Registry::set(self::class . '_id_shipping_address', (int) $params['cart']->id_address_delivery);
+        Registry::set(self::class . '_id_shipping_address', (string) $params['cart']->id_address_delivery);
 
         $module_soliberte = \Module::getInstanceByName('soliberte');
         if ($module_soliberte && $module_soliberte->active) {
@@ -131,7 +131,7 @@ class Socolissimo extends RuleAbstract implements RuleInterface
         // Avoid SoColissimo module to change the address by the one he created
         $id_shipping_address = Registry::get(self::class . '_id_shipping_address');
         if ($id_shipping_address) {
-            Registry::set(self::class . '_id_shipping_address', null);
+            Registry::set(self::class . '_id_shipping_address', '');
             \Db::getInstance()->update(
                 'orders',
                 ['id_address_delivery' => (int) $id_shipping_address],
@@ -183,20 +183,33 @@ class Socolissimo extends RuleAbstract implements RuleInterface
         } else {
             return true;
         }
-
+        /* @phpstan-ignore-next-line */
         $so_delivery->id_cart = (int) $cart->id;
+        /* @phpstan-ignore-next-line */
         $so_delivery->id_order = -time();
+        /* @phpstan-ignore-next-line */
         $so_delivery->id_point = null;
+        /* @phpstan-ignore-next-line */
         $so_delivery->id_customer = (int) $customer->id;
+        /* @phpstan-ignore-next-line */
         $so_delivery->firstname = $shippingAddress->firstname;
+        /* @phpstan-ignore-next-line */
         $so_delivery->lastname = $shippingAddress->lastname;
+        /* @phpstan-ignore-next-line */
         $so_delivery->company = $shippingAddress->company;
+        /* @phpstan-ignore-next-line */
         $so_delivery->telephone = $phone;
+        /* @phpstan-ignore-next-line */
         $so_delivery->email = $customer->email;
+        /* @phpstan-ignore-next-line */
         $so_delivery->postcode = $shippingAddress->postcode;
+        /* @phpstan-ignore-next-line */
         $so_delivery->city = $shippingAddress->city;
+        /* @phpstan-ignore-next-line */
         $so_delivery->country = $shippingCountry->iso_code;
+        /* @phpstan-ignore-next-line */
         $so_delivery->address1 = $shippingAddress->address1;
+        /* @phpstan-ignore-next-line */
         $so_delivery->address2 = $shippingAddress->address2;
 
         // determine type
@@ -209,7 +222,7 @@ class Socolissimo extends RuleAbstract implements RuleInterface
         $conf = \Configuration::getMultiple($soflexibilite_conf_key, null, null, null);
 
         $carrier = new \Carrier($cart->id_carrier);
-        if (isset($carrier->id_reference)) {
+        if (!$carrier->id_reference) {
             $id_reference = $carrier->id_reference;
         } else {
             $id_reference = $carrier->id;
@@ -218,28 +231,32 @@ class Socolissimo extends RuleAbstract implements RuleInterface
         if ($id_reference == $conf['SOFLEXIBILITE_DOM_ID']
             || $carrier->id == $conf['SOFLEXIBILITE_DOM_ID']
         ) {
+            /* @phpstan-ignore-next-line */
             $so_delivery->type = 'DOM';
         }
 
         if ($id_reference == $conf['SOFLEXIBILITE_DOS_ID']
             || $carrier->id == $conf['SOFLEXIBILITE_DOS_ID']
         ) {
+            /* @phpstan-ignore-next-line */
             $so_delivery->type = 'DOS';
         }
 
         if ($id_reference == $conf['SOFLEXIBILITE_BPR_ID']
             || $carrier->id == $conf['SOFLEXIBILITE_BPR_ID']
         ) {
+            /* @phpstan-ignore-next-line */
             $so_delivery->type = 'BPR';
         }
 
         if ($id_reference == $conf['SOFLEXIBILITE_A2P_ID']
             || $carrier->id == $conf['SOFLEXIBILITE_A2P_ID']
         ) {
+            /* @phpstan-ignore-next-line */
             $so_delivery->type = 'A2P';
         }
 
-        return (bool) $so_delivery->saveDelivery();
+        return (bool) call_user_func([$so_delivery, 'saveDelivery']);
     }
 
     /**

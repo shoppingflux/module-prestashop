@@ -32,9 +32,17 @@ class ImageLink
     /** @var bool */
     protected $allow;
 
+    protected $image_prod_dir = '';
+
     public function __construct()
     {
-        $this->allow = (int) \Configuration::get('PS_REWRITING_SETTINGS');
+        $this->allow = (int) \Configuration::get('PS_REWRITING_SETTINGS') !== 0;
+
+        if (defined('_PS_PRODUCT_IMG_DIR_')) {
+            $this->image_prod_dir = _PS_PRODUCT_IMG_DIR_;
+        } elseif (defined('_PS_PROD_IMG_DIR_')) {
+            $this->image_prod_dir = _PS_PROD_IMG_DIR_;
+        }
     }
 
     /**
@@ -70,9 +78,9 @@ class ImageLink
         }
 
         // legacy mode or default image
-        $theme = ((\Shop::isFeatureActive() && file_exists(_PS_PROD_IMG_DIR_ . $ids . ($type ? '-' . $type : '') . '-' . \Context::getContext()->shop->theme_name . '.jpg')) ? '-' . \Context::getContext()->shop->theme_name : '');
+        $theme = ((\Shop::isFeatureActive() && file_exists($this->image_prod_dir . $ids . ($type ? '-' . $type : '') . '-' . \Context::getContext()->shop->theme_name . '.jpg')) ? '-' . \Context::getContext()->shop->theme_name : '');
         if (($psLegacyImages
-                && file_exists(_PS_PROD_IMG_DIR_ . $ids . ($type ? '-' . $type : '') . $theme . '.jpg'))
+                && file_exists($this->image_prod_dir . $ids . ($type ? '-' . $type : '') . $theme . '.jpg'))
             || ($notDefault = strpos($ids, 'default') !== false)) {
             if ($this->allow == 1 && !$notDefault) {
                 $uriPath = __PS_BASE_URI__ . $ids . ($type ? '-' . $type : '') . $theme . '/' . $name . '.jpg';
@@ -83,7 +91,7 @@ class ImageLink
             // if ids if of the form id_product-id_image, we want to extract the id_image part
             $splitIds = explode('-', $ids);
             $idImage = (isset($splitIds[1]) ? $splitIds[1] : $splitIds[0]);
-            $theme = ((\Shop::isFeatureActive() && file_exists(_PS_PROD_IMG_DIR_ . \Image::getImgFolderStatic($idImage) . $idImage . ($type ? '-' . $type : '') . '-' . (int) \Context::getContext()->shop->theme_name . '.jpg')) ? '-' . \Context::getContext()->shop->theme_name : '');
+            $theme = ((\Shop::isFeatureActive() && file_exists($this->image_prod_dir . \Image::getImgFolderStatic($idImage) . $idImage . ($type ? '-' . $type : '') . '-' . (int) \Context::getContext()->shop->theme_name . '.jpg')) ? '-' . \Context::getContext()->shop->theme_name : '');
             if ($this->allow == 1) {
                 $uriPath = $shop->getBaseURI() . $idImage . ($type ? '-' . $type : '') . $theme . '/' . $name . '.jpg';
             } else {

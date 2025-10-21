@@ -27,6 +27,9 @@ require_once _PS_MODULE_DIR_ . 'shoppingfeed/vendor/autoload.php';
  */
 class AdminShoppingfeedFaqController extends ShoppingfeedAdminController
 {
+    /** @var Shoppingfeed */
+    public $module;
+
     public $bootstrap = true;
 
     public $nbr_products;

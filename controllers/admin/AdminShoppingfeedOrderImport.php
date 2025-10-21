@@ -133,7 +133,7 @@ class AdminShoppingfeedOrderImportController extends ShoppingfeedAdminController
         $resultImport = [];
         $sft = new ShoppingfeedToken();
         $shoppingfluxexport = Module::getInstanceByName('shoppingfluxexport');
-        $allTokensShoppingfluxexport = $shoppingfluxexport->getAllTokensOfShop(false, true);
+        $allTokensShoppingfluxexport = call_user_func([$shoppingfluxexport, 'getAllTokensOfShop'], false, true);
         foreach ($allTokensShoppingfluxexport as $curentTokensShoppingfluxexport) {
             $currentToken = $sft->findByToken($curentTokensShoppingfluxexport['token']);
             if ($currentToken === false) {
@@ -154,7 +154,7 @@ class AdminShoppingfeedOrderImportController extends ShoppingfeedAdminController
                     ProcessLoggerHandler::logError($error);
                     continue;
                 }
-                $result = $shoppingfeedApi->getOrdersFromSf($filters);
+                $result = $shoppingfeedApi->getUnacknowledgedOrders($filters);
             } catch (Exception $e) {
                 $errors[] = $error = sprintf(
                     $this->module->l('Could not retrieve orders to import : %s.', 'adminshoppingfeedorderimport'),

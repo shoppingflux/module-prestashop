@@ -31,7 +31,7 @@ use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 
 class ColissimoRule extends RuleAbstract implements RuleInterface
 {
-    const COLISSIMO_MODULE_NAME = 'colissimo';
+    public const COLISSIMO_MODULE_NAME = 'colissimo';
 
     protected $colissimo;
 
@@ -278,7 +278,7 @@ class ColissimoRule extends RuleAbstract implements RuleInterface
             'product_code' => $productCode,
             'network' => '', // TODO; how do we get this field ? It's not in the data sent by SF. Ask Colissimo directly ? Then again, it's not required.
         ];
-        $pickupPoint = \ColissimoPickupPoint::getPickupPointByIdColissimo($colissimoPickupPointId);
+        $pickupPoint = \ColissimoPickupPoint::getPickupPointByIdColissimo($colissimoPickupPointId); // @phpstan-ignore-line
         $pickupPoint->hydrate(array_map('pSQL', $pickupPointData));
         $pickupPoint->save();
 
@@ -307,7 +307,7 @@ class ColissimoRule extends RuleAbstract implements RuleInterface
         );
 
         // Save pickup point/cart association
-        \ColissimoCartPickupPoint::updateCartPickupPoint(
+        \ColissimoCartPickupPoint::updateCartPickupPoint( // @phpstan-ignore-line
             (int) $params['cart']->id,
             (int) $pickupPoint->id,
             !empty($shippingAddressObj->phone_mobile) ? $shippingAddressObj->phone_mobile : ''
@@ -347,41 +347,42 @@ class ColissimoRule extends RuleAbstract implements RuleInterface
         return 'A2P';
     }
 
+    protected function formatPointId($pointId)
+    {
+        $parts = explode(':', $pointId);
+
+        return isset($parts[1]) ? trim($parts[1]) : trim($parts[0]);
+    }
+
     protected function getRelayId(OrderResource $apiOrder)
     {
         $apiOrderData = $apiOrder->toArray();
 
         if (false === empty($apiOrderData['shippingAddress']['relayId'])) {
-            return $apiOrderData['shippingAddress']['relayId'];
+            return $this->formatPointId($apiOrderData['shippingAddress']['relayId']);
         }
         if ($this->isCdiscount($apiOrder) || $this->isManomano($apiOrder) || $this->isMonechelle($apiOrder)) {
             if (false === empty($apiOrderData['shippingAddress']['other'])) {
-                return $apiOrderData['shippingAddress']['other'];
+                return $this->formatPointId($apiOrderData['shippingAddress']['other']);
             }
         }
         if (false === empty($apiOrderData['shippingAddress']['relayID'])) {
-            return $apiOrderData['shippingAddress']['relayID'];
+            return $this->formatPointId($apiOrderData['shippingAddress']['relayID']);
         }
         if (false === empty($apiOrderData['additionalFields']['pickup_point_id'])) {
-            return $apiOrderData['additionalFields']['pickup_point_id'];
+            return $this->formatPointId($apiOrderData['additionalFields']['pickup_point_id']);
         }
         if (false === empty($apiOrderData['additionalFields']['shippingRelayId'])) {
-            return $apiOrderData['additionalFields']['shippingRelayId'];
+            return $this->formatPointId($apiOrderData['additionalFields']['shippingRelayId']);
         }
         if (false === empty($apiOrderData['additionalFields']['relais-id'])) {
-            return $apiOrderData['additionalFields']['relais-id'];
+            return $this->formatPointId($apiOrderData['additionalFields']['relais-id']);
         }
         if (false === empty($apiOrderData['additionalFields']['shipping_pudo_id'])) {
-            return $apiOrderData['additionalFields']['shipping_pudo_id'];
+            return $this->formatPointId($apiOrderData['additionalFields']['shipping_pudo_id']);
         }
         if (false === empty($apiOrderData['additionalFields']['service_point_id'])) {
-            $service_point_id = explode(':', $apiOrderData['additionalFields']['service_point_id']);
-
-            if (count($service_point_id) > 1) {
-                return $service_point_id[1];
-            }
-
-            return $apiOrderData['additionalFields']['service_point_id'];
+            return $this->formatPointId($apiOrderData['additionalFields']['service_point_id']);
         }
 
         return '';

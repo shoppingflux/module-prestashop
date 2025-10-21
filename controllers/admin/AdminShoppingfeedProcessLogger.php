@@ -28,6 +28,9 @@ use ShoppingfeedClasslib\Extensions\ProcessLogger\Controllers\Admin\AdminProcess
  */
 class AdminShoppingfeedProcessLoggerController extends AdminProcessLoggerController
 {
+    /** @var Shoppingfeed */
+    public $module;
+
     public function initContent()
     {
         $this->module->setBreakingChangesNotices();

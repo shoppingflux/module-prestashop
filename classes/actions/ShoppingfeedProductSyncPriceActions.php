@@ -70,7 +70,7 @@ class ShoppingfeedProductSyncPriceActions extends ShoppingfeedProductSyncActions
                     'price_with_reduction' => true,
                 ]
             );
-            if (false === $price) {
+            if (!$price) {
                 $sfProduct->delete();
                 continue;
             }
@@ -105,7 +105,7 @@ class ShoppingfeedProductSyncPriceActions extends ShoppingfeedProductSyncActions
 
             return false;
         }
-        $limit = Configuration::getGlobalValue(Shoppingfeed::STOCK_SYNC_MAX_PRODUCTS);
+        $limit = (int) Configuration::getGlobalValue(Shoppingfeed::STOCK_SYNC_MAX_PRODUCTS);
         $preparedBatch = $this->conveyor['preparedBatch'];
 
         foreach (array_chunk($preparedBatch, $limit, true) as $products) {

@@ -38,11 +38,17 @@ use ShoppingFeed\Sdk\Api\Order\OrderResource;
  */
 class OrderData
 {
-    /** @var string|null */
+    /** @var string */
+    public $id;
+
+    /** @var string */
+    public $reference;
+
+    /** @var string */
     public $storeReference;
 
     /** @var string */
-    public $status;
+    public $status = '';
 
     /** @var \DateTimeImmutable|null */
     public $acknowledgedAt;
@@ -50,20 +56,20 @@ class OrderData
     /** @var \DateTimeImmutable|null */
     public $updatedAt;
 
-    /** @var \DateTimeImmutable */
+    /** @var \DateTimeImmutable|null */
     public $createdAt;
 
     /** @var array */
-    public $shippingAddress;
+    public $shippingAddress = [];
 
     /** @var array */
-    public $billingAddress;
+    public $billingAddress = [];
 
     /** @var array */
-    public $payment;
+    public $payment = [];
 
     /** @var array */
-    public $shipment;
+    public $shipment = [];
 
     /** @var array An array of \ShoppingfeedAddon\OrderImport\OrderItemData */
     public $items = [];
@@ -72,20 +78,22 @@ class OrderData
     public $itemsReferencesAliases = [];
 
     /** @var array */
-    public $additionalFields;
+    public $additionalFields = [];
 
     protected $isoCountryMap = [
         'UK' => 'GB',
     ];
 
-    /** @var OrderCustomerData */
+    /** @var OrderCustomerData|null */
     protected $customer;
 
-    /** @var OrderResource */
+    /** @var OrderResource|null */
     protected $apiOrder;
 
     public function __construct(OrderResource $apiOrder)
     {
+        $this->id = (string) $apiOrder->getId();
+        $this->reference = (string) $apiOrder->getReference();
         $this->storeReference = $apiOrder->getStoreReference();
         $this->status = $apiOrder->getStatus();
         $this->acknowledgedAt = $apiOrder->getAcknowledgedAt();
@@ -114,7 +122,7 @@ class OrderData
      */
     protected function validateISO($address)
     {
-        if (false === is_array($address)) {
+        if (false === is_array($address)) { // @phpstan-ignore-line
             return $address;
         }
 

@@ -16,25 +16,20 @@
  *  @copyright Since 2019 Shopping Feed
  *  @license   https://opensource.org/licenses/AFL-3.0  Academic Free License (AFL 3.0)
  */
-if (version_compare(phpversion(), '7', '<')) {
-    if (false === class_exists('Throwable') && false === interface_exists('Throwable')) {
-        interface Throwable
-        {
-            public function getMessage();
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 
-            public function getCode();
+use ShoppingfeedClasslib\Install\ModuleInstaller;
 
-            public function getFile();
+function upgrade_module_2_3_0($module)
+{
+    /**
+     * @var Shoppingfeed $module
+     */
+    $installer = new ModuleInstaller($module);
+    $installer->installObjectModel(ShoppingfeedTaskOrder::class);
+    $installer->registerHooks();
 
-            public function getLine();
-
-            public function getTrace();
-
-            public function getTraceAsString();
-
-            public function getPrevious();
-
-            public function __toString();
-        }
-    }
+    return true;
 }

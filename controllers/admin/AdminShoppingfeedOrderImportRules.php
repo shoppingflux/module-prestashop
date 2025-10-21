@@ -31,11 +31,14 @@ use ShoppingfeedAddon\OrderImport\SinceDate;
  */
 class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminController
 {
+    /** @var Shoppingfeed */
+    public $module;
+
     public $bootstrap = true;
 
     public $override_folder;
 
-    /** @var ShoppingfeedOrderImportSpecificRulesManager */
+    /** @var RulesManager */
     protected $specificRulesManager;
 
     /**
@@ -336,6 +339,23 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
                         ],
                         [
                             'type' => 'switch',
+                            'label' => $this->module->l('Allow partial refund', 'AdminShoppingfeedOrderImportRules'),
+                            'name' => Shoppingfeed::ALLOW_PARTIAL_REFUND,
+                            'id' => 'shoppingfeed_order-import-switch',
+                            'is_bool' => true,
+                            'values' => [
+                                [
+                                    'id' => Shoppingfeed::ALLOW_PARTIAL_REFUND . '-1',
+                                    'value' => 1,
+                                ],
+                                [
+                                    'id' => Shoppingfeed::ALLOW_PARTIAL_REFUND . '-0',
+                                    'value' => 0,
+                                ],
+                            ],
+                        ],
+                        [
+                            'type' => 'switch',
                             'label' => $this->module->l('Allow PrestaShop to send order status change emails on MarketPlace orders', 'AdminShoppingfeedOrderImportRules'),
                             'desc' => $this->module->l('Please note that this configuration prevents emails from being sent for both order confirmation and status change emails', 'AdminShoppingfeedOrderImportRules'),
                             'name' => Shoppingfeed::SEND_NOTIFICATION,
@@ -581,6 +601,7 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
             Shoppingfeed::ORDER_IMPORT_PERMANENT_SINCE_DATE => $this->getSinceDateService()->get(),
             Shoppingfeed::IMPORT_ORDER_STATE => $this->initSfOrderState()->get()->id,
             Shoppingfeed::ORDER_TRACKING => (int) Configuration::get(Shoppingfeed::ORDER_TRACKING),
+            Shoppingfeed::ALLOW_PARTIAL_REFUND => (int) Configuration::get(Shoppingfeed::ALLOW_PARTIAL_REFUND),
             Shoppingfeed::ORDER_SHIPPED_IMPORT_PERMANENT_SINCE_DATE => $this->getSinceDateService()->getForShipped(),
             Shoppingfeed::ORDER_SHIPPED_BY_MARKETPLACE_IMPORT_PERMANENT_SINCE_DATE => $this->getSinceDateService()->getForShippedByMarketplace(),
             Shoppingfeed::SEND_NOTIFICATION => (int) Configuration::get(Shoppingfeed::SEND_NOTIFICATION),
@@ -651,6 +672,7 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
         $order_sync_shipped = Tools::getValue(Shoppingfeed::ORDER_IMPORT_SHIPPED);
         $order_sync_shipped_marketplace = Tools::getValue(Shoppingfeed::ORDER_IMPORT_SHIPPED_MARKETPLACE);
         $order_tracking = Tools::getValue(Shoppingfeed::ORDER_TRACKING);
+        $allow_partial_refund = Tools::getValue(Shoppingfeed::ALLOW_PARTIAL_REFUND);
 
         $shops = Shop::getShops();
         foreach ($shops as $shop) {
@@ -668,6 +690,13 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
             Configuration::updateValue(
                 Shoppingfeed::ORDER_TRACKING,
                 $order_tracking ? true : false,
+                false,
+                null,
+                $shop['id_shop']
+            );
+            Configuration::updateValue(
+                Shoppingfeed::ALLOW_PARTIAL_REFUND,
+                $allow_partial_refund ? 1 : 0,
                 false,
                 null,
                 $shop['id_shop']
@@ -735,7 +764,7 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
                 $sfCarrier = new ShoppingfeedCarrier($id_shoppingfeed_carrier);
                 if (Validate::isLoadedObject($sfCarrier)) {
                     $sfCarrier->id_carrier_reference = (int) $id_carrier_reference;
-                    $sfCarrier->is_new = 0;
+                    $sfCarrier->is_new = false;
                     $sfCarrier->update();
                 }
             }
@@ -791,7 +820,7 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
         $carriers = [
             [
                 'value' => 0,
-                'label' => $this->l('Select carrier', 'AdminShoppingfeedOrderImportRules'),
+                'label' => $this->module->l('Select carrier', 'AdminShoppingfeedOrderImportRules'),
             ],
         ];
 

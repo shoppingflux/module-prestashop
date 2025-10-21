@@ -29,7 +29,7 @@ use ShoppingfeedClasslib\Hook\AbstractHook;
 
 class RelaisColis extends AbstractHook
 {
-    const AVAILABLE_HOOKS = [
+    public const AVAILABLE_HOOKS = [
         'actionShoppingfeedTracking',
     ];
 
@@ -47,14 +47,12 @@ class RelaisColis extends AbstractHook
             return;
         }
 
-        /**
-         * @var \Carrier $carrier
-         * @var \Order $order
-         */
+        /** @var \Order $order */
         $order = $params[0]['order'];
+        /** @var \Carrier $carrier */
         $carrier = $this->initCarrierFinder()->findByOrder($order);
         // Getting a tracking number for relaiscolis carrier
-        if ($carrier->external_module_name == 'relaiscolis' && class_exists(\RelaisColisOrder::class)) {
+        if ($carrier->external_module_name == 'relaiscolis' && class_exists(\RelaisColisOrder::class)) { // @phpstan-ignore-line
             $relaisColisOrder = $this->getRelaisColisOrderFromPsOrder($order);
 
             if (\Validate::isLoadedObject($relaisColisOrder)) {
@@ -66,7 +64,7 @@ class RelaisColis extends AbstractHook
     protected function getRelaisColisOrderFromPsOrder(\Order $order)
     {
         try {
-            return new \RelaisColisOrder($this->getIdRelaisColisOrderFromPsOrder($order));
+            return new \RelaisColisOrder($this->getIdRelaisColisOrderFromPsOrder($order)); // @phpstan-ignore-line
         } catch (\Throwable $e) {
             return null;
         }
@@ -75,7 +73,7 @@ class RelaisColis extends AbstractHook
     protected function getIdRelaisColisOrderFromPsOrder(\Order $order)
     {
         try {
-            return (int) \RelaisColisOrder::getRelaisColisOrderId($order->id);
+            return (int) \RelaisColisOrder::getRelaisColisOrderId($order->id); // @phpstan-ignore-line
         } catch (\Throwable $e) {
             return null;
         }

@@ -28,6 +28,7 @@ use SpecificPrice;
 
 class ProductSerializer
 {
+    /** @var \Product */
     private $product;
     private $configurations;
     private $link;
@@ -215,11 +216,6 @@ class ProductSerializer
         return $contentUpdate;
     }
 
-    private function getDiscounts()
-    {
-        return array_column($this->_getDiscounts(), 'price');
-    }
-
     private function getImages()
     {
         $imagesFromDb = $this->getImagesFromDb($this->id_lang);
@@ -245,42 +241,6 @@ class ProductSerializer
         }
 
         return $images;
-    }
-
-    protected function _getDiscounts()
-    {
-        $discounts = [];
-        $specificPricesInFuture = [];
-        $specificPrices = \SpecificPrice::getIdsByProductId($this->product->id);
-        $priceComputed = $this->product->getPrice(true, null, 2, null, false, true, 1);
-
-        foreach ($specificPrices as $idSpecificPrice) {
-            $specificPrice = new \SpecificPrice($idSpecificPrice['id_specific_price']);
-            if (new \DateTime($specificPrice->from) > new \DateTime()) {
-                $specificPricesInFuture[] = $specificPrice;
-            }
-        }
-        foreach ($specificPricesInFuture as $currentSpecificPrice) {
-            $discount = [];
-            if ($currentSpecificPrice->price == -1) {
-                if ($currentSpecificPrice->reduction_type == 'amount') {
-                    $reduction_amount = $currentSpecificPrice->reduction;
-                    $reduc = $reduction_amount;
-                } else {
-                    $reduc = $priceComputed * $currentSpecificPrice->reduction;
-                }
-                $priceComputed -= $reduc;
-                $priceComputed = round($priceComputed, 2);
-            } else {
-                $priceComputed = $currentSpecificPrice->price;
-            }
-            $discount['from'] = $currentSpecificPrice->from;
-            $discount['to'] = $currentSpecificPrice->to;
-            $discount['price'] = $priceComputed;
-            $discounts[] = $discount;
-        }
-
-        return $discounts;
     }
 
     private function getStringTags()
@@ -355,6 +315,9 @@ class ProductSerializer
         if (empty($this->product->wholesale_price) === false && $this->product->wholesale_price != 0) {
             $attributes['wholesale_price'] = $this->product->wholesale_price;
         }
+        if (empty($this->product->mpn) === false) {
+            $attributes['mpn_sf'] = $this->product->mpn;
+        }
 
         if (empty($supplierReference) === false) {
             $attributes['supplier_reference'] = $supplierReference;
@@ -368,9 +331,11 @@ class ProductSerializer
 
         if (empty($this->configurations[\Shoppingfeed::PRODUCT_FEED_CUSTOM_FIELDS]) === false) {
             $fields = json_decode($this->configurations[\Shoppingfeed::PRODUCT_FEED_CUSTOM_FIELDS], true);
-            foreach ($this->getOverrideFields() as $fieldname) {
-                if (in_array($fieldname, $fields)) {
-                    $attributes[$fieldname] = $this->product->$fieldname;
+            if (is_array($fields)) {
+                foreach ($this->getOverrideFields() as $fieldname) {
+                    if (in_array($fieldname, $fields)) {
+                        $attributes[$fieldname] = $this->product->$fieldname;
+                    }
                 }
             }
         }
@@ -390,6 +355,11 @@ class ProductSerializer
         foreach ($this->product->getAttachments($this->id_lang) as $attachment) {
             $link = \Context::getContext()->link->getPageLink('attachment', true, null, 'id_attachment=' . $attachment['id_attachment']);
             $attributes['file-' . ++$fileNumber] = $link;
+
+            if ((int) \Configuration::get(\Shoppingfeed::SYNC_PRODUCT_ATTACHMENT_TITLE)) {
+                $attributes['name-file-' . $fileNumber] = $attachment['name'];
+                $attributes['description-file-' . $fileNumber] = $attachment['description'];
+            }
         }
 
         return $attributes;
@@ -399,6 +369,7 @@ class ProductSerializer
     {
         $variations = [];
         $combinations = $this->getAttributeCombinationService()->get($this->product, $this->id_lang, $this->id_shop);
+        /** @var \Shoppingfeed $sfModule */
         $sfModule = \Module::getInstanceByName('shoppingfeed');
         $sfp = new \ShoppingfeedProduct();
         $sfp->id_product = $this->product->id;
@@ -434,10 +405,9 @@ class ProductSerializer
             }
 
             if (empty($combination['mpn']) === false) {
-                $variation['attributes']['mpn'] = $combination['mpn'];
+                $variation['attributes']['mpn_sf'] = $combination['mpn'];
             }
             if (empty($combination['weight']) === false && $combination['weight'] != 0) {
-                $variation['attributes']['weight'] = $combination['weight'];
                 $variation['attributes']['weight'] = (float) $this->product->weight + (float) $combination['weight'];
             }
             if (empty($combination['wholesale_price']) === false && $combination['wholesale_price'] != 0) {
@@ -703,7 +673,7 @@ class ProductSerializer
     }
 
     /**
-     * @param int $idProductAttribute
+     * @param int|null $id_product_attribute
      *
      * @return array
      */

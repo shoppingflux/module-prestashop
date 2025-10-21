@@ -34,7 +34,7 @@ class SymbolValidator
      */
     public function validate(&$input, $callback, $replaceSymbol = '-')
     {
-        if (false == is_callable($callback)) {
+        if (false == is_callable($callback)) { // @phpstan-ignore-line
             return;
         }
 

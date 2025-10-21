@@ -18,6 +18,7 @@
  */
 
 use ShoppingfeedAddon\OrderInvoiceSync\Hub;
+use ShoppingfeedAddon\Services\SfTools;
 
 if (!defined('_PS_VERSION_')) {
     exit;
@@ -51,66 +52,70 @@ class Shoppingfeed extends ShoppingfeedClasslib\Module
      */
     public $php_version_required = '5.6';
 
-    const AUTH_TOKEN = 'SHOPPINGFEED_AUTH_TOKEN';
-    const STOCK_SYNC_ENABLED = 'SHOPPINGFEED_STOCK_SYNC_ENABLED';
-    const PRICE_SYNC_ENABLED = 'SHOPPINGFEED_PRICE_SYNC_ENABLED';
-    const ORDER_SYNC_ENABLED = 'SHOPPINGFEED_ORDER_SYNC_ENABLED';
-    const STOCK_SYNC_MAX_PRODUCTS = 'SHOPPINGFEED_STOCK_SYNC_MAX_PRODUCTS';
-    const REAL_TIME_SYNCHRONIZATION = 'SHOPPINGFEED_REAL_TIME_SYNCHRONIZATION';
-    const LAST_CRON_TIME_SYNCHRONIZATION = 'SHOPPINGFEED_LAST_CRON_TIME_SYNCHRONIZATION';
-    const ORDER_STATUS_TIME_SHIFT = 'SHOPPINGFEED_ORDER_STATUS_TIME_SHIFT';
-    const ORDER_STATUS_MAX_ORDERS = 'SHOPPINGFEED_ORDER_STATUS_MAX_ORDERS';
-    const SHIPPED_ORDERS = 'SHOPPINGFEED_SHIPPED_ORDERS';
-    const CANCELLED_ORDERS = 'SHOPPINGFEED_CANCELLED_ORDERS';
-    const REFUNDED_ORDERS = 'SHOPPINGFEED_REFUNDED_ORDERS';
-    const DELIVERED_ORDERS = 'SHOPPINGFEED_DELIVERED_ORDERS';
-    const ORDER_IMPORT_ENABLED = 'SHOPPINGFEED_ORDER_IMPORT_ENABLED';
-    const ORDER_IMPORT_TEST = 'SHOPPINGFEED_ORDER_IMPORT_TEST';
-    const ORDER_IMPORT_SHIPPED = 'SHOPPINGFEED_ORDER_IMPORT_SHIPPED';
-    const ORDER_IMPORT_SHIPPED_MARKETPLACE = 'SHOPPINGFEED_ORDER_IMPORT_SHIPPED_MARKETPLACE';
-    const ORDER_IMPORT_SPECIFIC_RULES_CONFIGURATION = 'SHOPPINGFEED_ORDER_IMPORT_SPECIFIC_RULES_CONFIGURATION';
-    const ORDER_DEFAULT_CARRIER_REFERENCE = 'SHOPPINGFEED_ORDER_DEFAULT_CARRIER_REFERENCE';
-    const PRODUCT_FEED_CARRIER_REFERENCE = 'SHOPPINGFEED_PRODUCT_FEED_CARRIER_REFERENCE';
-    const PRODUCT_FEED_SYNC_PACK = 'SHOPPINGFEED_PRODUCT_FEED_SYNC_PACK';
-    const PRODUCT_FEED_IMAGE_FORMAT = 'SHOPPINGFEED_PRODUCT_FEED_IMAGE_FORMAT';
-    const PRODUCT_FEED_CATEGORY_DISPLAY = 'SHOPPINGFEED_PRODUCT_FEED_CATEGORY_DISPLAY';
-    const PRODUCT_FEED_CUSTOM_FIELDS = 'SHOPPINGFEED_PRODUCT_FEED_CUSTOM_FIELDS';
-    const PRODUCT_FEED_REFERENCE_FORMAT = 'SHOPPINGFEED_PRODUCT_FEED_REFERENCE_FORMAT';
-    const PRODUCT_FEED_RULE_FILTERS = 'SHOPPINGFEED_PRODUCT_FEED_RULE_FILTERS';
-    const PRODUCT_VISIBILTY_NOWHERE = 'SHOPPINGFEED_PRODUCT_VISIBILTY_NOWHERE';
-    const PRODUCT_SYNC_BY_DATE_UPD = 'SHOPPINGFEED_PRODUCT_SYNC_BY_DATE_UPD';
-    const PRODUCT_FEED_TIME_FULL_UPDATE = 'SHOPPINGFEED_PRODUCT_FEED_TIME_FULL_UPDATE';
-    const PRODUCT_FEED_INTERVAL_CRON = 'SHOPPINGFEED_PRODUCT_FEED_INTERVAL_CRON';
-    const ORDER_IMPORT_PERMANENT_SINCE_DATE = 'SHOPPINGFEED_ORDER_IMPORT_PERMANENT_SINCE_DATE';
-    const ORDER_SHIPPED_IMPORT_PERMANENT_SINCE_DATE = 'SHOPPINGFEED_ORDER_SHIPPED_IMPORT_PERMANENT_SINCE_DATE';
-    const ORDER_SHIPPED_BY_MARKETPLACE_IMPORT_PERMANENT_SINCE_DATE = 'SHOPPINGFEED_ORDER_SHIPPED_BY_MARKETPLACE_IMPORT_PERMANENT_SINCE_DATE';
-    const IMPORT_ORDER_STATE = 'SHOPPINGFEED_FIRST_STATE_AFTER_IMPORT';
-    const CDISCOUNT_FEE_PRODUCT = 'SHOPPINGFEED_CDISCOUNT_FEE_PRODUCT';
-    const NEED_UPDATE_HOOK = 'SHOPPINGFEED_IS_NEED_UPDATE_HOOK';
-    const ORDER_TRACKING = 'SHOPPINGFEED_ORDER_TRACKING';
-    const COMPRESS_PRODUCTS_FEED = 'SHOPPINGFEED_COMPRESS_PRODUCTS_FEED';
-    const SEND_NOTIFICATION = 'SHOPPINGFEED_SEND_NOTIFICATION';
-    const PRODUCT_FEED_EXPORT_HIERARCHY = 'SHOPPINGFEED_PRODUCT_FEED_EXPORT_HIERARCHY';
+    public const AUTH_TOKEN = 'SHOPPINGFEED_AUTH_TOKEN';
+    public const STOCK_SYNC_ENABLED = 'SHOPPINGFEED_STOCK_SYNC_ENABLED';
+    public const PRICE_SYNC_ENABLED = 'SHOPPINGFEED_PRICE_SYNC_ENABLED';
+    public const ORDER_SYNC_ENABLED = 'SHOPPINGFEED_ORDER_SYNC_ENABLED';
+    public const STOCK_SYNC_MAX_PRODUCTS = 'SHOPPINGFEED_STOCK_SYNC_MAX_PRODUCTS';
+    public const REAL_TIME_SYNCHRONIZATION = 'SHOPPINGFEED_REAL_TIME_SYNCHRONIZATION';
+    public const LAST_CRON_TIME_SYNCHRONIZATION = 'SHOPPINGFEED_LAST_CRON_TIME_SYNCHRONIZATION';
+    public const ORDER_STATUS_TIME_SHIFT = 'SHOPPINGFEED_ORDER_STATUS_TIME_SHIFT';
+    public const ORDER_STATUS_MAX_ORDERS = 'SHOPPINGFEED_ORDER_STATUS_MAX_ORDERS';
+    public const SHIPPED_ORDERS = 'SHOPPINGFEED_SHIPPED_ORDERS';
+    public const CANCELLED_ORDERS = 'SHOPPINGFEED_CANCELLED_ORDERS';
+    public const REFUNDED_ORDERS = 'SHOPPINGFEED_REFUNDED_ORDERS';
+    public const DELIVERED_ORDERS = 'SHOPPINGFEED_DELIVERED_ORDERS';
+    public const ORDER_IMPORT_ENABLED = 'SHOPPINGFEED_ORDER_IMPORT_ENABLED';
+    public const ORDER_IMPORT_TEST = 'SHOPPINGFEED_ORDER_IMPORT_TEST';
+    public const ORDER_IMPORT_SHIPPED = 'SHOPPINGFEED_ORDER_IMPORT_SHIPPED';
+    public const ORDER_IMPORT_SHIPPED_MARKETPLACE = 'SHOPPINGFEED_ORDER_IMPORT_SHIPPED_MARKETPLACE';
+    public const ORDER_IMPORT_SPECIFIC_RULES_CONFIGURATION = 'SHOPPINGFEED_ORDER_IMPORT_SPECIFIC_RULES_CONFIGURATION';
+    public const ORDER_DEFAULT_CARRIER_REFERENCE = 'SHOPPINGFEED_ORDER_DEFAULT_CARRIER_REFERENCE';
+    public const PRODUCT_FEED_CARRIER_REFERENCE = 'SHOPPINGFEED_PRODUCT_FEED_CARRIER_REFERENCE';
+    public const PRODUCT_FEED_SYNC_PACK = 'SHOPPINGFEED_PRODUCT_FEED_SYNC_PACK';
+    public const PRODUCT_FEED_IMAGE_FORMAT = 'SHOPPINGFEED_PRODUCT_FEED_IMAGE_FORMAT';
+    public const PRODUCT_FEED_CATEGORY_DISPLAY = 'SHOPPINGFEED_PRODUCT_FEED_CATEGORY_DISPLAY';
+    public const PRODUCT_FEED_CUSTOM_FIELDS = 'SHOPPINGFEED_PRODUCT_FEED_CUSTOM_FIELDS';
+    public const PRODUCT_FEED_REFERENCE_FORMAT = 'SHOPPINGFEED_PRODUCT_FEED_REFERENCE_FORMAT';
+    public const PRODUCT_FEED_RULE_FILTERS = 'SHOPPINGFEED_PRODUCT_FEED_RULE_FILTERS';
+    public const PRODUCT_VISIBILTY_NOWHERE = 'SHOPPINGFEED_PRODUCT_VISIBILTY_NOWHERE';
+    public const PRODUCT_SYNC_BY_DATE_UPD = 'SHOPPINGFEED_PRODUCT_SYNC_BY_DATE_UPD';
+    public const PRODUCT_FEED_TIME_FULL_UPDATE = 'SHOPPINGFEED_PRODUCT_FEED_TIME_FULL_UPDATE';
+    public const PRODUCT_FEED_INTERVAL_CRON = 'SHOPPINGFEED_PRODUCT_FEED_INTERVAL_CRON';
+    public const ORDER_IMPORT_PERMANENT_SINCE_DATE = 'SHOPPINGFEED_ORDER_IMPORT_PERMANENT_SINCE_DATE';
+    public const ORDER_SHIPPED_IMPORT_PERMANENT_SINCE_DATE = 'SHOPPINGFEED_ORDER_SHIPPED_IMPORT_PERMANENT_SINCE_DATE';
+    public const ORDER_SHIPPED_BY_MARKETPLACE_IMPORT_PERMANENT_SINCE_DATE = 'SHOPPINGFEED_ORDER_SHIPPED_BY_MARKETPLACE_IMPORT_PERMANENT_SINCE_DATE';
+    public const IMPORT_ORDER_STATE = 'SHOPPINGFEED_FIRST_STATE_AFTER_IMPORT';
+    public const CDISCOUNT_FEE_PRODUCT = 'SHOPPINGFEED_CDISCOUNT_FEE_PRODUCT';
+    public const NEED_UPDATE_HOOK = 'SHOPPINGFEED_IS_NEED_UPDATE_HOOK';
+    public const ORDER_TRACKING = 'SHOPPINGFEED_ORDER_TRACKING';
+    public const ALLOW_PARTIAL_REFUND = 'SHOPPINGFEED_ALLOW_PARTIAL_REFUND';
+    public const COMPRESS_PRODUCTS_FEED = 'SHOPPINGFEED_COMPRESS_PRODUCTS_FEED';
+    public const SEND_NOTIFICATION = 'SHOPPINGFEED_SEND_NOTIFICATION';
+    public const PRODUCT_FEED_EXPORT_HIERARCHY = 'SHOPPINGFEED_PRODUCT_FEED_EXPORT_HIERARCHY';
+    public const SYNC_PRODUCT_ATTACHMENT_TITLE = 'SHOPPINGFEED_SYNC_PRODUCT_ATTACHMENT_TITLE';
 
-    const ORDER_OPERATION_ACCEPT = 'accept';
+    public const ORDER_OPERATION_ACCEPT = 'accept';
 
-    const ORDER_OPERATION_CANCEL = 'cancel';
+    public const ORDER_OPERATION_CANCEL = 'cancel';
 
-    const ORDER_OPERATION_REFUSE = 'refuse';
+    public const ORDER_OPERATION_REFUSE = 'refuse';
 
-    const ORDER_OPERATION_SHIP = 'ship';
+    public const ORDER_OPERATION_SHIP = 'ship';
 
-    const ORDER_OPERATION_REFUND = 'refund';
+    public const ORDER_OPERATION_REFUND = 'refund';
 
-    const ORDER_OPERATION_ACKNOWLEDGE = 'acknowledge';
+    public const ORDER_OPERATION_ACKNOWLEDGE = 'acknowledge';
 
-    const ORDER_OPERATION_UNACKNOWLEDGE = 'unacknowledge';
+    public const ORDER_OPERATION_UNACKNOWLEDGE = 'unacknowledge';
 
-    const ORDER_OPERATION_UPLOAD_DOCUMENTS = 'upload-documents';
+    public const ORDER_OPERATION_UPLOAD_DOCUMENTS = 'upload-documents';
 
-    const ORDER_OPERATION_DELIVER = 'deliver';
+    public const ORDER_OPERATION_DELIVER = 'deliver';
 
-    const ORDER_INVOICE_SYNC_MARKETPLACES = 'SHOPPINGFEED_ORDER_INVOICE_SYNC_MARKETPLACES';
+    public const ORDER_INVOICE_SYNC_MARKETPLACES = 'SHOPPINGFEED_ORDER_INVOICE_SYNC_MARKETPLACES';
+
+    public const IMPORT_MARKETPLACE_DISCOUNT = 'SHOPPINGFEED_IMPORT_MARKETPLACE_DISCOUNT';
 
     public $extensions = [
         ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerExtension::class,
@@ -295,6 +300,7 @@ class Shoppingfeed extends ShoppingfeedClasslib\Module
         'actionObjectCombinationUpdateAfter',
         'actionValidateOrder',
         'actionOrderStatusPostUpdate',
+        'actionOrderSlipAdd',
         'actionShoppingfeedOrderImportRegisterSpecificRules',
         'actionObjectProductDeleteBefore',
         'ActionObjectCategoryUpdateAfter',
@@ -329,10 +335,11 @@ class Shoppingfeed extends ShoppingfeedClasslib\Module
         $this->version = '@version@';
         $this->author = '202 ecommerce';
         $this->tab = 'market_place';
-        $this->ps_versions_compliancy = ['min' => '1.6', 'max' => '8.99.99'];
-        $this->need_instance = false;
+        $this->ps_versions_compliancy = ['min' => '1.6', 'max' => '9.99.99'];
+        $this->need_instance = 0;
         $this->bootstrap = true;
-        $this->tools = new ShoppingfeedAddon\Services\SfTools();
+        $this->module_key = '7251acf8971b8f1de58ce48f01f86a9d';
+        $this->tools = new SfTools();
 
         parent::__construct();
 
@@ -473,13 +480,13 @@ class Shoppingfeed extends ShoppingfeedClasslib\Module
         $this->setConfigurationDefault(self::SEND_NOTIFICATION, 1);
 
         if (method_exists(ImageType::class, 'getFormatedName')) {
-            $this->setConfigurationDefault(self::PRODUCT_FEED_IMAGE_FORMAT, ImageType::getFormatedName('large'));
+            $this->setConfigurationDefault(self::PRODUCT_FEED_IMAGE_FORMAT, call_user_func([ImageType::class, 'getFormatedName'], 'large'));
         } else {
             $this->setConfigurationDefault(self::PRODUCT_FEED_IMAGE_FORMAT, ImageType::getFormattedName('large'));
         }
         $this->saveToken();
 
-        return $res;
+        return (bool) $res;
     }
 
     private function saveToken()
@@ -488,7 +495,7 @@ class Shoppingfeed extends ShoppingfeedClasslib\Module
         $shops = Shop::getShops();
         foreach ($shops as $shop) {
             $tokenConfig = Configuration::get('SHOPPING_FLUX_TOKEN', null, null, $shop['id_shop']);
-            if ($tokenConfig === false) {
+            if ($tokenConfig == false) {
                 continue;
             }
             $tokenTable = $sfToken->findByToken($tokenConfig);
@@ -538,7 +545,7 @@ class Shoppingfeed extends ShoppingfeedClasslib\Module
         if ($tab->id == null) {
             return true;
         }
-        $tab->active = 0;
+        $tab->active = false;
         $tab->save();
 
         return true;
@@ -559,7 +566,7 @@ class Shoppingfeed extends ShoppingfeedClasslib\Module
         if ($tab->id == null) {
             return true;
         }
-        $tab->active = 1;
+        $tab->active = true;
         $tab->save();
 
         return true;
@@ -651,7 +658,7 @@ class Shoppingfeed extends ShoppingfeedClasslib\Module
      * Returns the product's Shopping Feed reference. The developer can skip
      * products to sync by overriding this method and have it return false.
      *
-     * @param ShoppingFeedProduct $sfProduct
+     * @param ShoppingfeedProduct $sfProduct
      * @param array $arguments Should you want to pass more arguments to this
      *                         function, you can find them in this array
      *
@@ -678,11 +685,11 @@ class Shoppingfeed extends ShoppingfeedClasslib\Module
      * this method and have it return false.
      *
      * @param string $sfProductReference The product's reference in Shopping Feed's system
-     * @param string $id_shop
+     * @param int $id_shop
      * @param array $arguments Should you want to pass more arguments to this
      *                         function, you can find them in this array
      *
-     * @return array
+     * @return Product
      */
     public function mapPrestashopProduct($sfProductReference, $id_shop, ...$arguments)
     {
@@ -698,7 +705,7 @@ class Shoppingfeed extends ShoppingfeedClasslib\Module
         );
 
         $explodedReference = explode('_', $sfProductReference);
-        $id_product = isset($explodedReference[0]) ? $explodedReference[0] : null;
+        $id_product = isset($explodedReference[0]) ? (int) $explodedReference[0] : null;
 
         if ($this->tools->isInt($id_product)) {
             $product = new Product($id_product, true, null, $id_shop);
@@ -706,8 +713,10 @@ class Shoppingfeed extends ShoppingfeedClasslib\Module
             $product = new Product();
         }
         if (isset($explodedReference[1]) && $this->tools->isInt($explodedReference[1])) {
+            /* @phpstan-ignore-next-line */
             $product->id_product_attribute = $explodedReference[1];
         } else {
+            /* @phpstan-ignore-next-line */
             $product->id_product_attribute = null;
         }
 
@@ -729,12 +738,12 @@ class Shoppingfeed extends ShoppingfeedClasslib\Module
      * false. Note that the comparison with the return value is strict to allow
      * "0" as a valid price.
      *
-     * @param ShoppingFeedProduct $sfProduct
+     * @param ShoppingfeedProduct $sfProduct
      * @param int $id_shop
      * @param array $arguments Should you want to pass more arguments to this
      *                         function, you can find them in this array
      *
-     * @return string
+     * @return float
      */
     public function mapProductPrice(ShoppingfeedProduct $sfProduct, $id_shop, $arguments = [])
     {
@@ -753,7 +762,7 @@ class Shoppingfeed extends ShoppingfeedClasslib\Module
                 $sfProduct->id_product_attribute : null,
             $id_country,
             0,// id_state
-            0,// postcode
+            '',// postcode
             $id_currency,// id_currency
             $id_group,// id_group
             1,// quantity
@@ -796,7 +805,7 @@ class Shoppingfeed extends ShoppingfeedClasslib\Module
         $sql->select('COUNT(distinct p.`id_product`)');
         $countProductsOnFeed = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
 
-        return $countProductsOnFeed;
+        return (int) $countProductsOnFeed;
     }
 
     /**
@@ -887,7 +896,6 @@ class Shoppingfeed extends ShoppingfeedClasslib\Module
         $id_product_attribute = $params['id_product_attribute'];
 
         try {
-            /** @var ShoppingfeedHandler $handler */
             $handler = new ShoppingfeedClasslib\Actions\ActionsHandler();
             $handler
                 ->setConveyor([
@@ -1212,7 +1220,7 @@ class Shoppingfeed extends ShoppingfeedClasslib\Module
     /**
      * This hook is used to "record" SF orders imported using the old module.
      *
-     * @param type array
+     * @param mixed $params
      *
      * @return void
      */
@@ -1312,7 +1320,7 @@ class Shoppingfeed extends ShoppingfeedClasslib\Module
     /**
      * Saves an order for status synchronization
      *
-     * @param type $params
+     * @param mixed $params
      */
     public function hookActionOrderStatusPostUpdate($params)
     {
@@ -1351,6 +1359,21 @@ class Shoppingfeed extends ShoppingfeedClasslib\Module
         }
     }
 
+    public function hookActionOrderSlipAdd($params)
+    {
+        if (false == (int) Configuration::get(self::ALLOW_PARTIAL_REFUND)) {
+            return;
+        }
+
+        $shoppingFeedOrder = ShoppingfeedOrder::getByIdOrder($params['order']->id);
+
+        if (!Validate::isLoadedObject($shoppingFeedOrder)) {
+            return;
+        }
+
+        $this->addOrderTask($shoppingFeedOrder->id_order, ShoppingfeedTaskOrder::ACTION_PARTIAL_REFUND);
+    }
+
     /**
      * Adds the order import specific rules to the manager.
      * Add, remove or extend an order import rule ! Use this hook to declare
@@ -1383,6 +1406,8 @@ class Shoppingfeed extends ShoppingfeedClasslib\Module
             ShoppingfeedAddon\OrderImport\Rules\TaxForBusiness::class,
             ShoppingfeedAddon\OrderImport\Rules\GroupCustomer::class,
             ShoppingfeedAddon\OrderImport\Rules\Cdiscount::class,
+            ShoppingfeedAddon\OrderImport\Rules\CdiscountEmailRule::class,
+            ShoppingfeedAddon\OrderImport\Rules\OrderDiscountRule::class,
         ];
 
         foreach ($defaultRulesClassNames as $ruleClassName) {

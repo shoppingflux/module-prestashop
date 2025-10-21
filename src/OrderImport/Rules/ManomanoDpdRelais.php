@@ -32,10 +32,10 @@ use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 
 class ManomanoDpdRelais extends RuleAbstract implements RuleInterface
 {
-    /** @var \Module */
+    /** @var \ModuleCore */
     protected $dpdfrance;
 
-    const MODULE_NAME = 'dpdfrance';
+    public const MODULE_NAME = 'dpdfrance';
 
     /**
      * {@inheritdoc}
@@ -111,7 +111,7 @@ class ManomanoDpdRelais extends RuleAbstract implements RuleInterface
             return false;
         }
 
-        /** @var \Cart $cart */
+        /** @var \Cart|null $cart */
         $cart = $params['cart'];
 
         if (false == $cart instanceof \Cart) {

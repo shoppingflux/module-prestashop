@@ -22,4 +22,6 @@ if (!defined('_PS_VERSION_')) {
 
 class ShoppingfeedPaymentModule extends PaymentModule
 {
+    /** @var string */
+    public $currentOrderReference;
 }

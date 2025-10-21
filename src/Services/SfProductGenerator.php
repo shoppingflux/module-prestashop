@@ -28,14 +28,13 @@ use ShoppingFeed\Feed\Product;
 use ShoppingFeed\Feed\ProductFeedMetadata;
 use ShoppingFeed\Feed\ProductFeedResult;
 use ShoppingFeed\Feed\ProductFeedWriterInterface;
-use ShoppingFeed\Feed\ProductGenerator;
 use ShoppingFeed\Feed\Xml\XmlProductFeedWriter;
 
 class SfProductGenerator
 {
-    const VALIDATE_NONE = 0;
-    const VALIDATE_EXCLUDE = 1;
-    const VALIDATE_EXCEPTION = 2;
+    public const VALIDATE_NONE = 0;
+    public const VALIDATE_EXCLUDE = 1;
+    public const VALIDATE_EXCEPTION = 2;
 
     /**
      * File destination for the output feed
@@ -72,7 +71,7 @@ class SfProductGenerator
     protected $metadata;
 
     /**
-     * @var bool
+     * @var int
      */
     protected $validate;
 
@@ -80,6 +79,10 @@ class SfProductGenerator
      * @var string
      */
     protected $writer;
+    /**
+     * @var ProductFeedWriterInterface
+     */
+    protected $writerInstance;
 
     /**
      * @var array
@@ -117,8 +120,8 @@ class SfProductGenerator
     }
 
     /**
-     * @param string string $uri The uri where data will be written
-     * @param string string $writerAlias The writer to use for this generator instance
+     * @param string $uri The uri where data will be written
+     * @param string $writerAlias The writer to use for this generator instance
      */
     public function __construct($uri = 'php://output', $writerAlias = 'xml')
     {
@@ -182,7 +185,7 @@ class SfProductGenerator
      *
      * @param int $flags
      *
-     * @return ProductGenerator
+     * @return $this
      */
     public function setValidationFlags($flags)
     {
@@ -244,15 +247,15 @@ class SfProductGenerator
     {
         $this->metadata->setStartedAt(new \DateTimeImmutable());
 
-        $this->writer = $this->createWriter();
-        $this->writer->open($this->uri);
-        $this->writer->setAttributes($this->attributes);
+        $this->writerInstance = $this->createWriter();
+        $this->writerInstance->open($this->uri);
+        $this->writerInstance->setAttributes($this->attributes);
     }
 
     public function close()
     {
         $this->metadata->setFinishedAt(new \DateTimeImmutable());
-        $this->writer->close($this->metadata);
+        $this->writerInstance->close($this->metadata);
 
         return new ProductFeedResult(
             $this->metadata->getStartedAt(),
@@ -267,7 +270,7 @@ class SfProductGenerator
         }
 
         $prototype = new Product\Product();
-        foreach ($iterable as $item) {
+        foreach ($iterable as $index => $item) {
             // Apply processors
             foreach ($this->processors as $processor) {
                 $item = $processor($item);
@@ -290,14 +293,14 @@ class SfProductGenerator
             // The product does not match expected validation rules
             if ($this->validate && false === $product->isValid()) {
                 if ($this->validate === self::VALIDATE_EXCEPTION) {
-                    throw new Product\InvalidProductException(sprintf('Invalid product found at index %d, aborting', $product->id));
+                    throw new Product\InvalidProductException(sprintf('Invalid product found at index %d, aborting', (int) $index));
                 }
 
                 $this->metadata->incrInvalid();
                 continue;
             }
 
-            $this->writer->writeProduct($product);
+            $this->writerInstance->writeProduct($product);
             $this->metadata->incrWritten();
         }
     }
@@ -311,7 +314,7 @@ class SfProductGenerator
      */
     public function write($iterable)
     {
-        if (!$iterable instanceof \Traversable && !is_array($iterable)) {
+        if (!$iterable instanceof \Traversable && !is_array($iterable)) { // @phpstan-ignore-line
             throw new \Exception(sprintf('cannot iterates over %s', gettype($iterable)));
         }
 

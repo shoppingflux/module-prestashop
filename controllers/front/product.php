@@ -27,6 +27,8 @@ use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 
 class ShoppingfeedProductModuleFrontController extends ModuleFrontController
 {
+    /** @var Shoppingfeed */
+    public $module;
     protected $sfToken;
 
     protected $isCompressFeed;
@@ -306,7 +308,7 @@ class ShoppingfeedProductModuleFrontController extends ModuleFrontController
     }
 
     /**
-     * @param array $specificPrices
+     * @param mixed $specificPrices
      *
      * @return Discount
      */

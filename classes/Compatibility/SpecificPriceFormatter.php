@@ -51,7 +51,6 @@ class SpecificPriceFormatter
      *
      * @param array $specificPrice
      * @param bool $isTaxIncluded
-     * @param Context $context
      */
     public function __construct($specificPrice, $isTaxIncluded, Currency $currency, $displayDiscountPrice)
     {
@@ -88,7 +87,6 @@ class SpecificPriceFormatter
 
             // Since this price is set in default currency,
             // we need to convert it into current currency
-            $this->specificPrice['id_currency'];
             $currentPriceCurrentCurrency = Tools::convertPrice($currentPriceDefaultCurrency, $this->currency, true);
 
             if ($this->specificPrice['reduction_type'] == 'amount') {

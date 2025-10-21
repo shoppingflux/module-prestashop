@@ -28,8 +28,8 @@ if (!defined('_PS_VERSION_')) {
  */
 class ShoppingfeedProduct extends ObjectModel
 {
-    const ACTION_SYNC_STOCK = 'SYNC_STOCK';
-    const ACTION_SYNC_PRICE = 'SYNC_PRICE';
+    public const ACTION_SYNC_STOCK = 'SYNC_STOCK';
+    public const ACTION_SYNC_PRICE = 'SYNC_PRICE';
 
     /** @var string The action to execute for this product */
     public $action;
@@ -246,16 +246,16 @@ class ShoppingfeedProduct extends ObjectModel
             'Product'
         );
 
-        return null;
+        return '';
     }
 
     /**
      * Attempts to retrieve an object using its unique key; returns false if none was found.
      *
-     * @param $action
-     * @param $id_product
-     * @param $id_product_attribute
-     * @param $id_token
+     * @param string $action
+     * @param int $id_product
+     * @param int $id_product_attribute
+     * @param int $id_token
      *
      * @return bool|ShoppingfeedProduct
      *
@@ -271,7 +271,7 @@ class ShoppingfeedProduct extends ObjectModel
             ->where('id_product = ' . (int) $id_product)
             ->where('id_product_attribute = ' . (int) $id_product_attribute)
             ->where('id_token = ' . (int) $id_token);
-        $id = Db::getInstance()->getValue($sql);
+        $id = (int) Db::getInstance()->getValue($sql);
         if ($id) {
             return new ShoppingfeedProduct($id);
         }

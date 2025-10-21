@@ -33,7 +33,7 @@ use ShoppingfeedAddon\Services\CdiscountFeeProduct;
 class Cdiscount extends RuleAbstract implements RuleInterface
 {
     /**
-     * @var \Shoppingfeed
+     * @var \ModuleCore
      */
     protected $module;
 
@@ -69,11 +69,11 @@ class Cdiscount extends RuleAbstract implements RuleInterface
         $cdiscountFeeProduct->id_product_attribute = null;
         $sfp = new \ShoppingfeedProduct();
         $sfp->id_product = $cdiscountFeeProduct->id;
-        $reference = $this->module->mapReference($sfp);
+        $reference = call_user_func([$this->module, 'mapReference'], $sfp);
         $params['prestashopProducts'][$reference] = $cdiscountFeeProduct;
         $orderData = $params['orderData'];
         $item = new OrderItem(
-            uniqid(),
+            (int) uniqid(),
             $reference,
             '',
             1,

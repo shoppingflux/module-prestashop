@@ -42,13 +42,13 @@ class ShoppingfeedProductSyncStockActions extends ShoppingfeedProductSyncActions
     public function prepareBatch()
     {
         $this->conveyor['preparedBatch'] = [];
+        /** @var Shoppingfeed $sfModule */
         $sfModule = Module::getInstanceByName('shoppingfeed');
         $token = new ShoppingfeedToken($this->conveyor['id_token']);
 
         /** @var ShoppingfeedProduct $sfProduct */
         foreach ($this->conveyor['batch'] as $sfProduct) {
             $sfReference = $sfModule->mapReference($sfProduct);
-
             // The developer can skip products to sync by overriding
             // ShoppingFeed::mapReference and have it return false
             if (empty($sfReference)) {
@@ -81,16 +81,16 @@ class ShoppingfeedProductSyncStockActions extends ShoppingfeedProductSyncActions
     {
         $shoppingfeedApi = ShoppingfeedApi::getInstanceByToken($this->conveyor['id_token']);
         if ($shoppingfeedApi == false) {
-            ProcessLoggerHandler::logError(
+            ProcessLoggerHandler::logError( // @phpstan-ignore-line
                 static::getLogPrefix($this->conveyor['id_token']) . ' ' .
                     $this->l('Could not retrieve Shopping Feed API.', 'ShoppingfeedProductSyncStockActions'),
                 'Product'
             );
-            Registry::increment('errors');
+            Registry::increment('errors'); // @phpstan-ignore-line
 
             return false;
         }
-        $limit = Configuration::getGlobalValue(Shoppingfeed::STOCK_SYNC_MAX_PRODUCTS);
+        $limit = (int) Configuration::getGlobalValue(Shoppingfeed::STOCK_SYNC_MAX_PRODUCTS);
         $preparedBatch = $this->conveyor['preparedBatch'];
         foreach (array_chunk($preparedBatch, $limit, true) as $products) {
             $res = $shoppingfeedApi->updateMainStoreInventory($products, $this->conveyor['shoppingfeed_store_id']);
@@ -106,7 +106,7 @@ class ShoppingfeedProductSyncStockActions extends ShoppingfeedProductSyncActions
                 $sfProduct = $products[$reference]['sfProduct'];
 
                 if (false === Validate::isLoadedObject($sfProduct)) {
-                    ProcessLoggerHandler::logError(
+                    ProcessLoggerHandler::logError( // @phpstan-ignore-line
                         sprintf(
                             static::getLogPrefix($this->conveyor['id_token']) . ' ' .
                             $this->l('Cannot retrieve a product for a reference %s', 'ShoppingfeedProductSyncStockActions'),
@@ -118,7 +118,7 @@ class ShoppingfeedProductSyncStockActions extends ShoppingfeedProductSyncActions
                     continue;
                 }
 
-                ProcessLoggerHandler::logInfo(
+                ProcessLoggerHandler::logInfo( // @phpstan-ignore-line
                     sprintf(
                         static::getLogPrefix($this->conveyor['id_token']) . ' ' .
                             $this->l('Updated %s qty: %s', 'ShoppingfeedProductSyncStockActions'),
@@ -129,7 +129,7 @@ class ShoppingfeedProductSyncStockActions extends ShoppingfeedProductSyncActions
                     $sfProduct->id_product
                 );
 
-                Registry::increment('updatedProducts');
+                Registry::increment('updatedProducts'); // @phpstan-ignore-line
 
                 unset($products[$reference]);
 
@@ -142,7 +142,7 @@ class ShoppingfeedProductSyncStockActions extends ShoppingfeedProductSyncActions
             foreach ($products as $data) {
                 $sfProduct = $data['sfProduct'];
 
-                ProcessLoggerHandler::logInfo(
+                ProcessLoggerHandler::logInfo( // @phpstan-ignore-line
                     sprintf(
                         static::getLogPrefix($this->conveyor['id_token']) . ' ' .
                             $this->l('%s not referenced in the Shopping Feed catalog or unmodified Shopping Feed stock - qty: %s', 'ShoppingfeedProductSyncStockActions'),
@@ -152,7 +152,7 @@ class ShoppingfeedProductSyncStockActions extends ShoppingfeedProductSyncActions
                     'Product',
                     $sfProduct->id_product
                 );
-                Registry::increment('not-in-catalog');
+                Registry::increment('not-in-catalog'); // @phpstan-ignore-line
 
                 $sfProduct->delete();
             }

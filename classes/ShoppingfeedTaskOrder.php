@@ -25,14 +25,18 @@ if (!defined('_PS_VERSION_')) {
  */
 class ShoppingfeedTaskOrder extends ObjectModel
 {
-    const ACTION_SYNC_STATUS = 'SYNC_STATUS';
+    public const ACTION_SYNC_STATUS = 'SYNC_STATUS';
 
-    const ACTION_UPLOAD_INVOICE = 'UPLOAD_INVOICE';
+    public const ACTION_UPLOAD_INVOICE = 'UPLOAD_INVOICE';
+
+    public const ACTION_PARTIAL_REFUND = 'PARTIAL_REFUND';
 
     // As in, "check the ticket related to the Order Status synchronization"
-    const ACTION_CHECK_TICKET_SYNC_STATUS = 'CHECK_TICKET_SYNC_STATUS';
+    public const ACTION_CHECK_TICKET_SYNC_STATUS = 'CHECK_TICKET_SYNC_STATUS';
 
-    const ACTION_CHECK_TICKET_UPLOAD_INVOICE = 'CHECK_TICKET_UPLOAD_INVOICE';
+    public const ACTION_CHECK_TICKET_UPLOAD_INVOICE = 'CHECK_TICKET_UPLOAD_INVOICE';
+
+    public const ACTION_CHECK_TICKET_PARTIAL_REFUND = 'ACTION_CHECK_TICKET_PARTIAL_REFUND';
 
     /** @var string The action to execute for this order */
     public $action;
@@ -69,6 +73,8 @@ class ShoppingfeedTaskOrder extends ObjectModel
                     self::ACTION_CHECK_TICKET_SYNC_STATUS,
                     self::ACTION_UPLOAD_INVOICE,
                     self::ACTION_CHECK_TICKET_UPLOAD_INVOICE,
+                    self::ACTION_PARTIAL_REFUND,
+                    self::ACTION_CHECK_TICKET_PARTIAL_REFUND,
                 ],
             ],
             'id_order' => [
@@ -119,8 +125,8 @@ class ShoppingfeedTaskOrder extends ObjectModel
      * Attempts to retrieve an object using its id_order and action. Returns
      * false if none was found.
      *
-     * @param $id_order
-     * @param $action
+     * @param int $id_order
+     * @param string $action
      *
      * @return bool|ShoppingfeedTaskOrder
      *
@@ -135,7 +141,7 @@ class ShoppingfeedTaskOrder extends ObjectModel
             ->where('id_order = ' . (int) $id_order)
             ->where("action = '" . pSQL($action) . "'");
 
-        $id = Db::getInstance()->getValue($sql);
+        $id = (int) Db::getInstance()->getValue($sql);
         if ($id) {
             return new ShoppingfeedTaskOrder($id);
         }

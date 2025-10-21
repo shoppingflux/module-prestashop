@@ -30,6 +30,9 @@ use ShoppingfeedClasslib\Actions\ActionsHandler;
  */
 class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminController
 {
+    /** @var Shoppingfeed */
+    public $module;
+
     public $bootstrap = true;
 
     public $nbr_products;
@@ -309,6 +312,22 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
                     'label' => $this->module->l('Layout of variations', 'AdminShoppingfeedGeneralSettings'),
                     'name' => Shoppingfeed::PRODUCT_FEED_EXPORT_HIERARCHY,
                 ],
+                [
+                    'type' => 'switch',
+                    'is_bool' => true,
+                    'values' => [
+                        [
+                            'id' => 'ok',
+                            'value' => 1,
+                        ],
+                        [
+                            'id' => 'ko',
+                            'value' => 0,
+                        ],
+                    ],
+                    'label' => $this->module->l('Export title and description of attached documents', 'AdminShoppingfeedGeneralSettings'),
+                    'name' => Shoppingfeed::SYNC_PRODUCT_ATTACHMENT_TITLE,
+                ],
             ],
             'submit' => [
                 'title' => $this->module->l('Save', 'AdminShoppingfeedGeneralSettings'),
@@ -322,6 +341,7 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
             Shoppingfeed::PRODUCT_FEED_IMAGE_FORMAT => Configuration::get(Shoppingfeed::PRODUCT_FEED_IMAGE_FORMAT),
             Shoppingfeed::PRODUCT_FEED_CATEGORY_DISPLAY => Configuration::get(Shoppingfeed::PRODUCT_FEED_CATEGORY_DISPLAY),
             Shoppingfeed::PRODUCT_FEED_EXPORT_HIERARCHY => Configuration::get(Shoppingfeed::PRODUCT_FEED_EXPORT_HIERARCHY),
+            Shoppingfeed::SYNC_PRODUCT_ATTACHMENT_TITLE => (int) Configuration::get(Shoppingfeed::SYNC_PRODUCT_ATTACHMENT_TITLE),
         ];
 
         $customFields = $this->getOverrideFields();
@@ -580,7 +600,7 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
     protected function getProductFilters()
     {
         $product_feed_rule_filters = Configuration::getGlobalValue(Shoppingfeed::PRODUCT_FEED_RULE_FILTERS);
-        if ($product_feed_rule_filters === false) {
+        if (!$product_feed_rule_filters) {
             return [];
         }
         $product_feed_rule_filters = json_decode($product_feed_rule_filters, true);
@@ -722,6 +742,7 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
         $categoryDisplay = Tools::getValue(Shoppingfeed::PRODUCT_FEED_CATEGORY_DISPLAY);
         $customFields = Tools::getValue(Shoppingfeed::PRODUCT_FEED_CUSTOM_FIELDS);
         $exportWithHierarchy = Tools::getValue(Shoppingfeed::PRODUCT_FEED_EXPORT_HIERARCHY);
+        $syncProductAttachmentTitle = (int) Tools::getValue(Shoppingfeed::SYNC_PRODUCT_ATTACHMENT_TITLE);
 
         Configuration::updateGlobalValue(Shoppingfeed::PRODUCT_FEED_SYNC_PACK, $sync_pack ? true : false);
         Configuration::updateGlobalValue(Shoppingfeed::PRODUCT_FEED_CARRIER_REFERENCE, $carrierReference);
@@ -729,6 +750,7 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
         Configuration::updateGlobalValue(Shoppingfeed::PRODUCT_FEED_CATEGORY_DISPLAY, $categoryDisplay);
         Configuration::updateGlobalValue(Shoppingfeed::PRODUCT_FEED_CUSTOM_FIELDS, json_encode($customFields));
         Configuration::updateGlobalValue(Shoppingfeed::PRODUCT_FEED_EXPORT_HIERARCHY, $exportWithHierarchy);
+        Configuration::updateGlobalValue(Shoppingfeed::SYNC_PRODUCT_ATTACHMENT_TITLE, $syncProductAttachmentTitle);
 
         return true;
     }

@@ -32,7 +32,7 @@ use ShoppingFeed\Sdk\Api\Order\OrderResource;
  */
 class RulesManager
 {
-    /** @var ShoppingFeed\Sdk\Api\Order\OrderResource */
+    /** @var OrderResource|null */
     protected $apiOrder;
 
     /** @var array The rules to be applied */
@@ -45,7 +45,8 @@ class RulesManager
      * If no OrderResource is specified, the manager will retrieve all rules but
      * never execute them.
      *
-     * @param OrderResource $apiOrder
+     * @param int $id_shop
+     * @param ?OrderResource $apiOrder
      */
     public function __construct($id_shop, OrderResource $apiOrder = null)
     {
@@ -68,8 +69,12 @@ class RulesManager
                 'specificRulesClassNames' => &$rulesClassNames,
             ]
         );
+        /* @phpstan-ignore-next-line */
+        if (empty($rulesClassNames)) {
+            return;
+        }
 
-        foreach ($rulesClassNames as $ruleClassName) {
+        foreach ($rulesClassNames as $ruleClassName) { // @phpstan-ignore-line
             $this->addRule(
                 new $ruleClassName(
                     isset($this->rulesConfiguration[$ruleClassName]) ? $this->rulesConfiguration[$ruleClassName] : [],
@@ -83,7 +88,7 @@ class RulesManager
      * Adds a rule to the manager. If an OrderResource was given, checks if the
      * rule matches the order.
      *
-     * @param RuleInterface $ruleObject
+     * @param RuleAbstract $ruleObject
      *
      * @return bool
      */

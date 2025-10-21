@@ -36,7 +36,7 @@ class ActionsHandler extends DefaultActionHandler
     /**
      * Values classAction by the classes
      *
-     * @var ShoppingfeedClasslib\Actions\DefaultActions
+     * @var DefaultActionHandler|null
      */
     protected $classAction;
 
@@ -74,15 +74,16 @@ class ActionsHandler extends DefaultActionHandler
         }
 
         $moduleId = \Module::getModuleIdByName('shoppingfeed');
+        /** @var array|false|mixed|string|null $hookResult */
         $hookResult = \Hook::exec(self::PROCESS_OVERRIDE_HOOK, ['className' => $className], $moduleId, true, false);
-        if (!empty($hookResult) && !empty($hookResult['shoppingfeed'])) {
+        if (is_array($hookResult) && !empty($hookResult['shoppingfeed'])) {
             $className = $hookResult['shoppingfeed'];
         }
 
-        if (class_exists($className) === false && empty($this->classAction) === true) {
+        if (class_exists($className) === false && empty($this->classAction)) {
             throw new \Exception($className . '" class not defined "');
         }
-        if (class_exists($className) === true && empty($this->classAction) === true) {
+        if (class_exists($className) && empty($this->classAction)) {
             /* @var DefaultActions $this->classAction */
             $this->classAction = new $className();
         }

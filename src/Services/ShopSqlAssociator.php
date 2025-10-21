@@ -46,7 +46,7 @@ class ShopSqlAssociator
 
         $asso_table = \Shop::getAssoTable($table);
 
-        if ($asso_table === false || $asso_table['type'] != 'shop') {
+        if (empty($asso_table) || $asso_table['type'] != 'shop') {
             return;
         }
 

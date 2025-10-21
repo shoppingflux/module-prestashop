@@ -35,7 +35,7 @@ class GlsRule extends RuleAbstract implements RuleInterface
 {
     protected $gls;
 
-    /** @var Adapter */
+    /** @var AdapterInterface */
     protected $glsAdapter;
 
     protected $logPrefix = '';
