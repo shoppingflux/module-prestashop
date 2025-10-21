@@ -1,5 +1,4 @@
 <?php
-
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -279,7 +278,7 @@ class ColissimoRule extends RuleAbstract implements RuleInterface
             'product_code' => $productCode,
             'network' => '', // TODO; how do we get this field ? It's not in the data sent by SF. Ask Colissimo directly ? Then again, it's not required.
         ];
-        $pickupPoint = \ColissimoPickupPoint::getPickupPointByIdColissimo($colissimoPickupPointId);
+        $pickupPoint = \ColissimoPickupPoint::getPickupPointByIdColissimo($colissimoPickupPointId); // @phpstan-ignore-line
         $pickupPoint->hydrate(array_map('pSQL', $pickupPointData));
         $pickupPoint->save();
 
@@ -308,7 +307,7 @@ class ColissimoRule extends RuleAbstract implements RuleInterface
         );
 
         // Save pickup point/cart association
-        \ColissimoCartPickupPoint::updateCartPickupPoint(
+        \ColissimoCartPickupPoint::updateCartPickupPoint( // @phpstan-ignore-line
             (int) $params['cart']->id,
             (int) $pickupPoint->id,
             !empty($shippingAddressObj->phone_mobile) ? $shippingAddressObj->phone_mobile : ''

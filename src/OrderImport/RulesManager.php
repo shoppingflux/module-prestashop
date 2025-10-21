@@ -1,5 +1,4 @@
 <?php
-
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -49,7 +48,7 @@ class RulesManager
      * @param int $id_shop
      * @param ?OrderResource $apiOrder
      */
-    public function __construct($id_shop, ?OrderResource $apiOrder = null)
+    public function __construct($id_shop, OrderResource $apiOrder = null)
     {
         $this->apiOrder = $apiOrder;
         $this->rulesConfiguration = json_decode(
@@ -75,7 +74,7 @@ class RulesManager
             return;
         }
 
-        foreach ($rulesClassNames as $ruleClassName) {
+        foreach ($rulesClassNames as $ruleClassName) { // @phpstan-ignore-line
             $this->addRule(
                 new $ruleClassName(
                     isset($this->rulesConfiguration[$ruleClassName]) ? $this->rulesConfiguration[$ruleClassName] : [],

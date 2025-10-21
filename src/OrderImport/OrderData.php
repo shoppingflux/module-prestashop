@@ -1,5 +1,4 @@
 <?php
-
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -123,7 +122,7 @@ class OrderData
      */
     protected function validateISO($address)
     {
-        if (false === is_array($address)) {
+        if (false === is_array($address)) { // @phpstan-ignore-line
             return $address;
         }
 

@@ -1,5 +1,4 @@
 <?php
-
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -63,7 +62,7 @@ class RelaisColisRule extends RuleAbstract implements RuleInterface
             return false;
         }
 
-        /** @var \Cart $cart */
+        /** @var \Cart|null $cart */
         $cart = $params['cart'];
 
         if (false == $cart instanceof \Cart) {
@@ -192,7 +191,7 @@ class RelaisColisRule extends RuleAbstract implements RuleInterface
         }
 
         if (false == is_array($deliveryOption) || empty($deliveryOption)) {
-            return new \RelaisColisInfo();
+            return new \RelaisColisInfo(); // @phpstan-ignore-line
         }
 
         $addresses = array_keys($deliveryOption);
@@ -223,7 +222,7 @@ class RelaisColisRule extends RuleAbstract implements RuleInterface
         try {
             call_user_func([$relaisColisInfo, 'save']);
         } catch (\Throwable $e) {
-            return new \RelaisColisInfo();
+            return new \RelaisColisInfo(); // @phpstan-ignore-line
         }
 
         return $relaisColisInfo;

@@ -1,5 +1,4 @@
 <?php
-
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -112,7 +111,7 @@ class ManomanoDpdRelais extends RuleAbstract implements RuleInterface
             return false;
         }
 
-        /** @var \Cart $cart */
+        /** @var \Cart|null $cart */
         $cart = $params['cart'];
 
         if (false == $cart instanceof \Cart) {

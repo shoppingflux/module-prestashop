@@ -1,5 +1,4 @@
 <?php
-
 /**
  *  Copyright since 2019 Shopping Feed
  *
@@ -309,7 +308,7 @@ class ShoppingfeedProductModuleFrontController extends ModuleFrontController
     }
 
     /**
-     * @param array $specificPrices
+     * @param mixed $specificPrices
      *
      * @return Discount
      */

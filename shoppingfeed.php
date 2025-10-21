@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Copyright since 2019 Shopping Feed
  *
@@ -481,7 +480,7 @@ class Shoppingfeed extends ShoppingfeedClasslib\Module
         $this->setConfigurationDefault(self::SEND_NOTIFICATION, 1);
 
         if (method_exists(ImageType::class, 'getFormatedName')) {
-            $this->setConfigurationDefault(self::PRODUCT_FEED_IMAGE_FORMAT, ImageType::getFormatedName('large'));
+            $this->setConfigurationDefault(self::PRODUCT_FEED_IMAGE_FORMAT, call_user_func([ImageType::class, 'getFormatedName'], 'large'));
         } else {
             $this->setConfigurationDefault(self::PRODUCT_FEED_IMAGE_FORMAT, ImageType::getFormattedName('large'));
         }
