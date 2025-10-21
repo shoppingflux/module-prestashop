@@ -1213,6 +1213,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 'shipping_cost_tax_excl' => Tools::ps_round($orderPrices['total_shipping_tax_excl'], 4),
                 'id_carrier' => $carrier->id,
                 'id_order' => (int) $id_order,
+                'weight' => $psOrder->getTotalWeight(),
             ];
 
             foreach ($updateOrder as $key => $value) {
