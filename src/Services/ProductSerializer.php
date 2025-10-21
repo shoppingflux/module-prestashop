@@ -405,10 +405,9 @@ class ProductSerializer
             }
 
             if (empty($combination['mpn']) === false) {
-                $variation['attributes']['mpn'] = $combination['mpn'];
+                $variation['attributes']['mpn_sf'] = $combination['mpn'];
             }
             if (empty($combination['weight']) === false && $combination['weight'] != 0) {
-                $variation['attributes']['weight'] = $combination['weight'];
                 $variation['attributes']['weight'] = (float) $this->product->weight + (float) $combination['weight'];
             }
             if (empty($combination['wholesale_price']) === false && $combination['wholesale_price'] != 0) {
