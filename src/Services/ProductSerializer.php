@@ -316,6 +316,9 @@ class ProductSerializer
         if (empty($this->product->wholesale_price) === false && $this->product->wholesale_price != 0) {
             $attributes['wholesale_price'] = $this->product->wholesale_price;
         }
+        if (empty($this->product->mpn) === false) {
+            $attributes['mpn_sf'] = $this->product->mpn;
+        }
 
         if (empty($supplierReference) === false) {
             $attributes['supplier_reference'] = $supplierReference;

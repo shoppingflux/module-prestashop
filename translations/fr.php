@@ -429,7 +429,7 @@ $_MODULE['<{shoppingfeed}prestashop>zalandocarrier_0cc1e925b5703e8da52b7c3e91829
 $_MODULE['<{shoppingfeed}prestashop>zalandocarrier_43b6ade8fd758b0597ad2f31c9cd1b41'] = 'Règle déclenchée.';
 $_MODULE['<{shoppingfeed}prestashop>zalandocarrier_9b03904408244323647649bf095e6b72'] = 'Si la commande provient de Zalando.';
 $_MODULE['<{shoppingfeed}prestashop>zalandocarrier_c080a57a1eec56e1f84db6783c85e7d9'] = 'Régler le transporteur.';
-$_MODULE['<{shoppingfeed}prestashop>orderdiscountrule_e16540c4bf50c76625362e4642712884'] = 'Importer les remises du marché';
+$_MODULE['<{shoppingfeed}prestashop>orderdiscountrule_e16540c4bf50c76625362e4642712884'] = 'Importer les coupons de réduction';
 $_MODULE['<{shoppingfeed}prestashop>orderdiscountrule_3c578142b532719175b87190e8887c8f'] = 'Coupon (marchand)';
 $_MODULE['<{shoppingfeed}prestashop>orderdiscountrule_c23bfa1a1917c0acfeb09a8a734d4035'] = 'Coupon (place de marché)';
 $_MODULE['<{shoppingfeed}prestashop>manomanodpdrelais_2a917f8d6c7a6f333b01471c6c529639'] = 'Recherche l\'ID relais et complète la table \'dpdfrance_shipping\' comme attendu par le module  \'DPD France\'';
