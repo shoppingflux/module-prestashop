@@ -116,13 +116,13 @@ class OrderData
     }
 
     /**
-     * @param mixed $address
+     * @param array $address
      *
      * @return array
      */
     protected function validateISO($address)
     {
-        if (false === is_array($address)) {
+        if (false === is_array($address)) { // @phpstan-ignore-line
             return $address;
         }
 
