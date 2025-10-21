@@ -19,6 +19,10 @@
 
 namespace ShoppingfeedAddon\OrderImport;
 
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
 use ShoppingfeedAddon\Services\SfTools;
 
 class DiscountProvider

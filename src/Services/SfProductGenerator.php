@@ -314,7 +314,7 @@ class SfProductGenerator
      */
     public function write($iterable)
     {
-        if (!$iterable instanceof \Traversable && !is_array($iterable)) {
+        if (!$iterable instanceof \Traversable && !is_array($iterable)) { // @phpstan-ignore-line
             throw new \Exception(sprintf('cannot iterates over %s', gettype($iterable)));
         }
 

@@ -81,12 +81,12 @@ class ShoppingfeedProductSyncStockActions extends ShoppingfeedProductSyncActions
     {
         $shoppingfeedApi = ShoppingfeedApi::getInstanceByToken($this->conveyor['id_token']);
         if ($shoppingfeedApi == false) {
-            ProcessLoggerHandler::logError(
+            ProcessLoggerHandler::logError( // @phpstan-ignore-line
                 static::getLogPrefix($this->conveyor['id_token']) . ' ' .
                     $this->l('Could not retrieve Shopping Feed API.', 'ShoppingfeedProductSyncStockActions'),
                 'Product'
             );
-            Registry::increment('errors');
+            Registry::increment('errors'); // @phpstan-ignore-line
 
             return false;
         }
@@ -106,7 +106,7 @@ class ShoppingfeedProductSyncStockActions extends ShoppingfeedProductSyncActions
                 $sfProduct = $products[$reference]['sfProduct'];
 
                 if (false === Validate::isLoadedObject($sfProduct)) {
-                    ProcessLoggerHandler::logError(
+                    ProcessLoggerHandler::logError( // @phpstan-ignore-line
                         sprintf(
                             static::getLogPrefix($this->conveyor['id_token']) . ' ' .
                             $this->l('Cannot retrieve a product for a reference %s', 'ShoppingfeedProductSyncStockActions'),
@@ -118,7 +118,7 @@ class ShoppingfeedProductSyncStockActions extends ShoppingfeedProductSyncActions
                     continue;
                 }
 
-                ProcessLoggerHandler::logInfo(
+                ProcessLoggerHandler::logInfo( // @phpstan-ignore-line
                     sprintf(
                         static::getLogPrefix($this->conveyor['id_token']) . ' ' .
                             $this->l('Updated %s qty: %s', 'ShoppingfeedProductSyncStockActions'),
@@ -129,7 +129,7 @@ class ShoppingfeedProductSyncStockActions extends ShoppingfeedProductSyncActions
                     $sfProduct->id_product
                 );
 
-                Registry::increment('updatedProducts');
+                Registry::increment('updatedProducts'); // @phpstan-ignore-line
 
                 unset($products[$reference]);
 
@@ -142,7 +142,7 @@ class ShoppingfeedProductSyncStockActions extends ShoppingfeedProductSyncActions
             foreach ($products as $data) {
                 $sfProduct = $data['sfProduct'];
 
-                ProcessLoggerHandler::logInfo(
+                ProcessLoggerHandler::logInfo( // @phpstan-ignore-line
                     sprintf(
                         static::getLogPrefix($this->conveyor['id_token']) . ' ' .
                             $this->l('%s not referenced in the Shopping Feed catalog or unmodified Shopping Feed stock - qty: %s', 'ShoppingfeedProductSyncStockActions'),
@@ -152,7 +152,7 @@ class ShoppingfeedProductSyncStockActions extends ShoppingfeedProductSyncActions
                     'Product',
                     $sfProduct->id_product
                 );
-                Registry::increment('not-in-catalog');
+                Registry::increment('not-in-catalog'); // @phpstan-ignore-line
 
                 $sfProduct->delete();
             }

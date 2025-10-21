@@ -74,7 +74,7 @@ class RulesManager
             return;
         }
 
-        foreach ($rulesClassNames as $ruleClassName) {
+        foreach ($rulesClassNames as $ruleClassName) { // @phpstan-ignore-line
             $this->addRule(
                 new $ruleClassName(
                     isset($this->rulesConfiguration[$ruleClassName]) ? $this->rulesConfiguration[$ruleClassName] : [],

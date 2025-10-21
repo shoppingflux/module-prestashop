@@ -86,7 +86,7 @@ class ShoppingfeedApi
             $clientOptions = new ClientOptions();
             $clientOptions->setHttpAdapter(new GuzzleHTTPAdapter());
             /** @var ShoppingFeed\Sdk\Api\Session\SessionResource $session */
-            $session = Client::createSession($credential, $clientOptions);
+            $session = Client::createSession($credential, $clientOptions); // @phpstan-ignore-line
 
             self::$instance = new ShoppingfeedApi($session);
 
@@ -121,7 +121,7 @@ class ShoppingfeedApi
             $clientOptions = new ClientOptions();
             $clientOptions->setHttpAdapter(new GuzzleHTTPAdapter());
             /** @var ShoppingFeed\Sdk\Api\Session\SessionResource $session */
-            $session = Client::createSession($credential, $clientOptions);
+            $session = Client::createSession($credential, $clientOptions); // @phpstan-ignore-line
             self::$instance = new ShoppingfeedApi($session);
 
             return self::$instance;

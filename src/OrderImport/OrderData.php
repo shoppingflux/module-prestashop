@@ -116,7 +116,7 @@ class OrderData
     }
 
     /**
-     * @param array $address
+     * @param mixed $address
      *
      * @return array
      */
