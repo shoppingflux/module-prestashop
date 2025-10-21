@@ -31,7 +31,7 @@ use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 class ChronopostRule extends RuleAbstract implements RuleInterface
 {
     protected $chronopost;
-    protected $logprefix = '';
+    protected $logPrefix = '';
 
     public function __construct($configuration = [], $id_shop = null)
     {
