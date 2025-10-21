@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Copyright since 2019 Shopping Feed
  *
@@ -49,7 +48,7 @@ class SfTools
         return \Validate::isInt($value);
     }
 
-    public function displayPrice($price, $currency = null, $no_utf8 = false, ?\Context $context = null)
+    public function displayPrice($price, $currency = null, $no_utf8 = false, \Context $context = null)
     {
         if (version_compare(_PS_VERSION_, '1.7.6.0', '<')) {
             return call_user_func([\Tools::class, 'display_price'], $price, $currency, $no_utf8, $context);

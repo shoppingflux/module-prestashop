@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Copyright since 2021 Shopping Feed
  *
