@@ -335,7 +335,7 @@ class Shoppingfeed extends ShoppingfeedClasslib\Module
         $this->version = '@version@';
         $this->author = '202 ecommerce';
         $this->tab = 'market_place';
-        $this->ps_versions_compliancy = ['min' => '1.6', 'max' => '9.99.99'];
+        $this->ps_versions_compliancy = ['min' => '1.7.6', 'max' => '9.99.99'];
         $this->need_instance = 0;
         $this->bootstrap = true;
         $this->module_key = '7251acf8971b8f1de58ce48f01f86a9d';
@@ -840,12 +840,18 @@ class Shoppingfeed extends ShoppingfeedClasslib\Module
                 $groupFilterCollection = [];
 
                 foreach ($groupFilters as $filterMap) {
+                    if (false === is_array($filterMap)) {
+                        continue;
+                    }
+
                     $type = key($filterMap);
                     $filter = $this->getFilterFactory()->getFilter($type, $filterMap[$type]);
                     $groupFilterCollection[] = $filter->getSqlChunk();
                 }
 
-                $sqlFilter[] = implode(' AND ', $groupFilterCollection);
+                if (false === empty($groupFilterCollection)) {
+                    $sqlFilter[] = implode(' AND ', $groupFilterCollection);
+                }
             }
 
             $sqlFilter = array_map(
