@@ -133,7 +133,7 @@ class Cdiscount extends RuleAbstract implements RuleInterface
                 'desc' => $this->l('Caution: deactivating this option could distort your accounting and invoicing.', 'Cdiscount'),
                 'name' => 'enabled',
                 'is_bool' => true,
-                'disabled' => \Tools::isSubmit('with_factory') === false,
+                'form_group_class' => \Tools::isSubmit('with_factory') === false ? 'sf_disabled' : '',
                 'values' => [
                     [
                         'id' => 'ok',
