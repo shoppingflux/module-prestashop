@@ -580,6 +580,10 @@ class AdminShoppingfeedAccountSettingsController extends ShoppingfeedAdminContro
 
     protected function renderCloudSyncSection()
     {
-        return (new CloudSyncView())->render();
+        try {
+            return (new CloudSyncView())->render();
+        } catch (Throwable $e) {
+            return '';
+        }
     }
 }
