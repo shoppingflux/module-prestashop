@@ -840,12 +840,18 @@ class Shoppingfeed extends ShoppingfeedClasslib\Module
                 $groupFilterCollection = [];
 
                 foreach ($groupFilters as $filterMap) {
+                    if (false === is_array($filterMap)) {
+                        continue;
+                    }
+
                     $type = key($filterMap);
                     $filter = $this->getFilterFactory()->getFilter($type, $filterMap[$type]);
                     $groupFilterCollection[] = $filter->getSqlChunk();
                 }
 
-                $sqlFilter[] = implode(' AND ', $groupFilterCollection);
+                if (false === empty($groupFilterCollection)) {
+                    $sqlFilter[] = implode(' AND ', $groupFilterCollection);
+                }
             }
 
             $sqlFilter = array_map(
