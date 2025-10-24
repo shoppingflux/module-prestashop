@@ -606,12 +606,18 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
         $product_feed_rule_filters = json_decode($product_feed_rule_filters, true);
         $product_filters = [];
 
-        foreach ($product_feed_rule_filters as $index => $groupFilter) {
-            $product_filters[$index] = [];
-            foreach ($groupFilter as $filterMap) {
-                $type = key($filterMap);
-                $filter = $this->getFilterFactory()->getFilter($type, $filterMap[$type]);
-                $product_filters[$index][] = $filter;
+        if (is_array($product_feed_rule_filters)) {
+            foreach ($product_feed_rule_filters as $index => $groupFilter) {
+                $product_filters[$index] = [];
+                foreach ($groupFilter as $filterMap) {
+                    if (false === is_array($filterMap)) {
+                        continue;
+                    }
+
+                    $type = key($filterMap);
+                    $filter = $this->getFilterFactory()->getFilter($type, $filterMap[$type]);
+                    $product_filters[$index][] = $filter;
+                }
             }
         }
 
@@ -664,7 +670,7 @@ class AdminShoppingfeedGeneralSettingsController extends ShoppingfeedAdminContro
 
         foreach ($product_rule_select as &$groupFilter) {
             foreach ($groupFilter as &$filter) {
-                $filter = json_decode($filter, true);
+                $filter = json_decode(html_entity_decode($filter), true);
             }
         }
 

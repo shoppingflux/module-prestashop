@@ -184,11 +184,7 @@ class RelaisColisRule extends RuleAbstract implements RuleInterface
 
     protected function createRelaisColisInfo(\Cart $cart, $idRelais)
     {
-        if (version_compare(_PS_VERSION_, '1.7.2.5', '>=')) {
-            $deliveryOption = json_decode($cart->delivery_option, true);
-        } else {
-            $deliveryOption = unserialize($cart->delivery_option);
-        }
+        $deliveryOption = json_decode($cart->delivery_option, true);
 
         if (false == is_array($deliveryOption) || empty($deliveryOption)) {
             return new \RelaisColisInfo(); // @phpstan-ignore-line
