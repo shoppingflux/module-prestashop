@@ -354,41 +354,42 @@ class ColissimoRule extends RuleAbstract implements RuleInterface
         return 'A2P';
     }
 
+    protected function formatPointId($pointId)
+    {
+        $parts = explode(':', $pointId);
+
+        return isset($parts[1]) ? $parts[1] : $parts[0];
+    }
+
     protected function getRelayId(OrderResource $apiOrder)
     {
         $apiOrderData = $apiOrder->toArray();
 
         if (false === empty($apiOrderData['shippingAddress']['relayId'])) {
-            return $apiOrderData['shippingAddress']['relayId'];
+            return $this->formatPointId($apiOrderData['shippingAddress']['relayId']);
         }
         if ($this->isCdiscount($apiOrder) || $this->isManomano($apiOrder) || $this->isMonechelle($apiOrder)) {
             if (false === empty($apiOrderData['shippingAddress']['other'])) {
-                return $apiOrderData['shippingAddress']['other'];
+                return $this->formatPointId($apiOrderData['shippingAddress']['other']);
             }
         }
         if (false === empty($apiOrderData['shippingAddress']['relayID'])) {
-            return $apiOrderData['shippingAddress']['relayID'];
+            return $this->formatPointId($apiOrderData['shippingAddress']['relayID']);
         }
         if (false === empty($apiOrderData['additionalFields']['pickup_point_id'])) {
-            return $apiOrderData['additionalFields']['pickup_point_id'];
+            return $this->formatPointId($apiOrderData['additionalFields']['pickup_point_id']);
         }
         if (false === empty($apiOrderData['additionalFields']['shippingRelayId'])) {
-            return $apiOrderData['additionalFields']['shippingRelayId'];
+            return $this->formatPointId($apiOrderData['additionalFields']['shippingRelayId']);
         }
         if (false === empty($apiOrderData['additionalFields']['relais-id'])) {
-            return $apiOrderData['additionalFields']['relais-id'];
+            return $this->formatPointId($apiOrderData['additionalFields']['relais-id']);
         }
         if (false === empty($apiOrderData['additionalFields']['shipping_pudo_id'])) {
-            return $apiOrderData['additionalFields']['shipping_pudo_id'];
+            return $this->formatPointId($apiOrderData['additionalFields']['shipping_pudo_id']);
         }
         if (false === empty($apiOrderData['additionalFields']['service_point_id'])) {
-            $service_point_id = explode(':', $apiOrderData['additionalFields']['service_point_id']);
-
-            if (count($service_point_id) > 1) {
-                return $service_point_id[1];
-            }
-
-            return $apiOrderData['additionalFields']['service_point_id'];
+            return $this->formatPointId($apiOrderData['additionalFields']['service_point_id']);
         }
 
         return '';
