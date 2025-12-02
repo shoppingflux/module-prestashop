@@ -586,6 +586,16 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
                 'type' => 'shoppingfeed_marketplace_switch_list',
                 'marketplaces' => ShoppingfeedAddon\OrderInvoiceSync\Hub::getInstance()->getMarketplaces(),
             ];
+            $fields_form['form']['form']['input'][] = [
+                'type' => 'select',
+                'name' => Shoppingfeed::STATUS_SEND_INVOICE,
+                'label' => $this->module->l('Order status triggering invoice sending', 'AdminShoppingfeedOrderImportRules'),
+                'options' => [
+                    'query' => OrderState::getOrderStates($this->context->language->id),
+                    'id' => 'id_order_state',
+                    'name' => 'name',
+                ],
+            ];
         }
 
         $helper = new HelperForm();
@@ -605,6 +615,7 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
             Shoppingfeed::ORDER_SHIPPED_IMPORT_PERMANENT_SINCE_DATE => $this->getSinceDateService()->getForShipped(),
             Shoppingfeed::ORDER_SHIPPED_BY_MARKETPLACE_IMPORT_PERMANENT_SINCE_DATE => $this->getSinceDateService()->getForShippedByMarketplace(),
             Shoppingfeed::SEND_NOTIFICATION => (int) Configuration::get(Shoppingfeed::SEND_NOTIFICATION),
+            Shoppingfeed::STATUS_SEND_INVOICE => (int) Configuration::get(Shoppingfeed::STATUS_SEND_INVOICE),
         ];
 
         $helper->base_folder = $this->getTemplatePath() . $this->override_folder;
@@ -718,6 +729,12 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
                     ShoppingfeedAddon\OrderInvoiceSync\Hub::getInstance()->disable($id);
                 }
             }
+        }
+        if (Tools::isSubmit(Shoppingfeed::STATUS_SEND_INVOICE)) {
+            Configuration::updateValue(
+                Shoppingfeed::STATUS_SEND_INVOICE,
+                (int) Tools::getValue(Shoppingfeed::STATUS_SEND_INVOICE)
+            );
         }
 
         $orderStatusesShipped = Tools::getValue('status_shipped_order');
