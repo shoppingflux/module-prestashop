@@ -584,6 +584,7 @@ $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_0147ea0808
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_e3212a6266bce4b9444bfb291b89e719'] = 'Le paramètre \'Nombre de commande max par requête\' est reservée aux expert (100 par défaut). Vous pouvez configurer le nombre de commandes qui seront traitées à chaque appel de la tâche CRON. Plus vous augmentez ce nombre, plus il y aura de requête en base de données. La valeur de ce paramètre doit être ajustée en fonction de la capacité de votre serveur MYSQL.';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_e4efbb5b13b21b642f301a34a7dc6607'] = 'Nombre de commande max par requête';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_c8878a5464c72f58e4a4f1e40532eb34'] = 'Premier état de commande après import';
+$_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_490b1f211dc80150dab20cd64f3e44f6'] = 'Statut de la commande déclenchant l\'envoi de la facture';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_b9d1b8558d2d7145794f697158b6f253'] = 'Shoppingfeed Prestashop Plugin (Feed&Order)';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_ceff443491edd888ee91e6bef87446a6'] = 'Vous devez spécifier un \'Délai avant la synchronisation du numéro de suivi\' supérieur à 0.';
 $_MODULE['<{shoppingfeed}prestashop>adminshoppingfeedorderimportrules_23b574c89c8eafae9531357e5763d00f'] = 'Vous devez spécifier un \'Nombre de commandes maximum\' entre 1 et 200.';
