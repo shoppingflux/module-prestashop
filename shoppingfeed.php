@@ -1652,6 +1652,9 @@ class Shoppingfeed extends ShoppingfeedClasslib\Module
         if ($params['template'] === 'new_order' || empty($params['templateVars']['{order_name}'])) {
             return true;
         }
+        if ($params['template'] === 'order_merchant_comment') {
+            return true;
+        }
 
         $orders = Order::getByReference($params['templateVars']['{order_name}']);
 
