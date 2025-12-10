@@ -94,6 +94,7 @@ class Shoppingfeed extends ShoppingfeedClasslib\Module
     public const SEND_NOTIFICATION = 'SHOPPINGFEED_SEND_NOTIFICATION';
     public const PRODUCT_FEED_EXPORT_HIERARCHY = 'SHOPPINGFEED_PRODUCT_FEED_EXPORT_HIERARCHY';
     public const SYNC_PRODUCT_ATTACHMENT_TITLE = 'SHOPPINGFEED_SYNC_PRODUCT_ATTACHMENT_TITLE';
+    public const STATUS_SEND_INVOICE = 'SHOPPINGFEED_STATUS_SEND_INVOICE';
 
     public const ORDER_OPERATION_ACCEPT = 'accept';
 
@@ -1346,6 +1347,7 @@ class Shoppingfeed extends ShoppingfeedClasslib\Module
         $cancelled_status = json_decode(Configuration::get(Shoppingfeed::CANCELLED_ORDERS, null, null, $order->id_shop));
         $refunded_status = json_decode(Configuration::get(Shoppingfeed::REFUNDED_ORDERS, null, null, $order->id_shop));
         $delivered_status = json_decode(Configuration::get(Shoppingfeed::DELIVERED_ORDERS, null, null, $order->id_shop));
+        $status_send_invoice = (int) Configuration::get(Shoppingfeed::STATUS_SEND_INVOICE);
 
         if ((is_array($shipped_status) && in_array($newOrderStatus->id, $shipped_status))
             || (is_array($cancelled_status) && in_array($newOrderStatus->id, $cancelled_status))
@@ -1356,7 +1358,7 @@ class Shoppingfeed extends ShoppingfeedClasslib\Module
         }
 
         if ($this->isUploadOrderDocumentReady()) {
-            if ($newOrderStatus->invoice) {
+            if ($status_send_invoice && $status_send_invoice === (int) $newOrderStatus->id) {
                 $marketplace = Hub::getInstance()->findByName($shoppingFeedOrder->name_marketplace);
                 if ($marketplace && $marketplace->isEnabled()) {
                     $this->addOrderTask($shoppingFeedOrder->id_order, ShoppingfeedTaskOrder::ACTION_UPLOAD_INVOICE);
@@ -1414,6 +1416,7 @@ class Shoppingfeed extends ShoppingfeedClasslib\Module
             ShoppingfeedAddon\OrderImport\Rules\Cdiscount::class,
             ShoppingfeedAddon\OrderImport\Rules\CdiscountEmailRule::class,
             ShoppingfeedAddon\OrderImport\Rules\OrderDiscountRule::class,
+            ShoppingfeedAddon\OrderImport\Rules\ChronopostRule::class,
         ];
 
         foreach ($defaultRulesClassNames as $ruleClassName) {
@@ -1647,6 +1650,9 @@ class Shoppingfeed extends ShoppingfeedClasslib\Module
     public function hookActionEmailSendBefore($params)
     {
         if ($params['template'] === 'new_order' || empty($params['templateVars']['{order_name}'])) {
+            return true;
+        }
+        if ($params['template'] === 'order_merchant_comment') {
             return true;
         }
 
