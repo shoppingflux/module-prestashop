@@ -810,7 +810,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             $sql->where('p.cache_is_pack = 0');
         }
         if ($product_visibility_nowhere === false) {
-            $sql->where("p.visibility != 'none'");
+            $sql->where("ps.visibility != 'none'");
         }
         Hook::exec('ShoppingfeedSqlProductsOnFeed',
             [
