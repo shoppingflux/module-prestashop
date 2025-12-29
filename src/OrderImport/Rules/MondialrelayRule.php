@@ -57,6 +57,28 @@ class MondialrelayRule extends RuleAbstract implements RuleInterface
         return false;
     }
 
+    public function beforeShippingAddressSave($params)
+    {
+        if (empty($params['shippingAddress'])) {
+            return;
+        }
+        if (empty($params['apiOrder']) || false === $params['apiOrder'] instanceof OrderResource) {
+            return;
+        }
+
+        $apiOrderData = $params['apiOrder']->toArray();
+
+        if (empty($apiOrderData['additionalFields']['pickup_name'])) {
+            return;
+        }
+
+        $shippingAddress = $params['shippingAddress'];
+
+        if ($shippingAddress instanceof \Address && empty($shippingAddress->company)) {
+            $shippingAddress->company = $apiOrderData['additionalFields']['pickup_name'];
+        }
+    }
+
     public function onPostProcess($params)
     {
         if (empty($params['sfOrder'])) {
