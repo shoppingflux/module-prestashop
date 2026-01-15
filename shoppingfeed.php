@@ -478,7 +478,7 @@ class Shoppingfeed extends ShoppingfeedClasslib\Module
         $this->setConfigurationDefault(self::PRODUCT_FEED_CARRIER_REFERENCE, Configuration::getGlobalValue('PS_CARRIER_DEFAULT'));
         $this->setConfigurationDefault(self::ORDER_DEFAULT_CARRIER_REFERENCE, Configuration::getGlobalValue('PS_CARRIER_DEFAULT'));
         $this->setConfigurationDefault(self::COMPRESS_PRODUCTS_FEED, 1);
-        $this->setConfigurationDefault(self::SEND_NOTIFICATION, 1);
+        $this->setConfigurationDefault(self::SEND_NOTIFICATION, 0);
 
         if (method_exists(ImageType::class, 'getFormatedName')) {
             $this->setConfigurationDefault(self::PRODUCT_FEED_IMAGE_FORMAT, call_user_func([ImageType::class, 'getFormatedName'], 'large'));
