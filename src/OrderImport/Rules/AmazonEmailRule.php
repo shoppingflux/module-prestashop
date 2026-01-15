@@ -41,10 +41,6 @@ class AmazonEmailRule extends RuleAbstract implements RuleInterface
 
     public function isApplicable(OrderResource $apiOrder)
     {
-        if (!$this->configuration['enabled']) {
-            return false;
-        }
-
         $this->logPrefix = sprintf(
             $this->l('[Order: %s][%s] %s | ', 'AmazonEmailRule'),
             $apiOrder->getId(),
@@ -52,11 +48,7 @@ class AmazonEmailRule extends RuleAbstract implements RuleInterface
             self::class
         );
 
-        if (preg_match('#^amazon$#', strtolower($apiOrder->getChannel()->getName()))) {
-            return true;
-        }
-
-        return false;
+        return $this->configuration['enabled'];
     }
 
     public function onPreProcess($params)
@@ -66,7 +58,7 @@ class AmazonEmailRule extends RuleAbstract implements RuleInterface
         /** @var OrderCustomerData $customer */
         $customer = $orderData->getCustomer();
 
-        if ($customer->getEmail() === 'noreply@clemarche.com') {
+        if ($customer->getEmail() === 'no-reply-amazon-iba-buyer@marketplace.amazon.fr') {
             $customer->setEmail($orderData->reference . '-' . $customer->getEmail());
             ProcessLoggerHandler::logInfo($this->logPrefix . $this->l('Rule triggered', 'AmazonEmailRule'));
         }
@@ -77,7 +69,7 @@ class AmazonEmailRule extends RuleAbstract implements RuleInterface
      */
     public function getConditions()
     {
-        return $this->l('Rule is applied to all orders coming from Amazon', 'AmazonEmailRule');
+        return $this->l('Rule is applied to all orders', 'AmazonEmailRule');
     }
 
     /**
@@ -85,7 +77,7 @@ class AmazonEmailRule extends RuleAbstract implements RuleInterface
      */
     public function getDescription()
     {
-        return $this->l('Rule adds the prefix to email noreply@clemarche.com', 'AmazonEmailRule');
+        return $this->l('Rule adds the prefix to email no-reply-amazon-iba-buyer@marketplace.amazon.fr', 'AmazonEmailRule');
     }
 
     public function getConfigurationSubform()
