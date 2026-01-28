@@ -1417,6 +1417,7 @@ class Shoppingfeed extends ShoppingfeedClasslib\Module
             ShoppingfeedAddon\OrderImport\Rules\CdiscountEmailRule::class,
             ShoppingfeedAddon\OrderImport\Rules\OrderDiscountRule::class,
             ShoppingfeedAddon\OrderImport\Rules\ChronopostRule::class,
+            ShoppingfeedAddon\OrderImport\Rules\AmazonEmailRule::class,
         ];
 
         foreach ($defaultRulesClassNames as $ruleClassName) {
