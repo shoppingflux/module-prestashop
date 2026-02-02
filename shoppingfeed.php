@@ -478,7 +478,7 @@ class Shoppingfeed extends ShoppingfeedClasslib\Module
         $this->setConfigurationDefault(self::PRODUCT_FEED_CARRIER_REFERENCE, Configuration::getGlobalValue('PS_CARRIER_DEFAULT'));
         $this->setConfigurationDefault(self::ORDER_DEFAULT_CARRIER_REFERENCE, Configuration::getGlobalValue('PS_CARRIER_DEFAULT'));
         $this->setConfigurationDefault(self::COMPRESS_PRODUCTS_FEED, 1);
-        $this->setConfigurationDefault(self::SEND_NOTIFICATION, 1);
+        $this->setConfigurationDefault(self::SEND_NOTIFICATION, 0);
 
         if (method_exists(ImageType::class, 'getFormatedName')) {
             $this->setConfigurationDefault(self::PRODUCT_FEED_IMAGE_FORMAT, call_user_func([ImageType::class, 'getFormatedName'], 'large'));
@@ -870,7 +870,7 @@ class Shoppingfeed extends ShoppingfeedClasslib\Module
             $sql->where('p.cache_is_pack = 0');
         }
         if ($product_visibility_nowhere === false) {
-            $sql->where("p.visibility != 'none'");
+            $sql->where("ps.visibility != 'none'");
         }
         Hook::exec('ShoppingfeedSqlProductsOnFeed',
             [
@@ -1417,6 +1417,7 @@ class Shoppingfeed extends ShoppingfeedClasslib\Module
             ShoppingfeedAddon\OrderImport\Rules\CdiscountEmailRule::class,
             ShoppingfeedAddon\OrderImport\Rules\OrderDiscountRule::class,
             ShoppingfeedAddon\OrderImport\Rules\ChronopostRule::class,
+            ShoppingfeedAddon\OrderImport\Rules\AmazonEmailRule::class,
         ];
 
         foreach ($defaultRulesClassNames as $ruleClassName) {
