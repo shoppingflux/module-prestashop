@@ -353,9 +353,9 @@ class MondialrelayRule extends RuleAbstract implements RuleInterface
             );
 
             return false;
-        } else {
-            return $result->WSI2_AdressePointRelaisResult;
         }
+
+        return $result->WSI2_AdressePointRelaisResult;
     }
 
     protected function getMondialRelayConfig()

@@ -248,9 +248,9 @@ class ProductSerializer
         $tabTags = \Tag::getProductTags($this->product->id);
         if (empty($tabTags[$this->id_lang])) {
             return '';
-        } else {
-            return implode('|', $tabTags[$this->id_lang]);
         }
+
+        return implode('|', $tabTags[$this->id_lang]);
     }
 
     public function getSupplierReference()

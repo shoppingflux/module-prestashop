@@ -34,6 +34,14 @@ class ShoppingfeedOrderImportActions extends DefaultActions
     protected $specificRulesManager;
 
     protected $logPrefix = '';
+    /** @var Shoppingfeed */
+    protected $module;
+
+    public function __construct()
+    {
+        /* @phpstan-ignore-next-line */
+        $this->module = Module::getInstanceByName('shoppingfeed');
+    }
 
     public function setLogPrefix($id_internal_shoppingfeed = '', $shoppingfeed_order_reference = '')
     {
@@ -1450,11 +1458,16 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         }
         $address->id_country = $id_country;
 
-        // Update state (needed for US)
-        $state_iso_code = Tools::strtoupper(trim($apiAddress['street2']));
-        $id_state = State::getIdByIso($state_iso_code, $address->id_country);
-        if ($id_state) {
-            $address->id_state = $id_state;
+        if ((int) $country->contains_states) {
+            $addressService = $this->module->getAddressService();
+            $sfState = isset($apiAddress['province']) ? Tools::strtoupper(trim($apiAddress['province'])) : Tools::strtoupper(trim($apiAddress['street2']));
+            $id_state = $addressService->getStateIdByIso($sfState, $country->id);
+            if (!$id_state) {
+                $id_state = $addressService->getStateIdByName($sfState, $country->id);
+            }
+            if ($id_state) {
+                $address->id_state = $id_state;
+            }
         }
 
         return $address;
@@ -1513,9 +1526,9 @@ class ShoppingfeedOrderImportActions extends DefaultActions
     {
         if (version_compare(_PS_VERSION_, '1.7.1', '<')) {
             return new Order((int) call_user_func([Order::class, 'getOrderByCartId'], (int) $idCart));
-        } else {
-            return new Order(Order::getIdByCartId((int) $idCart));
         }
+
+        return new Order(Order::getIdByCartId((int) $idCart));
     }
 
     /**

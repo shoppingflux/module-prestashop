@@ -29,18 +29,18 @@ class SfTools
     {
         if (version_compare(_PS_VERSION_, '1.7', '<')) {
             return call_user_func([\Tools::class, 'encrypt'], $string);
-        } else {
-            return \Tools::hash($string);
         }
+
+        return \Tools::hash($string);
     }
 
     public function str2url($str)
     {
         if (version_compare(_PS_VERSION_, '8.1', '<')) {
             return call_user_func([\Tools::class, 'link_rewrite'], $str);
-        } else {
-            return call_user_func([\Tools::class, 'str2url'], $str);
         }
+
+        return call_user_func([\Tools::class, 'str2url'], $str);
     }
 
     public function isInt($value)
