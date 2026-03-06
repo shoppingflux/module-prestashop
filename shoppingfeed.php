@@ -1671,4 +1671,9 @@ class Shoppingfeed extends ShoppingfeedClasslib\Module
 
         return (bool) Configuration::get(self::SEND_NOTIFICATION);
     }
+
+    public function getAddressService()
+    {
+        return new ShoppingfeedAddon\Services\AddressService();
+    }
 }
