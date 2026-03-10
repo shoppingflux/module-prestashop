@@ -79,6 +79,7 @@ abstract class ShoppingfeedProductSyncActions extends DefaultActions
                 continue;
             }
             $this->conveyor['id_token'] = $token['id_shoppingfeed_token'];
+            $this->conveyor['shoppingfeed_store_id'] = $token['shoppingfeed_store_id'];
             $sfProduct = ShoppingfeedProduct::getFromUniqueKey(
                 $action,
                 $id_product,
