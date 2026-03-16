@@ -4,6 +4,10 @@ $psconfig = new PrestaShop\CodingStandards\CsFixer\Config();
 $rules = $psconfig->getRules();
 $rules['nullable_type_declaration_for_default_null_value'] = false;
 $rules['blank_line_after_opening_tag'] = false;
+unset($rules['visibility_required']);
+$rules['modifier_keywords'] = [
+    'elements' => ['property', 'method'], // exclude 'const'
+];
 
 /** @var \Symfony\Component\Finder\Finder $finder */
 $finder = $psconfig->setUsingCache(true)->getFinder();
