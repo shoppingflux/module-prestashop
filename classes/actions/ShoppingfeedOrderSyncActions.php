@@ -1210,7 +1210,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
 
         return $tickets;
     }
-    
+
     protected function getShoppingfeedApiInstance(int $idToken)
     {
         return ShoppingfeedApi::getInstanceByToken($idToken);

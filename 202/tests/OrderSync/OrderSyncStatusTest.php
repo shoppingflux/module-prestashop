@@ -112,13 +112,13 @@ class OrderSyncStatusTest extends TestCase
                 [
                     [
                         'taskOrder' => $taskOrderIgnored,
-                        'id_internal_shoppingfeed' => $id_internal_shoppingfeed
+                        'id_internal_shoppingfeed' => $id_internal_shoppingfeed,
                     ],
                 ],
                 [
                     [
                         'taskOrder' => $taskOrderToSync,
-                        'id_internal_shoppingfeed' => ''
+                        'id_internal_shoppingfeed' => '',
                     ],
                 ],
             ],
