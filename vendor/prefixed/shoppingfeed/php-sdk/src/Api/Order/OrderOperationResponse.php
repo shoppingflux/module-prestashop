@@ -10,8 +10,8 @@ use ShoppingFeed\Sdk\Hal\HalResource;
 class OrderOperationResponse
 {
     private $batchId;
-
-    private Task\TicketDomain $ticketDomain;
+    /** @var Task\TicketDomain */
+    private $ticketDomain;
 
     /**
      * @var array{int, array{
@@ -22,7 +22,7 @@ class OrderOperationResponse
      *      message: string
      *  }} $report
      */
-    private array $report;
+    private $report;
 
     public function __construct(HalResource $resource)
     {
