@@ -508,7 +508,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
             return false;
         }
 
-        $shoppingfeedApi = ShoppingfeedApi::getInstanceByToken($this->conveyor['id_token']);
+        $shoppingfeedApi = $this->getShoppingfeedApiInstance((int) $this->conveyor['id_token']);
         if ($shoppingfeedApi == false) {
             ProcessLoggerHandler::logError(
                 $this->l('Could not retrieve Shopping Feed API.', 'ShoppingfeedOrderSyncActions'),
@@ -593,7 +593,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
             return false;
         }
 
-        $shoppingfeedApi = ShoppingfeedApi::getInstanceByToken($this->conveyor['id_token']);
+        $shoppingfeedApi = $this->getShoppingfeedApiInstance((int) $this->conveyor['id_token']);
         if ($shoppingfeedApi == false) {
             ProcessLoggerHandler::logError(
                 $this->l('Could not retrieve Shopping Feed API.', 'ShoppingfeedOrderSyncActions'),
@@ -684,7 +684,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
             return false;
         }
 
-        $shoppingfeedApi = ShoppingfeedApi::getInstanceByToken($this->conveyor['id_token']);
+        $shoppingfeedApi = $this->getShoppingfeedApiInstance((int) $this->conveyor['id_token']);
         if ($shoppingfeedApi == false) {
             ProcessLoggerHandler::logError(
                 $this->l('Could not retrieve Shopping Feed API.', 'ShoppingfeedOrderSyncActions'),
@@ -1200,7 +1200,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
 
     protected function getTicketsForBatchIds($batchIds, $idShoppingfeedToken)
     {
-        $shoppingfeedApi = ShoppingfeedApi::getInstanceByToken($idShoppingfeedToken);
+        $shoppingfeedApi = $this->getShoppingfeedApiInstance((int) $idShoppingfeedToken);
         $sfToken = new ShoppingfeedToken($idShoppingfeedToken);
         $tickets = [];
 
@@ -1209,5 +1209,10 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
         }
 
         return $tickets;
+    }
+    
+    protected function getShoppingfeedApiInstance(int $idToken)
+    {
+        return ShoppingfeedApi::getInstanceByToken($idToken);
     }
 }
