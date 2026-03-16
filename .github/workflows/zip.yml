@@ -36,11 +36,12 @@ jobs:
           composer global require prestashop/autoindex
           [ -f "./index.php" ] && [ -f "$HOME/.composer/vendor/prestashop/autoindex/assets/index.php" ] && cat index.php > ~/.composer/vendor/prestashop/autoindex/assets/index.php
           ~/.composer/vendor/bin/autoindex --exclude=202
+          cp ~/classes/index.php ~/index.php
           rm -f composer.lock
           [ -d "./vendor" ] && find ./vendor -mindepth 1 ! -regex '^./vendor/totpsclasslib\(/.*\)?' -delete
           composer remove phpstan/phpstan phpunit/phpunit prestashop/php-dev-tools prestashop/header-stamp --no-progress --dev --no-install --no-update
           composer install --no-dev --optimize-autoloader --classmap-authoritative
-          rm 202 node_modules composer.* node_modules _dev .git tests var views/_dev .husky -Rf
+          rm 202 node_modules composer.* node_modules _dev .git tests var views/_dev .husky README.md -Rf
           rm commitlint.config.js .prettierrc docker-compose.yml browserlist .stylelintignore .editorconfig babel.config.js webpack.config.js postcss.config.js cache.properties sonar-project.properties config_fr.xml composer.json composer.lock composer.phar .gitignore .browserlistrc .eslintrc.js .postcssrc.js babel.config.js vue.config.js package.json package-lock.json .php-cs-fixer.dist.php .php_cs.cache .php-cs-fixer.cache .gitlab-ci.yml before_autoload.sh Makefile -Rf
 
           cd "$PACKAGES_DIR/$MODULE_NAME"
@@ -72,8 +73,8 @@ jobs:
 
           find "./$MODULE_NAME" -type f -exec md5sum "{}" + > "${MODULE_NAME}.md5"
 
-          cp "$MODULE_NAME.zip" "$PROJECT_DIR/$MODULE_NAME-${{github.run_number}}.zip"
-          cp "$MODULE_NAME.md5" "$PROJECT_DIR/${MODULE_NAME}-${{github.run_number}}.md5"
+          cp "$MODULE_NAME.zip" "$PROJECT_DIR/$MODULE_NAME-v${MODULE_VERSION}-${{github.run_number}}.zip"
+          cp "$MODULE_NAME.md5" "$PROJECT_DIR/${MODULE_NAME}-v${MODULE_VERSION}-${{github.run_number}}.md5"
 
           cd "$PROJECT_DIR"
           find . -type f ! \( -name "*.zip" -o -name "*.md5" \) -delete
