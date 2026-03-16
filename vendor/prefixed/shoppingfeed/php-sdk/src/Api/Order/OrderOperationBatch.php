@@ -9,7 +9,7 @@ use ShoppingFeed\Sdk\Hal\HalResource;
  */
 class OrderOperationBatch
 {
-    private OrderOperationResponse $response;
+    private $response;
 
     public function __construct(HalResource $resource)
     {

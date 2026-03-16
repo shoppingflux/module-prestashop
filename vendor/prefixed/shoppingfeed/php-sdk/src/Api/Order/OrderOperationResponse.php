@@ -9,7 +9,7 @@ use ShoppingFeed\Sdk\Hal\HalResource;
 
 class OrderOperationResponse
 {
-    private string $batchId;
+    private $batchId;
 
     private Task\TicketDomain $ticketDomain;
 

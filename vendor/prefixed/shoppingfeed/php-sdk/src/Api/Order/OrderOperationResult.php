@@ -5,7 +5,7 @@ namespace ShoppingFeed\Sdk\Api\Order;
 class OrderOperationResult
 {
     /** @var OrderOperationBatch[] $batches  */
-    private array $batches;
+    private $batches;
 
     public function __construct(array $resources = [])
     {
