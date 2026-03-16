@@ -1,5 +1,7 @@
 name: Create module zip
 on: [push]
+permissions:
+  contents: read
 
 env:
   PROJECT_NAME: shoppingfeed
