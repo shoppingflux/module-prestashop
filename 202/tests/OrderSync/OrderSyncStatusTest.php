@@ -86,7 +86,7 @@ class OrderSyncStatusTest extends TestCase
         $this->assertEquals(8, count($processData['preparedTaskOrders']));
     }
 
-    public function testHandlingReportInResponse()
+    public function testHandlingReportInResponseSyncStatus()
     {
         $taskOrderIgnored = new \ShoppingfeedTaskOrder();
         $taskOrderIgnored->action = \ShoppingfeedTaskOrder::ACTION_SYNC_STATUS;
@@ -128,6 +128,94 @@ class OrderSyncStatusTest extends TestCase
 
         $this->assertFalse(\Validate::isLoadedObject(new \ShoppingfeedTaskOrder($taskOrderIgnored->id)));
         $this->assertEquals(\ShoppingfeedTaskOrder::ACTION_CHECK_TICKET_SYNC_STATUS, (new \ShoppingfeedTaskOrder($taskOrderToSync->id))->action);
+    }
+
+    public function testHandlingReportInResponseSyncInvoice()
+    {
+        $taskOrderIgnored = new \ShoppingfeedTaskOrder();
+        $taskOrderIgnored->action = \ShoppingfeedTaskOrder::ACTION_UPLOAD_INVOICE;
+        $taskOrderIgnored->id_order = 1;
+        $taskOrderIgnored->save();
+
+        $taskOrderToSync = new \ShoppingfeedTaskOrder();
+        $taskOrderToSync->action = \ShoppingfeedTaskOrder::ACTION_UPLOAD_INVOICE;
+        $taskOrderToSync->id_order = 1;
+        $taskOrderToSync->save();
+
+        $id_internal_shoppingfeed = '123456';
+
+        $this->assertTrue(\Validate::isLoadedObject($taskOrderIgnored));
+
+        $orderOperationResult = $this->createOrderOperationResultMock($this->getResponseWithReport($id_internal_shoppingfeed));
+        $mockOrderSyncActions = $this->createSyncActionMock($orderOperationResult);
+
+        $mockOrderSyncActions->setConveyor([
+            'id_shop' => 1,
+            'id_token' => 1,
+            'preparedTaskOrders' => [
+                [
+                    [
+                        'taskOrder' => $taskOrderIgnored,
+                        'id_internal_shoppingfeed' => $id_internal_shoppingfeed,
+                    ],
+                ],
+                [
+                    [
+                        'taskOrder' => $taskOrderToSync,
+                        'id_internal_shoppingfeed' => '',
+                    ],
+                ],
+            ],
+        ]);
+
+        $mockOrderSyncActions->sendTaskOrdersSyncInvoice();
+
+        $this->assertFalse(\Validate::isLoadedObject(new \ShoppingfeedTaskOrder($taskOrderIgnored->id)));
+        $this->assertEquals(\ShoppingfeedTaskOrder::ACTION_CHECK_TICKET_UPLOAD_INVOICE, (new \ShoppingfeedTaskOrder($taskOrderToSync->id))->action);
+    }
+
+    public function testHandlingReportInResponsePartialRefund()
+    {
+        $taskOrderIgnored = new \ShoppingfeedTaskOrder();
+        $taskOrderIgnored->action = \ShoppingfeedTaskOrder::ACTION_PARTIAL_REFUND;
+        $taskOrderIgnored->id_order = 1;
+        $taskOrderIgnored->save();
+
+        $taskOrderToSync = new \ShoppingfeedTaskOrder();
+        $taskOrderToSync->action = \ShoppingfeedTaskOrder::ACTION_PARTIAL_REFUND;
+        $taskOrderToSync->id_order = 1;
+        $taskOrderToSync->save();
+
+        $id_internal_shoppingfeed = '123456';
+
+        $this->assertTrue(\Validate::isLoadedObject($taskOrderIgnored));
+
+        $orderOperationResult = $this->createOrderOperationResultMock($this->getResponseWithReport($id_internal_shoppingfeed));
+        $mockOrderSyncActions = $this->createSyncActionMock($orderOperationResult);
+
+        $mockOrderSyncActions->setConveyor([
+            'id_shop' => 1,
+            'id_token' => 1,
+            'preparedTaskOrders' => [
+                [
+                    [
+                        'taskOrder' => $taskOrderIgnored,
+                        'id_internal_shoppingfeed' => $id_internal_shoppingfeed,
+                    ],
+                ],
+                [
+                    [
+                        'taskOrder' => $taskOrderToSync,
+                        'id_internal_shoppingfeed' => '',
+                    ],
+                ],
+            ],
+        ]);
+
+        $mockOrderSyncActions->sendTaskOrdersSyncPartialRefund();
+
+        $this->assertFalse(\Validate::isLoadedObject(new \ShoppingfeedTaskOrder($taskOrderIgnored->id)));
+        $this->assertEquals(\ShoppingfeedTaskOrder::ACTION_CHECK_TICKET_PARTIAL_REFUND, (new \ShoppingfeedTaskOrder($taskOrderToSync->id))->action);
     }
 
     protected function createOrderOperationResultMock(string $response)
