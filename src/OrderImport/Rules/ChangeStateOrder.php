@@ -24,13 +24,10 @@ if (!defined('_PS_VERSION_')) {
 }
 
 use Order;
-use OrderHistory;
-use OrderState;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
-use Validate;
 
 class ChangeStateOrder extends RuleAbstract implements RuleInterface
 {
@@ -52,9 +49,9 @@ class ChangeStateOrder extends RuleAbstract implements RuleInterface
             $apiOrder->getId()
         );
         $logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
-        $psOrder = new Order($idOrder);
+        $psOrder = new \Order($idOrder);
 
-        if (false === Validate::isLoadedObject($psOrder)) {
+        if (false === \Validate::isLoadedObject($psOrder)) {
             ProcessLoggerHandler::logError(
                 $logPrefix .
                 sprintf(
@@ -97,7 +94,7 @@ class ChangeStateOrder extends RuleAbstract implements RuleInterface
         }
 
         // Set order to CANCELED
-        $history = new OrderHistory();
+        $history = new \OrderHistory();
         $history->id_order = $idOrder;
         $use_existings_payment = true;
         $history->changeIdOrderState((int) $idOrderState, $psOrder, $use_existings_payment);
@@ -127,10 +124,10 @@ class ChangeStateOrder extends RuleAbstract implements RuleInterface
     public function getConfigurationSubform()
     {
         $context = \Context::getContext();
-        $statuses = OrderState::getOrderStates((int) $context->language->id);
+        $statuses = \OrderState::getOrderStates((int) $context->language->id);
         array_unshift($statuses, [
-          'id_order_state' => '',
-          'name' => '',
+            'id_order_state' => '',
+            'name' => '',
         ]);
 
         return [

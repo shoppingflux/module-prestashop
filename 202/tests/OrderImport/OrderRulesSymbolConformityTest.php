@@ -19,8 +19,6 @@
 
 namespace Tests\OrderImport;
 
-use Country;
-use Customer;
 use ShoppingfeedAddon\OrderImport\OrderData;
 use ShoppingfeedAddon\OrderImport\Rules\SymbolConformity;
 
@@ -45,7 +43,7 @@ class OrderRulesSymbolConformityTest extends AbstractOrdeTestCase
         $customerData = $params['orderData']->getCustomer();
         $apiBillingAddress = $params['orderData']->billingAddress;
 
-        $customer = new Customer();
+        $customer = new \Customer();
         $customer->firstname = $customerData->getFirstName();
         $customer->lastname = $customerData->getLastName();
         $customer->email = $customerData->getEmail();
@@ -54,7 +52,7 @@ class OrderRulesSymbolConformityTest extends AbstractOrdeTestCase
         $this->assertTrue($customer->validateFields(false));
 
         $address = new \Address();
-        $address->id_country = Country::getByIso($apiBillingAddress['country']);
+        $address->id_country = \Country::getByIso($apiBillingAddress['country']);
         $address->alias = 'testSymbolConformityAlias';
         $address->lastname = $apiBillingAddress['lastName'];
         $address->firstname = $apiBillingAddress['firstName'];

@@ -237,7 +237,7 @@ class ShoppingfeedProduct extends ObjectModel
             return $value;
         }
 
-        \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logInfo(
+        ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logInfo(
             sprintf(
                 'Product with %s: %s is not retrieved in your catalog.',
                 $reference_format,

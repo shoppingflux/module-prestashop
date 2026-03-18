@@ -21,7 +21,6 @@ namespace Tests\ProductSerializer;
 
 use PHPUnit\Framework\TestCase;
 use ShoppingfeedAddon\Actions\ActionsHandler;
-use ShoppingfeedPreloading;
 
 class TestAttributeTestCase extends TestCase
 {
@@ -32,7 +31,7 @@ class TestAttributeTestCase extends TestCase
         $handler->addActions('getBatch')
                 ->setConveyor(['id_token' => $id_token])
                 ->process('ShoppingfeedProductSyncPreloading');
-        $products = (new ShoppingfeedPreloading())->findAllByTokenId($id_token);
+        $products = (new \ShoppingfeedPreloading())->findAllByTokenId($id_token);
         $this->assertEquals(count($products), 18);
         foreach ($products as $product) {
             $this->assertArrayHasKey('price', $product);
@@ -48,7 +47,7 @@ class TestAttributeTestCase extends TestCase
         $handler->addActions('getBatch')
                 ->setConveyor(['id_token' => $id_token])
                 ->process('ShoppingfeedProductSyncPreloading');
-        $product = (new ShoppingfeedPreloading())->findByTokenIdAndProductId($id_token, $id_product);
+        $product = (new \ShoppingfeedPreloading())->findByTokenIdAndProductId($id_token, $id_product);
         $productContent = json_decode($product['content'], true);
         $this->assertIsArray($productContent);
 
@@ -89,7 +88,7 @@ class TestAttributeTestCase extends TestCase
         $handler->addActions('getBatch')
                 ->setConveyor(['id_token' => $id_token])
                 ->process('ShoppingfeedProductSyncPreloading');
-        $products = (new ShoppingfeedPreloading())->findAllByTokenId($id_token);
+        $products = (new \ShoppingfeedPreloading())->findAllByTokenId($id_token);
         $this->assertEquals(count($products), 18);
     }
 
@@ -102,7 +101,7 @@ class TestAttributeTestCase extends TestCase
                 ->setConveyor(['id_token' => $id_token])
                 ->process('ShoppingfeedProductSyncPreloading');
 
-        $product = (new ShoppingfeedPreloading())->findByTokenIdAndProductId($id_token, $id_product);
+        $product = (new \ShoppingfeedPreloading())->findByTokenIdAndProductId($id_token, $id_product);
         $this->assertArrayHasKey('content', $product);
         $productContent = json_decode($product['content'], true);
         $this->assertIsArray($productContent);
@@ -120,7 +119,7 @@ class TestAttributeTestCase extends TestCase
                 ->setConveyor(['id_token' => $id_token])
                 ->process('ShoppingfeedProductSyncPreloading');
 
-        $product = (new ShoppingfeedPreloading())->findByTokenIdAndProductId($id_token, $id_product);
+        $product = (new \ShoppingfeedPreloading())->findByTokenIdAndProductId($id_token, $id_product);
         $this->assertArrayHasKey('content', $product);
         $productContent = json_decode($product['content'], true);
         $this->assertIsArray($productContent);
@@ -138,7 +137,7 @@ class TestAttributeTestCase extends TestCase
                 ->setConveyor(['id_token' => $id_token])
                 ->process('ShoppingfeedProductSyncPreloading');
 
-        $product = (new ShoppingfeedPreloading())->findByTokenIdAndProductId($id_token, $id_product);
+        $product = (new \ShoppingfeedPreloading())->findByTokenIdAndProductId($id_token, $id_product);
         $this->assertArrayHasKey('content', $product);
         $productContent = json_decode($product['content'], true);
 
@@ -160,7 +159,7 @@ class TestAttributeTestCase extends TestCase
                 ->setConveyor(['id_token' => $id_token])
                 ->process('ShoppingfeedProductSyncPreloading');
 
-        $product = (new ShoppingfeedPreloading())->findByTokenIdAndProductId($id_token, $id_product);
+        $product = (new \ShoppingfeedPreloading())->findByTokenIdAndProductId($id_token, $id_product);
         $this->assertArrayHasKey('content', $product);
         $productContent = json_decode($product['content'], true);
         $this->assertIsArray($productContent);
@@ -180,7 +179,7 @@ class TestAttributeTestCase extends TestCase
                 ->setConveyor(['id_token' => $id_token])
                 ->process('ShoppingfeedProductSyncPreloading');
 
-        $product = (new ShoppingfeedPreloading())->findByTokenIdAndProductId($id_token, $id_product);
+        $product = (new \ShoppingfeedPreloading())->findByTokenIdAndProductId($id_token, $id_product);
         $this->assertArrayHasKey('content', $product);
         $productContent = json_decode($product['content'], true);
         $this->assertIsArray($productContent);
@@ -188,7 +187,7 @@ class TestAttributeTestCase extends TestCase
         $this->assertArrayHasKey($id_product_attribute, $productContent['variations']);
         $this->assertArrayHasKey('attributes', $productContent['variations'][$id_product_attribute]);
         $this->assertArrayHasKey('ecotax_child', $productContent['variations'][$id_product_attribute]['attributes']);
-        $this->assertEquals((6 * 1.2), $productContent['variations'][$id_product_attribute]['attributes']['ecotax_child']);
+        $this->assertEquals(6 * 1.2, $productContent['variations'][$id_product_attribute]['attributes']['ecotax_child']);
     }
 
     public function testAttributesMultiples()
@@ -200,11 +199,11 @@ class TestAttributeTestCase extends TestCase
                 ->setConveyor(
                     [
                         'products_id' => [$id_product],
-                        'product_action' => ShoppingfeedPreloading::ACTION_SYNC_ALL,
+                        'product_action' => \ShoppingfeedPreloading::ACTION_SYNC_ALL,
                     ]
                 )
                 ->process('ShoppingfeedProductSyncPreloading');
-        $product = (new ShoppingfeedPreloading())->findByTokenIdAndProductId($id_token, $id_product);
+        $product = (new \ShoppingfeedPreloading())->findByTokenIdAndProductId($id_token, $id_product);
         $this->assertArrayHasKey('content', $product);
         $productContent = json_decode($product['content'], true);
         $this->assertIsArray($productContent);

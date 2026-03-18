@@ -18,7 +18,7 @@
  */
 function upgrade_module_1_7_1($module)
 {
-    $installer = new \ShoppingfeedClasslib\Install\ModuleInstaller($module);
+    $installer = new ShoppingfeedClasslib\Install\ModuleInstaller($module);
     $installer->registerHooks();
 
     return true;

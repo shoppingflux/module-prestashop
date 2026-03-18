@@ -83,7 +83,7 @@ class ShoppingfeedSyncAllModuleFrontController extends ShoppingfeedCronControlle
         try {
             $this->execute($this->syncProductCron, $this->module->cronTasks['syncProduct']['name']);
             $this->execute($this->syncOrderCron, $this->module->cronTasks['syncOrder']['name']);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->handleExeption($e);
         }
 
@@ -132,8 +132,8 @@ class ShoppingfeedSyncAllModuleFrontController extends ShoppingfeedCronControlle
             $processCron = new ReflectionMethod($cron, 'processCron');
             $processCron->setAccessible(true);
             $data = $processCron->invoke($cron, $data);
-        } catch (\Exception $e) {
-            throw new \Exception('Process Monitor Failed.', 0, $e);
+        } catch (Exception $e) {
+            throw new Exception('Process Monitor Failed.', 0, $e);
         }
 
         $cron->processMonitor->unlock($data);

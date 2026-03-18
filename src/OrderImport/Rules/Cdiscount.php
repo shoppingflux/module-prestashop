@@ -23,16 +23,12 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-use Module;
 use ShoppingFeed\Sdk\Api\Order\OrderItem;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use ShoppingfeedAddon\OrderImport\OrderItemData;
 use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
 use ShoppingfeedAddon\Services\CdiscountFeeProduct;
-use ShoppingfeedProduct;
-use Tools;
-use Validate;
 
 class Cdiscount extends RuleAbstract implements RuleInterface
 {
@@ -45,7 +41,7 @@ class Cdiscount extends RuleAbstract implements RuleInterface
     {
         parent::__construct($configuration, $id_shop);
 
-        $this->module = Module::getInstanceByName('shoppingfeed');
+        $this->module = \Module::getInstanceByName('shoppingfeed');
     }
 
     public function isApplicable(OrderResource $apiOrder)
@@ -67,11 +63,11 @@ class Cdiscount extends RuleAbstract implements RuleInterface
             return;
         }
         $cdiscountFeeProduct = $this->initCdiscountFeeProduct()->getProduct();
-        if (Validate::isLoadedObject($cdiscountFeeProduct) === false) {
+        if (\Validate::isLoadedObject($cdiscountFeeProduct) === false) {
             return;
         }
         $cdiscountFeeProduct->id_product_attribute = null;
-        $sfp = new ShoppingfeedProduct();
+        $sfp = new \ShoppingfeedProduct();
         $sfp->id_product = $cdiscountFeeProduct->id;
         $reference = $this->module->mapReference($sfp);
         $params['prestashopProducts'][$reference] = $cdiscountFeeProduct;
@@ -126,7 +122,7 @@ class Cdiscount extends RuleAbstract implements RuleInterface
                 'desc' => $this->l('Caution: deactivating this option could distort your accounting and invoicing.', 'Cdiscount'),
                 'name' => 'enabled',
                 'is_bool' => true,
-                'disabled' => Tools::isSubmit('with_factory') === false,
+                'disabled' => \Tools::isSubmit('with_factory') === false,
                 'values' => [
                     [
                         'id' => 'ok',

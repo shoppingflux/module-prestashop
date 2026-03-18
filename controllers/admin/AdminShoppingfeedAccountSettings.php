@@ -551,7 +551,7 @@ class AdminShoppingfeedAccountSettingsController extends ShoppingfeedAdminContro
                     Tools::getValue('password')
                 );
             }
-        } catch (\SfGuzzle\GuzzleHttp\Exception\ClientException $e) {
+        } catch (SfGuzzle\GuzzleHttp\Exception\ClientException $e) {
         }
 
         if (!$api) {

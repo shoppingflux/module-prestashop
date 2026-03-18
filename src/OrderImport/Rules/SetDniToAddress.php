@@ -19,7 +19,6 @@
 
 namespace ShoppingfeedAddon\OrderImport\Rules;
 
-use Address;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
@@ -49,7 +48,7 @@ class SetDniToAddress extends RuleAbstract
         return $this->l('If order.additionalFields.buyer_identification_number is not empty', $this->className);
     }
 
-    protected function addDniToAddress(Address $address, OrderResource $apiOrder)
+    protected function addDniToAddress(\Address $address, OrderResource $apiOrder)
     {
         $orderArray = $apiOrder->toArray();
         $logPrefix = sprintf(
@@ -62,7 +61,7 @@ class SetDniToAddress extends RuleAbstract
             return $address;
         }
 
-        if (empty(Address::$definition['fields']['dni']['validate'])) {
+        if (empty(\Address::$definition['fields']['dni']['validate'])) {
             ProcessLoggerHandler::logInfo(
                 $logPrefix .
                 $this->l('DNI validation method is missing', $this->className),
@@ -74,7 +73,7 @@ class SetDniToAddress extends RuleAbstract
         }
 
         $dni = $orderArray['additionalFields']['buyer_identification_number'];
-        $validateMethod = Address::$definition['fields']['dni']['validate'];
+        $validateMethod = \Address::$definition['fields']['dni']['validate'];
 
         if (false === is_callable(['Validate', $validateMethod])) {
             ProcessLoggerHandler::logInfo(

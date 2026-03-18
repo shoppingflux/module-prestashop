@@ -140,9 +140,9 @@ class SfProductGenerator
     /**
      * @param string $alias The writer alias to uses
      *
-     * @throws \InvalidArgumentException If the alias is not registered at class level
-     *
      * @return $this
+     *
+     * @throws \InvalidArgumentException If the alias is not registered at class level
      */
     public function setWriter($alias)
     {

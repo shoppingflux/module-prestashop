@@ -43,7 +43,7 @@ abstract class ShoppingfeedProductSyncActions extends DefaultActions
     {
         if (empty($this->conveyor['id_product'])) {
             ProcessLoggerHandler::logInfo(
-                    $this->l('Product not registered for synchronization; no ID product found', 'ShoppingfeedProductSyncActions'),
+                $this->l('Product not registered for synchronization; no ID product found', 'ShoppingfeedProductSyncActions'),
                 'Product'
             );
 

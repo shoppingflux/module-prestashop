@@ -19,8 +19,6 @@
 
 namespace ShoppingfeedAddon\ProductFilter;
 
-use Category;
-use Context;
 use ShoppingfeedClasslib\Utils\Translate\TranslateTrait;
 
 class CategoryFilter implements Filter
@@ -31,7 +29,7 @@ class CategoryFilter implements Filter
 
     public function __construct($id)
     {
-        $this->category = new Category($id, Context::getContext()->language->id);
+        $this->category = new \Category($id, \Context::getContext()->language->id);
     }
 
     public function getSqlChunk()

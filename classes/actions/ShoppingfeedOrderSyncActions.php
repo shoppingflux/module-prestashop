@@ -188,7 +188,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
             return false;
         }
         $id_shop = (int) $this->conveyor['id_shop'];
-        //Remove old tasks
+        // Remove old tasks
         $this->initTaskCleaner()->clean();
 
         if (empty($this->conveyor['order_action'])) {
@@ -262,7 +262,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
 
         $this->conveyor['preparedTaskOrders'] = [];
         foreach ($taskOrders as $taskOrder) {
-            /** @var $taskOrder ShoppingfeedTaskOrder */
+            /** @var ShoppingfeedTaskOrder $taskOrder */
             $logPrefix = self::getLogPrefix($taskOrder->id_order);
             $order = new Order($taskOrder->id_order);
 
@@ -473,7 +473,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
         // ticket number, and link each task to its SF order
         $this->conveyor['preparedTaskOrders'] = [];
         foreach ($taskOrders as $taskOrder) {
-            /** @var $taskOrder ShoppingfeedTaskOrder */
+            /** @var ShoppingfeedTaskOrder $taskOrder */
             $logPrefix = self::getLogPrefix($taskOrder->id_order);
             $shoppingfeedOrder = ShoppingfeedOrder::getByIdOrder($taskOrder->id_order);
             if (!Validate::isLoadedObject($shoppingfeedOrder)) {
@@ -539,7 +539,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
         $this->conveyor['failedTaskOrders'] = [];
         foreach ($tickets as $ticket) {
             $ticketOrderReference = $ticket->getPayloadProperty('reference');
-            //When the module gets the tickets by batch-id, the list might contain the ticket missed in $preparedTaskOrders
+            // When the module gets the tickets by batch-id, the list might contain the ticket missed in $preparedTaskOrders
             if (empty($preparedTaskOrders[$ticketOrderReference])) {
                 continue;
             }
