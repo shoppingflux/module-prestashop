@@ -24,9 +24,9 @@ use ShoppingFeed\Feed\Product\Product;
 use ShoppingfeedAddon\Services\SfProductGenerator;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 
-class ShoppingfeedProductModuleFrontController extends \ModuleFrontController
+class ShoppingfeedProductModuleFrontController extends ModuleFrontController
 {
-    protected $sfToken = null;
+    protected $sfToken;
 
     protected $isCompressFeed;
 
@@ -89,10 +89,10 @@ class ShoppingfeedProductModuleFrontController extends \ModuleFrontController
         }
         $productGenerator->setPlatform('Prestashop', _PS_VERSION_)
                          ->addMapper(
-                            [
-                                $this, $this->productWithHierarchy ? 'mapperWitHierarchy' : 'mapperWithoutHierarchy',
-                            ]
-                        );
+                             [
+                                 $this, $this->productWithHierarchy ? 'mapperWitHierarchy' : 'mapperWithoutHierarchy',
+                             ]
+                         );
 
         if (is_callable([$productGenerator, 'getMetaData'])) {
             $productGenerator->getMetaData()->setPlatform(

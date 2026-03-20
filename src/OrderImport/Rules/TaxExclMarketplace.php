@@ -27,12 +27,10 @@
 
 namespace ShoppingfeedAddon\OrderImport\Rules;
 
-use Db;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
-use Tools;
 
 class TaxExclMarketplace extends RuleAbstract implements RuleInterface
 {
@@ -44,7 +42,7 @@ class TaxExclMarketplace extends RuleAbstract implements RuleInterface
     {
         parent::__construct($configuration);
 
-        $this->db = Db::getInstance();
+        $this->db = \Db::getInstance();
     }
 
     public function isApplicable(OrderResource $apiOrder)
@@ -55,7 +53,7 @@ class TaxExclMarketplace extends RuleAbstract implements RuleInterface
         );
         $this->logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
 
-        if (preg_match('#^retif#', Tools::strtolower($apiOrder->getChannel()->getName())) == false) {
+        if (preg_match('#^retif#', \Tools::strtolower($apiOrder->getChannel()->getName())) == false) {
             return false;
         }
 

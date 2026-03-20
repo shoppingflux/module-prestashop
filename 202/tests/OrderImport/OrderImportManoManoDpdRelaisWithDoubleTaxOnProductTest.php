@@ -19,9 +19,6 @@
 
 namespace Tests\OrderImport;
 
-use Configuration;
-use Db;
-use Module;
 use ShoppingfeedAddon\Actions\ActionsHandler;
 use ShoppingfeedClasslib\Registry;
 
@@ -32,15 +29,15 @@ class OrderImportManoManoDpdRelaisWithDoubleTaxOnProductTest extends AbstractOrd
 {
     public function testAddDpdCarrierAssociation()
     {
-        $dpdFrance = Module::getInstanceByName('dpdfrance');
-        //$dpdFrance->createCarrier($dpdFrance->config_carrier_world, 'world');
+        $dpdFrance = \Module::getInstanceByName('dpdfrance');
+        // $dpdFrance->createCarrier($dpdFrance->config_carrier_world, 'world');
         // hack due to protected method createCarrier in the new
         $_GET['submitCreateCarrierWorld'] = 1;
         $dpdFrance->getContent();
         $contextData = [
             'carrierReference' => 0,
         ];
-        //Find dpd carrier
+        // Find dpd carrier
         $query = (new \DbQuery())
             ->from('carrier')
             ->where('active = 1')
@@ -48,9 +45,9 @@ class OrderImportManoManoDpdRelaisWithDoubleTaxOnProductTest extends AbstractOrd
             ->where('external_module_name = "dpdfrance"')
             ->select('id_reference');
 
-        $carrierReference = (int) Db::getInstance()->getValue($query);
+        $carrierReference = (int) \Db::getInstance()->getValue($query);
         $this->assertTrue($carrierReference > 0);
-        Configuration::updateValue('DPDFRANCE_RELAIS_CARRIER_LOG', $carrierReference);
+        \Configuration::updateValue('DPDFRANCE_RELAIS_CARRIER_LOG', $carrierReference);
 
         if (empty($carrierReference)) {
             return $contextData;
@@ -65,8 +62,8 @@ class OrderImportManoManoDpdRelaisWithDoubleTaxOnProductTest extends AbstractOrd
             'date_add' => '2022-02-17 00:00:00',
             'date_upd' => '2022-02-17 00:00:00',
         ];
-        //Add an association
-        $isAdded = Db::getInstance()->insert('shoppingfeed_carrier', $associationData, false, true, Db::REPLACE);
+        // Add an association
+        $isAdded = \Db::getInstance()->insert('shoppingfeed_carrier', $associationData, false, true, \Db::REPLACE);
         $this->assertTrue($isAdded);
 
         return $contextData;
@@ -158,7 +155,7 @@ class OrderImportManoManoDpdRelaisWithDoubleTaxOnProductTest extends AbstractOrd
             $this->assertEquals($invoice->total_wrapping_tax_incl, 0.000000);
         }
 
-        //refs#34500
+        // refs#34500
         $detail = $psOrder->getProductsDetail()[0];
         $detailTaxes = \OrderDetail::getTaxListStatic($detail['id_order_detail']);
         $this->assertEquals($detailTaxes[0]['total_amount'], 1.620000);

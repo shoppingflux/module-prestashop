@@ -19,7 +19,6 @@
 
 namespace Tests\OrderImport;
 
-use Order;
 use ShoppingfeedAddon\Actions\ActionsHandler;
 use ShoppingfeedClasslib\Registry;
 
@@ -60,7 +59,7 @@ class OrderImportRetifTest extends AbstractOrdeTestCase
      */
     public function testTax($conveyor)
     {
-        $order = new Order($conveyor['id_order']);
+        $order = new \Order($conveyor['id_order']);
 
         $this->assertEquals(4.5, $order->total_paid_tax_incl);
         $this->assertEquals(4.5, $order->total_paid_tax_excl);

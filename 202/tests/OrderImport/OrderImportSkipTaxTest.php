@@ -19,7 +19,6 @@
 
 namespace Tests\OrderImport;
 
-use Order;
 use ShoppingfeedAddon\Actions\ActionsHandler;
 use ShoppingfeedClasslib\Registry;
 
@@ -60,7 +59,7 @@ class OrderImportSkipTaxTest extends AbstractOrdeTestCase
      */
     public function testTax($conveyor)
     {
-        $order = new Order($conveyor['id_order']);
+        $order = new \Order($conveyor['id_order']);
 
         $this->assertTrue($order->total_paid_tax_excl == $order->total_paid_tax_incl);
     }

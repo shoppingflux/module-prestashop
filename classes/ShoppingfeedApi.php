@@ -38,10 +38,10 @@ use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 class ShoppingfeedApi
 {
     /** @var ShoppingfeedApi */
-    private static $instance = null;
+    private static $instance;
 
-    /** @var \ShoppingFeed\Sdk\Api\Session\SessionResource */
-    private $session = null;
+    /** @var ShoppingFeed\Sdk\Api\Session\SessionResource */
+    private $session;
 
     protected $id_shop;
 
@@ -83,7 +83,7 @@ class ShoppingfeedApi
             // Add Guzzle as HTTP interface
             $clientOptions = new ClientOptions();
             $clientOptions->setHttpAdapter(new Guzzle6Adapter());
-            /** @var \ShoppingFeed\Sdk\Api\Session\SessionResource $session */
+            /** @var ShoppingFeed\Sdk\Api\Session\SessionResource $session */
             $session = Client::createSession($credential, $clientOptions);
 
             static::$instance = new ShoppingfeedApi($session);
@@ -118,7 +118,7 @@ class ShoppingfeedApi
             // Add Guzzle as HTTP interface
             $clientOptions = new ClientOptions();
             $clientOptions->setHttpAdapter(new Guzzle6Adapter());
-            /** @var \ShoppingFeed\Sdk\Api\Session\SessionResource $session */
+            /** @var ShoppingFeed\Sdk\Api\Session\SessionResource $session */
             $session = Client::createSession($credential, $clientOptions);
             static::$instance = new ShoppingfeedApi($session);
 
@@ -286,7 +286,7 @@ class ShoppingfeedApi
                 throw new Exception('Invalid store ID');
             }
 
-            $operation = new \ShoppingFeed\Sdk\Api\Order\OrderOperation();
+            $operation = new OrderOperation();
 
             foreach ($taskOrders as $taskOrder) {
                 switch ($taskOrder['operation']) {
@@ -356,7 +356,7 @@ class ShoppingfeedApi
                     )
                 );
 
-                if (false == $e instanceof \SfGuzzle\GuzzleHttp\Exception\ClientException) {
+                if (false == $e instanceof SfGuzzle\GuzzleHttp\Exception\ClientException) {
                     return false;
                 }
 
@@ -491,7 +491,7 @@ class ShoppingfeedApi
                 throw new Exception('Invalid store ID');
             }
 
-            $operation = new \ShoppingFeed\Sdk\Api\Order\OrderOperation();
+            $operation = new OrderOperation();
             $operation
                 ->acknowledge(
                     (string) $id_order_marketplace,
@@ -570,7 +570,7 @@ class ShoppingfeedApi
                 ProcessLoggerHandler::logError(
                     sprintf(
                         'Error in ShoppingfeedApi::getTicketsByBatchId(): %s',
-                        (empty($e) ? '' : $e->getMessage())
+                        empty($e) ? '' : $e->getMessage()
                     )
                 );
 

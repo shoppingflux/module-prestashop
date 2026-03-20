@@ -39,7 +39,7 @@ require_once _PS_MODULE_DIR_ . 'shoppingfeed/vendor/autoload.php';
 /**
  * The base module class
  */
-class Shoppingfeed extends \ShoppingfeedClasslib\Module
+class Shoppingfeed extends ShoppingfeedClasslib\Module
 {
     /**
      * This module requires at least PHP version
@@ -88,9 +88,9 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     const PRODUCT_FEED_EXPORT_HIERARCHY = 'SHOPPINGFEED_PRODUCT_FEED_EXPORT_HIERARCHY';
 
     public $extensions = [
-        \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerExtension::class,
-        \ShoppingfeedClasslib\Extensions\ProcessMonitor\ProcessMonitorExtension::class,
-        \ShoppingfeedClasslib\Extensions\Diagnostic\DiagnosticExtension::class,
+        ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerExtension::class,
+        ShoppingfeedClasslib\Extensions\ProcessMonitor\ProcessMonitorExtension::class,
+        ShoppingfeedClasslib\Extensions\Diagnostic\DiagnosticExtension::class,
     ];
 
     /**
@@ -306,7 +306,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         $this->ps_versions_compliancy = ['min' => '1.6', 'max' => '8.99.99'];
         $this->need_instance = false;
         $this->bootstrap = true;
-        $this->tools = new \ShoppingfeedAddon\Services\SfTools();
+        $this->tools = new ShoppingfeedAddon\Services\SfTools();
 
         parent::__construct();
 
@@ -404,9 +404,9 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
 
         // There is a risk having a class not found exception because of cache of autoload.php
         try {
-            $this->hookDispatcher = new \ShoppingfeedAddon\Hook\HookDispatcher($this);
+            $this->hookDispatcher = new ShoppingfeedAddon\Hook\HookDispatcher($this);
             $this->hooks = array_merge($this->hooks, $this->hookDispatcher->getAvailableHooks());
-        } catch (Exception $e) { //for php version < 7.0
+        } catch (Exception $e) { // for php version < 7.0
         } catch (Throwable $e) {
         }
 
@@ -470,7 +470,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
 
             try {
                 $api = ShoppingfeedApi::getInstanceByToken(null, $tokenConfig);
-            } catch (\SfGuzzle\GuzzleHttp\Exception\ClientException $e) {
+            } catch (SfGuzzle\GuzzleHttp\Exception\ClientException $e) {
                 continue;
             }
 
@@ -724,7 +724,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             true,// use_customer_price
             0,// id_cart
             0,// real_quantity
-            0//id_customization
+            0// id_customization
         );
 
         Hook::exec(
@@ -844,7 +844,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
 
         try {
             /** @var ShoppingfeedHandler $handler */
-            $handler = new \ShoppingfeedClasslib\Actions\ActionsHandler();
+            $handler = new ShoppingfeedClasslib\Actions\ActionsHandler();
             $handler
                 ->setConveyor([
                     'id_product' => $id_product,
@@ -854,7 +854,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
                 ->addActions('saveProduct')
                 ->process('shoppingfeedProductSyncStock');
         } catch (Exception $e) {
-            \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logInfo(
+            ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logInfo(
                 sprintf(
                     $this->l('Product %s not registered for synchronization: %s', 'ShoppingfeedProductSyncActions'),
                     $id_product . ($id_product_attribute ? '_' . $id_product_attribute : ''),
@@ -865,7 +865,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             );
         }
 
-        \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::closeLogger();
+        ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::closeLogger();
     }
 
     /****************************** Prices hooks ******************************/
@@ -903,7 +903,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         }
 
         try {
-            $handler = new \ShoppingfeedClasslib\Actions\ActionsHandler();
+            $handler = new ShoppingfeedClasslib\Actions\ActionsHandler();
             $handler
                 ->setConveyor([
                     'id_product' => $product->id,
@@ -912,7 +912,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
                 ->addActions('saveProduct')
                 ->process('shoppingfeedProductSyncPrice');
         } catch (Exception $e) {
-            \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logInfo(
+            ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logInfo(
                 sprintf(
                     $this->l('Product %s not registered for synchronization: %s', 'ShoppingfeedProductSyncActions'),
                     $product->id,
@@ -923,14 +923,14 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             );
         }
 
-        if (!\ShoppingfeedClasslib\Registry::isRegistered('updated_product_prices_ids')) {
-            \ShoppingfeedClasslib\Registry::set('updated_product_prices_ids', []);
+        if (!ShoppingfeedClasslib\Registry::isRegistered('updated_product_prices_ids')) {
+            ShoppingfeedClasslib\Registry::set('updated_product_prices_ids', []);
         }
-        $updatedProductPricesIds = \ShoppingfeedClasslib\Registry::get('updated_product_prices_ids');
+        $updatedProductPricesIds = ShoppingfeedClasslib\Registry::get('updated_product_prices_ids');
         $updatedProductPricesIds[] = $product->id;
-        \ShoppingfeedClasslib\Registry::set('updated_product_prices_ids', $updatedProductPricesIds);
+        ShoppingfeedClasslib\Registry::set('updated_product_prices_ids', $updatedProductPricesIds);
 
-        \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::closeLogger();
+        ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::closeLogger();
 
         // Combinations hook are not called when saving the product on 1.6
         if (version_compare(_PS_VERSION_, '1.7', '<')) {
@@ -966,16 +966,16 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         // Retrieve previous values in DB
         // If all goes well, they should already be cached...
         $old_combination = new Combination($combination->id);
-        if ((float) $old_combination->price == (float) $combination->price &&
-            (
-                !\ShoppingfeedClasslib\Registry::isRegistered('updated_product_prices_ids') ||
-                !in_array($combination->id_product, \ShoppingfeedClasslib\Registry::get('updated_product_prices_ids'))
+        if ((float) $old_combination->price == (float) $combination->price
+            && (
+                !ShoppingfeedClasslib\Registry::isRegistered('updated_product_prices_ids')
+                || !in_array($combination->id_product, ShoppingfeedClasslib\Registry::get('updated_product_prices_ids'))
             )) {
             return;
         }
 
         try {
-            $handler = new \ShoppingfeedClasslib\Actions\ActionsHandler();
+            $handler = new ShoppingfeedClasslib\Actions\ActionsHandler();
             $handler
                 ->setConveyor([
                     'id_product' => $combination->id_product,
@@ -985,7 +985,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
                 ->addActions('saveProduct')
                 ->process('shoppingfeedProductSyncPrice');
         } catch (Exception $e) {
-            \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logInfo(
+            ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logInfo(
                 sprintf(
                     $this->l('Combination %s not registered for synchronization: %s', 'ShoppingfeedProductSyncActions'),
                     $combination->id_product . ($combination->id ? '_' . $combination->id : ''),
@@ -996,7 +996,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             );
         }
 
-        \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::closeLogger();
+        ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::closeLogger();
     }
 
     /**
@@ -1010,7 +1010,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         if (!Validate::isLoadedObject($product)) {
             return false;
         }
-        $handler = new \ShoppingfeedClasslib\Actions\ActionsHandler();
+        $handler = new ShoppingfeedClasslib\Actions\ActionsHandler();
         $handler->addActions('deleteProduct');
         try {
             $handler->setConveyor([
@@ -1019,19 +1019,19 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             ]);
             $processResult = $handler->process('ShoppingfeedProductSyncPreloading');
             if (!$processResult) {
-                \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logError(
+                ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logError(
                     $this->l('Fail : An error occurred during process.')
                 );
             }
         } catch (Exception $e) {
-            \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logError(
+            ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logError(
                 sprintf(
                     $this->l('Fail : %s'),
                     $e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine()
                 )
             );
         }
-        \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::closeLogger();
+        ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::closeLogger();
     }
 
     /**
@@ -1067,7 +1067,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
         if ((bool) Configuration::getGlobalValue(Shoppingfeed::REAL_TIME_SYNCHRONIZATION) === false) {
             return;
         }
-        $handler = new \ShoppingfeedClasslib\Actions\ActionsHandler();
+        $handler = new ShoppingfeedClasslib\Actions\ActionsHandler();
         $handler->addActions('getBatch');
         $sft = new ShoppingfeedToken();
         $tokens = $sft->findAllActive();
@@ -1080,20 +1080,20 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
 
                 $processResult = $handler->process('shoppingfeedProductSyncPrice');
                 if (!$processResult) {
-                    \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logError(
+                    ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logError(
                         ShoppingfeedProductSyncPriceActions::getLogPrefix($token['id_shoppingfeed_token']) . ' ' . $this->l('Fail : An error occurred during process.')
                     );
                 }
             }
         } catch (Exception $e) {
-            \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logError(
+            ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logError(
                 sprintf(
                     ShoppingfeedProductSyncPriceActions::getLogPrefix($token['id_shoppingfeed_token']) . ' ' . $this->l('Fail : %s'),
                     $e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine()
                 )
             );
         }
-        \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::closeLogger();
+        ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::closeLogger();
     }
 
     public function hookActionObjectCategoryUpdateAfter($params)
@@ -1130,7 +1130,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
      */
     public function updateShoppingFeedPreloading($products_id, $action)
     {
-        $handler = new \ShoppingfeedClasslib\Actions\ActionsHandler();
+        $handler = new ShoppingfeedClasslib\Actions\ActionsHandler();
         if (in_array(0, $products_id, true)) {
             $action = 'purge';
         } else {
@@ -1148,19 +1148,19 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
                         )
                         ->process('ShoppingfeedProductSyncPreloading');
             if (!$processResult) {
-                \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logError(
+                ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logError(
                     $this->l('Fail : An error occurred during process.')
                 );
             }
         } catch (Exception $e) {
-            \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logError(
+            ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logError(
                 sprintf(
                     $this->l('Fail : %s'),
                     $e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine()
                 )
             );
         }
-        \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::closeLogger();
+        ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::closeLogger();
     }
 
     /****************************** Order status hooks ******************************/
@@ -1175,13 +1175,13 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     public function hookActionValidateOrder($params)
     {
         if (Validate::isLoadedObject($params['order']) && !$this->isShoppingfeedOrder($params['order'])) {
-            //if that isn't shoppingfeed order and tracking order is active, then should track it
+            // if that isn't shoppingfeed order and tracking order is active, then should track it
             if ((int) Configuration::get(self::ORDER_TRACKING)) {
                 try {
                     $this->getOrderTracker()->track($params['order']);
                 } catch (Throwable $e) {
-                    \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::openLogger();
-                    \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::addLog(
+                    ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::openLogger();
+                    ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::addLog(
                         $this->l('Error while sending tracking order info. Message: ') . $e->getMessage(),
                         'Order',
                         $params['order']->id
@@ -1191,7 +1191,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             }
         }
 
-        $handler = \ShoppingfeedClasslib\Registry::get('shoppingfeedOrderImportHandler');
+        $handler = ShoppingfeedClasslib\Registry::get('shoppingfeedOrderImportHandler');
         if ($handler === false) {
             return;
         }
@@ -1216,18 +1216,18 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             $conveyor = $handler->getConveyor();
             $params['order'] = $conveyor['psOrder'];
         } catch (Throwable $e) {
-            \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logError(
+            ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logError(
                 sprintf(
                     ShoppingfeedOrderSyncActions::getLogPrefix() . ' ' .
                         $this->l('Order %s not imported : %s', 'ShoppingfeedOrderActions'),
-                        $currentOrder->id,
+                    $currentOrder->id,
                     $e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine()
                 ),
                 'Order',
                 $currentOrder->id
             );
         }
-        \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::closeLogger();
+        ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::closeLogger();
     }
 
     /**
@@ -1264,7 +1264,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
 
         $logPrefix = ShoppingfeedOrderSyncActions::getLogPrefix($shoppingFeedOrder->id_order);
         try {
-            \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logInfo(
+            ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logInfo(
                 sprintf(
                     $logPrefix . ' ' .
                         $this->l('Process started Order %s ', 'ShoppingfeedOrderActions'),
@@ -1273,7 +1273,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
                 'Order',
                 $shoppingFeedOrder->id_order
             );
-            $handler = new \ShoppingfeedClasslib\Actions\ActionsHandler();
+            $handler = new ShoppingfeedClasslib\Actions\ActionsHandler();
             $handler
                 ->setConveyor([
                     'id_order' => $params['id_order'],
@@ -1282,7 +1282,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
                 ->addActions('saveTaskOrder')
                 ->process('shoppingfeedOrderSync');
         } catch (Exception $e) {
-            \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logInfo(
+            ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logInfo(
                 sprintf(
                     $logPrefix . ' ' . $this->l('Order %s not registered for synchronization: %s', 'ShoppingfeedOrderActions'),
                     $params['id_order'],
@@ -1293,7 +1293,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             );
         }
 
-        \ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::closeLogger();
+        ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::closeLogger();
     }
 
     /**
@@ -1317,7 +1317,7 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
             ShoppingfeedAddon\OrderImport\Rules\RelaisColisRule::class,
             ShoppingfeedAddon\OrderImport\Rules\TestingOrder::class,
             ShoppingfeedAddon\OrderImport\Rules\ManomanoDpdRelais::class,
-            ShoppingfeedAddon\OrderImport\Rules\MissingCarrier::class, //should be performed before ZalandoCarrier
+            ShoppingfeedAddon\OrderImport\Rules\MissingCarrier::class, // should be performed before ZalandoCarrier
             ShoppingfeedAddon\OrderImport\Rules\ZalandoCarrier::class,
             ShoppingfeedAddon\OrderImport\Rules\AmazonManomanoTva::class,
             ShoppingfeedAddon\OrderImport\Rules\SymbolConformity::class,
@@ -1400,11 +1400,11 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
     }
 
     /**
-     * @return \ShoppingfeedAddon\Services\SpecificPriceService
+     * @return ShoppingfeedAddon\Services\SpecificPriceService
      */
     public function getSpecificPriceService()
     {
-        return new \ShoppingfeedAddon\Services\SpecificPriceService();
+        return new ShoppingfeedAddon\Services\SpecificPriceService();
     }
 
     public function addDateIndexToLogs()
@@ -1447,15 +1447,15 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
 
     protected function initCdiscountFeeProduct()
     {
-        return new \ShoppingfeedAddon\Services\CdiscountFeeProduct();
+        return new ShoppingfeedAddon\Services\CdiscountFeeProduct();
     }
 
     protected function updateHooks()
     {
         try {
-            $installer = new \ShoppingfeedClasslib\Install\ModuleInstaller($this);
+            $installer = new ShoppingfeedClasslib\Install\ModuleInstaller($this);
             $installer->registerHooks();
-        } catch (Exception $e) { //for php version < 7.0
+        } catch (Exception $e) { // for php version < 7.0
             return false;
         } catch (Throwable $e) {
             return false;
@@ -1466,12 +1466,12 @@ class Shoppingfeed extends \ShoppingfeedClasslib\Module
 
     protected function getFilterFactory()
     {
-        return new \ShoppingfeedAddon\ProductFilter\FilterFactory();
+        return new ShoppingfeedAddon\ProductFilter\FilterFactory();
     }
 
     protected function getOrderTracker()
     {
-        return new \ShoppingfeedAddon\Services\OrderTracker();
+        return new ShoppingfeedAddon\Services\OrderTracker();
     }
 
     /**

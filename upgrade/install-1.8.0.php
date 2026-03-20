@@ -18,7 +18,7 @@
  */
 function upgrade_module_1_8_0($module)
 {
-    $installer = new \ShoppingfeedClasslib\Install\ModuleInstaller($module);
+    $installer = new ShoppingfeedClasslib\Install\ModuleInstaller($module);
     $installer->installObjectModel(ShoppingfeedPreloading::class);
     $installer->installObjectModel(ShoppingfeedOrder::class);
     Configuration::updateGlobalValue(Shoppingfeed::NEED_UPDATE_HOOK, 1);

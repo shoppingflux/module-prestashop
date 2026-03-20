@@ -22,7 +22,6 @@ namespace ShoppingfeedAddon\OrderImport\Rules;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
-use Tools;
 
 if (!defined('_PS_VERSION_')) {
     exit;
@@ -37,15 +36,15 @@ class AmazonManomanoTva extends RuleAbstract implements RuleInterface
     {
         $isApplicable = false;
 
-        if ('amazon' == Tools::strtolower($apiOrder->getChannel()->getName())) {
+        if ('amazon' == \Tools::strtolower($apiOrder->getChannel()->getName())) {
             $isApplicable = true;
         }
 
-        if ('monechelle' == Tools::strtolower($apiOrder->getChannel()->getName())) {
+        if ('monechelle' == \Tools::strtolower($apiOrder->getChannel()->getName())) {
             $isApplicable = true;
         }
 
-        if ('manomanopro' == Tools::strtolower($apiOrder->getChannel()->getName())) {
+        if ('manomanopro' == \Tools::strtolower($apiOrder->getChannel()->getName())) {
             $isApplicable = true;
         }
 

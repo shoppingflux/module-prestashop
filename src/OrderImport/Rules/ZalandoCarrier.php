@@ -27,7 +27,6 @@ use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
-use Tools;
 
 class ZalandoCarrier extends RuleAbstract implements RuleInterface
 {
@@ -39,13 +38,13 @@ class ZalandoCarrier extends RuleAbstract implements RuleInterface
             $apiOrder->getId()
         );
         $logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
-        if (preg_match('#^zalando#', Tools::strtolower($apiOrder->getChannel()->getName()))
+        if (preg_match('#^zalando#', \Tools::strtolower($apiOrder->getChannel()->getName()))
             && empty($apiOrderData['shipment']['carrier'])) {
             ProcessLoggerHandler::logInfo(
-                    $logPrefix .
-                        $this->l('Rule triggered.', 'ZalandoCarrier'),
-                    'Order'
-                );
+                $logPrefix .
+                    $this->l('Rule triggered.', 'ZalandoCarrier'),
+                'Order'
+            );
 
             return true;
         }

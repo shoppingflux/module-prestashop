@@ -19,9 +19,6 @@
 
 namespace ShoppingfeedAddon\ProductFilter;
 
-use Attribute;
-use AttributeGroup;
-use Context;
 use ShoppingfeedClasslib\Utils\Translate\TranslateTrait;
 
 class AttributeFilter implements Filter
@@ -34,8 +31,8 @@ class AttributeFilter implements Filter
 
     public function __construct($id)
     {
-        $this->attribute = new Attribute($id);
-        $this->attributeGroup = new AttributeGroup($this->attribute->id_attribute_group, Context::getContext()->language->id);
+        $this->attribute = new \Attribute($id);
+        $this->attributeGroup = new \AttributeGroup($this->attribute->id_attribute_group, \Context::getContext()->language->id);
     }
 
     public function getSqlChunk()
@@ -63,7 +60,7 @@ class AttributeFilter implements Filter
         return sprintf(
             '%s:%s',
             $this->attributeGroup->name,
-            (is_array($this->attribute->name) ? $this->attribute->name[Context::getContext()->language->id] : $this->attribute->name)
+            is_array($this->attribute->name) ? $this->attribute->name[\Context::getContext()->language->id] : $this->attribute->name
         );
     }
 }

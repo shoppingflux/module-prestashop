@@ -592,20 +592,20 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
 
         $shops = Shop::getShops();
         foreach ($shops as $shop) {
-            Configuration::updateValue(Shoppingfeed::ORDER_IMPORT_ENABLED, ($order_import_enabled ? true : false), false, null, $shop['id_shop']);
-            Configuration::updateValue(Shoppingfeed::ORDER_IMPORT_TEST, ($order_sync_test ? true : false), false, null, $shop['id_shop']);
-            Configuration::updateValue(Shoppingfeed::ORDER_SYNC_ENABLED, ($order_sync_enabled ? true : false), false, null, $shop['id_shop']);
-            Configuration::updateValue(Shoppingfeed::ORDER_IMPORT_SHIPPED, ($order_sync_shipped ? true : false), false, null, $shop['id_shop']);
+            Configuration::updateValue(Shoppingfeed::ORDER_IMPORT_ENABLED, $order_import_enabled ? true : false, false, null, $shop['id_shop']);
+            Configuration::updateValue(Shoppingfeed::ORDER_IMPORT_TEST, $order_sync_test ? true : false, false, null, $shop['id_shop']);
+            Configuration::updateValue(Shoppingfeed::ORDER_SYNC_ENABLED, $order_sync_enabled ? true : false, false, null, $shop['id_shop']);
+            Configuration::updateValue(Shoppingfeed::ORDER_IMPORT_SHIPPED, $order_sync_shipped ? true : false, false, null, $shop['id_shop']);
             Configuration::updateValue(
                 Shoppingfeed::ORDER_IMPORT_SHIPPED_MARKETPLACE,
-                ($order_sync_shipped_marketplace ? true : false),
+                $order_sync_shipped_marketplace ? true : false,
                 false,
                 null,
                 $shop['id_shop']
             );
             Configuration::updateValue(
                 Shoppingfeed::ORDER_TRACKING,
-                ($order_tracking ? true : false),
+                $order_tracking ? true : false,
                 false,
                 null,
                 $shop['id_shop']

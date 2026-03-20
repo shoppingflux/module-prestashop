@@ -19,44 +19,37 @@
 
 namespace ShoppingfeedAddon\OrderImport\GLS;
 
-use Address;
-use Cart;
-use Configuration;
-use Country;
-use Db;
-use Exception;
-
 class CartCarrierAssociation
 {
     protected $db;
 
     protected $glsAdapter;
     /** @var \Module */
-    protected $nkmgls = null;
+    protected $nkmgls;
 
     public function __construct(AdapterInterface $glsAdapter)
     {
-        $this->db = Db::getInstance();
+        $this->db = \Db::getInstance();
         $this->glsAdapter = $glsAdapter;
         $this->nkmgls = \Module::getInstanceByName('nkmgls');
     }
 
-    public function create(Cart $cart, $relayId = null)
+    public function create(\Cart $cart, $relayId = null)
     {
         $relay_detail = [];
 
         if (false === empty($relayId)) {
             try {
                 $relay_detail = $this->glsAdapter->getRelayDetail($relayId);
-            } catch (Exception $e) {
-                throw new Exception($e->getMessage());
+            } catch (\Exception $e) {
+                throw new \Exception($e->getMessage());
             }
         }
 
-        $address = new Address($cart->id_address_delivery);
-        $country = new Country(empty($relay_detail['Country']) ? $address->id_country : Country::getByIso($relay_detail['Country']));
+        $address = new \Address($cart->id_address_delivery);
+        $country = new \Country(empty($relay_detail['Country']) ? $address->id_country : \Country::getByIso($relay_detail['Country']));
         $gls_product = $this->glsAdapter->getGlsProductCode(
-            Configuration::get('GLS_GLSRELAIS_ID', (int) $cart->id_carrier, $cart->id_shop_group, $cart->id_shop),
+            \Configuration::get('GLS_GLSRELAIS_ID', (int) $cart->id_carrier, $cart->id_shop_group, $cart->id_shop),
             $country->iso_code
         );
 

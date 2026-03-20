@@ -43,7 +43,7 @@ abstract class ShoppingfeedProductSyncActions extends DefaultActions
     {
         if (empty($this->conveyor['id_product'])) {
             ProcessLoggerHandler::logInfo(
-                    $this->l('Product not registered for synchronization; no ID product found', 'ShoppingfeedProductSyncActions'),
+                $this->l('Product not registered for synchronization; no ID product found', 'ShoppingfeedProductSyncActions'),
                 'Product'
             );
 
@@ -79,6 +79,7 @@ abstract class ShoppingfeedProductSyncActions extends DefaultActions
                 continue;
             }
             $this->conveyor['id_token'] = $token['id_shoppingfeed_token'];
+            $this->conveyor['shoppingfeed_store_id'] = $token['shoppingfeed_store_id'];
             $sfProduct = ShoppingfeedProduct::getFromUniqueKey(
                 $action,
                 $id_product,
