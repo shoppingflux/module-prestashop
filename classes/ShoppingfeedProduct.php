@@ -142,6 +142,14 @@ class ShoppingfeedProduct extends ObjectModel
         $sql->where($where);
         $reference = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
 
+        if (empty($reference) && empty($this->id_product_attribute) && $reference_format === 'ean13') {
+            $hasCombintions = !empty(Product::getProductAttributesIds((int) $this->id_product));
+
+            if ($hasCombintions) {
+                $reference = (string) $this->id_product;
+            }
+        }
+
         return is_string($reference) ? trim($reference) : '';
     }
 
