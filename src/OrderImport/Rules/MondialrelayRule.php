@@ -198,7 +198,7 @@ class MondialrelayRule extends RuleAbstract implements RuleInterface
         // Depending of the marketplace, the length of the relay ID is not the same. (5 digits, 6 digits).
         // We force a 6 digits string required by Mondial Relay
         if (strlen($relayId) > 6) {
-            $relayId = str_replace('FR-', '', $relayId);
+            $relayId = preg_replace('/^[A-Z]{2,3}-/', '', $relayId);
         }
         $formattedRelayId = str_pad($relayId, 6, '0', STR_PAD_LEFT);
 
@@ -265,7 +265,7 @@ class MondialrelayRule extends RuleAbstract implements RuleInterface
         // Depending of the marketplace, the length of the relay ID is not the same. (5 digits, 6 digits).
         // We force a 6 digits string required by Mondial Relay
         if (strlen($relayId) > 6) {
-            $relayId = str_replace('FR-', '', $relayId);
+            $relayId = preg_replace('/^[A-Z]{2}-/', '', $relayId);
         }
         $formattedRelayId = str_pad($relayId, 6, '0', STR_PAD_LEFT);
         $insertResult = \Db::getInstance()->insert(
