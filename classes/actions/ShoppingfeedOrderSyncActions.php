@@ -529,22 +529,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
             if (empty($batchId) === true) {
                 continue;
             }
-            // Handle a report in order to exclude "ignored" orders from further processing
-            foreach ($result->getBatches() as $batch) {
-                foreach ($batch->getResponse()->getReport() as $operationReport) {
-                    if ($operationReport['state'] !== 'ignored') {
-                        continue;
-                    }
-                    foreach ($preparedTaskOrders as $index => $preparedTaskOrder) {
-                        if ((string) $preparedTaskOrder['id_internal_shoppingfeed'] !== (string) $operationReport['id']) {
-                            continue;
-                        }
-                        $taskOrder = $preparedTaskOrder['taskOrder'];
-                        $taskOrder->delete();
-                        unset($preparedTaskOrders[$index]);
-                    }
-                }
-            }
+            $this->excludeIgnoredTasks($result, $preparedTaskOrders);
 
             foreach ($preparedTaskOrders as $preparedTaskOrder) {
                 $taskOrder = $preparedTaskOrder['taskOrder'];
@@ -624,22 +609,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
                 Registry::increment('syncStatusErrors');
                 continue;
             }
-            // Handle a report in order to exclude "ignored" orders from further processing
-            foreach ($result->getBatches() as $batch) {
-                foreach ($batch->getResponse()->getReport() as $operationReport) {
-                    if ($operationReport['state'] !== 'ignored') {
-                        continue;
-                    }
-                    foreach ($preparedTaskOrders as $index => $preparedTaskOrder) {
-                        if ((string) $preparedTaskOrder['id_internal_shoppingfeed'] !== (string) $operationReport['id']) {
-                            continue;
-                        }
-                        $taskOrder = $preparedTaskOrder['taskOrder'];
-                        $taskOrder->delete();
-                        unset($preparedTaskOrders[$index]);
-                    }
-                }
-            }
+            $this->excludeIgnoredTasks($result, $preparedTaskOrders);
 
             foreach ($preparedTaskOrders as $preparedTaskOrder) {
                 $taskOrder = $preparedTaskOrder['taskOrder'];
@@ -715,22 +685,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
                 Registry::increment('syncStatusErrors');
                 continue;
             }
-            // Handle a report in order to exclude "ignored" orders from further processing
-            foreach ($result->getBatches() as $batch) {
-                foreach ($batch->getResponse()->getReport() as $operationReport) {
-                    if ($operationReport['state'] !== 'ignored') {
-                        continue;
-                    }
-                    foreach ($preparedTaskOrders as $index => $preparedTaskOrder) {
-                        if ((string) $preparedTaskOrder['id_internal_shoppingfeed'] !== (string) $operationReport['id']) {
-                            continue;
-                        }
-                        $taskOrder = $preparedTaskOrder['taskOrder'];
-                        $taskOrder->delete();
-                        unset($preparedTaskOrders[$index]);
-                    }
-                }
-            }
+            $this->excludeIgnoredTasks($result, $preparedTaskOrders);
 
             foreach ($preparedTaskOrders as $preparedTaskOrder) {
                 $taskOrder = $preparedTaskOrder['taskOrder'];
@@ -1209,6 +1164,25 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
         }
 
         return $tickets;
+    }
+
+    protected function excludeIgnoredTasks(OrderOpeationResult $result, array &$preparedTaskOrders)
+    {
+        foreach ($result->getBatches() as $batch) {
+            foreach ($batch->getResponse()->getReport() as $operationReport) {
+                if ($operationReport['state'] !== 'ignored') {
+                    continue;
+                }
+                foreach ($preparedTaskOrders as $index => $preparedTaskOrder) {
+                    if ((string) $preparedTaskOrder['id_internal_shoppingfeed'] !== (string) $operationReport['id']) {
+                        continue;
+                    }
+                    $taskOrder = $preparedTaskOrder['taskOrder'];
+                    $taskOrder->delete();
+                    unset($preparedTaskOrders[$index]);
+                }
+            }
+        }
     }
 
     protected function getShoppingfeedApiInstance(int $idToken)
