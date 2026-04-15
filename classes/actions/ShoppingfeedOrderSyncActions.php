@@ -20,6 +20,7 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
+use ShoppingFeed\Sdk\Api\Order\OrderOperationResult;
 use ShoppingfeedAddon\Services\CarrierFinder;
 use ShoppingfeedAddon\Services\TaskOrderCleaner;
 use ShoppingfeedClasslib\Actions\DefaultActions;
@@ -1166,7 +1167,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
         return $tickets;
     }
 
-    protected function excludeIgnoredTasks(OrderOpeationResult $result, array &$preparedTaskOrders)
+    protected function excludeIgnoredTasks(OrderOperationResult $result, array &$preparedTaskOrders)
     {
         foreach ($result->getBatches() as $batch) {
             foreach ($batch->getResponse()->getReport() as $operationReport) {
