@@ -99,7 +99,7 @@ class TaxForBusiness extends RuleAbstract implements RuleInterface
         if ($params['isUseSfTax']) {
             ProcessLoggerHandler::logInfo(
                 $this->logPrefix .
-                $this->l('Rule triggered. Use Shoppingfeed tax', 'TaxForBusiness'),
+                $this->l('Rule triggered. Using Shoppingfeed tax', 'TaxForBusiness'),
                 'Order',
                 $params['id_order']
             );
