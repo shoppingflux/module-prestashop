@@ -124,7 +124,7 @@ class ProcessMonitorHandler
         }
         $this->process->last_update = date('Y-m-d H:i:s');
         $endTime = $this->microtimeFloat();
-        $duration = number_format(($endTime - $this->startTime), 3);
+        $duration = round(($endTime - $this->startTime), 3);
         $this->process->duration = $duration;
         $this->process->pid = null;
 
