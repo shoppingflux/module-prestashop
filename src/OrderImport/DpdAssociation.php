@@ -53,7 +53,7 @@ class DpdAssociation
             'postcode' => pSQL($address->postcode),
             'city' => pSQL($address->city),
             'id_country' => (int) $address->id_country,
-            'gsm_dest' => pSQL(($address->phone_mobile ? (string) $address->phone_mobile : (string) $address->phone)),
+            'gsm_dest' => pSQL($address->phone_mobile ? (string) $address->phone_mobile : (string) $address->phone),
         ];
 
         try {
