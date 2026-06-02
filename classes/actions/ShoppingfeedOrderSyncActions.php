@@ -355,6 +355,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
                     }
 
                     // Fill items array with product references and quantities
+                    /** @var Shoppingfeed $shoppingfeed */
                     $shoppingfeed = Module::getInstanceByName('shoppingfeed');
 
                     // Decode additionalFields to get items with their IDs
