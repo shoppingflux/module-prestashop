@@ -33,12 +33,14 @@ class OrderRuleTaxForBusinessTest extends AbstractOrdeTestCase
     {
         $apiOrder = $this->getOrderRessourceFromDataset('order-amazon.json');
         $apiOrderBusiness = $this->getOrderRessourceFromDataset('order-amazon-business.json');
+        $manmanoOrderBusiness = $this->getOrderRessourceFromDataset('order-manomano-tax-business.json');
         $rule = new TaxForBusiness(['enabled' => true]);
         $ruleDisabled = new TaxForBusiness(['enabled' => false]);
 
         $this->assertFalse($rule->isApplicable($apiOrder));
         $this->assertFalse($ruleDisabled->isApplicable($apiOrderBusiness));
         $this->assertTrue($rule->isApplicable($apiOrderBusiness));
+        $this->assertTrue($rule->isApplicable($manmanoOrderBusiness));
     }
 
     public function testImportAmazonBusiness()

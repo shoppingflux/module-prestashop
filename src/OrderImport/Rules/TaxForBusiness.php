@@ -57,28 +57,49 @@ class TaxForBusiness extends RuleAbstract implements RuleInterface
             self::class
         );
 
-        if (empty($apiOrderAdditionalFields['is_business_order'])) {
-            return false;
+        if (isset($apiOrderAdditionalFields['is_business_order']) && $apiOrderAdditionalFields['is_business_order']) {
+            return true;
+        }
+        if (!empty($apiOrderData['payment']['taxMode']) && $apiOrderData['payment']['taxMode'] === 'tax_excluded') {
+            return true;
         }
 
-        return true;
+        return false;
     }
 
     public function beforeRecalculateOrderPrices($params)
     {
         /** @var OrderResource $apiOrder */
         $apiOrder = $params['apiOrder'];
+        $orderData = $apiOrder->toArray();
 
         if (strtolower($apiOrder->getChannel()->getName()) !== 'amazon') {
             $params['skipTax'] = true;
+        } else {
+            $params['isUseSfTax'] = true;
+        }
+
+        if (false === empty($orderData['payment']['taxMode'])) {
+            if (strtolower($orderData['payment']['taxMode']) === 'tax_excluded') {
+                $params['skipTax'] = false;
+                $params['isUseSfTax'] = true;
+                $params['isAmountTaxIncl'] = false;
+            } else {
+                $params['skipTax'] = false;
+                $params['isUseSfTax'] = false;
+                $params['isAmountTaxIncl'] = true;
+            }
+        }
+
+        if ($params['skipTax']) {
             ProcessLoggerHandler::logInfo(
                 $this->logPrefix .
                 $this->l('Rule triggered. Skip tax', 'TaxForBusiness'),
                 'Order',
                 $params['id_order']
             );
-        } else {
-            $params['isUseSfTax'] = true;
+        }
+        if ($params['isUseSfTax']) {
             ProcessLoggerHandler::logInfo(
                 $this->logPrefix .
                 $this->l('Rule triggered. Using Shoppingfeed tax', 'TaxForBusiness'),
