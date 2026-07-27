@@ -180,11 +180,11 @@ class OrderDiscountRule extends RuleAbstract implements RuleInterface
         $name = '';
 
         if (!empty($additionalFields['seller_voucher'])) {
-            $amount = (float) $additionalFields['seller_voucher'];
+            $amount += (float) $additionalFields['seller_voucher'];
             $name = $this->l('Discount (merchant)', 'OrderDiscountRule');
         }
         if ($this->configuration['enabled'] && !empty($additionalFields['channel_voucher'])) {
-            $amount = (float) $additionalFields['channel_voucher'];
+            $amount += (float) $additionalFields['channel_voucher'];
             $name = $this->l('Discount (marketplace)', 'OrderDiscountRule');
         }
 
