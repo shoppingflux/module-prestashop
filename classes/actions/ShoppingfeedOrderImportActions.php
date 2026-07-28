@@ -1234,6 +1234,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             );
 
             Db::getInstance()->update('order_invoice', $updateOrderInvoice, '`id_order` = ' . (int) $id_order);
+            /* @phpstan-ignore-next-line */
             foreach ($discounts as $discountCartRule) {
                 $discountCartRuleAmountTaxIncl = $discountCartRule->reduction_amount;
                 $discountCartRuleAmountTaxExcl = Tools::ps_round($discountCartRuleAmountTaxIncl / (1 + ($tax_rate / 100)), 4);
@@ -1270,6 +1271,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 if (empty($cartRule['gift_product'])) {
                     continue;
                 }
+                /* @phpstan-ignore-next-line */
                 if (in_array((int) $cartRule['id_cart_rule'], $discountCartRuleIds, true)) {
                     continue;
                 }
