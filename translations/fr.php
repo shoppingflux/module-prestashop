@@ -181,10 +181,8 @@ $_MODULE['<{shoppingfeed}prestashop>order_status_syncro_0c097c8d2f2d519cf7bf6fd1
 $_MODULE['<{shoppingfeed}prestashop>order_status_syncro_8f07ae455b246a580ce7239c2b8dac63'] = 'Transporteur Shopping feed';
 $_MODULE['<{shoppingfeed}prestashop>order_status_syncro_d51f61bae1c0c52905c6b44619218e8c'] = 'Transporteur PrestaShop';
 $_MODULE['<{shoppingfeed}prestashop>order_status_syncro_b1c94ca2fbc3e78fc30069c8d0f01680'] = 'Tous';
-$_MODULE['<{shoppingfeed}prestashop>tax-for-business-desc_c4eb9097787df9878d3e63e9a44e5d04'] = 'En activant cette option:';
-$_MODULE['<{shoppingfeed}prestashop>tax-for-business-desc_3dde2db44a6795fe99ca74e32fc24597'] = 'si le chanel est Amazon et que la commande est business, le montant de la TVA de la commande sera reporté en l\'état, sans application des règles de taxe configurée dans le PrestaShop';
-$_MODULE['<{shoppingfeed}prestashop>tax-for-business-desc_34587757f52c0f744231105ad85c4955'] = 'si le channel n\'est pas Amazon et que la commande est business, la TVA sera passée à 0 sur la commande';
-$_MODULE['<{shoppingfeed}prestashop>tax-for-business-desc_d9608da8360e04a25cb1b6e88d50ae63'] = 'dans tous les autres cas, PrestaShop sera maître du calcul des taxes en fonction de sa configuration';
+$_MODULE['<{shoppingfeed}prestashop>tax-for-business-desc_60c9cef12c9ffd7dbfc1abff7cb6ec08'] = 'En activant cette option, si la plateforme nous fournit l\'information qu\'il s\'agit d\'une commande business, le module va importer le montant exact de TVA transmis sans que Prestashop ne le recalcule.';
+$_MODULE['<{shoppingfeed}prestashop>tax-for-business-desc_3865f69981de00bd10e31a25206d3249'] = 'Si la TVA est à 0, elle sera affichée à 0 sur la commande.';
 $_MODULE['<{shoppingfeed}prestashop>runcronbutton_9506f0fd0f7f1b07960b15b4c9e68d1a'] = 'Lancer';
 $_MODULE['<{shoppingfeed}prestashop>product_filter_8418bb52f108670fbb6e0acc7d439cf7'] = 'Sélection des produits';
 $_MODULE['<{shoppingfeed}prestashop>product_filter_0f500d988373a125295a82293de0ff84'] = 'Choisir les produits envoyés à Shopping Feed';
