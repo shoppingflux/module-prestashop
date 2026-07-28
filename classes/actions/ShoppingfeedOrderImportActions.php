@@ -1304,7 +1304,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 $where .= ' AND id_cart_rule NOT IN (' . implode(',', $discountCartRuleIds) . ')';
             }
 
-            //Db::getInstance()->delete('order_cart_rule', $where);
+            Db::getInstance()->delete('order_cart_rule', $where);
         }
 
         $queryUpdateOrderPayment = sprintf(
