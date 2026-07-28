@@ -22,17 +22,7 @@
 *}
 
 <div class="help-block">
-    <div>{l s='By activating this option:' mod='shoppingfeed'}</div>
-    <ul>
-        <li>
-            {l s='if the channel is Amazon and the order is business, the VAT amount of the order will be carried forward as is, without application of the tax rules configured in PrestaShop' mod='shoppingfeed'}
-        </li>
-        <li>
-            {l s='if the channel is not Amazon and the order is business, VAT will be set to 0 on the order' mod='shoppingfeed'}
-        </li>
-        <li>
-            {l s='in all other cases, PrestaShop will calculate taxes according to its own configuration.' mod='shoppingfeed'}
-        </li>
-    </ul>
+    <div>{l s='By enabling this option, if the marketplace identifies an order as B2B, the module imports the VAT amount provided by the marketplace without recalculation by PrestaShop.' mod='shoppingfeed'}</div>
+    <div>{l s='A VAT amount of €0 will be preserved on the order' mod='shoppingfeed'}</div>
 </div>
 
