@@ -74,9 +74,9 @@ class OrderDiscountRule extends RuleAbstract implements RuleInterface
         $cart = $params['cart'];
         /** @var OrderData $orderData */
         $orderData = $params['orderData'];
-        $cartRule = $this->getCartRule($orderData, $cart);
+        $cartRules = $this->getDiscountCartRules($orderData, $cart);
 
-        if ($cartRule instanceof \CartRule) {
+        foreach ($cartRules as $cartRule) {
             if ($cart->addCartRule($cartRule->id)) {
                 ProcessLoggerHandler::logInfo(
                     $this->logPrefix .
@@ -109,10 +109,10 @@ class OrderDiscountRule extends RuleAbstract implements RuleInterface
         $cart = $params['cart'];
         /** @var OrderData $orderData */
         $orderData = $params['orderData'];
-        $cartRule = $this->getCartRule($orderData, $cart);
+        $cartRules = $this->getDiscountCartRules($orderData, $cart);
 
-        if ($cartRule instanceof \CartRule) {
-            $params['discount'] = $cartRule;
+        if (!empty($cartRules)) {
+            $params['discounts'] = $cartRules;
         }
     }
 
@@ -173,27 +173,48 @@ class OrderDiscountRule extends RuleAbstract implements RuleInterface
         return ['enabled' => (int) $rulesConfiguration['ShoppingfeedAddon\OrderImport\Rules\OrderDiscountRule']['enabled']];
     }
 
-    protected function getCartRule(OrderData $orderData, \Cart $cart)
+    /**
+     * Builds one CartRule per marketplace discount present on the order (seller
+     * and/or channel), instead of merging them into a single combined discount.
+     *
+     * @return \CartRule[]
+     */
+    protected function getDiscountCartRules(OrderData $orderData, \Cart $cart)
     {
         $additionalFields = $orderData->additionalFields;
-        $amount = 0;
-        $name = '';
+        $cartRules = [];
 
         if (!empty($additionalFields['seller_voucher'])) {
-            $amount += (float) $additionalFields['seller_voucher'];
-            $name = $this->l('Discount (merchant)', 'OrderDiscountRule');
+            $cartRule = $this->createCartRule(
+                $orderData,
+                $cart,
+                (float) $additionalFields['seller_voucher'],
+                $this->l('Discount (merchant)', 'OrderDiscountRule')
+            );
+            if ($cartRule instanceof \CartRule) {
+                $cartRules[] = $cartRule;
+            }
         }
+
         if ($this->configuration['enabled'] && !empty($additionalFields['channel_voucher'])) {
-            $amount += (float) $additionalFields['channel_voucher'];
-            $name = $this->l('Discount (marketplace)', 'OrderDiscountRule');
+            $cartRule = $this->createCartRule(
+                $orderData,
+                $cart,
+                (float) $additionalFields['channel_voucher'],
+                $this->l('Discount (marketplace)', 'OrderDiscountRule')
+            );
+            if ($cartRule instanceof \CartRule) {
+                $cartRules[] = $cartRule;
+            }
         }
 
-        if (!$amount) {
-            return null;
-        }
+        return $cartRules;
+    }
 
+    protected function createCartRule(OrderData $orderData, \Cart $cart, $amount, $name)
+    {
         try {
-            $cartRule = $this->discountProvider->getForOrder(
+            return $this->discountProvider->getForOrder(
                 $orderData->reference,
                 $amount,
                 $cart->id_currency,
@@ -215,7 +236,5 @@ class OrderDiscountRule extends RuleAbstract implements RuleInterface
 
             return null;
         }
-
-        return $cartRule;
     }
 }
