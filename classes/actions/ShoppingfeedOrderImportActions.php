@@ -1158,6 +1158,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         foreach ($ordersList as $id_order => $orderPrices) {
             $total_discount_tax_incl = 0;
             $total_discount_tax_excl = 0;
+            /* @phpstan-ignore-next-line */
             if ((float) $psOrder->total_discounts_tax_incl > 0 && !empty($discounts)) {
                 foreach ($discounts as $discountCartRule) {
                     $total_discount_tax_incl += $discountCartRule->reduction_amount;
