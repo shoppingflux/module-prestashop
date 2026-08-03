@@ -20,6 +20,7 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
+use ShoppingFeed\Sdk\Api\Order\OrderOperationResult;
 use ShoppingfeedAddon\Services\CarrierFinder;
 use ShoppingfeedAddon\Services\TaskOrderCleaner;
 use ShoppingfeedClasslib\Actions\DefaultActions;
@@ -508,7 +509,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
             return false;
         }
 
-        $shoppingfeedApi = ShoppingfeedApi::getInstanceByToken($this->conveyor['id_token']);
+        $shoppingfeedApi = $this->getShoppingfeedApiInstance((int) $this->conveyor['id_token']);
         if ($shoppingfeedApi == false) {
             ProcessLoggerHandler::logError(
                 $this->l('Could not retrieve Shopping Feed API.', 'ShoppingfeedOrderSyncActions'),
@@ -529,6 +530,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
             if (empty($batchId) === true) {
                 continue;
             }
+            $this->excludeIgnoredTasks($result, $preparedTaskOrders);
 
             foreach ($preparedTaskOrders as $preparedTaskOrder) {
                 $taskOrder = $preparedTaskOrder['taskOrder'];
@@ -577,7 +579,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
             return false;
         }
 
-        $shoppingfeedApi = ShoppingfeedApi::getInstanceByToken($this->conveyor['id_token']);
+        $shoppingfeedApi = $this->getShoppingfeedApiInstance((int) $this->conveyor['id_token']);
         if ($shoppingfeedApi == false) {
             ProcessLoggerHandler::logError(
                 $this->l('Could not retrieve Shopping Feed API.', 'ShoppingfeedOrderSyncActions'),
@@ -608,6 +610,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
                 Registry::increment('syncStatusErrors');
                 continue;
             }
+            $this->excludeIgnoredTasks($result, $preparedTaskOrders);
 
             foreach ($preparedTaskOrders as $preparedTaskOrder) {
                 $taskOrder = $preparedTaskOrder['taskOrder'];
@@ -652,7 +655,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
             return false;
         }
 
-        $shoppingfeedApi = ShoppingfeedApi::getInstanceByToken($this->conveyor['id_token']);
+        $shoppingfeedApi = $this->getShoppingfeedApiInstance((int) $this->conveyor['id_token']);
         if ($shoppingfeedApi == false) {
             ProcessLoggerHandler::logError(
                 $this->l('Could not retrieve Shopping Feed API.', 'ShoppingfeedOrderSyncActions'),
@@ -683,6 +686,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
                 Registry::increment('syncStatusErrors');
                 continue;
             }
+            $this->excludeIgnoredTasks($result, $preparedTaskOrders);
 
             foreach ($preparedTaskOrders as $preparedTaskOrder) {
                 $taskOrder = $preparedTaskOrder['taskOrder'];
@@ -1152,7 +1156,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
 
     protected function getTicketsForBatchIds($batchIds, $idShoppingfeedToken)
     {
-        $shoppingfeedApi = ShoppingfeedApi::getInstanceByToken($idShoppingfeedToken);
+        $shoppingfeedApi = $this->getShoppingfeedApiInstance((int) $idShoppingfeedToken);
         $sfToken = new ShoppingfeedToken($idShoppingfeedToken);
         $tickets = [];
 
@@ -1161,5 +1165,29 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
         }
 
         return $tickets;
+    }
+
+    protected function excludeIgnoredTasks(OrderOperationResult $result, array &$preparedTaskOrders)
+    {
+        foreach ($result->getBatches() as $batch) {
+            foreach ($batch->getResponse()->getReport() as $operationReport) {
+                if ($operationReport['state'] !== 'ignored') {
+                    continue;
+                }
+                foreach ($preparedTaskOrders as $index => $preparedTaskOrder) {
+                    if ((string) $preparedTaskOrder['id_internal_shoppingfeed'] !== (string) $operationReport['id']) {
+                        continue;
+                    }
+                    $taskOrder = $preparedTaskOrder['taskOrder'];
+                    $taskOrder->delete();
+                    unset($preparedTaskOrders[$index]);
+                }
+            }
+        }
+    }
+
+    protected function getShoppingfeedApiInstance(int $idToken)
+    {
+        return ShoppingfeedApi::getInstanceByToken($idToken);
     }
 }

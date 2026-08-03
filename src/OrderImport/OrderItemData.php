@@ -51,8 +51,15 @@ class OrderItemData
     {
         $this->reference = $orderItem->getReference();
         $this->quantity = $orderItem->getQuantity();
-        $this->unitPrice = $orderItem->getUnitPrice();
         $this->taxAmount = $orderItem->getTaxAmount();
+
+        $additionalFields = $orderItem->getAdditionalFields();
+
+        if (empty($additionalFields['original_price'])) {
+            $this->unitPrice = $orderItem->getUnitPrice();
+        } else {
+            $this->unitPrice = round((float) $additionalFields['original_price'], 2);
+        }
     }
 
     public function getTotalPrice()

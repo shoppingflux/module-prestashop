@@ -951,7 +951,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         $isAmountTaxIncl = true;
         $skipTax = false;
         $isUseSfTax = false;
-        $discount = null;
+        $discounts = [];
         // Specific rules
         $this->specificRulesManager->applyRules(
             'beforeRecalculateOrderPrices',
@@ -966,7 +966,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 'isAmountTaxIncl' => &$isAmountTaxIncl,
                 'skipTax' => &$skipTax,
                 'isUseSfTax' => &$isUseSfTax,
-                'discount' => &$discount,
+                'discounts' => &$discounts,
             ]
         );
 
@@ -1159,8 +1159,10 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             $total_discount_tax_incl = 0;
             $total_discount_tax_excl = 0;
             /* @phpstan-ignore-next-line */
-            if ((float) $psOrder->total_discounts_tax_incl > 0 && $discount instanceof CartRule) {
-                $total_discount_tax_incl = $discount->reduction_amount;
+            if ((float) $psOrder->total_discounts_tax_incl > 0 && !empty($discounts)) {
+                foreach ($discounts as $discountCartRule) {
+                    $total_discount_tax_incl += $discountCartRule->reduction_amount;
+                }
                 $total_discount_tax_excl = Tools::ps_round($total_discount_tax_incl / (1 + ($tax_rate / 100)), 4);
             }
 
@@ -1234,14 +1236,16 @@ class ShoppingfeedOrderImportActions extends DefaultActions
 
             Db::getInstance()->update('order_invoice', $updateOrderInvoice, '`id_order` = ' . (int) $id_order);
             /* @phpstan-ignore-next-line */
-            if ($discount instanceof CartRule) {
+            foreach ($discounts as $discountCartRule) {
+                $discountCartRuleAmountTaxIncl = $discountCartRule->reduction_amount;
+                $discountCartRuleAmountTaxExcl = Tools::ps_round($discountCartRuleAmountTaxIncl / (1 + ($tax_rate / 100)), 4);
                 Db::getInstance()->update(
                     'order_cart_rule',
                     [
-                        'value' => $total_discount_tax_incl,
-                        'value_tax_excl' => $total_discount_tax_excl,
+                        'value' => $discountCartRuleAmountTaxIncl,
+                        'value_tax_excl' => $discountCartRuleAmountTaxExcl,
                     ],
-                    sprintf('id_order = %d and id_cart_rule = %d', (int) $psOrder->id, (int) $discount->id)
+                    sprintf('id_order = %d and id_cart_rule = %d', (int) $psOrder->id, (int) $discountCartRule->id)
                 );
             }
 
@@ -1259,6 +1263,9 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             ->leftJoin('cart_rule', 'cr', 'ocr.id_cart_rule = cr.id_cart_rule')
             ->where('ocr.id_order = ' . (int) $psOrder->id);
         $cartRules = Db::getInstance()->executeS($query);
+        $discountCartRuleIds = array_map(function ($discountCartRule) {
+            return (int) $discountCartRule->id;
+        }, $discounts);
         if (!empty($cartRules)) {
             // Looking for gift product
             foreach ($cartRules as $cartRule) {
@@ -1266,7 +1273,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                     continue;
                 }
                 /* @phpstan-ignore-next-line */
-                if ($discount instanceof CartRule && $discount->id == $cartRule['id_cart_rule']) {
+                if (in_array((int) $cartRule['id_cart_rule'], $discountCartRuleIds, true)) {
                     continue;
                 }
                 $removeGift = true;
@@ -1296,9 +1303,8 @@ class ShoppingfeedOrderImportActions extends DefaultActions
             }
             // deleting cart rules
             $where = 'id_order = ' . (int) $psOrder->id;
-            /* @phpstan-ignore-next-line */
-            if ($discount instanceof CartRule) {
-                $where .= ' AND id_cart_rule <> ' . (int) $discount->id;
+            if (!empty($discountCartRuleIds)) {
+                $where .= ' AND id_cart_rule NOT IN (' . implode(',', $discountCartRuleIds) . ')';
             }
 
             Db::getInstance()->delete('order_cart_rule', $where);

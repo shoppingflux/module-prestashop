@@ -1,0 +1,111 @@
+{
+  "id": 11111111,
+  "storeId": 11111,
+  "channelId": 111,
+  "reference": "M26038811111",
+  "storeReference": "4000001111",
+  "isTest": false,
+  "acknowledgedAt": "2026-03-23T01:01:10+01:00",
+  "createdAt": "2026-03-23T01:43:06+01:00",
+  "updatedAt": "2026-03-25T11:46:18+01:00",
+  "status": "shipped",
+  "anonymized": false,
+  "payment": {
+    "shippingAmount": 6.56,
+    "productAmount": 49.71,
+    "totalAmount": 56.27,
+    "currency": "EUR",
+    "method": "",
+    "taxMode": "tax_excluded"
+  },
+  "shipment": {
+    "type": null,
+    "carrier": "GLS",
+    "trackingNumber": "",
+    "trackingLink": "",
+    "returnInfo": {
+      "carrier": null,
+      "trackingNumber": null
+    }
+  },
+  "additionalFields": {
+    "order_status": "SHIPPED",
+    "shipping_tax": "0",
+    "seller_voucher": "0",
+    "channel_voucher": "0",
+  },
+  "latestShipDate": null,
+  "errors": [],
+  "itemsReferencesAliases": null,
+  "fulfilledBy": "store",
+  "items": [
+    {
+      "id": 22908668261,
+      "reference": "ZB4BS834",
+      "status": "",
+      "quantity": 3,
+      "price": 16.57,
+      "commission": null,
+      "taxAmount": 0,
+      "ecotaxAmount": 0,
+      "channelReference": "0",
+      "additionalFields": {
+        "taxRate": 0
+      },
+      "name": "test",
+      "image": "https://localhost/3129/protections-velo-race-gilet-mountain-top.jpg"
+    }
+  ],
+  "commission": null,
+  "shippingAddress": {
+    "firstName":"",
+    "lastName":"Bernard Martin",
+    "company":"202 ecommerce",
+    "street":"10 rue Vivienne",
+    "street2":"",
+    "other":"",
+    "postalCode":"75002",
+    "city":"Paris",
+    "country":"FR",
+    "phone":"0123456789",
+    "mobilePhone":"0623456789",
+    "email":"unique.id.1@test.net"
+  },
+  "billingAddress": {
+    "firstName":"",
+    "lastName":"Bernard Martin",
+    "company":"202 ecommerce",
+    "street":"10 rue Vivienne",
+    "street2":"",
+    "other":"",
+    "postalCode":"75002",
+    "city":"Paris",
+    "country":"FR",
+    "phone":"0123456789",
+    "mobilePhone":"0623456789",
+    "email":"unique.id.1@test.net"
+  },
+  "_links": {
+    "self": {
+      "href": "/v1/store/11111/order/11111111"
+    },
+    "store": {
+      "href": "/v1/store/11111"
+    }
+  },
+  "_embedded": {
+    "channel": {
+      "id": 111,
+      "name": "Monechelle",
+      "_links": {
+        "self": {
+          "href": "/v1/channel/111"
+        },
+        "image": {
+          "href": "https://assets.shopping-feed.com/channel/logo/Monechelle.png"
+        }
+      }
+    },
+    "tag": []
+  }
+}

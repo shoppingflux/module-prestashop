@@ -1,0 +1,17 @@
+{
+  "id": "1234567890",
+  "_links": {
+    "ticket": {
+      "href": "/v1/store/1/ticket/?batchId=1234567890"
+    }
+  },
+  "report": [
+    {
+      "id": "{{id_internal_shoppingfeed}}",
+      "channelName": "test channel",
+      "reference": "test reference",
+      "state": "ignored",
+      "message": "test message"
+    }
+  ]
+}
