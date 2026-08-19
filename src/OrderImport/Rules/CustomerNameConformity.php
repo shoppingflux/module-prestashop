@@ -65,7 +65,7 @@ class CustomerNameConformity extends RuleAbstract implements RuleInterface
      */
     public function onCustomerCreation($params)
     {
-        /** @var Customer $customer */
+        /** @var \Customer $customer */
         $customer = $params['customer'];
         $apiOrder = $params['apiOrder'];
 
@@ -79,7 +79,7 @@ class CustomerNameConformity extends RuleAbstract implements RuleInterface
             $customer->firstname,
             [
                 'Validate',
-                Customer::$definition['fields']['firstname']['validate'],
+                \Customer::$definition['fields']['firstname']['validate'],
             ],
             '',
             true
@@ -88,7 +88,7 @@ class CustomerNameConformity extends RuleAbstract implements RuleInterface
             $customer->lastname,
             [
                 'Validate',
-                Customer::$definition['fields']['lastname']['validate'],
+                \Customer::$definition['fields']['lastname']['validate'],
             ],
             '',
             true
