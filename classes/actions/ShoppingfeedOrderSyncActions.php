@@ -760,6 +760,7 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
                 foreach ($orderSlip->getProducts() as $productInfo) {
                     $sfp = new ShoppingfeedProduct();
                     $sfp->id_product = (int) $productInfo['product_id'];
+                    $sfp->id_product_attribute = (int) $productInfo['product_attribute_id'];
                     $products[] = [
                         'reference' => $shoppingfeed->mapReference($sfp),
                         'quantity' => $productInfo['product_quantity'],
