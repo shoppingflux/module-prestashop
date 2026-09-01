@@ -825,7 +825,9 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         if ($orderData->createdAt->getTimestamp() != 0) {
             $sfOrder->date_marketplace_creation = $orderData->createdAt->format('Y-m-d H:i:s');
         }
-        $sfOrder->additionalFields = json_encode($data['additionalFields']);
+        $additionalFields = $data['additionalFields'];
+        $additionalFields['items'] = $data['items'];
+        $sfOrder->additionalFields = json_encode($additionalFields);
         $sfOrder->save();
         $this->conveyor['sfOrder'] = $sfOrder;
 

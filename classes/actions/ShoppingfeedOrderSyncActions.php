@@ -354,6 +354,41 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
                         ];
                     }
 
+                    // Fill items array with product references and quantities
+                    /** @var Shoppingfeed $shoppingfeed */
+                    $shoppingfeed = Module::getInstanceByName('shoppingfeed');
+
+                    // Decode additionalFields to get items with their IDs
+                    $additionalFields = [];
+                    $sfOrderItems = [];
+                    if (!empty($sfOrder->additionalFields)) {
+                        $additionalFields = json_decode($sfOrder->additionalFields, true);
+                        if (isset($additionalFields['items']) && is_array($additionalFields['items'])) {
+                            $sfOrderItems = $additionalFields['items'];
+                        }
+                    }
+
+                    // Only process items if we have them in sfOrderItems
+                    if (!empty($sfOrderItems)) {
+                        foreach ($order->getProducts() as $productInfo) {
+                            $sfp = new ShoppingfeedProduct();
+                            $sfp->id_product = (int) $productInfo['product_id'];
+                            $sfp->id_product_attribute = (int) $productInfo['product_attribute_id'];
+                            $productReference = $shoppingfeed->mapReference($sfp);
+
+                            // Try to find the item in the SF order's additionalFields by reference
+                            foreach ($sfOrderItems as $sfItem) {
+                                if (!empty($sfItem['reference']) && $sfItem['reference'] === $productReference) {
+                                    $taskOrderPayload['items'][] = [
+                                        'id' => $sfItem['id'],
+                                        'quantity' => (int) $productInfo['product_quantity'],
+                                    ];
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
                     Hook::exec('actionShoppingfeedTracking', ['order' => $order, 'taskOrderPayload' => &$taskOrderPayload]);
                     continue;
                 } elseif (is_array($cancelled_status) && in_array($idOrderState, $cancelled_status)) {
