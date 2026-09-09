@@ -23,6 +23,7 @@ if (!defined('_PS_VERSION_')) {
 require_once _PS_MODULE_DIR_ . 'shoppingfeed/vendor/autoload.php';
 
 use ShoppingfeedAddon\Exception\ProcessLockedException;
+use ShoppingfeedAddon\Services\SfProcessMonitorHandler;
 use ShoppingfeedClasslib\Extensions\ProcessMonitor\Controllers\Front\CronController;
 use ShoppingfeedClasslib\Extensions\ProcessMonitor\ProcessMonitorHandler;
 
@@ -103,7 +104,7 @@ class ShoppingfeedSyncAllModuleFrontController extends ShoppingfeedCronControlle
     protected function execute(CronController $cron, $processName)
     {
         /* @phpstan-ignore-next-line */
-        $cron->processMonitor = new ProcessMonitorHandler();
+        $cron->processMonitor = new SfProcessMonitorHandler();
         FrontController::$initialized = false;
         $cron->init();
 
