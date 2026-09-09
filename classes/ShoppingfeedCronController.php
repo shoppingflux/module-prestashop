@@ -81,40 +81,39 @@ class ShoppingfeedCronController extends CronController
         $processName = $this->getProcessName();
 
         if (false === ($data = $this->processMonitor->lock($processName))) {
-            $return = array('success' => false, 'error' => 'Lock return false. Process ID already in run.');
+            $return = ['success' => false, 'error' => 'Lock return false. Process ID already in run.'];
             $this->ajaxDie(json_encode($return));
         }
 
         try {
-
             Hook::exec(
                 'actionProcessMonitorExecution',
-                array(
+                [
                     'processName' => $processName,
                     'processData' => $data,
-                ),
+                ],
                 null,
                 true
             );
 
             Hook::exec(
                 'actionShoppingfeedProcessMonitorExecution',
-                array(
+                [
                     'processName' => $processName,
                     'processData' => $data,
-                ),
+                ],
                 null,
                 true
             );
 
             $data = $this->processCron($data);
-        } catch (\Exception $e) {
-            throw new \Exception('Process Monitor Failed.', 0, $e);
+        } catch (Exception $e) {
+            throw new Exception('Process Monitor Failed.', 0, $e);
         }
 
         $this->processMonitor->unlock($data);
 
-        $return = array('success' => true);
+        $return = ['success' => true];
         $this->ajaxDie(json_encode($return));
     }
 }

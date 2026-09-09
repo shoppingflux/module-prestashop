@@ -25,7 +25,6 @@ require_once _PS_MODULE_DIR_ . 'shoppingfeed/vendor/autoload.php';
 use ShoppingfeedAddon\Exception\ProcessLockedException;
 use ShoppingfeedAddon\Services\SfProcessMonitorHandler;
 use ShoppingfeedClasslib\Extensions\ProcessMonitor\Controllers\Front\CronController;
-use ShoppingfeedClasslib\Extensions\ProcessMonitor\ProcessMonitorHandler;
 
 /**
  * This front controller receives the HTTP call for the CRON. It is used to

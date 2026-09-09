@@ -20,13 +20,12 @@
  * @author    202-ecommerce <tech@202-ecommerce.com>
  * @copyright Copyright (c) 202-ecommerce
  * @license   Commercial license
+ *
  * @version   feature/34626_diagnostic
  */
 
 namespace ShoppingfeedAddon\Services;
 
-use Db;
-use DbQuery;
 use ObjectModel;
 use ShoppingfeedClasslib\Extensions\ProcessMonitor\Classes\ProcessMonitorObjectModel;
 use ShoppingfeedClasslib\Extensions\ProcessMonitor\ProcessMonitorHandler;
@@ -35,7 +34,7 @@ class SfProcessMonitorHandler extends ProcessMonitorHandler
 {
     protected function initProcess($name)
     {
-        Db::getInstance()->insert(
+        \Db::getInstance()->insert(
             ProcessMonitorObjectModel::$definition['table'],
             [
                 'name' => pSQL($name),
@@ -43,13 +42,13 @@ class SfProcessMonitorHandler extends ProcessMonitorHandler
             ],
             false,
             true,
-            Db::INSERT_IGNORE
+            \Db::INSERT_IGNORE
         );
     }
 
     protected function setLock($name, $pid)
     {
-        Db::getInstance()->update(
+        \Db::getInstance()->update(
             ProcessMonitorObjectModel::$definition['table'],
             [
                 'pid' => (int) $pid,
@@ -77,7 +76,7 @@ class SfProcessMonitorHandler extends ProcessMonitorHandler
             $data_now = new \DateTime('NOW');
             $diff = $data_now->diff($last_update);
             $hours = $diff->h;
-            $hours = $hours + ($diff->days*24);
+            $hours = $hours + ($diff->days * 24);
             if ($hours < 1) {
                 return false;
             }
@@ -86,8 +85,6 @@ class SfProcessMonitorHandler extends ProcessMonitorHandler
         $this->process->last_update = date('Y-m-d H:i:s');
         $this->process->pid = $pid;
 
-        $this->date_upd = date('Y-m-d H:i:s');
-
         /**
          * We can't use the ObjectModel's "save", "add" or "update" methods.
          * PS will natively call ObjectModel hooks, using the class name of the
@@ -95,11 +92,11 @@ class SfProcessMonitorHandler extends ProcessMonitorHandler
          * resulting in an invalid hook name, e.g. :
          * actionObjectShoppingfeedClasslib\Extensions\ProcessMonitor\ProcessMonitorObjectModelUpdateBefore
          */
-        $definition = ObjectModel::getDefinition($this->process);
-        Db::getInstance()->update(
+        $definition = \ObjectModel::getDefinition($this->process);
+        \Db::getInstance()->update(
             $definition['table'],
             $this->process->getFields(),
-            '`'.pSQL($definition['primary']).'` = '.(int)$this->process->id,
+            '`' . pSQL($definition['primary']) . '` = ' . (int) $this->process->id,
             0,
             false
         );
