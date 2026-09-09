@@ -77,7 +77,7 @@ class ShoppingfeedCronController extends CronController
 
     public function initContent()
     {
-        /** @phpstan-ignore-next-line */
+        /* @phpstan-ignore-next-line */
         $this->processMonitor = new SfProcessMonitorHandler();
         $processName = $this->getProcessName();
 
