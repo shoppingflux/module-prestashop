@@ -17,6 +17,7 @@
  * @license   https://opensource.org/licenses/AFL-3.0  Academic Free License (AFL 3.0)
  */
 
+use ShoppingfeedAddon\Services\SfProcessMonitorHandler;
 use ShoppingfeedClasslib\Extensions\ProcessMonitor\Controllers\Front\CronController;
 
 if (!defined('_PS_VERSION_')) {
@@ -72,5 +73,48 @@ class ShoppingfeedCronController extends CronController
         header('Cache-Control: no-store, no-cache, must-revalidate, post-check=0, pre-check=0');
 
         echo $value;
+    }
+
+    public function initContent()
+    {
+        /* @phpstan-ignore-next-line */
+        $this->processMonitor = new SfProcessMonitorHandler();
+        $processName = $this->getProcessName();
+
+        if (false === ($data = $this->processMonitor->lock($processName))) {
+            $return = ['success' => false, 'error' => 'Lock return false. Process ID already in run.'];
+            $this->ajaxDie(json_encode($return));
+        }
+
+        try {
+            Hook::exec(
+                'actionProcessMonitorExecution',
+                [
+                    'processName' => $processName,
+                    'processData' => $data,
+                ],
+                null,
+                true
+            );
+
+            Hook::exec(
+                'actionShoppingfeedProcessMonitorExecution',
+                [
+                    'processName' => $processName,
+                    'processData' => $data,
+                ],
+                null,
+                true
+            );
+
+            $data = $this->processCron($data);
+        } catch (Exception $e) {
+            throw new Exception('Process Monitor Failed.', 0, $e);
+        }
+
+        $this->processMonitor->unlock($data);
+
+        $return = ['success' => true];
+        $this->ajaxDie(json_encode($return));
     }
 }
