@@ -34,12 +34,16 @@
     },
     "items":[
        {
+          "id":900000028,
           "reference":"TH0064",
           "status":"",
           "quantity":3,
           "price":16.45,
+          "commission":null,
           "taxAmount":2.74,
+          "ecotaxAmount":0,
           "channelReference":"0",
+          "additionalFields":null,
           "name":"Test TH - Test dureté eau",
           "image":"https://localhost/7651-marketplaces/test-th-test-durete-eau.jpg"
        }

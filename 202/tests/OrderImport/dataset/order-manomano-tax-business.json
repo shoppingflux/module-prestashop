@@ -32,7 +32,7 @@
     "order_status": "SHIPPED",
     "shipping_tax": "0",
     "seller_voucher": "0",
-    "channel_voucher": "0",
+    "channel_voucher": "0"
   },
   "latestShipDate": null,
   "errors": [],
