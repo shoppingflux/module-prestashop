@@ -35,12 +35,16 @@
     "itemsReferencesAliases":null,
     "items":[
        {
+          "id":900000043,
           "reference":"2_12",
           "status":"shipped",
           "quantity":2,
           "price":59.9,
+          "commission":null,
           "taxAmount":0,
+          "ecotaxAmount":0,
           "channelReference":"65c0f0dc-50a4-4d72-1111-d789e8a50215",
+          "additionalFields":null,
           "name":"Boni Achille - sandale enfant garcon",
           "image":"https://localhost/prestashop/img/p/6/0/9/3/boni-achille-sandale-enfant-garcon.jpg" 
        }

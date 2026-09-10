@@ -939,6 +939,57 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         return true;
     }
 
+    /**
+     * Splits a fixed tax-included unit price into a tax-excluded amount that properly nets out
+     * an eco-tax component (which may carry its own tax rate, distinct from the product's).
+     * The tax-included price itself is left untouched by this calculation.
+     *
+     * @param float $unitPriceTaxIncl
+     * @param float $taxRate product tax rate, percent
+     * @param float $ecotaxTaxExcl per-unit eco-tax amount, tax excluded
+     * @param float $ecotaxTaxRate eco-tax's own tax rate, percent
+     *
+     * @return float
+     */
+    public function calculateEcotaxAdjustedTaxExclPrice($unitPriceTaxIncl, $taxRate, $ecotaxTaxExcl, $ecotaxTaxRate)
+    {
+        if ($ecotaxTaxExcl <= 0) {
+            return (float) ($unitPriceTaxIncl / (1 + ($taxRate / 100)));
+        }
+
+        $ecotaxTaxIncl = $ecotaxTaxExcl * (1 + ($ecotaxTaxRate / 100));
+
+        return (float) ((($unitPriceTaxIncl - $ecotaxTaxIncl) / (1 + ($taxRate / 100))) + $ecotaxTaxExcl);
+    }
+
+    /**
+     * Resolves the per-unit, tax-excluded eco-tax to apply for a given ordered product, mirroring
+     * PrestaShop core's own resolution (see Cart::getProducts()): a combination-level eco-tax
+     * override takes priority over the product's own eco-tax when set.
+     *
+     * @param Product $psProduct
+     *
+     * @return float
+     */
+    public function resolveProductEcotaxExcl(Product $psProduct)
+    {
+        $ecotax = (float) $psProduct->ecotax;
+
+        /* @phpstan-ignore-next-line */
+        if ($psProduct->id_product_attribute) {
+            $combinationEcotax = Db::getInstance()->getValue(
+                'SELECT ecotax FROM ' . _DB_PREFIX_ . 'product_attribute_shop
+                 WHERE id_product_attribute = ' . (int) $psProduct->id_product_attribute .
+                    ' AND id_shop = ' . (int) $this->getIdShop()
+            );
+            if ($combinationEcotax !== false && (float) $combinationEcotax > 0) {
+                $ecotax = (float) $combinationEcotax;
+            }
+        }
+
+        return $ecotax;
+    }
+
     public function recalculateOrderPrices()
     {
         /** @var ShoppingFeed\Sdk\Api\Order\OrderResource $apiOrder */
@@ -953,6 +1004,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         $isAmountTaxIncl = true;
         $skipTax = false;
         $isUseSfTax = false;
+        $isUseEcotax = false;
         $discounts = [];
         // Specific rules
         $this->specificRulesManager->applyRules(
@@ -968,6 +1020,7 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 'isAmountTaxIncl' => &$isAmountTaxIncl,
                 'skipTax' => &$skipTax,
                 'isUseSfTax' => &$isUseSfTax,
+                'isUseEcotax' => &$isUseEcotax,
                 'discounts' => &$discounts,
             ]
         );
@@ -1045,6 +1098,23 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 $apiProduct->unitPrice = (float) ($apiProduct->unitPrice * (1 + ($tax_rate / 100)));
             }
 
+            $ecotaxTaxExcl = 0.0;
+            $ecotaxTaxRate = 0.0;
+            /* @phpstan-ignore-next-line */
+            if ($isUseEcotax) {
+                $ecotaxTaxExcl = $this->resolveProductEcotaxExcl($psProduct);
+                if ($ecotaxTaxExcl > 0) {
+                    $ecotaxTaxRate = (float) Tax::getProductEcotaxRate();
+                }
+            }
+            $unitPriceTaxExcl = $this->calculateEcotaxAdjustedTaxExclPrice(
+                (float) $apiProduct->unitPrice,
+                $tax_rate,
+                $ecotaxTaxExcl,
+                $ecotaxTaxRate
+            );
+            $orderDetailPrice_tax_excl = $unitPriceTaxExcl * $apiProduct->quantity;
+
             $ordersList[(int) $productOrderDetail['id_order']]['total_products_tax_incl'] += $orderDetailPrice_tax_incl;
             $ordersList[(int) $productOrderDetail['id_order']]['total_products_tax_excl'] += $orderDetailPrice_tax_excl;
 
@@ -1055,14 +1125,15 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 6
             );
             $updateOrderDetail = [
-                'product_price' => (float) ((float) $apiProduct->unitPrice / (1 + ($tax_rate / 100))),
+                'product_price' => $unitPriceTaxExcl,
                 'reduction_percent' => 0,
                 'reduction_amount' => 0,
-                'ecotax' => 0,
+                'ecotax' => $ecotaxTaxExcl,
+                'ecotax_tax_rate' => $ecotaxTaxRate,
                 'total_price_tax_incl' => $orderDetailPrice_tax_incl,
                 'total_price_tax_excl' => $orderDetailPrice_tax_excl,
                 'unit_price_tax_incl' => (float) $apiProduct->unitPrice,
-                'unit_price_tax_excl' => (float) ((float) $apiProduct->unitPrice / (1 + ($tax_rate / 100))),
+                'unit_price_tax_excl' => $unitPriceTaxExcl,
                 'original_product_price' => $original_product_price,
                 'product_quantity' => $apiProduct->quantity,
                 'product_quantity_in_stock' => $apiProduct->quantity,

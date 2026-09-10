@@ -28,12 +28,16 @@
     "itemsReferencesAliases":null,
     "items":[
        {
+          "id":900000022,
           "reference":"14",
           "status":"toship",
           "quantity":1,
           "price":59.9,
+          "commission":null,
           "taxAmount":0,
+          "ecotaxAmount":0,
           "channelReference":"1-2022.041.4342060-7",
+          "additionalFields":null,
           "name":"Grand sac en Cuir Ultrech, noir",
           "image":"https://www.duponddurand.com/11232-large_default/grand-sac-en-cuir-ultrech-noir.jpg"
        }

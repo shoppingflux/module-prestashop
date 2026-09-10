@@ -37,10 +37,12 @@
     "itemsReferencesAliases": null,
     "items": [
       {
+        "id": 900000041,
         "reference": "1_1",
         "status": "created",
         "quantity": 1,
         "price": 130,
+        "commission": null,
         "taxAmount": 0,
         "ecotaxAmount": 0,
         "channelReference": "0bf4ba16-0adc-4645-bf97-ff990781b482",
@@ -52,10 +54,12 @@
         "image": "https://localhost/65733-thickbox_default/haut-de-maillot-triangle-maille-crochet-dolce-noir.jpg" 
       },
       {
+        "id": 900000042,
         "reference": "1_2",
         "status": "created",
         "quantity": 1,
         "price": 95,
+        "commission": null,
         "taxAmount": 0,
         "ecotaxAmount": 0,
         "channelReference": "598ca1ab-609d-46c1-9fe6-03a851981543",

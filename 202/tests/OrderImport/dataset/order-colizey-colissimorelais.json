@@ -31,12 +31,16 @@
         "itemsReferencesAliases": {},
         "items": [
           {
+            "id":900000013,
             "reference":"2_12",
             "status": "shipped",
             "quantity": 1,
             "price": 89,
+            "commission": null,
             "taxAmount": 0,
+            "ecotaxAmount": 0,
             "channelReference": "4b432e50-9808-11ec-aabf-42010a840002",
+            "additionalFields": null,
             "name": "MAILLOT HOMME XV DE FRANCE - BLANC - 2021/2022 - COQ SPORTIF",
             "image": "https://localhost/17081-large_default/maillot-homme-xv-de-france-blanc-2021-2022-coq-sportif-boutique-rugby-corner.jpg" 
           }
