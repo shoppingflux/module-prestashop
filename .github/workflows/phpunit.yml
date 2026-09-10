@@ -12,7 +12,7 @@ jobs:
                 presta-versions: ['8.1.5']
         steps:
             - name: Checkout
-              uses: actions/checkout@v2.0.0
+              uses: shoppingflux/github-actions/checkout@main
 
             # Add vendor folder in cache to make next builds faster
             - name: Cache vendor folder

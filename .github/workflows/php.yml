@@ -9,7 +9,7 @@ jobs:
         runs-on: ubuntu-latest
         steps:
           - name: Checkout
-            uses: actions/checkout@v4
+            uses: shoppingflux/github-actions/checkout@main
           - name: PHP syntax checker 7.1
             uses: prestashop/github-action-php-lint/7.1@master
             with:
@@ -62,7 +62,7 @@ jobs:
                 phpstan-tag: '1-php8.1'
         steps:
             - name: Checkout
-              uses: actions/checkout@v2.0.0
+              uses: shoppingflux/github-actions/checkout@main
 
             # Add vendor folder in cache to make next builds faster
             - name: Cache vendor folder
