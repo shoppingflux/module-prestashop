@@ -1,5 +1,7 @@
 # Shoppingfeed PrestaShop Addons
 
+[![Coding Standart](https://github.com/shoppingflux/module-prestashop/actions/workflows/php.yml/badge.svg)](https://github.com/shoppingflux/module-prestashop/actions/workflows/php.yml) [![Unit test](https://github.com/shoppingflux/module-prestashop/actions/workflows/phpunit.yml/badge.svg)](https://github.com/shoppingflux/module-prestashop/actions/workflows/phpunit.yml)
+
 ## About
 
 Synchronize stocks, prices, products feed and orders from or to marketplace available on ShoppingFeed
