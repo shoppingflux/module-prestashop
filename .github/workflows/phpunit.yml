@@ -12,7 +12,7 @@ jobs:
                 presta-versions: ['8.1.5']
         steps:
             - name: Checkout
-              uses: actions/checkout@v2.0.0
+              uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
             # Add vendor folder in cache to make next builds faster
             - name: Cache vendor folder
