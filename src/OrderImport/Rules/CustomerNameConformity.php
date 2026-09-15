@@ -31,10 +31,11 @@ use ShoppingfeedAddon\Services\SymbolValidator;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 
 /**
- * Removes characters forbidden by Prestashop's customer name validation
- * (Customer::$definition['fields']['firstname'/'lastname']['validate'])
- * from the firstname/lastname of a customer about to be created, so that
- * $customer->add() does not fail on marketplace-provided names (eg. company
+ * Removes characters forbidden by Prestashop's name validation
+ * (Customer/Address::$definition['fields']['firstname'/'lastname']['validate'])
+ * from the firstname/lastname of a customer about to be created and of the
+ * billing/shipping addresses about to be saved, so that $customer->add() /
+ * $address->save() do not fail on marketplace-provided names (eg. company
  * names containing commas or digits). Always applied, not configurable.
  */
 class CustomerNameConformity extends RuleAbstract implements RuleInterface
@@ -69,36 +70,83 @@ class CustomerNameConformity extends RuleAbstract implements RuleInterface
         $customer = $params['customer'];
         $apiOrder = $params['apiOrder'];
 
+        $this->stripInvalidNameCharacters($customer, \Customer::$definition['fields']);
+
+        ProcessLoggerHandler::logInfo(
+            $this->logPrefix($apiOrder) .
+            $this->l('Rule triggered. Invalid characters removed from customer firstname/lastname.', 'CustomerNameConformity'),
+            'Customer'
+        );
+    }
+
+    /**
+     * Strips characters not accepted by Address::$definition validation
+     * from the billing address' firstname/lastname just before it is saved.
+     *
+     * @param array $params
+     */
+    public function beforeBillingAddressSave($params)
+    {
+        $this->stripAddressNameCharacters($params['billingAddress'], $params['apiOrder']);
+    }
+
+    /**
+     * Strips characters not accepted by Address::$definition validation
+     * from the shipping address' firstname/lastname just before it is saved.
+     *
+     * @param array $params
+     */
+    public function beforeShippingAddressSave($params)
+    {
+        $this->stripAddressNameCharacters($params['shippingAddress'], $params['apiOrder']);
+    }
+
+    private function stripAddressNameCharacters(\Address $address, OrderResource $apiOrder)
+    {
+        $this->stripInvalidNameCharacters($address, \Address::$definition['fields']);
+
+        ProcessLoggerHandler::logInfo(
+            $this->logPrefix($apiOrder) .
+            $this->l('Rule triggered. Invalid characters removed from address firstname/lastname.', 'CustomerNameConformity'),
+            'Address',
+            (int) $address->id
+        );
+    }
+
+    /**
+     * @param \Customer|\Address $object
+     * @param array $fieldsDefinition eg. Customer::$definition['fields'] or Address::$definition['fields']
+     */
+    private function stripInvalidNameCharacters($object, array $fieldsDefinition)
+    {
+        $this->validator->validate(
+            $object->firstname,
+            [
+                'Validate',
+                $fieldsDefinition['firstname']['validate'],
+            ],
+            '',
+            true
+        );
+        $this->validator->validate(
+            $object->lastname,
+            [
+                'Validate',
+                $fieldsDefinition['lastname']['validate'],
+            ],
+            '',
+            true
+        );
+    }
+
+    private function logPrefix(OrderResource $apiOrder)
+    {
         $logPrefix = sprintf(
             $this->l('[Order: %s]', 'CustomerNameConformity'),
             $apiOrder->getId()
         );
-        $logPrefix .= '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
 
-        $this->validator->validate(
-            $customer->firstname,
-            [
-                'Validate',
-                \Customer::$definition['fields']['firstname']['validate'],
-            ],
-            '',
-            true
-        );
-        $this->validator->validate(
-            $customer->lastname,
-            [
-                'Validate',
-                \Customer::$definition['fields']['lastname']['validate'],
-            ],
-            '',
-            true
-        );
-
-        ProcessLoggerHandler::logInfo(
-            $logPrefix .
-            $this->l('Rule triggered. Invalid characters removed from customer firstname/lastname.', 'CustomerNameConformity'),
-            'Customer'
-        );
+        return $logPrefix . '[' . $apiOrder->getReference() . '] ' . self::class . ' | ';
     }
 
     /**
@@ -114,6 +162,6 @@ class CustomerNameConformity extends RuleAbstract implements RuleInterface
      */
     public function getDescription()
     {
-        return $this->l('Removes characters prohibited by Prestashop from the customer firstname and lastname before the customer is created, so orders with invalid marketplace-provided names are not rejected.', 'CustomerNameConformity');
+        return $this->l('Removes characters prohibited by Prestashop from the firstname and lastname of the customer and of the billing/shipping addresses before they are saved, so orders with invalid marketplace-provided names are not rejected.', 'CustomerNameConformity');
     }
 }
