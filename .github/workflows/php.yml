@@ -10,6 +10,8 @@ jobs:
         steps:
           - name: Checkout
             uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+            with:
+              persist-credentials: false
           - name: PHP syntax checker 7.1
             uses: prestashop/github-action-php-lint/7.1@master
             with:
@@ -34,6 +36,8 @@ jobs:
 
             - name: Checkout
               uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+              with:
+                persist-credentials: false
 
             - name: Cache dependencies
               uses: actions/cache@v4
@@ -63,6 +67,8 @@ jobs:
         steps:
             - name: Checkout
               uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+              with:
+                persist-credentials: false
 
             # Add vendor folder in cache to make next builds faster
             - name: Cache vendor folder
