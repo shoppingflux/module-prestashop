@@ -31,22 +31,30 @@
     "itemsReferencesAliases":null,
     "items":[
        {
+          "id":900000011,
           "reference":"1_3",
           "status":"new",
           "quantity":1,
           "price":1.9,
+          "commission":null,
           "taxAmount":0,
+          "ecotaxAmount":0,
           "channelReference":"1",
+          "additionalFields":null,
           "name":"Rallonge de soutien gorge extensible noir 2 crochets",
           "image":"https://localhost/11676-thickbox_default/rallonge-de-soutien-gorge-extensible-noir-2-crochets.jpg"
        },
        {
+          "id":900000012,
           "reference":"1_5",
           "status":"new",
           "quantity":1,
           "price":37.9,
+          "commission":null,
           "taxAmount":0,
+          "ecotaxAmount":0,
           "channelReference":"0",
+          "additionalFields":null,
           "name":"Body gainant rayé sans bonnets Shape chic Noir",
           "image":"https://localhostr/17467-thickbox_default/body-gainant-raye-sans-bonnets-shape-chic-noir.jpg"
        }

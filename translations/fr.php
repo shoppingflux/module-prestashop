@@ -492,6 +492,10 @@ $_MODULE['<{shoppingfeed}prestashop>groupcustomer_d67e6326203b27ada212982f25aea9
 $_MODULE['<{shoppingfeed}prestashop>groupcustomer_11298acaa992d09ad84d3f69bc11d104'] = 'Met à jour le groupe du client par celui sélectionné.';
 $_MODULE['<{shoppingfeed}prestashop>groupcustomer_4d6542644f688d5300e70ca4fd9bf6aa'] = 'Pour toutes les commandes.';
 $_MODULE['<{shoppingfeed}prestashop>taxforbusiness_1ac6e4bd554d6a51e774951e1a357179'] = 'Gestion des taxes pour les commandes B2B';
+$_MODULE['<{shoppingfeed}prestashop>ecotaxrule_de5c93990251f0bc33255f2d209fb3e5'] = 'Si l\'option \'Affichage de l\'écotaxe\' est activée';
+$_MODULE['<{shoppingfeed}prestashop>ecotaxrule_4112de5cbab0e10b9cd7887a178fb4f3'] = 'Affiche l\'écotaxe des produits sur les commandes et factures importées';
+$_MODULE['<{shoppingfeed}prestashop>ecotaxrule_41f3038da44c09d2f2d7f9e84e474063'] = 'Affichage de l\'écotaxe';
+$_MODULE['<{shoppingfeed}prestashop>ecotaxrule_f4f7bd600cbaa19399846baaae675b14'] = 'En activant cette option, l\'écotaxe renseignée sur les fiches produits sera affichée sur vos commandes et vos factures';
 $_MODULE['<{shoppingfeed}prestashop>symbolconformity_0cc1e925b5703e8da52b7c3e91829499'] = '[Commande %s]';
 $_MODULE['<{shoppingfeed}prestashop>symbolconformity_6efbd4474b0556a3e01989218a4c4745'] = 'Règle déclenchée. ';
 $_MODULE['<{shoppingfeed}prestashop>symbolconformity_a081c9610c122ca2d1fe29935930f908'] = 'Toutes les commandes';

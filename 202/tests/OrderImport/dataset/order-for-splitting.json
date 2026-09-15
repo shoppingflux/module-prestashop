@@ -47,22 +47,30 @@
     "itemsReferencesAliases":null,
     "items":[
        {
+          "id":900000018,
           "reference":"8",
           "status":"",
           "quantity":1,
           "price":4.5,
+          "commission":null,
           "taxAmount":0,
+          "ecotaxAmount":0,
           "channelReference":"2201DBFVY-MP002320-A-1",
+          "additionalFields":null,
           "name":"Mug Today is a good day",
           "image":"http://localhost/img/p/1/1-small_default.jpg"
        },
         {
+          "id":900000019,
           "reference":"1_2",
           "status":"",
           "quantity":1,
           "price":10,
+          "commission":null,
           "taxAmount":0,
+          "ecotaxAmount":0,
           "channelReference":"2",
+          "additionalFields":null,
           "name":"Sac à langer Biscuit",
           "image":"https://localhost/5465-large_default/sac-a-langer-biscuit-pasito-a-pasito.jpg"
         }
