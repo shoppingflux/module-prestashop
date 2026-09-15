@@ -83,7 +83,7 @@ class TaxForBusiness extends RuleAbstract implements RuleInterface
             if (strtolower($orderData['payment']['taxMode']) === 'tax_excluded') {
                 $params['skipTax'] = false;
                 $params['isUseSfTax'] = true;
-                $params['isAmountTaxIncl'] = false;
+                $params['isAmountTaxIncl'] = true;
             } else {
                 $params['skipTax'] = false;
                 $params['isUseSfTax'] = false;
