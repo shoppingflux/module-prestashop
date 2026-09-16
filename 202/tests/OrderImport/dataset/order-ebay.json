@@ -29,12 +29,16 @@
     "itemsReferencesAliases":null,
     "items":[
        {
+          "id":900000017,
           "reference":"6915",
           "status":"",
           "quantity":1,
           "price":5.99,
+          "commission":null,
           "taxAmount":0,
+          "ecotaxAmount":0,
           "channelReference":"175071651403-2395587882007",
+          "additionalFields":null,
           "name":"D\u00e9coration No\u00ebl Harry Potter - Fanion Poufsouffle",
           "image":"https://lcoalhost/1-thickbox_default/decoration-noel-harry-potter-fanion-poufsouffle.jpg" 
        }

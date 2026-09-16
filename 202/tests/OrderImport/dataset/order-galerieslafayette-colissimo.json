@@ -30,12 +30,16 @@
   "fulfilledBy": "undefined",
   "items":[
     {
+      "id":900000020,
       "reference":"8",
       "status":"",
       "quantity":1,
       "price":4.5,
+      "commission":null,
       "taxAmount":0,
+      "ecotaxAmount":0,
       "channelReference":"1300448968034-A-1",
+      "additionalFields":null,
       "name":"Mug Today is a good day",
       "image":"http://localhost/img/p/1/1-small_default.jpg"
     }

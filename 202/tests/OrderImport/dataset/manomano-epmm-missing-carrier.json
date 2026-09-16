@@ -31,10 +31,12 @@
   "itemsReferencesAliases": null,
   "items": [
     {
+      "id": 900000001,
       "reference": "51444",
       "status": "",
       "quantity": 1,
       "price": 39.68,
+      "commission": null,
       "taxAmount": 6.61,
       "ecotaxAmount": 0,
       "channelReference": "0",

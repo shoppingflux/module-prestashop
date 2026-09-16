@@ -31,12 +31,16 @@
         "itemsReferencesAliases": {},
         "items": [
           {
+            "id":900000014,
             "reference":"2_12",
             "status": "shipped",
             "quantity": 1,
             "price": 63,
+            "commission": null,
             "taxAmount": 0,
+            "ecotaxAmount": 0,
             "channelReference": "6831f0f6-97f8-11ec-ba89-42010a840002",
+            "additionalFields": null,
             "name": null,
             "image": null
           }

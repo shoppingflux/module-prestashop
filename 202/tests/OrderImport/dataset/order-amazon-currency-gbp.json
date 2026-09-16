@@ -35,12 +35,16 @@
   },
   "items":[
     {
+      "id":900000004,
       "reference":"1_11",
       "status":"",
       "quantity":1,
       "price":67.19,
+      "commission":null,
       "taxAmount":11.2,
+      "ecotaxAmount":0,
       "channelReference":"123",
+      "additionalFields":null,
       "name":"Sac à langer Biscuit",
       "image":"https://localhost/5465-large_default/sac-a-langer-biscuit-pasito-a-pasito.jpg"
     }

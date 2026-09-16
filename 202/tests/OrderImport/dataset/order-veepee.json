@@ -29,12 +29,16 @@
 "itemsReferencesAliases": {},
 "items": [
     {
+    "id": 900000038,
     "reference": "demo_17_white",
     "status": "",
     "quantity": 1,
     "price": 259,
+    "commission": null,
     "taxAmount": 0,
+    "ecotaxAmount": 0,
     "channelReference": "6755401",
+    "additionalFields": null,
     "name": "Hummingbird cushion (color: white)",
     "image": "https://localhost/133-large_default/matelas-a-memoire-de-forme-maxi-epaisseur-balmoral.jpg" 
     }

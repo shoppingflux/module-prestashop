@@ -27,6 +27,7 @@ use Cart;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
+use ShoppingfeedAddon\Services\CarrierFinder;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 
 class ColissimoRule extends RuleAbstract implements RuleInterface
@@ -60,8 +61,18 @@ class ColissimoRule extends RuleAbstract implements RuleInterface
 
     public function onPreProcess($params)
     {
-        $this->setOther($params);
+        /** @var OrderResource $apiOrder */
         $apiOrder = $params['apiOrder'];
+        $carrier = $this->initCarrierFinder()->getCarrierForOrderImport(
+            $apiOrder->getChannel()->getName(),
+            $apiOrder->getShipment()['carrier']
+        );
+
+        if ($carrier->external_module_name != $this->colissimo->name) {
+            return;
+        }
+
+        $this->setOther($params);
 
         if ($this->isMonechelle($apiOrder)) {
             $this->parseCompoundFirstname($params);
@@ -72,6 +83,11 @@ class ColissimoRule extends RuleAbstract implements RuleInterface
         if ($this->isCdiscount($apiOrder)) {
             $this->updateCdiscountAddress($params);
         }
+    }
+
+    protected function initCarrierFinder()
+    {
+        return new CarrierFinder();
     }
 
     protected function isMonechelle(OrderResource $apiOrder)
