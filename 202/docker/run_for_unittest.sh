@@ -7,16 +7,23 @@ set -x
 
 sleep 3
 mysql -h localhost -u root prestashop -e "
-SET GLOBAL wait_timeout=6000;
-SET GLOBAL interactive_timeout=6000;
-SET GLOBAL max_allowed_packet=1073741824;
+SET @@wait_timeout=28800;
+SET @@interactive_timeout=28800;
+SET @@interactive_timeout=1073741824;
 "
 
+/etc/init.d/mariadb start
+
 php /var/www/html/bin/console prestashop:module install shoppingfeed -e prod
+rm /var/www/html/var/cache/*/* -Rf
 php /var/www/html/bin/console prestashop:module install dpdfrance -e prod
+rm /var/www/html/var/cache/*/* -Rf
 php /var/www/html/bin/console prestashop:module install colissimo -e prod
+rm /var/www/html/var/cache/*/* -Rf
 php /var/www/html/bin/console prestashop:module install mondialrelay -e prod
+rm /var/www/html/var/cache/*/* -Rf
 php /var/www/html/bin/console prestashop:module install nkmgls -e prod
+rm /var/www/html/var/cache/*/* -Rf
 
 echo "Add data fixtures for Unit Tests"
 
