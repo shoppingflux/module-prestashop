@@ -624,30 +624,40 @@ class ShoppingfeedOrderSyncActions extends DefaultActions
             return false;
         }
 
-        foreach ($this->conveyor['preparedTaskOrders'] as $preparedTaskOrders) {
-            $result = $shoppingfeedApi->updateMainStoreOrdersStatus($preparedTaskOrders, $this->conveyor['shoppingfeed_store_id']);
+        // Invoices are sent one at a time: the API enforces a request size
+        // limit, and PDF payloads can be large enough to exceed it if batched.
+        foreach ($this->conveyor['preparedTaskOrders'] as $preparedTaskOrdersGroup) {
+            foreach ($preparedTaskOrdersGroup as $preparedTaskOrder) {
+                $result = $shoppingfeedApi->updateMainStoreOrdersStatus([$preparedTaskOrder], $this->conveyor['shoppingfeed_store_id']);
 
-            if (!$result) {
-                ProcessLoggerHandler::logError(
-                    $this->l('API request is failed', 'ShoppingfeedOrderSyncActions'),
-                    'Order'
-                );
-                Registry::increment('syncStatusErrors');
-                continue;
-            }
+                if (!$result) {
+                    ProcessLoggerHandler::logError(
+                        static::getLogPrefix($preparedTaskOrder['taskOrder']->id_order) . ' ' . $this->l('API request is failed', 'ShoppingfeedOrderSyncActions'),
+                        'Order',
+                        $preparedTaskOrder['taskOrder']->id_order
+                    );
+                    Registry::increment('syncStatusErrors');
+                    continue;
+                }
 
-            $batchId = current($result->getBatchIds());
-            if (empty($batchId) === true) {
-                ProcessLoggerHandler::logError(
-                    $this->l('API response does not contain batchId', 'ShoppingfeedOrderSyncActions'),
-                    'Order'
-                );
-                Registry::increment('syncStatusErrors');
-                continue;
-            }
-            $this->excludeIgnoredTasks($result, $preparedTaskOrders);
+                $batchId = current($result->getBatchIds());
+                if (empty($batchId) === true) {
+                    ProcessLoggerHandler::logError(
+                        static::getLogPrefix($preparedTaskOrder['taskOrder']->id_order) . ' ' . $this->l('API response does not contain batchId', 'ShoppingfeedOrderSyncActions'),
+                        'Order',
+                        $preparedTaskOrder['taskOrder']->id_order
+                    );
+                    Registry::increment('syncStatusErrors');
+                    continue;
+                }
 
-            foreach ($preparedTaskOrders as $preparedTaskOrder) {
+                $singleTaskOrderList = [$preparedTaskOrder];
+                $this->excludeIgnoredTasks($result, $singleTaskOrderList);
+
+                if (empty($singleTaskOrderList)) {
+                    continue;
+                }
+
                 $taskOrder = $preparedTaskOrder['taskOrder'];
                 $taskOrder->batch_id = $batchId;
                 $taskOrder->action = ShoppingfeedTaskOrder::ACTION_CHECK_TICKET_UPLOAD_INVOICE;
