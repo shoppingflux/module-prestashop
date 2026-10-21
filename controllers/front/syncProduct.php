@@ -108,7 +108,12 @@ class ShoppingfeedSyncProductModuleFrontController extends ShoppingfeedCronContr
         Registry::set('errors', '0');
 
         $handler = new ActionsHandler();
-        $handler->addActions('getBatch');
+        if ($action === ShoppingfeedPreloading::ACTION_SYNC_PRELODING) {
+            // Remove orphans first so getBatch() compares accurate counts
+            $handler->addActions('removeProductFeed', 'getBatch');
+        } else {
+            $handler->addActions('getBatch');
+        }
         $sft = new ShoppingfeedToken();
         $tokens = $sft->findAllActive();
         $logPrefix = '';

@@ -95,8 +95,6 @@ class ShoppingfeedProductSyncPreloadingActions extends DefaultActions
             );
         }
 
-        $this->removeProductFeed();
-
         return true;
     }
 
@@ -159,29 +157,53 @@ class ShoppingfeedProductSyncPreloadingActions extends DefaultActions
         }
     }
 
+    /**
+     * Remove from the preloading table of the current token the products which are no longer on the feed
+     *
+     * @return bool
+     */
     public function removeProductFeed()
     {
-        $tokens = (new ShoppingfeedToken())->findAllActive();
+        $token = new ShoppingfeedToken($this->conveyor['id_token']);
+        if (Validate::isLoadedObject($token) === false) {
+            return true;
+        }
         /** @var Shoppingfeed $sfModule */
         $sfModule = Module::getInstanceByName('shoppingfeed');
-        $db = Db::getInstance(_PS_USE_SQL_SLAVE_);
-
-        foreach ($tokens as $token) {
-            $sql = $sfModule->sqlProductsOnFeed($token['id_shop'])
-                             ->select('ps.id_product');
-            $result = $db->executeS($sql, true, false);
-            if ($result === []) {
-                continue;
-            }
-            $db->delete(
-                ShoppingfeedPreloading::$definition['table'],
-                sprintf(
-                    'id_token = %s AND id_product NOT IN (%s)',
-                    $token['id_shoppingfeed_token'],
-                    implode(',', array_column($result, 'id_product'))
-                )
-            );
+        $db = Db::getInstance();
+        $notOnFeed = sprintf(
+            'sfp.`id_token` = %d AND NOT EXISTS (%s)',
+            (int) $token->id_shoppingfeed_token,
+            $sfModule->sqlProductsOnFeed($token->id_shop)
+                ->select('1')
+                ->where('ps.`id_product` = sfp.`id_product`')
+                ->build()
+        );
+        $orphan = $db->getValue(sprintf(
+            'SELECT sfp.`id_product` FROM `%s%s` sfp WHERE %s',
+            _DB_PREFIX_,
+            ShoppingfeedPreloading::$definition['table'],
+            $notOnFeed
+        ), false);
+        if (empty($orphan)) {
+            return true;
         }
+        // An empty feed is more likely a misconfiguration than a real catalog state; keep the preloading
+        $productOnFeed = $db->getValue(
+            $sfModule->sqlProductsOnFeed($token->id_shop)->select('ps.id_product'),
+            false
+        );
+        if (empty($productOnFeed)) {
+            return true;
+        }
+        $db->execute(sprintf(
+            'DELETE sfp FROM `%s%s` sfp WHERE %s',
+            _DB_PREFIX_,
+            ShoppingfeedPreloading::$definition['table'],
+            $notOnFeed
+        ));
+
+        return true;
     }
 
     public function deleteProduct()
