@@ -105,12 +105,14 @@ class ShoppingfeedProductModuleFrontController extends ModuleFrontController
         }
 
         $limit = 100;
-        $nb_iteration = ceil((new ShoppingfeedPreloading())->getPreloadingCount($this->sfToken['id_shoppingfeed_token']) / $limit);
+        $lastId = 0;
+        $sfp = new ShoppingfeedPreloading();
         ob_end_clean();
         $productGenerator->open();
 
-        for ($i = 0; $i < $nb_iteration; ++$i) {
-            $products = (new ShoppingfeedPreloading())->findAllByTokenId($this->sfToken['id_shoppingfeed_token'], $i * $limit, $limit);
+        while ($products = $sfp->findAllByTokenIdFromId($this->sfToken['id_shoppingfeed_token'], $lastId, $limit)) {
+            $lastId = max(array_keys($products));
+            $products = array_values($products);
             if ($this->productWithHierarchy) {
                 $productGenerator->appendProduct($products);
                 continue;
