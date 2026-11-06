@@ -167,7 +167,7 @@ class ShoppingfeedPreloading extends ObjectModel
         $sql = new DbQuery();
         $sql->from(self::$definition['table'])
             ->where(sprintf('id_token = %d', (int) $id_token))
-            ->where('length(content) > 0');
+            ->where('content <> ""');
 
         return $sql;
     }
@@ -190,6 +190,31 @@ class ShoppingfeedPreloading extends ObjectModel
 
         foreach (Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql) as $row) {
             $result[] = json_decode($row['content'], true);
+        }
+
+        return $result;
+    }
+
+    /**
+     * get content product in preloading table using keyset pagination
+     *
+     * @param int $id_token
+     * @param int $from_id rows with a greater id_shoppingfeed_preloading are returned
+     * @param int $limit
+     *
+     * @return array decoded contents keyed by id_shoppingfeed_preloading
+     */
+    public function findAllByTokenIdFromId($id_token, $from_id = 0, $limit = 100)
+    {
+        $result = [];
+        $sql = $this->getQueryPreloading($id_token)
+                    ->select(self::$definition['primary'] . ', content')
+                    ->where(self::$definition['primary'] . ' > ' . (int) $from_id)
+                    ->orderBy(self::$definition['primary'] . ' ASC')
+                    ->limit((int) $limit);
+
+        foreach (Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql) as $row) {
+            $result[(int) $row[self::$definition['primary']]] = json_decode($row['content'], true);
         }
 
         return $result;

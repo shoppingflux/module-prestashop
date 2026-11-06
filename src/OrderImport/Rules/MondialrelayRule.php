@@ -268,25 +268,27 @@ class MondialrelayRule extends RuleAbstract implements RuleInterface
             $relayId = preg_replace('/^[A-Z]{2}-/', '', $relayId);
         }
         $formattedRelayId = str_pad($relayId, 6, '0', STR_PAD_LEFT);
-        $insertResult = \Db::getInstance()->insert(
-            'mondialrelay_selected_relay',
-            [
-                'id_customer' => (int) $cart->id_customer,
-                'id_mondialrelay_carrier_method' => (int) $mondialRelayCarrierMethodId,
-                'id_cart' => (int) $cart->id,
-                'selected_relay_num' => pSQL($formattedRelayId),
-                'selected_relay_adr1' => pSQL($relayData->LgAdr1),
-                'selected_relay_adr2' => pSQL($relayData->LgAdr2),
-                'selected_relay_adr3' => pSQL($relayData->LgAdr3),
-                'selected_relay_adr4' => pSQL($relayData->LgAdr4),
-                'selected_relay_postcode' => pSQL($relayData->CP),
-                'selected_relay_city' => pSQL($relayData->Ville),
-                'selected_relay_country_iso' => pSQL($countryIso),
-                'package_weight' => $cart->getTotalWeight() * (float) \Configuration::get('MONDIALRELAY_WEIGHT_COEFF'),
-                'date_add' => date('Y-m-d H:i:s'),
-                'date_upd' => date('Y-m-d H:i:s'),
-            ]
-        );
+        $selectedRelay = [
+            'id_customer' => (int) $cart->id_customer,
+            'id_mondialrelay_carrier_method' => (int) $mondialRelayCarrierMethodId,
+            'id_cart' => (int) $cart->id,
+            'selected_relay_num' => pSQL($formattedRelayId),
+            'selected_relay_adr1' => pSQL($relayData->LgAdr1),
+            'selected_relay_adr2' => pSQL($relayData->LgAdr2),
+            'selected_relay_adr3' => pSQL($relayData->LgAdr3),
+            'selected_relay_adr4' => pSQL($relayData->LgAdr4),
+            'selected_relay_postcode' => pSQL($relayData->CP),
+            'selected_relay_city' => pSQL($relayData->Ville),
+            'selected_relay_country_iso' => pSQL($countryIso),
+            'package_weight' => $cart->getTotalWeight() * (float) \Configuration::get('MONDIALRELAY_WEIGHT_COEFF'),
+            'date_add' => date('Y-m-d H:i:s'),
+            'date_upd' => date('Y-m-d H:i:s'),
+        ];
+        // The id_address_delivery field exists since Mondial Relay 3.0.3
+        if (version_compare($this->module_mondialRelay->version, '3.0.3', '>=')) {
+            $selectedRelay['id_address_delivery'] = (int) $cart->id_address_delivery;
+        }
+        $insertResult = \Db::getInstance()->insert('mondialrelay_selected_relay', $selectedRelay);
 
         if ($insertResult) {
             ProcessLoggerHandler::logInfo(
