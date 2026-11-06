@@ -36,8 +36,10 @@ jobs:
           find ./ -type f -exec sed -i "s/@version@/$MODULE_VERSION/g" {} +
 
           composer global require prestashop/autoindex
-          [ -f "./index.php" ] && [ -f "$HOME/.composer/vendor/prestashop/autoindex/assets/index.php" ] && cat index.php > ~/.composer/vendor/prestashop/autoindex/assets/index.php
-          ~/.composer/vendor/bin/autoindex --exclude=202
+          COMPOSER_GLOBAL_DIR=$(composer global config home 2>/dev/null)
+          # Use the module's own index.php (PrestaShop coding standard compliant) as autoindex template
+          cp index.php "$COMPOSER_GLOBAL_DIR/vendor/prestashop/autoindex/assets/index.php"
+          "$COMPOSER_GLOBAL_DIR/vendor/bin/autoindex" --exclude=202
           cp classes/index.php  index.php
           rm -f composer.lock
 
