@@ -96,7 +96,7 @@ class ShoppingfeedCarrierRule extends ObjectModel
 
     public function setConditions(array $conditions)
     {
-        $this->conditions = json_encode($conditions);
+        $this->conditions = json_encode($conditions, JSON_PRESERVE_ZERO_FRACTION);
     }
 
     /**
