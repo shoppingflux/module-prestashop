@@ -20,6 +20,10 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
+use ShoppingfeedAddon\CarrierRule\CarrierRuleResolver;
+use ShoppingfeedAddon\CarrierRule\ConditionEvaluator;
+use ShoppingfeedAddon\CarrierRule\OrderCriteria;
+use ShoppingfeedAddon\CarrierRule\OrderWeightCalculator;
 use ShoppingfeedAddon\OrderImport\OrderData;
 use ShoppingfeedAddon\OrderImport\RulesManager;
 use ShoppingfeedAddon\OrderImport\SFOrderState;
@@ -260,7 +264,12 @@ class ShoppingfeedOrderImportActions extends DefaultActions
         if (Validate::isLoadedObject($carrier) == false) {
             $channelName = $apiOrder->getChannel()->getName() ? $apiOrder->getChannel()->getName() : '';
             $apiCarrierName = empty($apiOrderShipment['carrier']) ? $apiOrder->getShipment()['carrier'] : $apiOrderShipment['carrier'];
-            $carrier = $this->initCarrierFinder()->getCarrierForOrderImport($channelName, $apiCarrierName);
+
+            if (Configuration::getGlobalValue(Shoppingfeed::ORDER_CARRIER_ADVANCED_RULES)) {
+                $carrier = $this->getCarrierFromCarrierRules($orderData, $channelName, $apiCarrierName);
+            } else {
+                $carrier = $this->initCarrierFinder()->getCarrierForOrderImport($channelName, $apiCarrierName);
+            }
         }
 
         if (!Validate::isLoadedObject($carrier)) {
@@ -1630,6 +1639,69 @@ class ShoppingfeedOrderImportActions extends DefaultActions
     protected function initCarrierFinder()
     {
         return new CarrierFinder();
+    }
+
+    protected function initCarrierRuleResolver()
+    {
+        return new CarrierRuleResolver(new ConditionEvaluator());
+    }
+
+    /**
+     * Carrier selection rules (advanced carrier rules engine): first matching
+     * rule of the order's token, then the default carrier.
+     *
+     * @param OrderData $orderData
+     * @param string $channelName
+     * @param string|null $apiCarrierName
+     *
+     * @return Carrier|false|null
+     */
+    protected function getCarrierFromCarrierRules(OrderData $orderData, $channelName, $apiCarrierName)
+    {
+        $criteria = new OrderCriteria(
+            $channelName,
+            isset($orderData->shippingAddress['country']) ? $orderData->shippingAddress['country'] : '',
+            (string) $apiCarrierName,
+            (new OrderWeightCalculator())->calculate(
+                $orderData->items,
+                isset($this->conveyor['prestashopProducts']) ? $this->conveyor['prestashopProducts'] : []
+            )
+        );
+        $resolver = $this->initCarrierRuleResolver();
+        $match = $resolver->resolve((int) $this->conveyor['id_token'], $criteria);
+
+        foreach ($resolver->getSkippedRules() as $skippedRule) {
+            ProcessLoggerHandler::logInfo(
+                sprintf(
+                    $this->logPrefix .
+                        $this->l('Carrier selection rule (id %d) matches but its carrier does not exist anymore; rule skipped.', 'ShoppingfeedOrderImportActions'),
+                    (int) $skippedRule->id
+                ),
+                'Carrier'
+            );
+        }
+
+        if ($match !== null) {
+            ProcessLoggerHandler::logInfo(
+                sprintf(
+                    $this->logPrefix .
+                        $this->l('Carrier selection rule #%d applied.', 'ShoppingfeedOrderImportActions'),
+                    $match['number']
+                ),
+                'Carrier',
+                $match['carrier']->id
+            );
+
+            return $match['carrier'];
+        }
+
+        ProcessLoggerHandler::logInfo(
+            $this->logPrefix .
+                $this->l('No carrier selection rule matched, default carrier used.', 'ShoppingfeedOrderImportActions'),
+            'Carrier'
+        );
+
+        return $this->initCarrierFinder()->getDefaultCarrierForOrderImport();
     }
 
     protected function checkQtyProduct($id_product, $id_product_attribute, $qty)

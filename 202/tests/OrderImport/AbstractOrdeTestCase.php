@@ -33,10 +33,10 @@ abstract class AbstractOrdeTestCase extends TestCase
      *
      * @return void
      */
-    protected function getOrderRessourceFromDataset(string $dataset): OrderResource
+    protected function getOrderRessourceFromDataset(string $dataset, array $overrides = []): OrderResource
     {
         $dataset = file_get_contents(__DIR__ . '/dataset/' . $dataset);
-        $this->props = json_decode($dataset, true);
+        $this->props = array_replace_recursive(json_decode($dataset, true), $overrides);
         $client = $this->createMock(\ShoppingFeed\Sdk\Hal\HalClient::class);
         $halResource = $this
             ->getMockBuilder(HalResource::class)

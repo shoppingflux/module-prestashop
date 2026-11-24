@@ -71,7 +71,23 @@ class CarrierFinder
             $carrier = \Carrier::getCarrierByReference($sfCarrier->id_carrier_reference);
         }
 
-        if (!\Validate::isLoadedObject($carrier) && !empty(\Configuration::get(\Shoppingfeed::ORDER_DEFAULT_CARRIER_REFERENCE))) {
+        if (!\Validate::isLoadedObject($carrier)) {
+            $carrier = $this->getDefaultCarrierForOrderImport();
+        }
+
+        return $carrier;
+    }
+
+    /**
+     * Module default carrier, then the shop default carrier
+     *
+     * @return \Carrier|false|null
+     */
+    public function getDefaultCarrierForOrderImport()
+    {
+        $carrier = null;
+
+        if (!empty(\Configuration::get(\Shoppingfeed::ORDER_DEFAULT_CARRIER_REFERENCE))) {
             $carrier = \Carrier::getCarrierByReference(\Configuration::get(\Shoppingfeed::ORDER_DEFAULT_CARRIER_REFERENCE));
         }
 
