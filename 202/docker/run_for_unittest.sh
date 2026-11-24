@@ -50,6 +50,7 @@ UPDATE ps_product_attribute_shop SET ecotax = 6 WHERE id_product = 5 AND id_prod
 mysql -h localhost -u root prestashop -e "
 TRUNCATE ps_shoppingfeed_order;
 TRUNCATE ps_shoppingfeed_task_order;
+TRUNCATE ps_shoppingfeed_carrier_rule;
 UPDATE ps_configuration SET value = '[\"5\",\"4\"]' WHERE name = 'SHOPPINGFEED_SHIPPED_ORDERS';
 UPDATE ps_configuration SET value = '[\"6\"]' WHERE name = 'SHOPPINGFEED_CANCELLED_ORDERS';
 UPDATE ps_configuration SET value = '[\"7\"]' WHERE name = 'SHOPPINGFEED_REFUNDED_ORDERS';
