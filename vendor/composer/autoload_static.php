@@ -2096,6 +2096,7 @@ class ComposerStaticInitfa23dbc36d09c26fab8d3ef5eed71644
         'ShoppingfeedAddon\\Actions\\ActionsHandler' => __DIR__ . '/../..' . '/src/Actions/ActionsHandler.php',
         'ShoppingfeedAddon\\CarrierRule\\CarrierRuleFormHandler' => __DIR__ . '/../..' . '/src/CarrierRule/CarrierRuleFormHandler.php',
         'ShoppingfeedAddon\\CarrierRule\\CarrierRuleResolver' => __DIR__ . '/../..' . '/src/CarrierRule/CarrierRuleResolver.php',
+        'ShoppingfeedAddon\\CarrierRule\\CarrierSelection' => __DIR__ . '/../..' . '/src/CarrierRule/CarrierSelection.php',
         'ShoppingfeedAddon\\CarrierRule\\ConditionEvaluator' => __DIR__ . '/../..' . '/src/CarrierRule/ConditionEvaluator.php',
         'ShoppingfeedAddon\\CarrierRule\\OrderCriteria' => __DIR__ . '/../..' . '/src/CarrierRule/OrderCriteria.php',
         'ShoppingfeedAddon\\CarrierRule\\OrderWeightCalculator' => __DIR__ . '/../..' . '/src/CarrierRule/OrderWeightCalculator.php',

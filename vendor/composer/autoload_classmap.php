@@ -1759,6 +1759,7 @@ return array(
     'ShoppingfeedAddon\\Actions\\ActionsHandler' => $baseDir . '/src/Actions/ActionsHandler.php',
     'ShoppingfeedAddon\\CarrierRule\\CarrierRuleFormHandler' => $baseDir . '/src/CarrierRule/CarrierRuleFormHandler.php',
     'ShoppingfeedAddon\\CarrierRule\\CarrierRuleResolver' => $baseDir . '/src/CarrierRule/CarrierRuleResolver.php',
+    'ShoppingfeedAddon\\CarrierRule\\CarrierSelection' => $baseDir . '/src/CarrierRule/CarrierSelection.php',
     'ShoppingfeedAddon\\CarrierRule\\ConditionEvaluator' => $baseDir . '/src/CarrierRule/ConditionEvaluator.php',
     'ShoppingfeedAddon\\CarrierRule\\OrderCriteria' => $baseDir . '/src/CarrierRule/OrderCriteria.php',
     'ShoppingfeedAddon\\CarrierRule\\OrderWeightCalculator' => $baseDir . '/src/CarrierRule/OrderWeightCalculator.php',
