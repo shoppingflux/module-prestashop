@@ -43,6 +43,55 @@ class OrderRuleTaxForBusinessTest extends AbstractOrdeTestCase
         $this->assertTrue($rule->isApplicable($manmanoOrderBusiness));
     }
 
+    /**
+     * "undefined" means the marketplace did not send a tax mode: Amazon keeps using the Shoppingfeed tax
+     */
+    public function testAmazonUndefinedTaxModeUsesShoppingfeedTax()
+    {
+        $flags = $this->recalculationFlags('order-amazon-business.json');
+
+        $this->assertTrue($flags['isUseSfTax']);
+        $this->assertFalse($flags['skipTax']);
+    }
+
+    public function testTaxIncludedModeUsesPrestashopTax()
+    {
+        $flags = $this->recalculationFlags('order-amazon-business.json', ['payment' => ['taxMode' => 'tax_included']]);
+
+        $this->assertFalse($flags['isUseSfTax']);
+        $this->assertFalse($flags['skipTax']);
+        $this->assertTrue($flags['isAmountTaxIncl']);
+    }
+
+    public function testTaxExcludedModeUsesShoppingfeedTax()
+    {
+        $flags = $this->recalculationFlags('order-amazon-business.json', ['payment' => ['taxMode' => 'tax_excluded']]);
+
+        $this->assertTrue($flags['isUseSfTax']);
+        $this->assertFalse($flags['skipTax']);
+    }
+
+    /**
+     * Flags set by TaxForBusiness::beforeRecalculateOrderPrices(), from the defaults used by recalculateOrderPrices()
+     */
+    private function recalculationFlags($dataset, array $overrides = [])
+    {
+        $apiOrder = $this->getOrderRessourceFromDataset($dataset, $overrides);
+        $rule = new TaxForBusiness(['enabled' => true]);
+        $this->assertTrue($rule->isApplicable($apiOrder));
+
+        $flags = ['isAmountTaxIncl' => true, 'skipTax' => false, 'isUseSfTax' => false];
+        $rule->beforeRecalculateOrderPrices([
+            'apiOrder' => $apiOrder,
+            'id_order' => 0,
+            'isAmountTaxIncl' => &$flags['isAmountTaxIncl'],
+            'skipTax' => &$flags['skipTax'],
+            'isUseSfTax' => &$flags['isUseSfTax'],
+        ]);
+
+        return $flags;
+    }
+
     public function testImportAmazonBusiness()
     {
         $apiOrder = $this->getOrderRessourceFromDataset('order-amazon-business.json');
