@@ -86,4 +86,21 @@ trait CarrierRuleFixturesTrait
         \Cache::clean('objectmodel_Product_*');
     }
 
+    /**
+     * A carrier owned by a carrier module (e.g. dpdfrance), so the tests don't
+     * depend on another test creating one. Delete it in tearDown().
+     */
+    private function createModuleCarrier($moduleName)
+    {
+        $carrier = new \Carrier();
+        $carrier->name = 'TEST-34133 ' . $moduleName;
+        $carrier->is_module = true;
+        $carrier->external_module_name = $moduleName;
+        $carrier->active = true;
+        $carrier->delay = [1 => 'test'];
+        $this->assertTrue((bool) $carrier->add());
+
+        // Carrier::add() sets id_reference in the database only: reload it
+        return new \Carrier($carrier->id);
+    }
 }

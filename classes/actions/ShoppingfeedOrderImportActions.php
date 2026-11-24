@@ -313,6 +313,8 @@ class ShoppingfeedOrderImportActions extends DefaultActions
                 'isSkipImport' => &$this->conveyor['isSkipImport'],
                 'orderData' => $this->conveyor['orderData'],
                 'prestashopProducts' => &$this->conveyor['prestashopProducts'],
+                // carrier selected above: rules depending on the carrier must use it
+                'carrier' => $this->conveyor['carrier'],
             ]
         );
 

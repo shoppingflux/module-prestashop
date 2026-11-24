@@ -27,7 +27,6 @@ use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use ShoppingfeedAddon\OrderImport\DpdAssociation;
 use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
-use ShoppingfeedAddon\Services\CarrierFinder;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 
 class ManomanoDpdRelais extends RuleAbstract implements RuleInterface
@@ -57,10 +56,7 @@ class ManomanoDpdRelais extends RuleAbstract implements RuleInterface
             return false;
         }
 
-        if (false == $this->isDpdCarrier($apiOrder)) {
-            return false;
-        }
-
+        // The carrier is not known yet at this point: onVerifyOrder() checks it
         return true;
     }
 
@@ -81,13 +77,18 @@ class ManomanoDpdRelais extends RuleAbstract implements RuleInterface
     }
 
     /**
-     * We have to do this on pre process, as the fields may be used in various
-     * steps
+     * Runs once verifyOrder() has selected the carrier (mapping or carrier
+     * selection rules), before the addresses are created, as the fields are
+     * used by the next steps.
      *
      * @param array $params
      */
-    public function onPreProcess($params)
+    public function onVerifyOrder($params)
     {
+        if (false == $this->isDpdCarrier(isset($params['carrier']) ? $params['carrier'] : null)) {
+            return;
+        }
+
         /** @var \ShoppingfeedAddon\OrderImport\OrderData $orderData */
         $orderData = $params['orderData'];
         $apiOrder = $params['apiOrder'];
@@ -191,21 +192,17 @@ class ManomanoDpdRelais extends RuleAbstract implements RuleInterface
         return '';
     }
 
-    protected function isDpdCarrier(OrderResource $apiOrder)
+    /**
+     * @param \Carrier|null $carrier
+     *
+     * @return bool
+     */
+    protected function isDpdCarrier($carrier)
     {
-        $channelName = $apiOrder->getChannel()->getName() ? $apiOrder->getChannel()->getName() : '';
-        $apiCarrierName = empty($apiOrder->getShipment()['carrier']) ? '' : $apiOrder->getShipment()['carrier'];
-        $carrier = $this->initCarrierFinder()->getCarrierForOrderImport($channelName, $apiCarrierName);
-
         if (false == \Validate::isLoadedObject($carrier)) {
             return false;
         }
 
-        return $carrier->external_module_name = self::MODULE_NAME;
-    }
-
-    protected function initCarrierFinder()
-    {
-        return new CarrierFinder();
+        return $carrier->external_module_name == self::MODULE_NAME;
     }
 }

@@ -27,6 +27,19 @@ use ShoppingfeedAddon\OrderImport\Rules\ManomanoDpdRelais;
  */
 class OrderRulesManomanoDpdRelaisTest extends AbstractOrdeTestCase
 {
+    use CarrierRuleFixturesTrait;
+
+    /** @var \Carrier|null */
+    private $dpdCarrier;
+
+    protected function tearDown(): void
+    {
+        if ($this->dpdCarrier) {
+            $this->dpdCarrier->delete();
+            $this->dpdCarrier = null;
+        }
+    }
+
     /**
      * Test to split name
      *
@@ -41,7 +54,8 @@ class OrderRulesManomanoDpdRelaisTest extends AbstractOrdeTestCase
         $this->assertTrue($rules->isApplicable($params['apiOrder']));
 
         $params['orderData'] = new OrderData($params['apiOrder']);
-        $rules->onPreProcess($params);
+        $params['carrier'] = $this->dpdCarrier = $this->createModuleCarrier(ManomanoDpdRelais::MODULE_NAME);
+        $rules->onVerifyOrder($params);
 
         $expedtedAddress = [
             'firstName' => 'patrice',
@@ -71,5 +85,17 @@ class OrderRulesManomanoDpdRelaisTest extends AbstractOrdeTestCase
 
         $rules = new ManomanoDpdRelais();
         $this->assertTrue($rules->isApplicable($params['apiOrder']));
+    }
+
+    public function testAddressUnchangedWhenCarrierIsNotDpd(): void
+    {
+        $params['apiOrder'] = $this->getOrderRessourceFromDataset('order-manomano.json');
+        $params['orderData'] = new OrderData($params['apiOrder']);
+        $expectedAddress = $params['orderData']->shippingAddress;
+        $params['carrier'] = new \Carrier(2);
+
+        (new ManomanoDpdRelais())->onVerifyOrder($params);
+
+        $this->assertSame($expectedAddress, $params['orderData']->shippingAddress);
     }
 }

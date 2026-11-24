@@ -27,7 +27,6 @@ use Cart;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use ShoppingfeedAddon\OrderImport\RuleAbstract;
 use ShoppingfeedAddon\OrderImport\RuleInterface;
-use ShoppingfeedAddon\Services\CarrierFinder;
 use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 
 class ColissimoRule extends RuleAbstract implements RuleInterface
@@ -59,16 +58,19 @@ class ColissimoRule extends RuleAbstract implements RuleInterface
         }
     }
 
-    public function onPreProcess($params)
+    /**
+     * Runs once verifyOrder() has selected the carrier (mapping or carrier
+     * selection rules), before the addresses are created.
+     *
+     * @param array $params
+     */
+    public function onVerifyOrder($params)
     {
         /** @var OrderResource $apiOrder */
         $apiOrder = $params['apiOrder'];
-        $carrier = $this->initCarrierFinder()->getCarrierForOrderImport(
-            $apiOrder->getChannel()->getName(),
-            $apiOrder->getShipment()['carrier']
-        );
+        $carrier = isset($params['carrier']) ? $params['carrier'] : null;
 
-        if ($carrier->external_module_name != $this->colissimo->name) {
+        if (!\Validate::isLoadedObject($carrier) || $carrier->external_module_name != $this->colissimo->name) {
             return;
         }
 
@@ -83,11 +85,6 @@ class ColissimoRule extends RuleAbstract implements RuleInterface
         if ($this->isCdiscount($apiOrder)) {
             $this->updateCdiscountAddress($params);
         }
-    }
-
-    protected function initCarrierFinder()
-    {
-        return new CarrierFinder();
     }
 
     protected function isMonechelle(OrderResource $apiOrder)
