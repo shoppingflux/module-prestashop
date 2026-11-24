@@ -43,15 +43,13 @@ class OrderRuleTaxForBusinessTest extends AbstractOrdeTestCase
         $this->assertTrue($rule->isApplicable($manmanoOrderBusiness));
     }
 
-    /**
-     * "undefined" means the marketplace did not send a tax mode: Amazon keeps using the Shoppingfeed tax
-     */
-    public function testAmazonUndefinedTaxModeUsesShoppingfeedTax()
+    public function testUndefinedTaxModeUsesPrestashopTax()
     {
-        $flags = $this->recalculationFlags('order-amazon-business.json');
+        $flags = $this->recalculationFlags('order-amazon-business.json', ['payment' => ['taxMode' => 'undefined']]);
 
-        $this->assertTrue($flags['isUseSfTax']);
+        $this->assertFalse($flags['isUseSfTax']);
         $this->assertFalse($flags['skipTax']);
+        $this->assertTrue($flags['isAmountTaxIncl']);
     }
 
     public function testTaxIncludedModeUsesPrestashopTax()

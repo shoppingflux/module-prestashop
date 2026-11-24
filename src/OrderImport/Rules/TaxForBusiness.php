@@ -30,8 +30,6 @@ use ShoppingfeedClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 
 class TaxForBusiness extends RuleAbstract implements RuleInterface
 {
-    public const TAX_MODE_UNDEFINED = 'undefined';
-
     /** @var \Context */
     protected $context;
 
@@ -81,11 +79,8 @@ class TaxForBusiness extends RuleAbstract implements RuleInterface
             $params['isUseSfTax'] = true;
         }
 
-        $taxMode = empty($orderData['payment']['taxMode']) ? '' : strtolower((string) $orderData['payment']['taxMode']);
-
-        // "undefined": the marketplace did not send a tax mode, keep the behavior above
-        if ($taxMode !== '' && $taxMode !== self::TAX_MODE_UNDEFINED) {
-            if ($taxMode === 'tax_excluded') {
+        if (false === empty($orderData['payment']['taxMode'])) {
+            if (strtolower($orderData['payment']['taxMode']) === 'tax_excluded') {
                 $params['skipTax'] = false;
                 $params['isUseSfTax'] = true;
                 $params['isAmountTaxIncl'] = true;

@@ -16,7 +16,7 @@
     "totalAmount": 107.4,
     "currency": "EUR",
     "method": "MFN",
-    "taxMode": "undefined"
+    "taxMode": "tax_excluded"
   },
   "shipment": {
     "type": null,
