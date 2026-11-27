@@ -1,0 +1,145 @@
+/*
+* NOTICE OF LICENSE
+*
+* This source file is subject to a commercial license from SARL 202 ecommence
+* Use, copy, modification or distribution of this source file without written
+* license agreement from the SARL 202 ecommence is strictly forbidden.
+* In order to obtain a license, please contact us: tech@202-ecommerce.com
+* ...........................................................................
+* INFORMATION SUR LA LICENCE D'UTILISATION
+*
+* L'utilisation de ce fichier source est soumise a une licence commerciale
+* concedee par la societe 202 ecommence
+* Toute utilisation, reproduction, modification ou distribution du present
+* fichier source sans contrat de licence ecrit de la part de la SARL 202 ecommence est
+* expressement interdite.
+* Pour obtenir une licence, veuillez contacter 202-ecommerce <tech@202-ecommerce.com>
+* ...........................................................................
+*
+* @author    202-ecommerce <tech@202-ecommerce.com>
+* @copyright Copyright (c) 202-ecommerce
+* @license   Commercial license
+*/
+
+/* Carrier selection rules (#34133) */
+#shoppingfeed_carrier-rules-app .sf-cr-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+#shoppingfeed_carrier-rules-app .sf-cr-header h3 {
+    margin: 0;
+}
+#shoppingfeed_carrier-rules-app .sf-cr-rule {
+    margin-bottom: 15px;
+}
+#shoppingfeed_carrier-rules-app .sf-cr-rule-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 10px 0;
+}
+#shoppingfeed_carrier-rules-app .sf-cr-rule-title {
+    font-size: 15px;
+    font-weight: bold;
+    color: inherit;
+}
+#shoppingfeed_carrier-rules-app .sf-cr-delete-rule {
+    color: #e84e6a;
+    border-color: #e84e6a;
+}
+#shoppingfeed_carrier-rules-app .sf-cr-group {
+    background: #f8fcfd;
+    border: 1px solid #e5e9ea;
+    border-radius: 3px;
+    padding: 15px;
+    margin-bottom: 10px;
+}
+#shoppingfeed_carrier-rules-app .sf-cr-condition {
+    margin-bottom: 5px;
+}
+#shoppingfeed_carrier-rules-app .sf-cr-and {
+    margin: 0 0 5px 15px;
+    border-left: 2px solid #25b9d7;
+    padding: 4px 0 4px 6px;
+}
+#shoppingfeed_carrier-rules-app .sf-cr-and .badge {
+    background: #25b9d7;
+}
+#shoppingfeed_carrier-rules-app .sf-cr-or {
+    text-align: center;
+    border-top: 1px dashed #bbcdd2;
+    margin: 20px 0;
+    line-height: 0;
+}
+#shoppingfeed_carrier-rules-app .sf-cr-or span {
+    background: #fff;
+    border: 1px solid #bbcdd2;
+    border-radius: 3px;
+    padding: 4px 12px;
+    font-weight: bold;
+    line-height: 1;
+}
+#shoppingfeed_carrier-rules-app .sf-cr-add {
+    margin-top: 5px;
+}
+#shoppingfeed_carrier-rules-app .sf-cr-icon-button {
+    display: inline-block;
+    padding: 6px;
+    color: #6c868e;
+}
+#shoppingfeed_carrier-rules-app .sf-cr-text,
+#shoppingfeed_carrier-rules-app .sf-cr-tags {
+    position: relative;
+}
+#shoppingfeed_carrier-rules-app .sf-cr-tags {
+    height: auto;
+    min-height: 31px;
+    padding: 3px;
+}
+#shoppingfeed_carrier-rules-app .sf-cr-tag {
+    display: inline-block;
+    border: 1px solid #25b9d7;
+    color: #25b9d7;
+    border-radius: 3px;
+    padding: 1px 6px;
+    margin: 2px;
+}
+#shoppingfeed_carrier-rules-app .sf-cr-tag-remove {
+    margin-left: 5px;
+    color: inherit;
+}
+#shoppingfeed_carrier-rules-app .sf-cr-tag-input {
+    border: none;
+    outline: none;
+    display: inline-block;
+    width: 150px !important;
+    height: auto;
+    padding: 2px;
+    box-shadow: none;
+}
+#shoppingfeed_carrier-rules-app .sf-cr-suggestions {
+    position: absolute;
+    z-index: 10;
+    left: 0;
+    right: 0;
+    top: 100%;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    background: #fff;
+    border: 1px solid #bbcdd2;
+}
+#shoppingfeed_carrier-rules-app .sf-cr-suggestions li {
+    padding: 5px 8px;
+    cursor: pointer;
+}
+#shoppingfeed_carrier-rules-app .sf-cr-suggestions li:hover {
+    background: #eff9fb;
+}
+#shoppingfeed_carrier-rules-app .sf-cr-footer {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+}

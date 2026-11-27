@@ -22,6 +22,8 @@ if (!defined('_PS_VERSION_')) {
 
 require_once _PS_MODULE_DIR_ . 'shoppingfeed/vendor/autoload.php';
 
+use ShoppingfeedAddon\CarrierRule\CarrierRuleFormHandler;
+use ShoppingfeedAddon\CarrierRule\ConditionEvaluator;
 use ShoppingfeedAddon\OrderImport\RulesManager;
 use ShoppingfeedAddon\OrderImport\SFOrderState;
 use ShoppingfeedAddon\OrderImport\SinceDate;
@@ -38,6 +40,9 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
 
     public $override_folder;
 
+    /** @var array|null Carrier selection rules posted by a save that failed validation, redisplayed as typed */
+    protected $postedCarrierRules;
+
     /** @var RulesManager */
     protected $specificRulesManager;
 
@@ -52,6 +57,9 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
         ]);
 
         $this->addJS($this->module->getPathUri() . 'views/js/form_config.js');
+        $this->addCSS($this->module->getPathUri() . 'views/css/shoppingfeed_configuration/carrier_rules.css');
+        $this->addJS($this->module->getPathUri() . 'views/js/order_import/carrier_rules.js');
+        Media::addJsDef(['shoppingfeedCarrierRules' => $this->getCarrierRulesJsData()]);
         $this->content = $this->welcomeForm();
         $id_shop = $this->context->shop->id;
         $this->identifier = 'className';
@@ -379,7 +387,26 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
                             'desc' => $this->module->l('Match carriers from marketplaces to your Prestashop\'s carriers', 'AdminShoppingfeedOrderImportRules'),
                         ],
                         [
+                            'type' => 'switch',
+                            'label' => $this->module->l('Use the advanced carrier rules engine', 'AdminShoppingfeedOrderImportRules'),
+                            'desc' => $this->module->l('Choose the carrier with your own rules (marketplace, shipping country, delivery mode, order weight) instead of the carriers matching.', 'AdminShoppingfeedOrderImportRules'),
+                            'name' => Shoppingfeed::ORDER_CARRIER_ADVANCED_RULES,
+                            'is_bool' => true,
+                            'values' => [
+                                [
+                                    'id' => Shoppingfeed::ORDER_CARRIER_ADVANCED_RULES . '_on',
+                                    'value' => 1,
+                                ],
+                                [
+                                    'id' => Shoppingfeed::ORDER_CARRIER_ADVANCED_RULES . '_off',
+                                    'value' => 0,
+                                ],
+                            ],
+                        ],
+                        [
                             'type' => 'shoppingfeed_carrier-matching',
+                            'advanced_rules_enabled' => (bool) Configuration::getGlobalValue(Shoppingfeed::ORDER_CARRIER_ADVANCED_RULES),
+                            'carrier_rules_tpl' => _PS_MODULE_DIR_ . $this->module->name . '/views/templates/admin/shoppingfeed_order_import_rules/carrier_rules.tpl',
                             'marketplace_filter_options' => array_map(
                                 function ($m) {
                                     return [
@@ -606,6 +633,7 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
             Shoppingfeed::ORDER_IMPORT_SHIPPED_MARKETPLACE => Configuration::get(Shoppingfeed::ORDER_IMPORT_SHIPPED_MARKETPLACE),
             Shoppingfeed::ORDER_SYNC_ENABLED => !$order_sync_available ? false : Configuration::get(Shoppingfeed::ORDER_SYNC_ENABLED),
             Shoppingfeed::ORDER_DEFAULT_CARRIER_REFERENCE => Configuration::get(Shoppingfeed::ORDER_DEFAULT_CARRIER_REFERENCE),
+            Shoppingfeed::ORDER_CARRIER_ADVANCED_RULES => (int) Configuration::getGlobalValue(Shoppingfeed::ORDER_CARRIER_ADVANCED_RULES),
             'tracking_timeshift' => Configuration::get(Shoppingfeed::ORDER_STATUS_TIME_SHIFT),
             'max_order_update' => Configuration::get(Shoppingfeed::ORDER_STATUS_MAX_ORDERS),
             Shoppingfeed::ORDER_IMPORT_PERMANENT_SINCE_DATE => $this->getSinceDateService()->get(),
@@ -774,6 +802,8 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
             Configuration::updateValue(Shoppingfeed::ORDER_DEFAULT_CARRIER_REFERENCE, Tools::getValue(Shoppingfeed::ORDER_DEFAULT_CARRIER_REFERENCE));
         }
 
+        $this->saveCarrierRules();
+
         // Update carriers matching
         $carriersMatching = Tools::getValue('shoppingfeed_carrier_matching');
         if ($carriersMatching) {
@@ -830,6 +860,129 @@ class AdminShoppingfeedOrderImportRulesController extends ShoppingfeedAdminContr
     protected function getSinceDateService()
     {
         return new SinceDate();
+    }
+
+    /**
+     * Advanced carrier rules engine switch and carrier selection rules (#34133).
+     * The rules are only validated and saved while the engine is enabled.
+     */
+    protected function saveCarrierRules()
+    {
+        if (!Tools::isSubmit(Shoppingfeed::ORDER_CARRIER_ADVANCED_RULES)) {
+            return;
+        }
+
+        $enabled = (bool) Tools::getValue(Shoppingfeed::ORDER_CARRIER_ADVANCED_RULES);
+        Configuration::updateGlobalValue(Shoppingfeed::ORDER_CARRIER_ADVANCED_RULES, (int) $enabled);
+
+        if (!$enabled || !Tools::isSubmit('shoppingfeed_carrier_rules')) {
+            return;
+        }
+
+        $postedRules = json_decode((string) Tools::getValue('shoppingfeed_carrier_rules'), true);
+        if (!is_array($postedRules)) {
+            $this->errors[] = $this->module->l('The carrier selection rules could not be read; they were not saved.', 'AdminShoppingfeedOrderImportRules');
+
+            return;
+        }
+
+        $handler = new CarrierRuleFormHandler();
+        $result = $handler->normalize($postedRules);
+        if (!empty($result['errors'])) {
+            $this->errors = array_merge($this->errors, $result['errors']);
+            $this->postedCarrierRules = $postedRules;
+
+            return;
+        }
+
+        $handler->save($result['rules']);
+    }
+
+    /**
+     * @return array data for views/js/order_import/carrier_rules.js
+     */
+    protected function getCarrierRulesJsData()
+    {
+        $idLang = (int) $this->context->language->id;
+        $tokens = [];
+        foreach ((new ShoppingfeedToken())->findAllActive() as $token) {
+            $shop = new Shop((int) $token['id_shop']);
+            $currency = new Currency((int) $token['id_currency']);
+            $tokens[] = [
+                'id' => (int) $token['id_shoppingfeed_token'],
+                'label' => $shop->name . ' / ' . Language::getIsoById((int) $token['id_lang']) . ' / ' . $currency->iso_code,
+            ];
+        }
+
+        $carriers = array_values(array_filter(
+            $this->getAvailableCarriers(),
+            function ($carrier) {
+                return (int) $carrier['value'] > 0;
+            }
+        ));
+
+        $deliveryModes = [];
+        foreach (ShoppingfeedCarrier::getAllCarriers() as $sfCarrier) {
+            $deliveryModes[$sfCarrier->name_carrier] = ['value' => $sfCarrier->name_carrier, 'label' => $sfCarrier->name_carrier];
+        }
+
+        $countries = [];
+        foreach (Country::getCountries($idLang) as $country) {
+            $countries[] = ['value' => $country['iso_code'], 'label' => $country['name']];
+        }
+
+        return [
+            'switchName' => Shoppingfeed::ORDER_CARRIER_ADVANCED_RULES,
+            'rules' => $this->postedCarrierRules !== null ? $this->postedCarrierRules : (new CarrierRuleFormHandler())->toFormData(),
+            'tokens' => $tokens,
+            'carriers' => $carriers,
+            'weightUnit' => Configuration::get('PS_WEIGHT_UNIT'),
+            'operators' => ConditionEvaluator::getOperatorsByCriterion(),
+            'criteria' => [
+                ConditionEvaluator::CRITERION_MARKETPLACE => $this->module->l('Marketplace', 'AdminShoppingfeedOrderImportRules'),
+                ConditionEvaluator::CRITERION_COUNTRY => $this->module->l('Shipping country', 'AdminShoppingfeedOrderImportRules'),
+                ConditionEvaluator::CRITERION_DELIVERY_MODE => $this->module->l('Delivery mode', 'AdminShoppingfeedOrderImportRules'),
+                ConditionEvaluator::CRITERION_WEIGHT => $this->module->l('Order weight', 'AdminShoppingfeedOrderImportRules'),
+            ],
+            'operatorLabels' => [
+                ConditionEvaluator::OPERATOR_CONTAINS => $this->module->l('contains', 'AdminShoppingfeedOrderImportRules'),
+                ConditionEvaluator::OPERATOR_EQUALS => $this->module->l('equals', 'AdminShoppingfeedOrderImportRules'),
+                ConditionEvaluator::OPERATOR_IN => $this->module->l('is in list', 'AdminShoppingfeedOrderImportRules'),
+                ConditionEvaluator::OPERATOR_NOT_IN => $this->module->l('is not in list', 'AdminShoppingfeedOrderImportRules'),
+                ConditionEvaluator::OPERATOR_GREATER_THAN => $this->module->l('greater than', 'AdminShoppingfeedOrderImportRules'),
+            ],
+            'suggestions' => [
+                ConditionEvaluator::CRITERION_MARKETPLACE => array_map(
+                    function ($marketplace) {
+                        return ['value' => $marketplace, 'label' => $marketplace];
+                    },
+                    ShoppingfeedCarrier::getAllMarketplaces()
+                ),
+                ConditionEvaluator::CRITERION_COUNTRY => $countries,
+                ConditionEvaluator::CRITERION_DELIVERY_MODE => array_values($deliveryModes),
+            ],
+            'trans' => [
+                'title' => $this->module->l('Carrier selection rules', 'AdminShoppingfeedOrderImportRules'),
+                'help' => $this->module->l('Help', 'AdminShoppingfeedOrderImportRules'),
+                'rule' => $this->module->l('Rule #%d', 'AdminShoppingfeedOrderImportRules'),
+                'deleteRule' => $this->module->l('Delete rule', 'AdminShoppingfeedOrderImportRules'),
+                'token' => $this->module->l('Token', 'AdminShoppingfeedOrderImportRules'),
+                'conditions' => $this->module->l('Conditions', 'AdminShoppingfeedOrderImportRules'),
+                'conditionsHelp' => $this->module->l('Define your rules to automatically choose the carrier based on the order\'s characteristics. Conditions within a group are joined by AND; a single matching group (OR) is enough for the rule to apply.', 'AdminShoppingfeedOrderImportRules'),
+                'and' => $this->module->l('AND', 'AdminShoppingfeedOrderImportRules'),
+                'or' => $this->module->l('OR', 'AdminShoppingfeedOrderImportRules'),
+                'addAndCondition' => $this->module->l('Add AND condition', 'AdminShoppingfeedOrderImportRules'),
+                'addOrGroup' => $this->module->l('Add group (OR)', 'AdminShoppingfeedOrderImportRules'),
+                'deleteCondition' => $this->module->l('Delete condition', 'AdminShoppingfeedOrderImportRules'),
+                'carrier' => $this->module->l('Carrier', 'AdminShoppingfeedOrderImportRules'),
+                'thenSelectCarrier' => $this->module->l('Then select this carrier', 'AdminShoppingfeedOrderImportRules'),
+                'selectCarrier' => $this->module->l('Select carrier', 'AdminShoppingfeedOrderImportRules'),
+                'addRule' => $this->module->l('Add rule', 'AdminShoppingfeedOrderImportRules'),
+                'cancel' => $this->module->l('Cancel', 'AdminShoppingfeedOrderImportRules'),
+                'noRule' => $this->module->l('No rule yet: until you add one, orders get the default carrier.', 'AdminShoppingfeedOrderImportRules'),
+                'typeToSearch' => $this->module->l('Type to search...', 'AdminShoppingfeedOrderImportRules'),
+            ],
+        ];
     }
 
     protected function getAvailableCarriers()

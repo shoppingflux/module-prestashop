@@ -93,7 +93,7 @@
             </select>
         </div>
     </div>
-        <div class="form-group">
+        <div class="form-group" id="shoppingfeed_carriers-matching-group"{if $input.advanced_rules_enabled} style="display: none;"{/if}>
             <label class="control-label col-lg-3">
                 {l s='Carriers matching' mod='shoppingfeed'}
             </label>
@@ -134,6 +134,7 @@
                 </table>
             </div>
         </div>
+        {include file=$input.carrier_rules_tpl}
     {elseif $input.type == 'shoppingfeed_marketplace_switch_list'}
         <div class="form-group">
             <label class="control-label col-lg-3">

@@ -23,13 +23,64 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
+use ShoppingfeedAddon\CarrierRule\CarrierRuleResolver;
+use ShoppingfeedAddon\CarrierRule\CarrierSelection;
+use ShoppingfeedAddon\CarrierRule\ConditionEvaluator;
+use ShoppingfeedAddon\CarrierRule\OrderCriteria;
+use ShoppingfeedAddon\CarrierRule\OrderWeightCalculator;
+use ShoppingfeedAddon\OrderImport\OrderData;
+
 class CarrierFinder
 {
     protected $db;
 
-    public function __construct()
+    /** @var CarrierRuleResolver */
+    protected $carrierRuleResolver;
+
+    /** @var OrderWeightCalculator */
+    protected $orderWeightCalculator;
+
+    public function __construct(?CarrierRuleResolver $carrierRuleResolver = null, ?OrderWeightCalculator $orderWeightCalculator = null)
     {
         $this->db = \Db::getInstance();
+        $this->carrierRuleResolver = $carrierRuleResolver ? $carrierRuleResolver : new CarrierRuleResolver(new ConditionEvaluator());
+        $this->orderWeightCalculator = $orderWeightCalculator ? $orderWeightCalculator : new OrderWeightCalculator();
+    }
+
+    /**
+     * Carrier of an imported order: the carrier selection rules when the
+     * advanced engine is enabled (first matching rule, then the default
+     * carrier; the marketplace mapping is not used), otherwise the mapping
+     * then the default carrier.
+     *
+     * @param OrderData $orderData
+     * @param int $idToken
+     * @param string $channelName
+     * @param string|null $apiCarrierName
+     * @param \Product[] $prestashopProducts mapped products by order item reference
+     *
+     * @return CarrierSelection
+     */
+    public function selectCarrierForOrderImport(OrderData $orderData, $idToken, $channelName, $apiCarrierName, array $prestashopProducts)
+    {
+        if (!\Configuration::getGlobalValue(\Shoppingfeed::ORDER_CARRIER_ADVANCED_RULES)) {
+            return new CarrierSelection($this->getCarrierForOrderImport($channelName, $apiCarrierName), false);
+        }
+
+        $criteria = new OrderCriteria(
+            (string) $channelName,
+            isset($orderData->shippingAddress['country']) ? $orderData->shippingAddress['country'] : '',
+            (string) $apiCarrierName,
+            $this->orderWeightCalculator->calculate($orderData->items, $prestashopProducts)
+        );
+        $match = $this->carrierRuleResolver->resolve((int) $idToken, $criteria);
+        $skippedRules = $this->carrierRuleResolver->getSkippedRules();
+
+        if ($match === null) {
+            return new CarrierSelection($this->getDefaultCarrierForOrderImport(), true, null, $skippedRules);
+        }
+
+        return new CarrierSelection($match['carrier'], true, $match['number'], $skippedRules);
     }
 
     public function findByOrder(\Order $order)
@@ -71,7 +122,23 @@ class CarrierFinder
             $carrier = \Carrier::getCarrierByReference($sfCarrier->id_carrier_reference);
         }
 
-        if (!\Validate::isLoadedObject($carrier) && !empty(\Configuration::get(\Shoppingfeed::ORDER_DEFAULT_CARRIER_REFERENCE))) {
+        if (!\Validate::isLoadedObject($carrier)) {
+            $carrier = $this->getDefaultCarrierForOrderImport();
+        }
+
+        return $carrier;
+    }
+
+    /**
+     * Module default carrier, then the shop default carrier
+     *
+     * @return \Carrier|false|null
+     */
+    public function getDefaultCarrierForOrderImport()
+    {
+        $carrier = null;
+
+        if (!empty(\Configuration::get(\Shoppingfeed::ORDER_DEFAULT_CARRIER_REFERENCE))) {
             $carrier = \Carrier::getCarrierByReference(\Configuration::get(\Shoppingfeed::ORDER_DEFAULT_CARRIER_REFERENCE));
         }
 

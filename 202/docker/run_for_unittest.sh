@@ -3,9 +3,17 @@
 set -e
 set -x
 
+# The image entrypoint also starts MariaDB and ends by starting Apache. Wait for it
+# to finish, otherwise both starts race and MariaDB restarts in the middle of the
+# module installs ("MySQL server has gone away").
+for i in $(seq 1 120); do
+    pgrep -x apache2 > /dev/null && break
+    sleep 1
+done
 /etc/init.d/mariadb start
-
-sleep 3
+until mysqladmin -u root ping --silent; do
+    sleep 1
+done
 mysql -h localhost -u root prestashop -e "
 SET GLOBAL wait_timeout=6000;
 SET GLOBAL interactive_timeout=6000;
@@ -42,6 +50,7 @@ UPDATE ps_product_attribute_shop SET ecotax = 6 WHERE id_product = 5 AND id_prod
 mysql -h localhost -u root prestashop -e "
 TRUNCATE ps_shoppingfeed_order;
 TRUNCATE ps_shoppingfeed_task_order;
+TRUNCATE ps_shoppingfeed_carrier_rule;
 UPDATE ps_configuration SET value = '[\"5\",\"4\"]' WHERE name = 'SHOPPINGFEED_SHIPPED_ORDERS';
 UPDATE ps_configuration SET value = '[\"6\"]' WHERE name = 'SHOPPINGFEED_CANCELLED_ORDERS';
 UPDATE ps_configuration SET value = '[\"7\"]' WHERE name = 'SHOPPINGFEED_REFUNDED_ORDERS';

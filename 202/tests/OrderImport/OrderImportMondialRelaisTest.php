@@ -28,8 +28,32 @@ use ShoppingfeedClasslib\Registry;
  */
 class OrderImportMondialRelaisTest extends AbstractOrdeTestCase
 {
+    use CarrierRuleFixturesTrait;
+
+    public const MONDIALRELAY_MODULE_NAME = 'mondialrelay';
+
+    /** @var int Carrier of the mondialrelay module created for this test case */
+    private static $idCarrier = 0;
+
+    /** @var int */
+    private static $idCarrierReference = 0;
+
+    /** @var int */
+    private static $idCarrierMethod = 0;
+
+    public static function tearDownAfterClass(): void
+    {
+        if (self::$idCarrier) {
+            \Db::getInstance()->delete('shoppingfeed_carrier', 'name_marketplace = "Colizey" AND name_carrier = "Mondial Relay"');
+            \Db::getInstance()->delete('mondialrelay_carrier_method', 'id_mondialrelay_carrier_method = ' . (int) self::$idCarrierMethod);
+            (new \Carrier(self::$idCarrier))->delete();
+            self::$idCarrier = self::$idCarrierReference = self::$idCarrierMethod = 0;
+        }
+    }
+
     public function testImportMondialRelais()
     {
+        $this->createMondialRelayCarrier();
         $apiOrder = $this->getOrderRessourceFromDataset('order-colizey-mondialrelais.json');
         $handler = new ActionsHandler();
         $handler->addActions(
@@ -170,7 +194,8 @@ class OrderImportMondialRelaisTest extends AbstractOrdeTestCase
      */
     public function testDataCarrier($carrier)
     {
-        $this->assertEquals($carrier->id_reference, 1);
+        $this->assertEquals(self::$idCarrierReference, $carrier->id_reference);
+        $this->assertSame(self::MONDIALRELAY_MODULE_NAME, $carrier->external_module_name);
     }
 
     /**
@@ -183,21 +208,104 @@ class OrderImportMondialRelaisTest extends AbstractOrdeTestCase
     }
 
     /**
+     * The relay details come from the Mondial Relay webservice: it is replaced by
+     * a stub so the test does not depend on the network nor on a live account.
+     *
      * @depends testIsCartValid
+     * @depends testImportMondialRelais
      *
      * @return void
      */
-    public function testDataMondialrelay($cart)
+    public function testDataMondialrelay($cart, $conveyor)
     {
-        $mrsr = \MondialrelaySelectedRelay::getFromIdCart($cart->id);
+        // the import itself called the real webservice: start from a clean state
+        \Db::getInstance()->delete('mondialrelay_selected_relay', 'id_cart = ' . (int) $cart->id);
+        $soapClient = $this->createRelaySoapClientStub();
+        $rule = new class extends MondialrelayRule {
+            public $soapClient;
 
+            protected function initSoapClient()
+            {
+                return $this->soapClient;
+            }
+        };
+        $rule->soapClient = $soapClient;
+        $this->assertTrue($rule->isApplicable($conveyor['apiOrder']));
+
+        $rule->afterCartCreation(['apiOrder' => $conveyor['apiOrder'], 'cart' => $cart]);
+
+        $this->assertSame('012082', $soapClient->requests[0]['Num']);
+        $this->assertSame('FR', $soapClient->requests[0]['Pays']);
+        $mrsr = \MondialrelaySelectedRelay::getFromIdCart($cart->id);
         $this->assertTrue(\Validate::isLoadedObject($mrsr));
-        $this->assertEquals($mrsr->id_mondialrelay_carrier_method, 1);
+        $this->assertEquals($mrsr->id_mondialrelay_carrier_method, self::$idCarrierMethod);
         $this->assertEquals($mrsr->selected_relay_num, '012082');
         $this->assertEquals($mrsr->selected_relay_adr1, 'CARREFOUR EXPRESS');
         $this->assertEquals($mrsr->selected_relay_adr3, 'ESPL. SAINTE-GERMAINE');
         $this->assertEquals($mrsr->selected_relay_postcode, '31820');
         $this->assertEquals($mrsr->selected_relay_city, 'PIBRAC');
         $this->assertEquals($mrsr->selected_relay_country_iso, 'FR');
+    }
+
+    /**
+     * A carrier owned by the mondialrelay module with its carrier method, and the
+     * mapping of the dataset's Colizey / "Mondial Relay" to it
+     */
+    private function createMondialRelayCarrier()
+    {
+        $carrier = $this->createModuleCarrier(self::MONDIALRELAY_MODULE_NAME);
+        self::$idCarrier = (int) $carrier->id;
+        self::$idCarrierReference = (int) $carrier->id_reference;
+        \Db::getInstance()->insert('carrier_zone', ['id_carrier' => self::$idCarrier, 'id_zone' => 9], false, true, \Db::REPLACE);
+        // shipping taxed like the shop's carriers (the order totals below include shipping tax)
+        $carrier->setTaxRulesGroup((int) \Carrier::getIdTaxRulesGroupByIdCarrier(1));
+        \Db::getInstance()->insert('mondialrelay_carrier_method', [
+            'id_carrier' => self::$idCarrier,
+            'id_reference' => self::$idCarrierReference,
+            'delivery_mode' => '24R',
+            'delivery_type' => 'MR',
+            'insurance_level' => '0',
+            'is_deleted' => 0,
+            'date_add' => date('Y-m-d H:i:s'),
+            'date_upd' => date('Y-m-d H:i:s'),
+        ]);
+        self::$idCarrierMethod = (int) \Db::getInstance()->Insert_ID();
+        \Db::getInstance()->insert('shoppingfeed_carrier', [
+            'name_marketplace' => 'Colizey',
+            'name_carrier' => 'Mondial Relay',
+            'id_carrier_reference' => self::$idCarrierReference,
+            'is_new' => 0,
+            'date_add' => date('Y-m-d H:i:s'),
+            'date_upd' => date('Y-m-d H:i:s'),
+        ], false, true, \Db::REPLACE);
+    }
+
+    /**
+     * Answers WSI2_AdressePointRelais like the Mondial Relay webservice does for relay 012082
+     */
+    private function createRelaySoapClientStub()
+    {
+        return new class {
+            public $soap_defencoding;
+
+            public $decode_utf8;
+
+            public $requests = [];
+
+            public function WSI2_AdressePointRelais(array $params)
+            {
+                $this->requests[] = $params;
+
+                return (object) ['WSI2_AdressePointRelaisResult' => (object) [
+                    'STAT' => '0',
+                    'LgAdr1' => 'CARREFOUR EXPRESS',
+                    'LgAdr2' => '',
+                    'LgAdr3' => 'ESPL. SAINTE-GERMAINE',
+                    'LgAdr4' => '',
+                    'CP' => '31820',
+                    'Ville' => 'PIBRAC',
+                ]];
+            }
+        };
     }
 }

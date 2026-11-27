@@ -71,6 +71,7 @@ class Shoppingfeed extends ShoppingfeedClasslib\Module
     public const ORDER_IMPORT_SHIPPED_MARKETPLACE = 'SHOPPINGFEED_ORDER_IMPORT_SHIPPED_MARKETPLACE';
     public const ORDER_IMPORT_SPECIFIC_RULES_CONFIGURATION = 'SHOPPINGFEED_ORDER_IMPORT_SPECIFIC_RULES_CONFIGURATION';
     public const ORDER_DEFAULT_CARRIER_REFERENCE = 'SHOPPINGFEED_ORDER_DEFAULT_CARRIER_REFERENCE';
+    public const ORDER_CARRIER_ADVANCED_RULES = 'SHOPPINGFEED_ORDER_CARRIER_ADVANCED_RULES';
     public const PRODUCT_FEED_CARRIER_REFERENCE = 'SHOPPINGFEED_PRODUCT_FEED_CARRIER_REFERENCE';
     public const PRODUCT_FEED_SYNC_PACK = 'SHOPPINGFEED_PRODUCT_FEED_SYNC_PACK';
     public const PRODUCT_FEED_IMAGE_FORMAT = 'SHOPPINGFEED_PRODUCT_FEED_IMAGE_FORMAT';
@@ -134,6 +135,7 @@ class Shoppingfeed extends ShoppingfeedClasslib\Module
         ShoppingfeedProduct::class,
         ShoppingfeedOrder::class,
         ShoppingfeedCarrier::class,
+        ShoppingfeedCarrierRule::class,
         ShoppingfeedPreloading::class,
         ShoppingfeedToken::class,
     ];
@@ -477,6 +479,7 @@ class Shoppingfeed extends ShoppingfeedClasslib\Module
         $this->setConfigurationDefault(self::ORDER_IMPORT_SHIPPED_MARKETPLACE, 0);
         $this->setConfigurationDefault(self::PRODUCT_FEED_CARRIER_REFERENCE, Configuration::getGlobalValue('PS_CARRIER_DEFAULT'));
         $this->setConfigurationDefault(self::ORDER_DEFAULT_CARRIER_REFERENCE, Configuration::getGlobalValue('PS_CARRIER_DEFAULT'));
+        $this->setConfigurationDefault(self::ORDER_CARRIER_ADVANCED_RULES, 0);
         $this->setConfigurationDefault(self::COMPRESS_PRODUCTS_FEED, 1);
         $this->setConfigurationDefault(self::SEND_NOTIFICATION, 0);
 
